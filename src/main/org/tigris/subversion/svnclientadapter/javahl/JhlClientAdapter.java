@@ -123,6 +123,11 @@ public class JhlClientAdapter implements ISVNClientAdapter {
 			        } catch (Exception e) {
 			        } catch (UnsatisfiedLinkError e) {
 			        }
+					try {
+						System.loadLibrary("intl");
+			        } catch (Exception e) {
+			        } catch (UnsatisfiedLinkError e) {
+			        }
 				}
 	        	//workaround to solve Subclipse ISSUE #83
 	
