@@ -21,6 +21,7 @@ import java.io.File;
 import java.net.MalformedURLException;
 
 import org.tigris.subversion.svnclientadapter.SVNClientAdapterFactory;
+import org.tigris.subversion.svnclientadapter.SVNClientException;
 import org.tigris.subversion.svnclientadapter.SVNUrl;
 
 /**
@@ -34,7 +35,7 @@ public class TestsConfig {
      * common root URL for all tests. Can be set by system property "test.rooturl". 
      * If not set, the file url of the rootDirectoryName is used.
      */
-    public String rootUrl;
+    public SVNUrl rootUrl;
 
     
     /**
@@ -59,12 +60,14 @@ public class TestsConfig {
      * the directory "working_copies" in the rootDir. All test working copies
      * will be created here.
      */
-    public File workingCopies;    
+    public File workingCopies;
+    
+    public String protocol;
 
     private static TestsConfig testsConfig;
     
     
-    private TestsConfig() {
+    private TestsConfig() throws SVNClientException {
         String clientTypeStr = System.getProperty("test.clientType");
         if ("command".equalsIgnoreCase(clientTypeStr)) {
             clientType = SVNClientAdapterFactory.COMMANDLINE_CLIENT;
@@ -79,21 +82,32 @@ public class TestsConfig {
             rootDirectoryName = System.getProperty("user.dir");
         rootDir = new File(rootDirectoryName);
     
-        // if not alread set, get a usefull value for root url
-        rootUrl = System.getProperty("test.rooturl");
-        if(rootUrl == null)
-        {
-            // if no root url, set build a file url
-            rootUrl = rootDir.toURI().toString();
+        protocol = System.getProperty("test.protocol");
+        if (protocol == null)
+        	protocol = "file";
+        
+        String rootUrlStr = null;
+        if(protocol.equals("file")) {
+            rootUrlStr = rootDir.toURI().toString();
             // java may have a different view about the number of '/' to follow
             // "file:" than subversion. We convert to the subversion view.
-            if(rootUrl.startsWith("file:///"))
+            if(rootUrlStr.startsWith("file:///"))
                 ; // this is the form subversion needs
-            else if(rootUrl.startsWith("file://"))
-                rootUrl = rootUrl.replaceFirst("file://", "file:///");
-            else if(rootUrl.startsWith("file:/"))
-                rootUrl = rootUrl.replaceFirst("file:/", "file:///");
+            else if(rootUrlStr.startsWith("file://"))
+                rootUrlStr = rootUrlStr.replaceFirst("file://", "file:///");
+            else if(rootUrlStr.startsWith("file:/"))
+                rootUrlStr = rootUrlStr.replaceFirst("file:/", "file:///");
+        } else
+        if (protocol.equals("svn")) {
+        	rootUrlStr = "svn://localhost";
         }
+        
+        
+        try {
+			rootUrl = new SVNUrl(rootUrlStr);
+		} catch (MalformedURLException e) {
+			throw new SVNClientException(e);
+		}
         
         // create the directory for the repositories and the working copies
         repositories = new File(rootDir, "repositories");
@@ -104,7 +118,7 @@ public class TestsConfig {
     }
     
     
-    public static TestsConfig getTestsConfig() {
+    public static TestsConfig getTestsConfig() throws SVNClientException {
         if (testsConfig == null) { 
             testsConfig = new TestsConfig();
         }
@@ -122,7 +136,7 @@ public class TestsConfig {
         String path = file.getAbsolutePath().
                 substring(rootDirectoryName.length()+1);
         // append to the root url
-        return new SVNUrl(rootUrl + path.replace(File.separatorChar, '/'));
+        return new SVNUrl(rootUrl + "/" + path.replace(File.separatorChar, '/'));
     }
     
     

@@ -25,6 +25,7 @@ import junit.framework.TestCase;
 import org.tigris.subversion.svnclientadapter.ISVNClientAdapter;
 import org.tigris.subversion.svnclientadapter.SVNClientAdapterFactory;
 import org.tigris.subversion.svnclientadapter.SVNClientException;
+import org.tigris.subversion.svnclientadapter.utils.SvnServer;
 
 /**
  * common base class for the SvnclientAdapter tests
@@ -52,7 +53,9 @@ public abstract class SVNTest extends TestCase
     
     private TestConfig greekTestConfig = null;
     
-    private TestsConfig testsConfig = TestsConfig.getTestsConfig();
+    private TestsConfig testsConfig;
+    
+    private SvnServer svnServer;
     
 
     /**
@@ -62,6 +65,7 @@ public abstract class SVNTest extends TestCase
     protected void setUp() throws Exception
     {
         super.setUp();
+        testsConfig = TestsConfig.getTestsConfig();
 
         // create a clean directory for the config files and the sample
         // repository
@@ -74,12 +78,34 @@ public abstract class SVNTest extends TestCase
 
         // create and configure the needed subversion objects
         client = SVNClientAdapterFactory.createSVNClient(testsConfig.clientType);
-        client.setUsername("jrandom");
-        client.setPassword("rayjandom");
+        client.setUsername("cedric");
+        client.setPassword("cedricpass");
 //        client.setConfigDirectory(conf.getAbsolutePath());
-
+        
+        startServer(testsConfig.rootDir);
     }
 
+    protected void startServer(File repository) throws IOException {
+        if (testsConfig.protocol.equals("svn")) {
+            svnServer = new SvnServer();
+            svnServer.setRepository(repository);
+            System.out.print("Starting svnserve : ");
+            svnServer.start();
+            System.out.println("done.");
+        }
+    }
+    
+    protected void stopServer() {
+        if (testsConfig.protocol.equals("svn")) {
+            System.out.print("Stopping svnserve : ");
+            svnServer.kill();
+            System.out.println("done.");            
+            svnServer = null;
+        }        
+    }
+    
+    
+    
     public TestConfig getGreekTestConfig() throws IOException, SVNClientException {
         if (greekTestConfig == null) {
             // build the sample repository that will be imported
@@ -91,10 +117,12 @@ public abstract class SVNTest extends TestCase
             
             // create the repository
             File greekRepos = new File(localTmp, "repos");
-            client.createRepository(greekRepos,ISVNClientAdapter.REPOSITORY_BDB);
+            client.createRepository(greekRepos,ISVNClientAdapter.REPOSITORY_FSFS);
+            FileUtils.copyFile(new File("test/svnserve.conf"),new File(greekRepos,"conf/svnserve.conf"));
+            FileUtils.copyFile(new File("test/passwd"),new File(greekRepos,"conf/passwd"));
             client.doImport(greekFiles, testsConfig.makeReposUrl(greekRepos),
                     logMessage, true );
-    
+            
             greekTestConfig = new TestConfig();
             greekTestConfig.client = client;
             greekTestConfig.sampleRepos = greekRepos;
@@ -142,6 +170,7 @@ public abstract class SVNTest extends TestCase
         
         // remove the temporary directory
         FileUtils.removeDirectoryWithContent(localTmp);
+        stopServer();
         super.tearDown();
     }
 

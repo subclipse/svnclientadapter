@@ -1,8 +1,19 @@
-/*
- * Created on 10 oct. 2004
+/**
+ * @copyright
+ * ====================================================================
+ * Copyright (c) 2003-2004 CollabNet.  All rights reserved.
  *
- * TODO To change the template for this generated file go to
- * Window - Preferences - Java - Code Style - Code Templates
+ * This software is licensed as described in the file COPYING, which
+ * you should have received as part of this distribution.  The terms
+ * are also available at http://subversion.tigris.org/license-1.html.
+ * If newer versions of this license are posted there, you may use a
+ * newer version instead, at your option.
+ *
+ * This software consists of voluntary contributions made by many
+ * individuals.  For exact contribution history, see the revision
+ * history and logs, available at http://subversion.tigris.org/.
+ * ====================================================================
+ * @endcopyright
  */
 package org.tigris.subversion.svnclientadapter.basictests;
 
@@ -11,6 +22,7 @@ import java.io.File;
 import org.tigris.subversion.svnclientadapter.ISVNStatus;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
 import org.tigris.subversion.svnclientadapter.SVNUrl;
+import org.tigris.subversion.svnclientadapter.utils.SvnServer;
 
 /**
  * this internal class represent the repository and the working copy for one

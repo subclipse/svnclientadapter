@@ -10,6 +10,7 @@ public class SVNJavahlTests extends TestSuite {
 
     public static TestSuite suite() {
         System.setProperty("test.clientType","javahl");
+        System.setProperty("test.protocol","svn");
         
         TestSuite testSuite = new SVNJavahlTests("Test group");
 
