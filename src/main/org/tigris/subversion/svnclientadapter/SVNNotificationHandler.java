@@ -108,7 +108,7 @@ public abstract class SVNNotificationHandler {
      * @param commandLine
      */
     public void logCommandLine(String commandLine) {
-        if (logEnabled) {
+        if (logEnabled && !skipCommand()) {
             for(Iterator it=notifylisteners.iterator(); it.hasNext();) {
                 ISVNNotifyListener listener = (ISVNNotifyListener)it.next();
                 listener.logCommandLine(commandLine);
@@ -184,6 +184,23 @@ public abstract class SVNNotificationHandler {
             ISVNNotifyListener listener = (ISVNNotifyListener)it.next();
             listener.onNotify(f, kind);
         }  
+    }
+    
+    /**
+     * For certain commands we just want to skip the logging of the
+     * command line
+     */
+    private boolean skipCommand() {
+        if (command == ISVNNotifyListener.Command.CAT ||
+                command == ISVNNotifyListener.Command.INFO ||
+                command == ISVNNotifyListener.Command.LOG ||
+                command == ISVNNotifyListener.Command.LS ||
+                command == ISVNNotifyListener.Command.PROPGET ||
+                command == ISVNNotifyListener.Command.PROPLIST ||
+                command == ISVNNotifyListener.Command.STATUS )
+            return true;
+        else
+            return false;
     }
     
 }
