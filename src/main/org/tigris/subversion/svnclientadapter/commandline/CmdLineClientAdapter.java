@@ -1169,9 +1169,9 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#createRepository(java.io.File)
 	 */
-	public void createRepository(File path) throws SVNClientException {
+	public void createRepository(File path, String repositoryType) throws SVNClientException {
 		try {
-			svnAdminCmd.create(toString(path));
+			svnAdminCmd.create(toString(path), repositoryType);
 		} catch (CmdLineException e) {
 			SVNClientException.wrapException(e);
 		}		

@@ -59,6 +59,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -68,6 +69,7 @@ import org.tigris.subversion.javahl.ClientException;
 import org.tigris.subversion.javahl.PromptUserPassword;
 import org.tigris.subversion.javahl.PropertyData;
 import org.tigris.subversion.javahl.Revision;
+import org.tigris.subversion.javahl.SVNAdmin;
 import org.tigris.subversion.javahl.SVNClient;
 import org.tigris.subversion.javahl.SVNClientInterface;
 import org.tigris.subversion.javahl.SVNClientSynchronized;
@@ -98,12 +100,14 @@ public class JhlClientAdapter implements ISVNClientAdapter {
     final private static int SVN_ERR_WC_NOT_DIRECTORY = 155007;
 
     private SVNClientSynchronized svnClient;
+    private SVNAdmin svnAdmin;
     private JhlNotificationHandler notificationHandler;
     private PromptUserPassword promptUserPasswordHandler;
     
 
     public JhlClientAdapter() {
         svnClient = new SVNClientSynchronized();
+        svnAdmin = new SVNAdmin();
         notificationHandler = new JhlNotificationHandler();
         svnClient.notification(notificationHandler);        
         svnClient.setPrompt(new DefaultPromptUserPassword());
@@ -126,7 +130,26 @@ public class JhlClientAdapter implements ISVNClientAdapter {
 			}
         	//workaround to solve Subclipse ISSUE #83
 
-        	System.loadLibrary("svnjavahl");
+            /*
+             * first try to load the library by the new name.
+             * if that fails, try to load the library by the old name.
+             */
+            try
+            {
+                System.loadLibrary("svnjavahl-1");
+            }
+            catch(UnsatisfiedLinkError ex)
+            {
+                try
+                {
+                    System.loadLibrary("libsvnjavahl-1");
+                }
+                catch (UnsatisfiedLinkError e)
+                {
+                    System.loadLibrary("svnjavahl");
+                }
+            }        	
+        	
             return true;
         } catch (Exception e) {
             return false;
@@ -1504,12 +1527,26 @@ public class JhlClientAdapter implements ISVNClientAdapter {
     }
 
     
-    
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#createRepository(java.io.File)
 	 */
-	public void createRepository(File path) throws SVNClientException {
-		// TODO implement this method when a new version of javahl will be released
-
+	public void createRepository(File path, String repositoryType) throws SVNClientException {
+		try {		
+			if (repositoryType == null) {
+				repositoryType = REPOSITORY_BDB;
+			}
+		    notificationHandler.setCommand(ISVNNotifyListener.Command.CREATE_REPOSITORY);
+		     
+		    String target = fileToSVNPath(path,true);
+		    notificationHandler.logCommandLine(
+		    		MessageFormat.format(
+		    				"create --fstype {0} {1}", 
+							new String[] { repositoryType, target }));
+		    svnAdmin.create(target, false, false, null, repositoryType);
+		} catch (ClientException e) {
+			notificationHandler.logException(e);
+			throw new SVNClientException(e);            
+		}        
+	    
 	}
 }

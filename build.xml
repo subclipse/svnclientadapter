@@ -11,7 +11,7 @@
   <property file="build.properties"/>
 
   <path id="project.classpath">
-    <pathelement location="${svnjavahl.jar}"/>
+    <pathelement location="${svn-javahl.jar}"/>
 	<pathelement location="${commons-logging.jar}"/>
 	<pathelement location="${jakarta-regexp.jar}"/>
   </path>
@@ -75,11 +75,11 @@
 	<mkdir dir="${build.distrib.dir}/lib"/>
 	<copy file="readme.txt" todir="${build.distrib.dir}"/>
 	<copy file="changelog.txt" todir="${build.distrib.dir}"/>
-	<copy file="svnjavahl.dll" todir="${build.distrib.dir}"/>
+	<copy file="libsvnjavahl-1.dll" todir="${build.distrib.dir}"/>
 	<copy file="libeay32.dll" todir="${build.distrib.dir}"/>
 	<copy file="ssleay32.dll" todir="${build.distrib.dir}"/>
 	<copy file="libdb42.dll" todir="${build.distrib.dir}"/>
-	<copy file="${svnjavahl.jar}" todir="${build.distrib.dir}/lib"/>
+	<copy file="${svn-javahl.jar}" todir="${build.distrib.dir}/lib"/>
 	<copy file="${commons-logging.jar}" todir="${build.distrib.dir}/lib"/>
 	<copy file="${jakarta-regexp.jar}" todir="${build.distrib.dir}/lib"/>
 	<copy file="${build.lib.dir}/svnClientAdapter.jar" todir="${build.distrib.dir}/lib"/>

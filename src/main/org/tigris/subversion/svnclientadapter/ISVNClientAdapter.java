@@ -63,6 +63,11 @@ import org.tigris.subversion.javahl.ClientException;
 
 
 public interface ISVNClientAdapter {
+
+    public final static String REPOSITORY_BDB = "bdb";
+    public final static String REPOSITORY_FSFS = "fsfs";
+	
+	
 	/**
 	 * Add a notification listener
 	 */
@@ -563,10 +568,13 @@ public interface ISVNClientAdapter {
 	public abstract void resolved(File path) throws SVNClientException;
     
 	/**
-	 * Create a new, empty repository at path
+	 * Create a new, empty repository at path 
+	 * 
 	 * @param path
+	 * @param repositoryType either {@link ISVNClientAdapter#REPOSITORY_BDB} or
+	 *        {@link ISVNClientAdapter#REPOSITORY_FSFS} or null (will use svnadmin default)
 	 * @throws SVNClientException
 	 */
-	public abstract void createRepository(File path) throws SVNClientException;
+	public abstract void createRepository(File path, String repositoryType) throws SVNClientException;
 	
 }

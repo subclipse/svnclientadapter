@@ -26,10 +26,15 @@ public class SvnAdminCommandLine extends CommandLine {
 	 * Create a new, empty repository at path
 	 * 
 	 */
-	void create(String path) throws CmdLineException {
+	void create(String path, String repositoryType) throws CmdLineException {
 		notificationHandler.setCommand(ISVNNotifyListener.Command.CREATE_REPOSITORY);
 		ArrayList args = new ArrayList();
 		args.add("create");
+		if (repositoryType != null) {
+			// repository type is for svnadmin >= 1.1
+			args.add("--fs-type");
+			args.add(repositoryType);
+		}
 		args.add(path);
 		execVoid(args);
 	}
