@@ -54,6 +54,8 @@
  */ 
 package org.tigris.subversion.svnclientadapter.commandline;
 
+import java.io.File;
+
 import org.tigris.subversion.svnclientadapter.ISVNProperty;
 
 /**
@@ -63,13 +65,13 @@ import org.tigris.subversion.svnclientadapter.ISVNProperty;
 class CmdLineProperty implements ISVNProperty {
 	private String propName;
 	private String propValue;
-	private String path;
+	private File file;
 	private byte[] data;
 
-	CmdLineProperty(String name, String value, String path, byte[] data) {
+	CmdLineProperty(String name, String value, File file, byte[] data) {
 		this.propName = name;
 		this.propValue = value;
-		this.path = path;
+		this.file = file.getAbsoluteFile();
 		this.data = data;
 	}
 
@@ -88,10 +90,10 @@ class CmdLineProperty implements ISVNProperty {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.tigris.subversion.svnclientadapter.ISVNProperty#getPath()
+	 * @see org.tigris.subversion.svnclientadapter.ISVNProperty#getFile()
 	 */
-	public String getPath() {
-		return path;
+	public File getFile() {
+		return file;
 	}
 
 	/* (non-Javadoc)

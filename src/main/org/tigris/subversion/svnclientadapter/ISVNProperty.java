@@ -54,6 +54,8 @@
  */ 
 package org.tigris.subversion.svnclientadapter;
 
+import java.io.File;
+
 /**
  * describes a property (see svn command propget)
  *
@@ -83,8 +85,24 @@ public interface ISVNProperty {
 
 	public static final String REV_ORIGINAL_DATE = "svn:original-date";
 
+	/**
+	 * get the name of the property
+	 */
 	public abstract String getName();
+	
+	/**
+	 * get the value of the property as a string
+	 * note that if value is a binary, this string will be invalid
+	 */
 	public abstract String getValue();
-	public abstract String getPath();
+	
+	/**
+	 * get the file this property belongs to 
+	 */
+	public abstract File getFile();
+	
+	/**
+	 * get the value of the property as an array of bytes 
+	 */
 	public abstract byte[] getData();
 }

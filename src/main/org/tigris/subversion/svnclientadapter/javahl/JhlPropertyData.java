@@ -54,6 +54,8 @@
  */ 
 package org.tigris.subversion.svnclientadapter.javahl;
 
+import java.io.File;
+
 import org.tigris.subversion.javahl.PropertyData;
 import org.tigris.subversion.svnclientadapter.ISVNProperty;
 
@@ -72,21 +74,37 @@ public class JhlPropertyData implements ISVNProperty
         _propertyData = propertyData;
     }
 
+	/*
+	 * (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNProperty#getName()
+	 */
     public String getName()
     {
         return _propertyData.getName();
     }
 
+	/*
+	 * (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNProperty#getValue()
+	 */
     public String getValue()
     {
         return _propertyData.getValue();
     }
 
-    public String getPath()
+	/*
+	 * (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNProperty#getFile()
+	 */
+    public File getFile()
     {
-        return _propertyData.getPath();
+        return new File(_propertyData.getPath()).getAbsoluteFile();
     }
     
+    /*
+     * (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNProperty#getData()
+     */
     public byte[] getData()
     {
         return _propertyData.getData();
