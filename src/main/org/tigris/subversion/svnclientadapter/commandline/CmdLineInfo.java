@@ -55,9 +55,9 @@
 package org.tigris.subversion.svnclientadapter.commandline;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
-import java.util.TreeMap;
 
 import org.tigris.subversion.svnclientadapter.SVNNodeKind;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
@@ -71,7 +71,7 @@ public class CmdLineInfo {
 
 	//"Constants"
 	private static final String KEY_PATH = "Path";
-	private static final String KEY_URL = "Url";
+	private static final String KEY_URL = "URL";
 	private static final String KEY_REVISION = "Revision";
 	private static final String KEY_NODEKIND = "Node Kind";
 	private static final String KEY_LASTCHANGEDAUTHOR = "Last Changed Author";
@@ -84,7 +84,7 @@ public class CmdLineInfo {
 	//private static final String KEY_CHECKSUM = "Checksum";
 
 	//Fields
-	private Map infoMap = new TreeMap();
+	private Map infoMap = new HashMap();
 
 	/**
 	 * 
