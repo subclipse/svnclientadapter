@@ -70,4 +70,6 @@ public interface ISVNLogMessage {
 	public abstract Date getDate();
 
 	public abstract String getMessage();
+    
+    public abstract ISVNLogMessageChangePath[] getChangedPaths();
 }

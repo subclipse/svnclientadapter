@@ -58,6 +58,7 @@ import java.util.Date;
 
 import org.tigris.subversion.javahl.LogMessage;
 import org.tigris.subversion.svnclientadapter.ISVNLogMessage;
+import org.tigris.subversion.svnclientadapter.ISVNLogMessageChangePath;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
 
 /**
@@ -77,32 +78,45 @@ public class JhlLogMessage implements ISVNLogMessage {
 		_m = msg;
 	}
 
-	/**
-	 * 
-	 */
+
+    /*
+     * (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNLogMessage#getRevision()
+     */
 	public SVNRevision.Number getRevision() {
 		return (SVNRevision.Number)JhlConverter.convert(_m.getRevision());
 	}
 
-	/**
-	 * 
-	 */
+    /*
+     *  (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNLogMessage#getAuthor()
+     */
 	public String getAuthor() {
 		return _m.getAuthor();
 	}
 
-	/**
-	 * 
-	 */
+    /*
+     * (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNLogMessage#getDate()
+     */
 	public Date getDate() {
 		return _m.getDate();
 	}
 
-	/**
-	 * 
+	/*
+     * (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNLogMessage#getMessage()
 	 */
 	public String getMessage() {
 		return _m.getMessage();
 	}
 
+    /*
+     * (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNLogMessage#getChangedPaths()
+     */
+    public ISVNLogMessageChangePath[] getChangedPaths() {
+    	return JhlConverter.convert(_m.getChangedPaths());
+    }
+    
 }

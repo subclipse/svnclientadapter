@@ -707,7 +707,6 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 		File outFile,
 		boolean recurse)
 		throws SVNClientException {
-		// TODO : test
 		diff(url, oldUrlRevision, url, newUrlRevision, outFile, recurse);
 	}
 
@@ -1190,4 +1189,14 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
         }
         
 	}
+
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getRepositoryRoot(org.tigris.subversion.svnclientadapter.SVNUrl, org.tigris.subversion.svnclientadapter.SVNRevision)
+	 */
+	public SVNUrl getRepositoryRoot(SVNUrl url) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
 }

@@ -945,7 +945,8 @@ public class JhlClientAdapter implements ISVNClientAdapter {
                             target, 
                             JhlConverter.convert(revisionStart), 
                             JhlConverter.convert(revisionEnd),
-                            false)); // don't stop on copy
+                            false,  // don't stop on copy
+                            true)); // discover paths
 		} catch (ClientException e) {
 			notificationHandler.logException(e);
 			throw new SVNClientException(e);
@@ -981,7 +982,8 @@ public class JhlClientAdapter implements ISVNClientAdapter {
                             target, 
                             JhlConverter.convert(revisionStart), 
                             JhlConverter.convert(revisionEnd),
-                            false)); // don't stop on copy
+                            false,   // don't stop on copy
+                            true));  // discover paths
 		} catch (ClientException e) {
 			notificationHandler.logException(e);
 			throw new SVNClientException(e);
@@ -1618,4 +1620,38 @@ public class JhlClientAdapter implements ISVNClientAdapter {
 			throw new SVNClientException(e);            
 		}        
 	}
+    
+    public SVNUrl getRepositoryRoot(SVNUrl url) {
+        return null;
+        
+        // the following only works for file:/// urls
+/*    	String target = url.toString()+"/FILEWHICHDOESNOTEXIST";
+    	try {
+            // revision is not important because the repository root
+            // is always the same 
+            svnClient.logMessages(
+                            target, 
+                            JhlConverter.convert(SVNRevision.HEAD), 
+                            JhlConverter.convert(SVNRevision.HEAD),
+                            false,  // don't stop on copy
+                            true); // discover paths
+            return null;
+        } catch (ClientException e) {
+            // Filesystem has no item
+            // svn: File not found: revision 1, path '/entryTest/FILEWHICHDOESNOTEXIST'
+        	e.getMessage();
+            RE re = new RE("path '(.+)'");
+            if (re.match(e.getMessage())) {
+            	String path = re.getParen(1);
+            	try {
+					return new SVNUrl(target.substring(0,target.length()-path.length()));
+				} catch (MalformedURLException e1) {
+					return null;
+				}
+            } else {
+            	return null;
+            }
+        }*/        
+    }
+    
 }

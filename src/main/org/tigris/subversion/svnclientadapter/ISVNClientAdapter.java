@@ -592,5 +592,7 @@ public interface ISVNClientAdapter {
 	 */
 	public ISVNInfo getInfo(File file) throws SVNClientException;
 	
+    
+    public SVNUrl getRepositoryRoot(SVNUrl url);
 	
 }

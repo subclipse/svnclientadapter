@@ -469,6 +469,7 @@ public class SvnCommandLine extends CommandLine {
 		args.add(validRev(revision));
 		args.add(target);
 		args.add("--xml");
+        args.add("-v");
 		addAuthInfo(args);
 
         return execString(args,true);

@@ -63,8 +63,12 @@ import java.util.StringTokenizer;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.tigris.subversion.svnclientadapter.ISVNLogMessage;
+import org.tigris.subversion.svnclientadapter.ISVNLogMessageChangePath;
+import org.tigris.subversion.svnclientadapter.SVNClientException;
+import org.tigris.subversion.svnclientadapter.SVNLogMessageChangePath;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
 import org.w3c.dom.Document;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
@@ -80,12 +84,19 @@ class CmdLineLogMessage implements ISVNLogMessage {
 	private String author;
 	private Date date;
 	private String msg;
+    private ISVNLogMessageChangePath[] logMessageChangePaths;
 	
-	CmdLineLogMessage(SVNRevision.Number rev, String author, Date date, String msg){
+	CmdLineLogMessage(
+            SVNRevision.Number rev, 
+            String author, 
+            Date date, 
+            String msg,
+            ISVNLogMessageChangePath[] logMessageChangePaths){
         this.rev = rev;
         this.author = author;
         this.date = date;
         this.msg = msg;
+        this.logMessageChangePaths = logMessageChangePaths;
     }
 
     /**
@@ -169,11 +180,11 @@ class CmdLineLogMessage implements ISVNLogMessage {
 	}
 	
     /**
-     * creates CmdLineLogMessages from a xml string (see svn log --xml) 
+     * creates CmdLineLogMessages from a xml string (see svn log --xml -v) 
      * @param cmdLineResults
      * @return
      */
-	public static CmdLineLogMessage[] createLogMessages(String cmdLineResults){
+	public static CmdLineLogMessage[] createLogMessages(String cmdLineResults) throws SVNClientException {
 		Collection logMessages = new ArrayList();
 		
 		try {
@@ -193,6 +204,7 @@ class CmdLineLogMessage implements ISVNLogMessage {
 				
 				Node authorNode = logEntry.getFirstChild();
 				Node dateNode = authorNode.getNextSibling();
+                Node pathsNode = dateNode.getNextSibling();
 				Node msgNode = dateNode.getNextSibling();
 				Node revisionAttribute = logEntry.getAttributes().getNamedItem("revision");
 
@@ -205,17 +217,44 @@ class CmdLineLogMessage implements ISVNLogMessage {
 					msg = msgTextNode.getNodeValue();
 				else
 					msg = "";
-                    
-                CmdLineLogMessage logMessage = new CmdLineLogMessage(rev, author, date, msg);     
+                
+                ISVNLogMessageChangePath[] logMessageChangePath = new ISVNLogMessageChangePath[msgNode.getChildNodes().getLength()];
+                for (int j = 0; j < msgNode.getChildNodes().getLength();j++) {
+                	Node pathNode = msgNode.getChildNodes().item(j);
+                    String path = pathNode.getFirstChild().getNodeValue();
+                    NamedNodeMap attributes = pathNode.getAttributes();
+                    char action = attributes.getNamedItem("action").getNodeValue().charAt(0);
+                    Node copyFromPathNode = attributes.getNamedItem("copyfrom-path");
+                    Node copyFromRevNode = attributes.getNamedItem("copyfrom-rev");
+                    String copyFromPath = null;
+                    if (copyFromPathNode != null) {
+                        copyFromPath = copyFromPathNode.getNodeValue();
+                    }
+                    SVNRevision.Number copyFromRev = null;
+                    if (copyFromRevNode != null) {
+                        copyFromRev = Helper.toRevNum(copyFromRevNode.getNodeValue());
+                    }
+                    logMessageChangePath[j] = new SVNLogMessageChangePath(
+                            path, copyFromRev, copyFromPath, action);
+                }
+                
+                CmdLineLogMessage logMessage = new CmdLineLogMessage(rev, author, date, msg, logMessageChangePath);
 
 				logMessages.add(logMessage);				
 			}
 			
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw new SVNClientException(e);
 		} 
 		
 		return (CmdLineLogMessage[]) logMessages.toArray(new CmdLineLogMessage[logMessages.size()]);		
 	
+	}
+
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNLogMessage#getChangedPaths()
+	 */
+	public ISVNLogMessageChangePath[] getChangedPaths() {
+		return logMessageChangePaths;
 	}
 }

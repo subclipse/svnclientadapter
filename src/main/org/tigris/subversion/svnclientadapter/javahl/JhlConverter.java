@@ -56,6 +56,7 @@ package org.tigris.subversion.svnclientadapter.javahl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.tigris.subversion.javahl.ChangePath;
 import org.tigris.subversion.javahl.DirEntry;
 import org.tigris.subversion.javahl.LogMessage;
 import org.tigris.subversion.javahl.NodeKind;
@@ -63,11 +64,13 @@ import org.tigris.subversion.javahl.Revision;
 import org.tigris.subversion.javahl.ScheduleKind;
 import org.tigris.subversion.javahl.Status;
 import org.tigris.subversion.svnclientadapter.ISVNLogMessage;
+import org.tigris.subversion.svnclientadapter.ISVNLogMessageChangePath;
 import org.tigris.subversion.svnclientadapter.ISVNStatus;
-import org.tigris.subversion.svnclientadapter.SVNStatusKind;
+import org.tigris.subversion.svnclientadapter.SVNLogMessageChangePath;
 import org.tigris.subversion.svnclientadapter.SVNNodeKind;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
 import org.tigris.subversion.svnclientadapter.SVNScheduleKind;
+import org.tigris.subversion.svnclientadapter.SVNStatusKind;
 
 /**
  * Convert from javahl types to subversion.svnclientadapter.* types 
@@ -217,6 +220,19 @@ public class JhlConverter {
             jhlStatus[i] = new JhlStatus(status[i]);
         }
         return jhlStatus;
+    }
+    
+    static ISVNLogMessageChangePath[] convert(ChangePath[] changePaths) {
+        SVNLogMessageChangePath[] jhlChangePaths = new SVNLogMessageChangePath[changePaths.length];
+        for(int i=0; i < changePaths.length; i++) {
+            ChangePath changePath = changePaths[i];
+        	jhlChangePaths[i] = new SVNLogMessageChangePath(
+                    changePath.getPath(),
+                    new SVNRevision.Number(changePath.getCopySrcRevision()),
+                    changePath.getCopySrcPath(),
+                    changePath.getAction());
+        }
+        return jhlChangePaths;
     }
     
     public static SVNScheduleKind convertScheduleKind(int kind) {
