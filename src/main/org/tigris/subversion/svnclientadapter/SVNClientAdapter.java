@@ -651,14 +651,15 @@ public class SVNClientAdapter {
 	 * @param destPath
 	 * @throws ClientException
 	 */	
-	public void move(File srcPath, File destPath) throws ClientException {
+	public void move(File srcPath, File destPath, boolean force) throws ClientException {
+        // use force when you want to move file even if there are local modifications
         try {
             notificationHandler.setCommand(ISVNNotifyListener.COMMAND_MOVE);
 		    String src = fileToSVNPath(srcPath);
             String dest = fileToSVNPath(destPath);
             notificationHandler.setCommandLine(
                     "move "+src+' '+dest);        
-            svnClient.move(src,dest,"",Revision.HEAD,false);
+            svnClient.move(src,dest,"",Revision.HEAD,force);
         } catch (ClientException e) {
             notificationHandler.setException(e);
             throw e;
