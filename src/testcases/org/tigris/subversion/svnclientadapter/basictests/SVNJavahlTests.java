@@ -18,12 +18,15 @@ public class SVNJavahlTests extends TestSuite {
         testSuite.addTestSuite(CatTest.class);
         testSuite.addTestSuite(CheckOutTest.class);
         testSuite.addTestSuite(CommitTest.class);
+        testSuite.addTestSuite(CopyTest.class);
         testSuite.addTestSuite(DeleteTest.class);
+        testSuite.addTestSuite(ExportTest.class);
         testSuite.addTestSuite(ImportTest.class);
         testSuite.addTestSuite(InfoTest.class);
         testSuite.addTestSuite(LogTest.class);
         testSuite.addTestSuite(LsTest.class);
         testSuite.addTestSuite(MkdirTest.class);
+        testSuite.addTestSuite(MoveTest.class);
         testSuite.addTestSuite(ResolveTest.class);
         testSuite.addTestSuite(RevertTest.class);
         testSuite.addTestSuite(StatusTest.class);
