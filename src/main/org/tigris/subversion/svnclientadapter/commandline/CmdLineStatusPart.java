@@ -56,7 +56,6 @@ package org.tigris.subversion.svnclientadapter.commandline;
 
 import java.io.File;
 
-import org.tigris.subversion.svnclientadapter.ISVNStatus;
 import org.tigris.subversion.svnclientadapter.SVNStatusKind;
 
 /**

@@ -275,4 +275,12 @@ public class JhlStatus implements ISVNStatus {
         return JhlConverter.convertStatusKind(_s.getRepositoryPropStatus());
     }
 
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    public String toString() {
+        return getPath() + " "+getTextStatus().toString();
+    }
+    
+    
 }

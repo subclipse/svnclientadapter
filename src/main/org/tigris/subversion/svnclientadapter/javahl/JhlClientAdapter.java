@@ -90,7 +90,6 @@ import org.tigris.subversion.svnclientadapter.SVNKeywords;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
 import org.tigris.subversion.svnclientadapter.SVNStatusUnversioned;
 import org.tigris.subversion.svnclientadapter.SVNUrl;
-import org.tigris.subversion.svnclientadapter.commandline.CmdLineAnnotations;
 
 /**
  * An adapter for SVNClient. Easier and safer to use than SVNClient
@@ -524,10 +523,9 @@ public class JhlClientAdapter implements ISVNClientAdapter {
 			return JhlConverter.convert(
                 svnClient.status(
                     filePathSVN,  
-                    descend,     // If descend is true, recurse fully, else do only immediate children.
-                    contactServer,       // If update is set, contact the repository and augment the status structures with information about out-of-dateness     
-					getAll));    // retrieve all entries; otherwise, retrieve only "interesting" entries (local mods and/or
-                                 // out-of-date).
+                    descend,            // If descend is true, recurse fully, else do only immediate children.
+                    contactServer,      // If update is set, contact the repository and augment the status structures with information about out-of-dateness     
+					getAll,getAll));    // retrieve all entries; otherwise, retrieve only "interesting" entries (local mods and/or out-of-date).
 		} catch (ClientException e) {
 			if (e.getAprError() == SVN_ERR_WC_NOT_DIRECTORY) {
 				// when there is no .svn dir, an exception is thrown ...

@@ -694,18 +694,20 @@ public class SvnCommandLine extends CommandLine {
             // otherwise we would do a "svn status" without args
             return ""; 
         }
-
         setCommand(ISVNNotifyListener.Command.STATUS, false);
 		ArrayList args = new ArrayList();
 		args.add("status");
         args.add("-v");
-        if (!allEntries)
-        	args.add("-q");
+        if (!allEntries) {
+            args.add("-q");
+        }
 		if (!descend) 
             args.add("-N");
 		if (checkUpdates)
 			args.add("-u");
-        args.add("--no-ignore"); // disregard default and svn:ignore property ignores
+        if (allEntries) {
+        	args.add("--no-ignore"); // disregard default and svn:ignore property ignores
+        }
 		
         for (int i = 0; i < path.length;i++) { 
             args.add(path[i]);
