@@ -24,6 +24,7 @@ import java.io.PrintWriter;
 import java.util.Arrays;
 
 import org.tigris.subversion.svnclientadapter.SVNRevision;
+import org.tigris.subversion.svnclientadapter.SVNUrl;
 
 
 public class CatTest extends SVNTest {
@@ -32,10 +33,10 @@ public class CatTest extends SVNTest {
 	 * test the basic SVNClient.fileContent functionality
 	 * @throws Throwable
 	 */
-	public void testBasicCat() throws Throwable
+	public void testHeadCat() throws Throwable
 	{
 	    // create the working copy
-	    OneTest thisTest = new OneTest("basicCat",getGreekTestConfig());
+	    OneTest thisTest = new OneTest("testHeadCat",getGreekTestConfig());
 	
 	    // modify A/mu
 	    File mu = new File(thisTest.getWorkingCopy(), "A/mu");
@@ -52,4 +53,35 @@ public class CatTest extends SVNTest {
 	    assertTrue("content changed", Arrays.equals(content, testContent));
 	}
 
+    public void testBaseCat() throws Throwable {
+        // create the working copy
+        OneTest thisTest = new OneTest("testBaseCat",getGreekTestConfig());
+    
+        // modify A/mu
+        File mu = new File(thisTest.getWorkingCopy(), "A/mu");
+        PrintWriter pw = new PrintWriter(new FileOutputStream(mu, true));
+        pw.print("some text");
+        pw.close();
+        // get the content from BASE
+        InputStream is = client.getContent(new File(thisTest.getWCPath()+"/A/mu"), SVNRevision.BASE);
+        byte[] content = new byte[is.available()];
+        is.read(content);
+        byte[] testContent = thisTest.getWc().getItemContent("A/mu").getBytes();
+    
+        // the content should be the same
+        assertTrue("content changed", Arrays.equals(content, testContent));
+    }
+    
+    public void testUrlCat() throws Throwable {
+        // create the working copy
+        OneTest thisTest = new OneTest("testUrlCat",getGreekTestConfig());
+        InputStream is = client.getContent(new SVNUrl(thisTest.getUrl()+"/A/mu"), SVNRevision.HEAD);
+        byte[] content = new byte[is.available()];
+        is.read(content);
+        byte[] testContent = thisTest.getWc().getItemContent("A/mu").getBytes();
+    
+        // the content should be the same
+        assertTrue("content is not the same", Arrays.equals(content, testContent));
+    }
+    
 }
