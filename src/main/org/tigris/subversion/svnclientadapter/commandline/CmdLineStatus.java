@@ -54,7 +54,11 @@
  */ 
 package org.tigris.subversion.svnclientadapter.commandline;
 
+import java.io.File;
+import java.util.StringTokenizer;
+
 import org.tigris.subversion.svnclientadapter.ISVNStatus;
+import org.tigris.subversion.svnclientadapter.SVNNodeKind;
 
 /**
  * @author Phil
@@ -62,7 +66,40 @@ import org.tigris.subversion.svnclientadapter.ISVNStatus;
 public class CmdLineStatus extends CmdLineInfo implements ISVNStatus {
 
 	private char flag = '?';
-	//private boolean sendHistory;
+	public static final int STATUS_FILE_WIDTH = 40;
+	
+	/*
+	 * The first five columns in the output are each one character wide:
+    First column: Says if item was added, deleted, or otherwise changed
+      ' ' no modifications
+      'A' Added
+      'D' Deleted
+      'M' Modified
+      'C' Conflicted
+      'I' Ignored
+      'X' item is unversioned, but is used by an externals definition
+      '?' item is not under revision control
+      '!' item is missing (removed by non-svn command) or incomplete
+      '~' versioned item obstructed by some item of a different kind
+    Second column: Modifications of a file's or directory's properties
+      ' ' no modifications
+      'M' Modified
+      'C' Conflicted
+    Third column: Whether the working copy directory is locked
+      ' ' not locked
+      'L' locked
+    Fourth column: Scheduled commit will contain addition-with-history
+      ' ' no history scheduled with commit
+      '+' history scheduled with commit
+    Fifth column: Whether the item is switched relative to its parent
+      ' ' normal
+      'S' switched
+    The out-of-date information appears in the eighth column
+      '*' a newer revision exists on the server
+      ' ' the working copy is up to date
+
+	 * 
+	 */
 
 	public CmdLineStatus(String statusLine, String infoLine) {
 		super(infoLine);
@@ -70,6 +107,25 @@ public class CmdLineStatus extends CmdLineInfo implements ISVNStatus {
 	}
 
 	private void setStatus(String statusLine) {
+
+		// if the status is for a DIR then find the single line
+		if(getNodeKind() == SVNNodeKind.DIR){
+			StringTokenizer st = new StringTokenizer(statusLine, Helper.NEWLINE);
+
+			while (st.hasMoreTokens()) {
+				String line = st.nextToken();
+				
+				String fileName = line.substring(STATUS_FILE_WIDTH, line.length());
+				File file1 = new File(fileName);
+				File file2 = new File(getPath());								
+				
+				if(file1.equals(file2)){
+					statusLine = line;
+					break;
+				}
+			}					
+		}
+
 		char[] l = statusLine.toCharArray();
 		flag = l[0];
 	}
@@ -93,13 +149,16 @@ public class CmdLineStatus extends CmdLineInfo implements ISVNStatus {
 		return flag != '?';
 	}
 
-	/* (non-Javadoc)
-	 * @see org.tigris.subversion.subclipse.client.ISVNClientStatus#hasRemote()
+	/**
+	 * tells if the resource has a remote counter-part
+	 * @return
 	 */
-	public boolean hasRemote() {
-		return isManaged() && !isAdded();
-		//(!isAdded() && !sendHistory); //TODO is this proper?
+	public boolean hasRemote()
+	{
+		ISVNStatus.Kind textStatus = getTextStatus();
+		return ((isManaged()) && (textStatus != ISVNStatus.Kind.ADDED));
 	}
+	
 
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.subclipse.client.ISVNClientStatus#getTextStatus()
@@ -133,7 +192,6 @@ public class CmdLineStatus extends CmdLineInfo implements ISVNStatus {
 	 */
 	public boolean isModified() {
 		return flag == 'M';
-		//TODO or 'A', 'D', etc? aren't they modifications? not sure
 	}
 
 	/* (non-Javadoc)
