@@ -329,9 +329,6 @@ public class JhlClientAdapter implements ISVNClientAdapter {
      */
     public ISVNStatus getSingleStatus(File path) 
             throws SVNClientException {
-        if (!path.exists()) {
-            return null; // resource does not exist : we return null
-        }
         notificationHandler.setCommand(ISVNNotifyListener.Command.STATUS);
         String filePathSVN = fileToSVNPath(path, true);
         notificationHandler.logCommandLine("status -N "+filePathSVN);

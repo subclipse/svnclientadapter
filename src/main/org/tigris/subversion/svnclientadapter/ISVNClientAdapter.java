@@ -140,7 +140,7 @@ public interface ISVNClientAdapter {
 	 * Returns the status of a single file in the path.
 	 *
 	 * @param path File to gather status.
-	 * @return a Status or null if path does not exist
+	 * @return a Status
 	 */
 	public abstract ISVNStatus getSingleStatus(File path)
 		throws SVNClientException;
