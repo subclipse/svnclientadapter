@@ -65,6 +65,8 @@ import org.tigris.subversion.svnclientadapter.SVNClientException;
 import org.tigris.subversion.svnclientadapter.SVNNodeKind;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
 import org.tigris.subversion.svnclientadapter.SVNUrl;
+import org.tigris.subversion.svnclientadapter.commandline.CmdLineClientAdapterFactory;
+import org.tigris.subversion.svnclientadapter.javahl.JhlClientAdapterFactory;
 
 /**
  * A very simple sample
@@ -113,14 +115,32 @@ public class Sample {
 		}
 	}
 
+    public void setup() {
+        try {
+            JhlClientAdapterFactory.setup();
+        } catch (SVNClientException e) {
+            // can't register this factory
+        }
+        try {
+            CmdLineClientAdapterFactory.setup();
+        } catch (SVNClientException e1) {
+            // can't register this factory
+        }
+        
+    }
+    
 	public void run() {
-		// first create the SVNClient from factory
+        // register the factories
+        setup();
+		
+        // first create the SVNClient from factory
 		// SVNClientAdapterFactory.JAVAHL_CLIENT to use JNI client (recommanded)
 		// SVNClientAdapterFactory.COMMANDLINE_CLIENT to use command line client
 		// You can also get the best client type interface using getBestSVNClientType
 		ISVNClientAdapter svnClient;
 		try {
-			int bestClientType = SVNClientAdapterFactory.getBestSVNClientType();
+			String bestClientType = SVNClientAdapterFactory.getPreferredSVNClientType();
+            System.out.println("Using "+bestClientType+" factory");
 			svnClient = SVNClientAdapterFactory.createSVNClient(bestClientType);
 		} catch (SVNClientException e) {
 			System.out.println(e.getMessage());
