@@ -346,6 +346,30 @@ public class JhlClientAdapter implements ISVNClientAdapter {
         }
 	}
 
+	/**
+	 * List directory entries of a directory
+	 * @param url
+	 * @param revision
+	 * @param recurse
+	 * @return
+	 * @throws ClientException
+	 */
+	public ISVNDirEntry[] getList(File path, SVNRevision revision, boolean recurse) 
+            throws SVNClientException {
+        try {
+            notificationHandler.setCommand(ISVNNotifyListener.Command.LS);
+            String target = fileToSVNPath(path, true);
+            String commandLine = "list -r "+revision.toString()+(recurse?"-R":"")+" "+path;
+            notificationHandler.logCommandLine(commandLine);
+			notificationHandler.setBaseDir(new File("."));		
+            return JhlConverter.convert(svnClient.list(target, JhlConverter.convert(revision), recurse));
+        } catch (ClientException e) {
+            notificationHandler.logException(e);
+            throw new SVNClientException(e);
+        }
+	}
+	
+	
 	/*
 	 * (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getDirEntry(org.tigris.subversion.svnclientadapter.SVNUrl, org.tigris.subversion.svnclientadapter.SVNRevision)
@@ -365,6 +389,25 @@ public class JhlClientAdapter implements ISVNClientAdapter {
 		return null; // not found
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getDirEntry(java.io.File, org.tigris.subversion.svnclientadapter.SVNRevision)
+	 */
+	public ISVNDirEntry getDirEntry(File path, SVNRevision revision) 
+		throws SVNClientException {
+
+		// list give the DirEntrys of the elements of a directory or the DirEntry
+		// of a file
+		ISVNDirEntry[] entries = getList(path.getParentFile(), revision,false);
+		String expectedPath = path.getName();
+		for (int i = 0; i < entries.length;i++) {
+			if (entries[i].getPath().equals(expectedPath)) {
+				return entries[i];
+			}
+		}
+		return null; // not found
+	}
+	
     /**
      * Returns the status of a single file in the path.
      *

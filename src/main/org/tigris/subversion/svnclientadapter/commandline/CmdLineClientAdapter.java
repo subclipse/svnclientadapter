@@ -209,27 +209,40 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
         return getStatus(new File[] {path})[0];
     }
 
-	/* (non-Javadoc)
-	 * @see org.tigris.subversion.subclipse.client.ISVNClientAdapter#getList(java.net.URL, org.tigris.subversion.subclipse.client.ISVNRevision, boolean)
-	 */
-	public ISVNDirEntry[] getList(SVNUrl svnUrl, SVNRevision rev, boolean flag)
+    private ISVNDirEntry[] getList(String target, SVNRevision rev, boolean flag)
 		throws SVNClientException {
 		List entries = new java.util.LinkedList();
-
+	
 		String listLine;
 		try {
-			listLine = _cmd.list(toString(svnUrl), toString(rev));
-
+			listLine = _cmd.list(target, toString(rev));
+	
 			StringTokenizer st = new StringTokenizer(listLine, Helper.NEWLINE);
 			while (st.hasMoreTokens()) {
 				String dirLine = st.nextToken();
-				CmdLineRemoteDirEntry entry = new CmdLineRemoteDirEntry(toString(svnUrl), dirLine);
+				CmdLineRemoteDirEntry entry = new CmdLineRemoteDirEntry(target, dirLine);
 				entries.add(entry);
 			}
 			return (ISVNDirEntry[]) entries.toArray(new ISVNDirEntry[entries.size()]);
 		} catch (CmdLineException e) {
 			throw SVNClientException.wrapException(e);
 		}
+	}    
+    
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.subclipse.client.ISVNClientAdapter#getList(java.net.URL, org.tigris.subversion.subclipse.client.ISVNRevision, boolean)
+	 */
+	public ISVNDirEntry[] getList(SVNUrl svnUrl, SVNRevision revision, boolean recurse)
+		throws SVNClientException {
+		return getList(toString(svnUrl), revision, recurse);
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getList(java.io.File, org.tigris.subversion.svnclientadapter.SVNRevision, boolean)
+	 */
+	public ISVNDirEntry[] getList(File path, SVNRevision revision,
+			boolean recurse) throws SVNClientException {
+		return getList(toString(path), revision, recurse);
 	}
 
 	/*
@@ -251,7 +264,25 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 		}
 		return null; // not found
 	}
-
+	
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getDirEntry(java.io.File, org.tigris.subversion.svnclientadapter.SVNRevision)
+	 */
+	public ISVNDirEntry getDirEntry(File path, SVNRevision revision)
+			throws SVNClientException {
+		// list give the DirEntrys of the elements of a directory or the DirEntry
+		// of a file
+		ISVNDirEntry[] entries = getList(path.getParentFile(),revision,false);
+		
+		String expectedPath = path.getName();
+		for (int i = 0; i < entries.length;i++) {
+			if (entries[i].getPath().equals(expectedPath)) {
+				return entries[i];
+			}
+		}
+		return null; // not found
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.subclipse.client.ISVNClientAdapter#remove(java.io.File[], boolean)
 	 */

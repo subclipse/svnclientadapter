@@ -59,6 +59,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
+import org.tigris.subversion.javahl.ClientException;
+
 
 public interface ISVNClientAdapter {
 	/**
@@ -136,6 +138,17 @@ public interface ISVNClientAdapter {
 		SVNRevision revision,
 		boolean recurse)
 		throws SVNClientException;
+
+	/**
+	 * List directory entries of a directory
+	 * @param url
+	 * @param revision
+	 * @param recurse
+	 * @return
+	 * @throws ClientException
+	 */	
+	public ISVNDirEntry[] getList(File path, SVNRevision revision, boolean recurse) 
+    	throws SVNClientException;	
 	
 	/**
 	 * get the dirEntry for the given url
@@ -146,7 +159,16 @@ public interface ISVNClientAdapter {
 	 */
 	public ISVNDirEntry getDirEntry(SVNUrl url, SVNRevision revision)
 			throws SVNClientException;
-		
+
+	/**
+	 * get the dirEntry for the given directory 
+	 * @param path
+	 * @param revision
+	 * @return
+	 */
+	public ISVNDirEntry getDirEntry(File path, SVNRevision revision)
+			throws SVNClientException;
+	
 	/**
 	 * Returns the status of a single file in the path.
 	 *
