@@ -242,6 +242,42 @@ public class JhlStatus implements ISVNStatus {
     public String toString() {
         return getPath() + " "+getTextStatus().toString();
     }
+
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getConflictNew()
+     */
+    public File getConflictNew() {
+        String path = _s.getConflictNew();
+        if (path != null) {
+            return new File(getFile().getParent(), path).getAbsoluteFile();    
+        } else {
+            return null;
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getConflictOld()
+     */
+    public File getConflictOld() {
+        String path = _s.getConflictOld();
+        if (path != null) {
+            return new File(getFile().getParent(),path).getAbsoluteFile();    
+        } else {
+            return null;
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getConflictWorking()
+     */
+    public File getConflictWorking() {
+        String path = _s.getConflictWorking();
+        if (path != null) {
+            return new File(getFile().getParent(),path).getAbsoluteFile();    
+        } else {
+            return null;
+        }
+    }
     
     
 }

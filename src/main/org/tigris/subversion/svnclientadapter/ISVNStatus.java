@@ -24,12 +24,38 @@ import java.util.Date;
  */
 public interface ISVNStatus {
 
+    /**
+     * tells if resource is ignored
+     * @return
+     */
     boolean isIgnored();
 
+    /**
+     * tells if resource is managed
+     * @return
+     */
 	boolean isManaged();
 
+    boolean isMerged();
+
+    /**
+     * tells if resource is locally deleted 
+     * @return
+     */
+    boolean isDeleted();
+    
+    
+    /**
+     * tells if resource has a remote counterpart. A resource can be managed
+     * and not have a remote counterpart (file that has just been added)
+     * @return
+     */
 	boolean hasRemote();
 
+    /**
+     * get the url of the resource on repository
+     * @return
+     */
 	SVNUrl getUrl();
 
 	/**
@@ -37,6 +63,10 @@ public interface ISVNStatus {
 	 */
 	SVNRevision.Number getLastChangedRevision();
 
+    /**
+     * date this resource last changed
+     * @return
+     */
 	Date getLastChangedDate();
 
 	/**
@@ -51,16 +81,13 @@ public interface ISVNStatus {
 	SVNStatusKind getRepositoryTextStatus();
 	
 	/**
+     * status of properties
 	 * will return either Kind.NORMAL, Kind.CONFLICTED or Kind.MODIFIED
-	 * 
 	 */
 	SVNStatusKind getPropStatus();
 
 	SVNStatusKind getRepositoryPropStatus();
 
-	boolean isMerged();
-
-	boolean isDeleted();
 
 	/**
 	 * returns true if the resource has been modified.
@@ -75,8 +102,6 @@ public interface ISVNStatus {
 	 */
 	SVNRevision.Number getRevision();
 
-	boolean isCopied();
-	
 	String getPath();
     
     /**
@@ -91,6 +116,32 @@ public interface ISVNStatus {
      */
 	SVNNodeKind getNodeKind();
 
+    /**
+     * 
+     * @return
+     */
+    boolean isCopied();    
+    
 	SVNUrl getUrlCopiedFrom();
-	
+
+    /**
+     * Returns in case of conflict, the file of the most recent repository
+     * version
+     * @return the filename of the most recent repository version
+     */
+    public File getConflictNew();
+
+    /**
+     * Returns in case of conflict, the file of the common base version
+     * @return the filename of the common base version
+     */
+    public File getConflictOld();
+
+    /**
+     * Returns in case of conflict, the file of the former working copy
+     * version
+     * @return the filename of the former working copy version
+     */
+    public File getConflictWorking();
+    
 }

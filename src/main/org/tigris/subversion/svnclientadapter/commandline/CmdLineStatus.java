@@ -199,4 +199,28 @@ class CmdLineStatus  implements ISVNStatus {
         return null;
     }
 
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getConflictNew()
+     */
+    public File getConflictNew() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getConflictOld()
+     */
+    public File getConflictOld() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getConflictWorking()
+     */
+    public File getConflictWorking() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 }

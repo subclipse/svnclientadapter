@@ -112,4 +112,25 @@ public class SVNStatusUnversioned implements ISVNStatus {
 		return null;
 	}
 
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getConflictNew()
+     */
+    public File getConflictNew() {
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getConflictOld()
+     */
+    public File getConflictOld() {
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getConflictWorking()
+     */
+    public File getConflictWorking() {
+        return null;
+    }
+
 }
