@@ -66,7 +66,7 @@ public class CopyTest extends SVNTest {
 
     public void testCopyUrl2Url() throws Throwable {
         // create working copy
-        OneTest thisTest = new OneTest("basicCopyFile2File",
+        OneTest thisTest = new OneTest("basicCopyUrl2Url",
                 getGreekTestConfig());
 
         client.copy(new SVNUrl(thisTest.getUrl() + "/A/B"), new SVNUrl(thisTest
