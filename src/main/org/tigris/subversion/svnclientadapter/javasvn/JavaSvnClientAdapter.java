@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -31,12 +30,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.tigris.subversion.javahl.ClientException;
-import org.tigris.subversion.javahl.CommitItem;
-import org.tigris.subversion.javahl.CommitItemStateFlags;
-import org.tigris.subversion.javahl.Info;
-import org.tigris.subversion.javahl.NodeKind;
-import org.tigris.subversion.javahl.Revision;
 import org.tigris.subversion.svnclientadapter.ISVNAnnotations;
 import org.tigris.subversion.svnclientadapter.ISVNClientAdapter;
 import org.tigris.subversion.svnclientadapter.ISVNDirEntry;
@@ -51,9 +44,6 @@ import org.tigris.subversion.svnclientadapter.SVNInfoUnversioned;
 import org.tigris.subversion.svnclientadapter.SVNKeywords;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
 import org.tigris.subversion.svnclientadapter.SVNUrl;
-import org.tigris.subversion.svnclientadapter.javahl.JhlConverter;
-import org.tigris.subversion.svnclientadapter.javahl.JhlInfo;
-import org.tmatesoft.svn.core.ISVNCommitHandler;
 import org.tmatesoft.svn.core.ISVNStatusHandler;
 import org.tmatesoft.svn.core.ISVNWorkspace;
 import org.tmatesoft.svn.core.SVNProperty;
@@ -72,10 +62,8 @@ import org.tmatesoft.svn.core.io.SVNRepository;
 import org.tmatesoft.svn.core.io.SVNRepositoryFactory;
 import org.tmatesoft.svn.core.io.SVNRepositoryLocation;
 import org.tmatesoft.svn.core.io.SVNSimpleCredentialsProvider;
-import org.tmatesoft.svn.util.DebugLog;
 import org.tmatesoft.svn.util.PathUtil;
 import org.tmatesoft.svn.util.SVNUtil;
-import org.tmatesoft.svn.util.TimeUtil;
 
 /**
  * 
@@ -183,6 +171,14 @@ public class JavaSvnClientAdapter implements ISVNClientAdapter {
         return SVNUtil.getWorkspacePath(ws, file.getAbsolutePath());
     }
 
+    /**
+     * Get the path of given url in the repository
+     * 
+     * @param repository
+     * @param url
+     * @return @throws
+     *         SVNException
+     */
     private String getRepositoryPath(SVNRepository repository, SVNUrl url)
             throws SVNException {
         SVNRepositoryLocation reposLocation = repository.getLocation();
@@ -196,12 +192,30 @@ public class JavaSvnClientAdapter implements ISVNClientAdapter {
             return null;
         }
 
-        String pathRepos = reposLocation.getPath();
-        String pathUrl = urlLocation.getPath();
+        String pathRepos = PathUtil.decode(reposLocation.getPath());
+        String pathUrl = PathUtil.decode(urlLocation.getPath());
 
         if (pathUrl.startsWith(pathRepos)) {
             pathUrl = pathUrl.substring(pathRepos.length());
             return pathUrl;
+        }
+        return null;
+    }
+
+    private String getRepositoryRootPath(SVNRepository repository, SVNUrl url) throws SVNException {
+
+        SVNRepositoryLocation location = SVNRepositoryLocation
+                .parseURL(url.toString());
+        String path = location.getPath();
+        path = PathUtil.decode(path);
+        if (repository.getRepositoryRoot() == null) {
+            repository.testConnection();
+        }
+        String repositoryRoot = repository.getRepositoryRoot();
+        
+        if (path.startsWith(repositoryRoot)) {
+            path = path.substring(repository.getRepositoryRoot().length());
+            return path;
         }
         return null;
     }
@@ -580,7 +594,18 @@ public class JavaSvnClientAdapter implements ISVNClientAdapter {
      *      java.io.File)
      */
     public void copy(File srcPath, File destPath) throws SVNClientException {
-        notImplementedYet();
+        try {
+            notificationHandler.setCommand(ISVNNotifyListener.Command.COPY);
+            notificationHandler.logCommandLine("copy " + srcPath + " "
+                    + destPath);
+
+            ISVNWorkspace ws = getRootWorkspace(srcPath);
+            ws.copy(getWorkspacePath(ws, srcPath), getWorkspacePath(ws,
+                    destPath), false);
+        } catch (SVNException e) {
+            notificationHandler.logException(e);
+            throw new SVNClientException(e);
+        }
     }
 
     /*
@@ -614,7 +639,33 @@ public class JavaSvnClientAdapter implements ISVNClientAdapter {
      */
     public void copy(SVNUrl srcUrl, SVNUrl destUrl, String message,
             SVNRevision revision) throws SVNClientException {
-        notImplementedYet();
+        notificationHandler.setCommand(ISVNNotifyListener.Command.COPY);
+        notificationHandler.logCommandLine("copy " + srcUrl + " " + destUrl);
+
+        ISVNEditor editor = null;
+        try {
+            SVNRepository repository = getRepository(destUrl.getParent());
+            long revNumber = getRevisionNumber(revision, repository, null, null);
+
+            String srcPath = getRepositoryRootPath(repository, srcUrl);
+
+            editor = repository.getCommitEditor(message, null);
+            editor.openRoot(-1);
+            editor.addDir(destUrl.getLastSegment(), srcPath, revNumber);
+            editor.closeDir();
+            editor.closeDir();
+            editor.closeEdit();
+
+        } catch (SVNException e) {
+            if (editor != null) {
+                try {
+                    editor.abortEdit();
+                } catch (SVNException es) {
+                }
+            }
+            notificationHandler.logException(e);
+            throw new SVNClientException(e);
+        }
     }
 
     /*

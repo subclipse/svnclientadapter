@@ -84,7 +84,7 @@ public class JavaSvnStatus implements ISVNStatus {
         
         this.nodeKind = JavaSvnConverter.convertNodeKind((String)properties.get(SVNProperty.KIND));
         
-        boolean copied = SVNProperty.booleanValue((String) properties.get(SVNProperty.COPIED));
+        copied = SVNProperty.booleanValue((String) properties.get(SVNProperty.COPIED));
 
         if (copied) {
             try {
