@@ -1398,11 +1398,6 @@ public class JhlClientAdapter implements ISVNClientAdapter {
 			notificationHandler.logCommandLine("resolved "+target);
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
 			svnClient.resolved(target,false);
-
-			// there is no notification (Notify.notify is not called) whereas
-			// the status of the file has changed. We do it ourselves
-			notificationHandler.notifyListenersOfChange(path.getAbsolutePath());
-				
 		} catch (ClientException e) {
 			notificationHandler.logException(e);
 			throw new SVNClientException(e);            
