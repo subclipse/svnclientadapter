@@ -81,8 +81,18 @@ class CmdLineLogMessage implements ISVNLogMessage {
 	private Date date;
 	private String msg;
 	
-	CmdLineLogMessage(){}
+	CmdLineLogMessage(SVNRevision.Number rev, String author, Date date, String msg){
+        this.rev = rev;
+        this.author = author;
+        this.date = date;
+        this.msg = msg;
+    }
 
+    /**
+     * creates a log message from the output of svn log 
+     * This constructor is not used anymore. 
+     * The factory method createLogMessages is used instead   
+     */
 	CmdLineLogMessage(StringTokenizer st) {
 		//NOTE: the leading dashes are ommitted by ClientAdapter.
 		
@@ -158,6 +168,11 @@ class CmdLineLogMessage implements ISVNLogMessage {
 		return msg;
 	}
 	
+    /**
+     * creates CmdLineLogMessages from a xml string (see svn log --xml) 
+     * @param cmdLineResults
+     * @return
+     */
 	public static CmdLineLogMessage[] createLogMessages(String cmdLineResults){
 		Collection logMessages = new ArrayList();
 		
@@ -176,21 +191,22 @@ class CmdLineLogMessage implements ISVNLogMessage {
 			for(int i = 0; i < nodes.getLength(); i++){
 				Node logEntry = nodes.item(i);
 				
-				CmdLineLogMessage logMessage = new CmdLineLogMessage();
-
 				Node authorNode = logEntry.getFirstChild();
 				Node dateNode = authorNode.getNextSibling();
 				Node msgNode = dateNode.getNextSibling();
 				Node revisionAttribute = logEntry.getAttributes().getNamedItem("revision");
 
-				logMessage.rev = Helper.toRevNum(revisionAttribute.getNodeValue());
-				logMessage.author = authorNode.getFirstChild().getNodeValue();
-				logMessage.date = Helper.convertXMLDate(dateNode.getFirstChild().getNodeValue());
+                SVNRevision.Number rev = Helper.toRevNum(revisionAttribute.getNodeValue());
+				String author = authorNode.getFirstChild().getNodeValue();
+				Date date = Helper.convertXMLDate(dateNode.getFirstChild().getNodeValue());
 				Node msgTextNode = msgNode.getFirstChild();
+                String msg;
 				if(msgTextNode != null)
-					logMessage.msg = msgTextNode.getNodeValue();
+					msg = msgTextNode.getNodeValue();
 				else
-					logMessage.msg = ""; 
+					msg = "";
+                    
+                CmdLineLogMessage logMessage = new CmdLineLogMessage(rev, author, date, msg);     
 
 				logMessages.add(logMessage);				
 			}

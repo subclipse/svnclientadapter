@@ -57,6 +57,7 @@ package org.tigris.subversion.svnclientadapter.commandline;
 import org.tigris.subversion.svnclientadapter.ISVNProperty;
 
 /**
+ * 
  * @author Philip Schatz (schatz at tigris)
  */
 class CmdLineProperty implements ISVNProperty {

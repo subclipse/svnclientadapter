@@ -500,6 +500,9 @@ class CommandLine {
 		pass = password;
 	}
 
+    /**
+     * execute the given svn command and returns the corresponding process  
+     */
 	private Process execProcess(String svnCommand) throws CmdLineException {
 		Runtime rt = Runtime.getRuntime();
 
@@ -530,7 +533,7 @@ class CommandLine {
 		Process proc = execProcess(svnCommand);
 
 		try {
-			String result = Helper.getXMLOrFail(proc);
+			String result = getXMLOrFail(proc);
 			if (!listeners.isEmpty())
 				logMessageAndCompleted(result);
 			return result;
@@ -541,6 +544,43 @@ class CommandLine {
 		}
 
 	}
+
+    /**
+     * get a string from the inputstream of the given process or throws an 
+     * exception if an error occurred 
+     */
+    private String getStringOrFail(Process proc) throws CmdLineException {
+        //First see if we have an error.
+        //assume no error. find the text.
+        InputStream in = proc.getInputStream();
+        String message = Helper.toString(in);
+        if (message.length() > 0) {
+            proc.destroy();
+            return message;
+        }
+
+        InputStream err = proc.getErrorStream();
+        String errMessage = Helper.toString(err);
+        proc.destroy();
+        throw new CmdLineException(errMessage);
+    }
+
+    private String getXMLOrFail(Process proc) throws CmdLineException {
+        //First see if we have an error.
+        //assume no error. find the text.
+        InputStream in = proc.getInputStream();
+        String message = Helper.toXMLString(in);
+        if (message.length() > 0) {
+            proc.destroy();
+            return message;
+        }
+
+        InputStream err = proc.getErrorStream();
+        String errMessage = Helper.toString(err);
+        proc.destroy();
+        throw new CmdLineException(errMessage);
+    }
+
 
 	/**
 	 * runs the process and returns the results.
@@ -555,7 +595,7 @@ class CommandLine {
 		Process proc = execProcess(svnCommand);
 
 		try {
-			String result = Helper.getStringOrFail(proc);
+			String result = getStringOrFail(proc);
 			if (!listeners.isEmpty())
 				logMessageAndCompleted(result);
 			return result;

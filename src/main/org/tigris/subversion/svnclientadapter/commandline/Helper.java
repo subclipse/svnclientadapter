@@ -124,23 +124,7 @@ class Helper {
 		}
 	}
 
-	static String getXMLOrFail(Process proc) throws CmdLineException {
-		//First see if we have an error.
-		//assume no error. find the text.
-		InputStream in = proc.getInputStream();
-		String message = toXMLString(in);
-		if (message.length() > 0) {
-			proc.destroy();
-			return message;
-		}
-
-		InputStream err = proc.getErrorStream();
-		String errMessage = toString(err);
-		proc.destroy();
-		throw new CmdLineException(errMessage);
-	}
-	
-	private static String toXMLString(InputStream stream)
+	public static String toXMLString(InputStream stream)
 		throws CmdLineException {
 		StringBuffer sb = new StringBuffer();
 
@@ -157,23 +141,14 @@ class Helper {
 		return sb.toString();
 	}	
 	
-	static String getStringOrFail(Process proc) throws CmdLineException {
-		//First see if we have an error.
-		//assume no error. find the text.
-		InputStream in = proc.getInputStream();
-		String message = toString(in);
-		if (message.length() > 0) {
-			proc.destroy();
-			return message;
-		}
-
-		InputStream err = proc.getErrorStream();
-		String errMessage = toString(err);
-		proc.destroy();
-		throw new CmdLineException(errMessage);
-	}
-
-	private static String toString(InputStream stream)
+    /**
+     * read the stream until the end of the stream has been reached and returns
+     * a string containing what we have read
+     * @param stream
+     * @return
+     * @throws CmdLineException
+     */
+	public static String toString(InputStream stream)
 		throws CmdLineException {
 		StringBuffer sb = new StringBuffer();
 
