@@ -76,4 +76,8 @@ public class SVNUrlTest extends TestCase
         assertEquals(http1,http2);
     }
     
+    public void testNonStandardPort() throws Exception {
+        SVNUrl svnurl= new SVNUrl("http://svn.collab.net:8080/repos/subclipse/myfile.txt");
+        assertEquals("http://svn.collab.net:8080/repos/subclipse/myfile.txt",svnurl.toString());
+    }
 }
