@@ -344,10 +344,10 @@ public class SVNClientAdapter {
      * @param path File to gather status.
      * @return a Status
      */
-    public Status getStatus(File path) throws ClientException {
+    public Status getSingleStatus(File path) throws ClientException {
         notificationHandler.setCommand(ISVNNotifyListener.COMMAND_STATUS);
         String filePathSVN = fileToSVNPath(path);
-        notificationHandler.setCommandLine("status "+filePathSVN);
+        notificationHandler.setCommandLine("status -N "+filePathSVN);
         try {
             return svnClient.singleStatus(filePathSVN, false);
         } catch (ClientException e) {
@@ -376,6 +376,24 @@ public class SVNClientAdapter {
                 notificationHandler.setException(e);
                 throw e;
             }
+        }
+    }
+
+    /**
+     * Returns the status of files and directory recursively
+     *
+     * @param path File to gather status.
+     * @return a Status
+     */
+    public Status[] getStatusRecursively(File path) throws ClientException {
+        notificationHandler.setCommand(ISVNNotifyListener.COMMAND_STATUS);
+        String filePathSVN = fileToSVNPath(path);
+        notificationHandler.setCommandLine("status "+filePathSVN);
+        try {
+            return svnClient.status(filePathSVN,true, false);
+        } catch (ClientException e) {
+            notificationHandler.setException(e);
+            throw e;
         }
     }
 
@@ -688,6 +706,27 @@ public class SVNClientAdapter {
             throw e;
         }           	 
 	}
+
+    /**
+     * Restore pristine working copy file (undo all local edits)
+     * @param path
+     * @param recurse
+     * @throws ClientException
+     */
+    public void revert(File path, boolean recurse) throws ClientException {
+        try {
+            notificationHandler.setCommand(ISVNNotifyListener.COMMAND_REVERT);
+            String target = fileToSVNPath(path);
+            notificationHandler.setCommandLine(
+                "revert "+
+                (recurse?"":"-N ")+
+                target); 
+            svnClient.revert(target,recurse);
+        } catch (ClientException e) {
+            notificationHandler.setException(e);
+            throw e;
+        }         
+    }
 
     /**
      * Get the log messages for a set of revision(s) 

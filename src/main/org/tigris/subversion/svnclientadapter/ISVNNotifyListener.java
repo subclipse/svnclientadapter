@@ -79,6 +79,7 @@ public interface ISVNNotifyListener extends Notify {
     public static final int COMMAND_LOG = 13;
     public static final int COMMAND_PROPSET = 14;
     public static final int COMMAND_PROPDEL = 15;
+    public static final int COMMAND_REVERT = 16;
     
     
     public void setCommand(int command);
