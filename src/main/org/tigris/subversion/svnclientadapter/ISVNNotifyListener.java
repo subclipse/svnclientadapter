@@ -89,6 +89,7 @@ public interface ISVNNotifyListener {
         public static final int PROPGET = 20;
 		public static final int PROPLIST = 21;
 		public static final int RESOLVED = 22;
+		public static final int CREATE_REPOSITORY = 23;
     }    
 
     public void setCommand(int command);

@@ -96,13 +96,14 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 
 	//Fields
     private CmdLineNotificationHandler notificationHandler = new CmdLineNotificationHandler();
-	private CommandLine _cmd = new CommandLine("svn",notificationHandler);
+	private SvnCommandLine _cmd = new SvnCommandLine("svn",notificationHandler);
+	private SvnAdminCommandLine svnAdminCmd = new SvnAdminCommandLine("svnAdmin",notificationHandler);
     private String version = null;
 
 	//Methods
 	public static boolean isAvailable() {
 		// this will need to be fixed when path to svn will be customizable 
-		CommandLine cmd = new CommandLine("svn", new CmdLineNotificationHandler());
+		SvnCommandLine cmd = new SvnCommandLine("svn", new CmdLineNotificationHandler());
 		try {
 			String version = cmd.version();
     		return true;
@@ -1185,5 +1186,16 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 		}
 		
 	}
+
 	
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#createRepository(java.io.File)
+	 */
+	public void createRepository(File path) throws SVNClientException {
+		try {
+			svnAdminCmd.create(toString(path));
+		} catch (CmdLineException e) {
+			SVNClientException.wrapException(e);
+		}		
+	}
 }

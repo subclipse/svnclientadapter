@@ -1458,5 +1458,14 @@ public class JhlClientAdapter implements ISVNClientAdapter {
 		}        
    	
     }
-        
+
+    
+    
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#createRepository(java.io.File)
+	 */
+	public void createRepository(File path) throws SVNClientException {
+		// TODO implement this method when a new version of javahl will be released
+
+	}
 }

@@ -540,5 +540,12 @@ public interface ISVNClientAdapter {
 	 * @throws SVNClientException
 	 */ 	
 	public abstract void resolved(File path) throws SVNClientException;
-        
+    
+	/**
+	 * Create a new, empty repository at path
+	 * @param path
+	 * @throws SVNClientException
+	 */
+	public abstract void createRepository(File path) throws SVNClientException;
+	
 }
