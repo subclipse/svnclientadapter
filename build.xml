@@ -27,6 +27,9 @@
   <!-- ================================================================= -->
   <target name="compile" description="compile all sources files">
     <mkdir dir="${build.classes.dir}" />
+    <depend srcdir="${src.main.dir}"
+            destdir="${build.classes.dir}"
+            cache="${build.cache.dir}"/>
     <javac srcdir="${src.main.dir}"
            destdir="${build.classes.dir}"
            debug="${debug}"
