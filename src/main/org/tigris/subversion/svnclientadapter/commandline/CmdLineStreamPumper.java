@@ -26,7 +26,6 @@ import java.io.InputStreamReader;
  */
 public class CmdLineStreamPumper implements Runnable {
     private static final String NEWLINE = "\n\r";
-    private static final int SLEEP = 5;
     private static final int SIZE = 128;
     private BufferedReader br;
     private boolean finished;
@@ -75,9 +74,6 @@ public class CmdLineStreamPumper implements Runnable {
                 } else {
                     sb.append(st+NEWLINE);                    
                 }
-                try {
-                    Thread.sleep(SLEEP);
-                } catch (InterruptedException e) {}                
             }
         } catch (Exception e) {
             // ignore
