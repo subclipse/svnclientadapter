@@ -30,9 +30,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.tigris.subversion.javahl.ClientException;
+import org.tigris.subversion.svnclientadapter.AbstractClientAdapter;
 import org.tigris.subversion.svnclientadapter.ISVNAnnotations;
-import org.tigris.subversion.svnclientadapter.ISVNClientAdapter;
 import org.tigris.subversion.svnclientadapter.ISVNDirEntry;
 import org.tigris.subversion.svnclientadapter.ISVNInfo;
 import org.tigris.subversion.svnclientadapter.ISVNLogMessage;
@@ -43,11 +42,15 @@ import org.tigris.subversion.svnclientadapter.ISVNStatus;
 import org.tigris.subversion.svnclientadapter.SVNBaseDir;
 import org.tigris.subversion.svnclientadapter.SVNClientException;
 import org.tigris.subversion.svnclientadapter.SVNInfoUnversioned;
-import org.tigris.subversion.svnclientadapter.SVNKeywords;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
 import org.tigris.subversion.svnclientadapter.SVNUrl;
 import org.tigris.subversion.svnclientadapter.SVNUrlUtils;
-import org.tigris.subversion.svnclientadapter.javahl.JhlConverter;
+import org.tigris.subversion.svnclientadapter.javasvn.JavaSvnDirEntry;
+import org.tigris.subversion.svnclientadapter.javasvn.JavaSvnInfo;
+import org.tigris.subversion.svnclientadapter.javasvn.JavaSvnLogMessage;
+import org.tigris.subversion.svnclientadapter.javasvn.JavaSvnNotificationHandler;
+import org.tigris.subversion.svnclientadapter.javasvn.JavaSvnPropertyData;
+import org.tigris.subversion.svnclientadapter.javasvn.JavaSvnStatus;
 import org.tmatesoft.svn.core.ISVNStatusHandler;
 import org.tmatesoft.svn.core.ISVNWorkspace;
 import org.tmatesoft.svn.core.SVNProperty;
@@ -75,7 +78,7 @@ import org.tmatesoft.svn.util.SVNUtil;
  * @author Cédric Chabanois (cchabanois at tigris.org)
  *  
  */
-public class JavaSvnClientAdapter implements ISVNClientAdapter {
+public class JavaSvnClientAdapter extends AbstractClientAdapter {
     private String myUserName;
 
     private String myPassword;
@@ -97,8 +100,7 @@ public class JavaSvnClientAdapter implements ISVNClientAdapter {
      * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#addNotifyListener(org.tigris.subversion.svnclientadapter.ISVNNotifyListener)
      */
     public void addNotifyListener(ISVNNotifyListener listener) {
-        // TODO Auto-generated method stub
-
+        notificationHandler.add(listener);
     }
 
     /*
@@ -107,7 +109,7 @@ public class JavaSvnClientAdapter implements ISVNClientAdapter {
      * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#removeNotifyListener(org.tigris.subversion.svnclientadapter.ISVNNotifyListener)
      */
     public void removeNotifyListener(ISVNNotifyListener listener) {
-
+        notificationHandler.remove(listener);
     }
 
     /*
@@ -639,7 +641,7 @@ public class JavaSvnClientAdapter implements ISVNClientAdapter {
      */
     public void copy(File srcPath, SVNUrl destUrl, String message)
             throws SVNClientException {
-        notImplementedYet();
+        notImplementedYet("copy");
     }
 
     /*
@@ -650,7 +652,7 @@ public class JavaSvnClientAdapter implements ISVNClientAdapter {
      */
     public void copy(SVNUrl srcUrl, File destPath, SVNRevision revision)
             throws SVNClientException {
-        notImplementedYet();
+        notImplementedYet("copy");
     }
 
     /*
@@ -799,7 +801,7 @@ public class JavaSvnClientAdapter implements ISVNClientAdapter {
      */
     public void doExport(File srcPath, File destPath, boolean force)
             throws SVNClientException {
-        notImplementedYet();
+        notImplementedYet("doExport");
     }
 
     /*
@@ -935,7 +937,7 @@ public class JavaSvnClientAdapter implements ISVNClientAdapter {
 
             String deletePath = getRepositoryPath(repository, srcUrl);
             String destPath = getRepositoryPath(repository, destUrl);
-            
+
             editor = repository.getCommitEditor(message, null);
             editor.openRoot(-1);
 
@@ -1014,7 +1016,7 @@ public class JavaSvnClientAdapter implements ISVNClientAdapter {
     public ISVNLogMessage[] getLogMessages(SVNUrl url,
             SVNRevision revisionStart, SVNRevision revisionEnd)
             throws SVNClientException {
-        notImplementedYet();
+        notImplementedYet("getLogMessages");
         return null;
     }
 
@@ -1150,7 +1152,7 @@ public class JavaSvnClientAdapter implements ISVNClientAdapter {
      */
     public void propertySet(File path, String propertyName, File propertyFile,
             boolean recurse) throws SVNClientException, IOException {
-        notImplementedYet();
+        notImplementedYet("propertySet");
     }
 
     /*
@@ -1161,7 +1163,7 @@ public class JavaSvnClientAdapter implements ISVNClientAdapter {
      */
     public ISVNProperty propertyGet(File path, String propertyName)
             throws SVNClientException {
-        notImplementedYet();
+        notImplementedYet("propertyGet");
         return null;
     }
 
@@ -1173,39 +1175,7 @@ public class JavaSvnClientAdapter implements ISVNClientAdapter {
      */
     public void propertyDel(File path, String propertyName, boolean recurse)
             throws SVNClientException {
-        notImplementedYet();
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getIgnoredPatterns(java.io.File)
-     */
-    public List getIgnoredPatterns(File path) throws SVNClientException {
-        notImplementedYet();
-        return null;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#addToIgnoredPatterns(java.io.File,
-     *      java.lang.String)
-     */
-    public void addToIgnoredPatterns(File path, String pattern)
-            throws SVNClientException {
-        notImplementedYet();
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#setIgnoredPatterns(java.io.File,
-     *      java.util.List)
-     */
-    public void setIgnoredPatterns(File path, List patterns)
-            throws SVNClientException {
-        notImplementedYet();
+        notImplementedYet("propertyDel");
     }
 
     /*
@@ -1219,7 +1189,7 @@ public class JavaSvnClientAdapter implements ISVNClientAdapter {
     public void diff(File oldPath, SVNRevision oldPathRevision, File newPath,
             SVNRevision newPathRevision, File outFile, boolean recurse)
             throws SVNClientException {
-        notImplementedYet();
+        notImplementedYet("diff");
     }
 
     /*
@@ -1230,7 +1200,7 @@ public class JavaSvnClientAdapter implements ISVNClientAdapter {
      */
     public void diff(File path, File outFile, boolean recurse)
             throws SVNClientException {
-        notImplementedYet();
+        notImplementedYet("diff");
     }
 
     /*
@@ -1245,7 +1215,7 @@ public class JavaSvnClientAdapter implements ISVNClientAdapter {
     public void diff(SVNUrl oldUrl, SVNRevision oldUrlRevision, SVNUrl newUrl,
             SVNRevision newUrlRevision, File outFile, boolean recurse)
             throws SVNClientException {
-        notImplementedYet();
+        notImplementedYet("diff");
     }
 
     /*
@@ -1259,52 +1229,7 @@ public class JavaSvnClientAdapter implements ISVNClientAdapter {
     public void diff(SVNUrl url, SVNRevision oldUrlRevision,
             SVNRevision newUrlRevision, File outFile, boolean recurse)
             throws SVNClientException {
-        notImplementedYet();
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getKeywords(java.io.File)
-     */
-    public SVNKeywords getKeywords(File path) throws SVNClientException {
-        notImplementedYet();
-        return null;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#setKeywords(java.io.File,
-     *      org.tigris.subversion.svnclientadapter.SVNKeywords, boolean)
-     */
-    public void setKeywords(File path, SVNKeywords keywords, boolean recurse)
-            throws SVNClientException {
-        notImplementedYet();
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#addKeywords(java.io.File,
-     *      org.tigris.subversion.svnclientadapter.SVNKeywords)
-     */
-    public SVNKeywords addKeywords(File path, SVNKeywords keywords)
-            throws SVNClientException {
-        notImplementedYet();
-        return null;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#removeKeywords(java.io.File,
-     *      org.tigris.subversion.svnclientadapter.SVNKeywords)
-     */
-    public SVNKeywords removeKeywords(File path, SVNKeywords keywords)
-            throws SVNClientException {
-        notImplementedYet();
-        return null;
+        notImplementedYet("diff");
     }
 
     /*
@@ -1316,7 +1241,7 @@ public class JavaSvnClientAdapter implements ISVNClientAdapter {
      */
     public ISVNAnnotations annotate(SVNUrl url, SVNRevision revisionStart,
             SVNRevision revisionEnd) throws SVNClientException {
-        notImplementedYet();
+        notImplementedYet("annotate");
         return null;
     }
 
@@ -1329,7 +1254,7 @@ public class JavaSvnClientAdapter implements ISVNClientAdapter {
      */
     public ISVNAnnotations annotate(File file, SVNRevision revisionStart,
             SVNRevision revisionEnd) throws SVNClientException {
-        notImplementedYet();
+        notImplementedYet("annotate");
         return null;
     }
 
@@ -1339,8 +1264,33 @@ public class JavaSvnClientAdapter implements ISVNClientAdapter {
      * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getProperties(java.io.File)
      */
     public ISVNProperty[] getProperties(File path) throws SVNClientException {
-        notImplementedYet();
-        return null;
+        try {
+            notificationHandler.setCommand(ISVNNotifyListener.Command.PROPLIST);
+            notificationHandler.logCommandLine("proplist " + path);
+
+            Map properties = null;
+            ISVNWorkspace ws = getRootWorkspace(path);
+            properties = ws.getProperties(getWorkspacePath(ws, path), true,
+                    false);
+
+            if (properties == null) {
+                return new ISVNProperty[0];
+            }
+            Collection result = new LinkedList();
+            for (Iterator names = properties.keySet().iterator(); names
+                    .hasNext();) {
+                String name = (String) names.next();
+                String value = (String) properties.get(name);
+                result.add(new JavaSvnPropertyData(path, name, value,
+                        (value != null) ? value.getBytes() : null));
+            }
+            return (ISVNProperty[]) result.toArray(new ISVNProperty[result
+                    .size()]);
+
+        } catch (SVNException e) {
+            notificationHandler.logException(e);
+            throw new SVNClientException(e);
+        }
     }
 
     /*
@@ -1369,7 +1319,7 @@ public class JavaSvnClientAdapter implements ISVNClientAdapter {
      */
     public void createRepository(File path, String repositoryType)
             throws SVNClientException {
-        notImplementedYet();
+        notImplementedYet("createRepository");
     }
 
     /*
@@ -1378,7 +1328,7 @@ public class JavaSvnClientAdapter implements ISVNClientAdapter {
      * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#cancelOperation()
      */
     public void cancelOperation() throws SVNClientException {
-        notImplementedYet();
+        notImplementedYet("cancelOperation");
     }
 
     /*
@@ -1414,7 +1364,7 @@ public class JavaSvnClientAdapter implements ISVNClientAdapter {
      * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getRepositoryRoot(org.tigris.subversion.svnclientadapter.SVNUrl)
      */
     public SVNUrl getRepositoryRoot(SVNUrl url) throws SVNClientException {
-        notImplementedYet();
+        notImplementedYet("getRepositoryRoot");
         return null;
     }
 
@@ -1455,7 +1405,7 @@ public class JavaSvnClientAdapter implements ISVNClientAdapter {
      * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#setConfigDirectory(java.io.File)
      */
     public void setConfigDirectory(File dir) throws SVNClientException {
-        notImplementedYet();
+        notImplementedYet("setConfigDirectory");
     }
 
     /*
@@ -1464,7 +1414,7 @@ public class JavaSvnClientAdapter implements ISVNClientAdapter {
      * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#cleanup(java.io.File)
      */
     public void cleanup(File dir) throws SVNClientException {
-        notImplementedYet();
+        notImplementedYet("cleanup");
     }
 
     /*
@@ -1479,26 +1429,35 @@ public class JavaSvnClientAdapter implements ISVNClientAdapter {
     public void merge(SVNUrl path1, SVNRevision revision1, SVNUrl path2,
             SVNRevision revision2, File localPath, boolean force,
             boolean recurse) throws SVNClientException {
-        notImplementedYet();
+        notImplementedYet("merge");
     }
 
-    private void notImplementedYet() throws SVNClientException {
-        throw new SVNClientException("Not implemented yet");
+    private void notImplementedYet(String command) throws SVNClientException {
+        throw new SVNClientException("Not implemented yet : " + command);
     }
 
-    /* (non-Javadoc)
-     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#merge(org.tigris.subversion.svnclientadapter.SVNUrl, org.tigris.subversion.svnclientadapter.SVNRevision, org.tigris.subversion.svnclientadapter.SVNUrl, org.tigris.subversion.svnclientadapter.SVNRevision, java.io.File, boolean, boolean, boolean)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#merge(org.tigris.subversion.svnclientadapter.SVNUrl,
+     *      org.tigris.subversion.svnclientadapter.SVNRevision,
+     *      org.tigris.subversion.svnclientadapter.SVNUrl,
+     *      org.tigris.subversion.svnclientadapter.SVNRevision, java.io.File,
+     *      boolean, boolean, boolean)
      */
     public void merge(SVNUrl path1, SVNRevision revision1, SVNUrl path2,
             SVNRevision revision2, File localPath, boolean force,
             boolean recurse, boolean dryRun) throws SVNClientException {
-        notImplementedYet();
+        notImplementedYet("merge");
     }
-    /* (non-Javadoc)
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#addPasswordCallback(org.tigris.subversion.svnclientadapter.ISVNPromptUserPassword)
      */
     public void addPasswordCallback(ISVNPromptUserPassword callback) {
-        // Default is to do nothing.  If JavaSVN has a way to do callbacks
+        // Default is to do nothing. If JavaSVN has a way to do callbacks
         // for authentication, it could be added here.
     }
 }

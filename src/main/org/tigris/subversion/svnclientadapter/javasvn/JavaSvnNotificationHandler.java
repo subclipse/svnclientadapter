@@ -28,24 +28,21 @@ public class JavaSvnNotificationHandler extends SVNNotificationHandler implement
      * @see org.tmatesoft.svn.core.ISVNWorkspaceListener#updated(java.lang.String, int, int, long)
      */
     public void updated(String path, int contentsStatus, int propertiesStatus, long revision) {
-        // TODO Auto-generated method stub
-        
+        notifyListenersOfChange(path);
     }
 
     /* (non-Javadoc)
      * @see org.tmatesoft.svn.core.ISVNWorkspaceListener#committed(java.lang.String, int)
      */
     public void committed(String path, int kind) {
-        // TODO Auto-generated method stub
-        
+        notifyListenersOfChange(path);
     }
 
     /* (non-Javadoc)
      * @see org.tmatesoft.svn.core.ISVNWorkspaceListener#modified(java.lang.String, int)
      */
     public void modified(String path, int kind) {
-        // TODO Auto-generated method stub
-        
+        notifyListenersOfChange(path);
     }
 
 }
