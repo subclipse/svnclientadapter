@@ -62,6 +62,10 @@ import org.tigris.subversion.svnclientadapter.javahl.JhlClientAdapter;
  *
  * @author Cédric Chabanois 
  *         <a href="mailto:cchabanois@ifrance.com">cchabanois@ifrance.com</a>
+ * 
+ * @author Panagiotis Korros 
+ *         <a href="mailto:pkorros@bigfoot.com">pkorros@bigfoot.com</a>
+ * 
  */
 public class SVNClientAdapterFactory {
 
@@ -73,13 +77,15 @@ public class SVNClientAdapterFactory {
      * client.
      * 
      * @param clientType
-     * @return
+     * @return the client adapter that was requested or null if that client adapter is not
+     *         available or doesn't exist.
      */
     public static ISVNClientAdapter createSVNClient(int clientType) {
-        if (clientType == JAVAHL_CLIENT)
-            return new JhlClientAdapter();
-        else
+        if (clientType == JAVAHL_CLIENT && JhlClientAdapter.isAvailable() )
+        	return new JhlClientAdapter();
+        if (clientType == COMMANDLINE_CLIENT && CmdLineClientAdapter.isAvailable() )
             return new CmdLineClientAdapter();
+        return null;
     }
 
     /**

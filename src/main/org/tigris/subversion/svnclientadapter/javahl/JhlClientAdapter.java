@@ -90,7 +90,8 @@ import org.tigris.subversion.svnclientadapter.SVNUrl;
 /**
  * An adapter for SVNClient. Easier and safer to use than SVNClient
  *
- * @author Cédric Chabanois (cchabanois at no-log.org) 
+ * @author Cédric Chabanois (cchabanois at no-log.org)
+ * @author Panagiotis Korros (pkorros at bigfoot.com) 
  *
  */
 public class JhlClientAdapter implements ISVNClientAdapter {
@@ -115,7 +116,17 @@ public class JhlClientAdapter implements ISVNClientAdapter {
     public static boolean isAvailable() {
         try {
             // if library is already loaded, it will not be reloaded
-            System.loadLibrary("svnjavahl");
+
+        	//workaround to solve Subclipse ISSUE #83
+        	String os = System.getProperty("osgi.os");
+			if( "win32".equals(os) ) {
+				System.loadLibrary("libeay32");
+				System.loadLibrary("libdb42");
+				System.loadLibrary("ssleay32");
+			}
+        	//workaround to solve Subclipse ISSUE #83
+
+        	System.loadLibrary("svnjavahl");
             return true;
         } catch (Exception e) {
             return false;
