@@ -64,4 +64,10 @@ public class SVNUrlTest extends TestCase
         assertEquals(22,url1.getPort());
     }
     
+    public void testEquals() throws Exception {
+        SVNUrl http1 = new SVNUrl("HTTP://SVN.collab.net/repos/subclipse/");
+        SVNUrl http2 = new SVNUrl("http://svn.collab.net:80/repos/subclipse");
+        assertEquals(http1,http2);
+    }
+    
 }

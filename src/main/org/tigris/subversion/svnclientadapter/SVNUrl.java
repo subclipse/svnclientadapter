@@ -26,13 +26,13 @@ import java.net.MalformedURLException;
  * We just want a string which represent a SVN url which can be used with our JNI
  * methods.
  *
+ * An SVNUrl is immutable. 
  *
  * @author Cédric Chabanois 
  *         <a href="mailto:cchabanois@ifrance.com">cchabanois@ifrance.com</a>
  *
  */
 public class SVNUrl {
-    private String svnUrl;
     private String protocol; // http, file, svn or svn+ssh
     private String[] segments;
     private String host;
@@ -41,27 +41,15 @@ public class SVNUrl {
     public SVNUrl(String svnUrl) throws MalformedURLException {
         if(svnUrl == null)
             throw new MalformedURLException("Svn url cannot be null. Is this  a versioned resource?");
-        this.svnUrl = svnUrl;
-        
-        // we make sure the url does not end with "/" because
-        // in svn 1.0.2 (at least) if a non-canonical path is passed to 
-        // svn_path_join(base, component, pool), the assertion "assert (is_canonical (base, blen));" will fail
-        if (this.svnUrl.endsWith("/")) { // remove ending "/" if any
-        	this.svnUrl = this.svnUrl.substring(0,this.svnUrl.length()-1);
-		}
-        
-        parseUrl();
+   
+        parseUrl(svnUrl);
     }
 
     /**
      * verifies that the url is correct
      * @throws MalformedURLException
      */
-    private void parseUrl() throws MalformedURLException{
-        // for now, we don't verify the url, we let subversion do it
-        // we just make sure the protocol is one we support
-        // (scheme)://(optional_stuff)
-
+    private void parseUrl(String svnUrl) throws MalformedURLException{
         int i = svnUrl.indexOf("://");
         if (i == -1)
             throw new MalformedURLException("Invalid svn url :"+svnUrl);
@@ -78,6 +66,7 @@ public class SVNUrl {
 			throw new MalformedURLException("Invalid svn url :"+svnUrl);
 		}        
         segments = StringUtils.split(toSplit,'/');
+        segments[0] = segments[0].toLowerCase(); // lowercase host 
         
         // parse host & port
         String[] hostport = StringUtils.split(segments[0],':');
@@ -114,8 +103,20 @@ public class SVNUrl {
         return port;
     }
     
+    /**
+     * get the url. The url returned never ends with "/"
+     * @return
+     */
     public String get() {
-        return svnUrl;
+        String result = getProtocol()+"://"+getHost(); 
+        if (getPort() != getDefaultPort(getProtocol())) {
+            result += ':'+getPort();
+        }
+        String[] segments = getSegments();
+        for (int i = 1; i < segments.length;i++) {
+            result+='/'+segments[i];
+        }
+        return result; 
     }
     
     /**
@@ -146,6 +147,11 @@ public class SVNUrl {
     	return segments[i];
     }
     
+    /**
+     * get the segments of the url. 
+     * segment[0] is host and port, other segments is the path
+     * @return
+     */
     public String[] getSegments() {
     	return segments;
     }
@@ -160,10 +166,7 @@ public class SVNUrl {
      */
     public SVNUrl getParent() {
     	try {
-    		String url = svnUrl;
-    		if (url.endsWith("/")) { // remove ending "/" if any
-    			url = url.substring(0,url.length()-1);
-    		}
+    		String url = get();
     		
     		return new SVNUrl(url.substring(0,url.lastIndexOf('/')));
     	} catch (MalformedURLException e) {
@@ -176,9 +179,7 @@ public class SVNUrl {
 	 */
 	public boolean equals(Object target) {
 	    // this method is not very accurate because :
-	    // protocol is not case-sensitive
 	    // url before repository is not always case sensitive
-	    // url after repository is case sensitive
 		if (this == target)
 			return true;
 		if (!(target instanceof SVNUrl))
