@@ -1091,10 +1091,13 @@ public class JhlClientAdapter implements ISVNClientAdapter {
             notificationHandler.logCommandLine("propdel "+propertyName+" "+target);
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
             
-            svnClient.propertySet(target, propertyName, "", recurse);
-// propertyRemove is on repository, this will be present on next version of javahl			
-// svnClient.propertyRemove(target, propertyName,recurse);
-
+			// propertyRemove is on repository, this will be present on next version of javahl			
+			// svnClient.propertyRemove(target, propertyName,recurse);
+			// @TODO : change this method when svnjavahl will be upgraded
+			// for now we use this workaround 		
+            PropertyData propData = svnClient.propertyGet(target,propertyName);
+            propData.remove(recurse);
+            
 		   // there is no notification (Notify.notify is not called) when we set a property
    		   // so we will do notification ourselves
    		   ISVNStatus[] statuses = getStatus(path,recurse,false);
