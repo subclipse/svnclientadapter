@@ -208,6 +208,11 @@ public class ExpectedWC
         i.isLocked = isLocked;
     }
 
+    public void setItemIsCopied(String path, boolean isCopied) {
+        Item i = (Item) items.get(path);
+        i.isCopied = isCopied;
+    }
+    
     /**
      * Set the expected switched flag at a path
      * @param path          the path, where the switch flag is set
@@ -377,6 +382,8 @@ public class ExpectedWC
                     item.isLocked, tested[i].getTextStatus().equals(SVNStatusKind.LOCKED));
 //            Assert.assertEquals("switch status wrong",
 //                    item.isSwitched, tested[i].isSwitched());
+            Assert.assertEquals("copied status wrong for "+path,
+                    item.isCopied, tested[i].isCopied());
             Assert.assertEquals("wrong prop status in working copy for "+path,
                     item.propStatus, tested[i].getPropStatus());
             if (item.myContent != null)
@@ -473,6 +480,11 @@ public class ExpectedWC
          * expected switched status
          */
         boolean isSwitched;
+        
+        /**
+         * expected copied status
+         */
+        boolean isCopied;
 
         /**
          * create a new item
