@@ -29,6 +29,7 @@ import java.util.Locale;
  */
 public class SVNRevision 
 {
+	private static DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'");
     protected int revKind;
 
     public SVNRevision(int kind)
@@ -114,9 +115,7 @@ public class SVNRevision
         }
 
         public String toString() {
-            
-            SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z", Locale.US); 
-            return '{'+dateFormat.format(revDate)+'}';
+            return '{' +dateFormat.format(revDate)+ '}';
         }
 
         public boolean equals(Object target) {
