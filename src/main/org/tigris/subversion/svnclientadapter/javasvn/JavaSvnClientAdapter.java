@@ -37,6 +37,7 @@ import org.tigris.subversion.svnclientadapter.ISVNDirEntry;
 import org.tigris.subversion.svnclientadapter.ISVNInfo;
 import org.tigris.subversion.svnclientadapter.ISVNLogMessage;
 import org.tigris.subversion.svnclientadapter.ISVNNotifyListener;
+import org.tigris.subversion.svnclientadapter.ISVNPromptUserPassword;
 import org.tigris.subversion.svnclientadapter.ISVNProperty;
 import org.tigris.subversion.svnclientadapter.ISVNStatus;
 import org.tigris.subversion.svnclientadapter.SVNBaseDir;
@@ -1492,5 +1493,12 @@ public class JavaSvnClientAdapter implements ISVNClientAdapter {
             SVNRevision revision2, File localPath, boolean force,
             boolean recurse, boolean dryRun) throws SVNClientException {
         notImplementedYet();
+    }
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#addPasswordCallback(org.tigris.subversion.svnclientadapter.ISVNPromptUserPassword)
+     */
+    public void addPasswordCallback(ISVNPromptUserPassword callback) {
+        // Default is to do nothing.  If JavaSVN has a way to do callbacks
+        // for authentication, it could be added here.
     }
 }

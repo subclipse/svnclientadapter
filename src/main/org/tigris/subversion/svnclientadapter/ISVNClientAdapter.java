@@ -42,6 +42,10 @@ public interface ISVNClientAdapter {
 	 * Sets the password.
 	 */
 	public abstract void setPassword(String password);
+	/**
+	 * Add a callback for prompting for username, password SSL etc...
+	 */
+	public abstract void addPasswordCallback(ISVNPromptUserPassword callback);
 	
     
     /**

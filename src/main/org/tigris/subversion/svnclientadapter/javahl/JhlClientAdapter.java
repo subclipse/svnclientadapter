@@ -21,10 +21,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.StringTokenizer;
 
 import org.apache.commons.lang.SystemUtils;
 import org.tigris.subversion.javahl.ClientException;
@@ -43,12 +39,12 @@ import org.tigris.subversion.svnclientadapter.ISVNDirEntry;
 import org.tigris.subversion.svnclientadapter.ISVNInfo;
 import org.tigris.subversion.svnclientadapter.ISVNLogMessage;
 import org.tigris.subversion.svnclientadapter.ISVNNotifyListener;
+import org.tigris.subversion.svnclientadapter.ISVNPromptUserPassword;
 import org.tigris.subversion.svnclientadapter.ISVNProperty;
 import org.tigris.subversion.svnclientadapter.ISVNStatus;
 import org.tigris.subversion.svnclientadapter.SVNBaseDir;
 import org.tigris.subversion.svnclientadapter.SVNClientException;
 import org.tigris.subversion.svnclientadapter.SVNInfoUnversioned;
-import org.tigris.subversion.svnclientadapter.SVNKeywords;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
 import org.tigris.subversion.svnclientadapter.SVNStatusUnversioned;
 import org.tigris.subversion.svnclientadapter.SVNUrl;
@@ -1619,4 +1615,13 @@ public class JhlClientAdapter extends AbstractClientAdapter {
             merge(path1, revision1, path2, revision2, localPath, force, recurse);
     }
     
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#addPasswordCallback(org.tigris.subversion.svnclientadapter.ISVNPromptUserPassword)
+     */
+    public void addPasswordCallback(ISVNPromptUserPassword callback) {
+        if (callback != null) {
+	        JhlPromptUserPassword prompt = new JhlPromptUserPassword(callback);
+	        this.setPromptUserPassword(prompt);
+        }
+    }
 }

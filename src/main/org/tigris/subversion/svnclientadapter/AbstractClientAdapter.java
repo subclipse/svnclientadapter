@@ -142,4 +142,10 @@ public abstract class AbstractClientAdapter implements ISVNClientAdapter {
         return new SVNKeywords(value);
     }    
     
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#addPasswordCallback(org.tigris.subversion.svnclientadapter.ISVNPromptUserPassword)
+     */
+    public void addPasswordCallback(ISVNPromptUserPassword callback) {
+        // Default implementation does nothing
+    }
 }
