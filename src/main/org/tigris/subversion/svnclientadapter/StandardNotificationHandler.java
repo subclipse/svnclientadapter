@@ -139,7 +139,7 @@ public class StandardNotificationHandler implements ISVNNotifyListener {
 			case Notify.Action.failed_revert :
 				log(LOG_ERROR,"Failed to revert " + path + " -- try updating instead.");
 				break;
-			case Notify.Action.resolve :
+			case Notify.Action.resolved :
                 log(LOG_MESSAGE,"Resolved conflicted state of " + path);
 				break;
 			case Notify.Action.add :

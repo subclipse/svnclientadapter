@@ -59,6 +59,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -209,6 +210,7 @@ public class SVNClientAdapter {
     	}
     }
     
+/*    
     private static String urlToSVNUrl(URL url) {
 		// SVN need urls like http://... or file:///, not file:/ 
     	String urlStr = url.toExternalForm();
@@ -218,7 +220,7 @@ public class SVNClientAdapter {
     		urlStr = urlStr.substring(0,urlStr.length()-1);
     	return urlStr;
     }
-    
+    */
 
     /**
      * Adds a file (or directory) to the repository.
@@ -261,7 +263,7 @@ public class SVNClientAdapter {
      * @exception ClientException
      */
     public void checkout(
-        URL moduleName,
+        SVNUrl moduleName,
         File destPath,
         Revision revision,
         boolean recurse)
@@ -274,7 +276,7 @@ public class SVNClientAdapter {
                 " -r "+revision.toString()+
                 " "+moduleName.toString());        
             svnClient.checkout(
-			    urlToSVNUrl(moduleName),
+			    moduleName.toString(),
                 fileToSVNPath(destPath),
                 revision,
                 recurse);
@@ -325,12 +327,12 @@ public class SVNClientAdapter {
 	 * @return
 	 * @throws ClientException
 	 */
-	public DirEntry[] getList(URL url, Revision revision, boolean recurse) throws ClientException {
+	public DirEntry[] getList(SVNUrl url, Revision revision, boolean recurse) throws ClientException {
         try {
             notificationHandler.setCommand(ISVNNotifyListener.COMMAND_LS);
             String commandLine = "list -r "+revision.toString()+(recurse?"-R":"")+" "+url.toString();
             notificationHandler.setCommandLine(commandLine);		
-            return svnClient.list(urlToSVNUrl(url), revision, recurse);
+            return svnClient.list(url.toString(), revision, recurse);
         } catch (ClientException e) {
             notificationHandler.setException(e);
             throw e;
@@ -369,7 +371,9 @@ public class SVNClientAdapter {
                 	false, // copied
                 	"", // conflictOld
                 	"", // conflictNew
-                	""  // conflictWorking
+                	"",  // conflictWorking
+                    null, // url copied from
+                    -1    // revision copied from
                 );
             } else
             {
@@ -424,11 +428,11 @@ public class SVNClientAdapter {
 	 * @param destUrl
 	 * @throws ClientException
 	 */
-	public void copy(File srcPath, URL destUrl, String message) throws ClientException {
+	public void copy(File srcPath, SVNUrl destUrl, String message) throws ClientException {
         try {
             notificationHandler.setCommand(ISVNNotifyListener.COMMAND_COPY);
             String src = fileToSVNPath(srcPath);
-            String dest = urlToSVNUrl(destUrl);
+            String dest = destUrl.toString();
             notificationHandler.setCommandLine(
                     "copy "+src+" "+dest);
 		    svnClient.copy(src,dest,message,Revision.HEAD); // last parameter is not used
@@ -444,10 +448,10 @@ public class SVNClientAdapter {
 	 * @param destPath
 	 * @throws ClientException
 	 */
-	public void copy(URL srcUrl, File destPath, Revision revision) throws ClientException {
+	public void copy(SVNUrl srcUrl, File destPath, Revision revision) throws ClientException {
         try {
             notificationHandler.setCommand(ISVNNotifyListener.COMMAND_COPY);
-            String src = urlToSVNUrl(srcUrl);
+            String src = srcUrl.toString();
             String dest = fileToSVNPath(destPath);
             notificationHandler.setCommandLine(
                     "copy "+src+" "+dest);
@@ -464,11 +468,11 @@ public class SVNClientAdapter {
 	 * @param destUrl
 	 * @throws ClientException
 	 */
-	public void copy(URL srcUrl, URL destUrl, String message, Revision revision) throws ClientException {
+	public void copy(SVNUrl srcUrl, SVNUrl destUrl, String message, Revision revision) throws ClientException {
         try {
             notificationHandler.setCommand(ISVNNotifyListener.COMMAND_COPY);
-            String src = urlToSVNUrl(srcUrl);
-            String dest = urlToSVNUrl(destUrl);
+            String src = srcUrl.toString();
+            String dest = destUrl.toString();
             notificationHandler.setCommandLine(
                     "copy "+src+" "+dest);
 
@@ -485,7 +489,7 @@ public class SVNClientAdapter {
 	 * @param message
 	 * @throws ClientException
 	 */
-	public void remove(URL url[], String message) throws ClientException {
+	public void remove(SVNUrl url[], String message) throws ClientException {
         try {
             notificationHandler.setCommand(ISVNNotifyListener.COMMAND_REMOVE);
 
@@ -493,7 +497,7 @@ public class SVNClientAdapter {
             
             String targets[] = new String[url.length];
             for (int i = 0; i < url.length;i++) {
-                targets[i] = urlToSVNUrl(url[i]); 
+                targets[i] = url[i].toString(); 
                 commandLine += " "+targets[i];
             }
             notificationHandler.setCommandLine(commandLine);
@@ -544,10 +548,10 @@ public class SVNClientAdapter {
 	 * @param revision
 	 * @throws ClientException
 	 */
-	public void doExport(URL srcUrl, File destPath, Revision revision, boolean force) throws ClientException {
+	public void doExport(SVNUrl srcUrl, File destPath, Revision revision, boolean force) throws ClientException {
         try {
             notificationHandler.setCommand(ISVNNotifyListener.COMMAND_EXPORT);
-            String src = urlToSVNUrl(srcUrl);
+            String src = srcUrl.toString();
             String dest = fileToSVNPath(destPath);
             notificationHandler.setCommandLine(
                 "export -r "+revision.toString()+ ' '+src+' '+dest);
@@ -592,11 +596,11 @@ public class SVNClientAdapter {
 	 * @param recurse
 	 * @throws ClientException
 	 */
-	public void doImport(File path, URL url, String message, boolean recurse) throws ClientException {
+	public void doImport(File path, SVNUrl url, String message, boolean recurse) throws ClientException {
         try {
             notificationHandler.setCommand(ISVNNotifyListener.COMMAND_IMPORT);
             String src = fileToSVNPath(path);
-            String dest = urlToSVNUrl(url);
+            String dest = url.toString();
             notificationHandler.setCommandLine(
                          "import -m \""+message+"\" "+
                          (recurse?"":"-N ")+
@@ -614,10 +618,10 @@ public class SVNClientAdapter {
 	 * @param message
 	 * @throws ClientException
 	 */
-	public void mkdir(URL url, String message) throws ClientException {
+	public void mkdir(SVNUrl url, String message) throws ClientException {
         try {
             notificationHandler.setCommand(ISVNNotifyListener.COMMAND_MKDIR);
-		    String target = urlToSVNUrl(url);
+		    String target = url.toString();
             notificationHandler.setCommandLine(
                 "mkdir -m \""+message+"\" "+target);
             svnClient.mkdir(new String[] { target },message);
@@ -672,11 +676,11 @@ public class SVNClientAdapter {
 	 * @param destPath
 	 * @throws ClientException
 	 */	
-	public void move(URL srcUrl, URL destUrl, String message, Revision revision) throws ClientException {
+	public void move(SVNUrl srcUrl, SVNUrl destUrl, String message, Revision revision) throws ClientException {
         try {
             notificationHandler.setCommand(ISVNNotifyListener.COMMAND_MOVE);
-            String src = urlToSVNUrl(srcUrl);
-            String dest = urlToSVNUrl(destUrl);
+            String src = srcUrl.toString();
+            String dest = destUrl.toString();
             notificationHandler.setCommandLine(
                 "move -m \""+message+"\" -r "+revision.toString()+' '+src+' '+dest); 
             svnClient.move(src,dest,message,revision,false);
@@ -736,11 +740,11 @@ public class SVNClientAdapter {
      * @param revisionEnd
      * @return
      */
-    public LogMessage[] getLogMessages(URL url, Revision revisionStart, Revision revisionEnd) throws ClientException 
+    public LogMessage[] getLogMessages(SVNUrl url, Revision revisionStart, Revision revisionEnd) throws ClientException 
     {
         try {
             notificationHandler.setCommand(ISVNNotifyListener.COMMAND_LOG);
-            String target = urlToSVNUrl(url);
+            String target = url.toString();
             notificationHandler.setCommandLine("log -r "+revisionStart.toString()+":"+revisionEnd.toString()+
                 " "+target);
         
@@ -787,11 +791,11 @@ public class SVNClientAdapter {
      * @param url
      * @param revision
      */
-    public InputStream getContent(URL url, Revision revision) throws ClientException
+    public InputStream getContent(SVNUrl url, Revision revision) throws ClientException
     {
         try {
             notificationHandler.setCommand(ISVNNotifyListener.COMMAND_UNDEFINED);
-            byte[] contents = svnClient.fileContent(urlToSVNUrl(url),revision);
+            byte[] contents = svnClient.fileContent(url.toString(),revision);
             InputStream input = new ByteArrayInputStream(contents);
             return input;
         } catch (ClientException e) {
@@ -941,5 +945,19 @@ public class SVNClientAdapter {
             value = value + '\n' + pattern;    
         }
         propertySet(path, "svn:ignore", value, false);       
+    }
+    
+    public static URL svnUrlToJavaUrl(String url) {
+      if (url == null)
+          return null;
+      else
+      {
+          try {
+              return new URL(url);
+          } catch (MalformedURLException e)
+          {
+              return null;
+          }
+      }        
     }
 }
