@@ -68,6 +68,7 @@ public class CommandLine {
 	 * These are the commands used to execute the methods listed
 	 * below.
 	 */
+    private static String CMD_VERSION = " --version";
 	private static String CMD_ADD = " add {0} {1}";
 	private static String CMD_CAT = " cat -r {0} {1}";
 	private static String CMD_CLEANUP = " cleanup {0}";
@@ -108,6 +109,10 @@ public class CommandLine {
 		CMD = svnPath;
 	}
 
+    public String version() throws CmdLineException {
+        return exec(CMD+CMD_VERSION);
+    }
+
 	/**
 	 * add: Put files and directories under revision control, scheduling
 	 * them for addition to repository.  They will be added in next commit.
@@ -143,7 +148,7 @@ public class CommandLine {
 	 * 	  --no-auth-cache          : do not cache authentication tokens
 	 * 	  --non-interactive        : do no interactive prompting
 	 */
-	public InputStream cat(String url, String revision) {
+	public InputStream cat(String url, String revision) throws CmdLineException {
 		Process proc =
 			execInternal(
 				CMD
@@ -204,7 +209,7 @@ public class CommandLine {
 	 * 
 	 * @param path
 	 */
-	public void cleanup(String path) {
+	public void cleanup(String path) throws CmdLineException {
 		execInternal(
 			CMD + MessageFormat.format(CMD_CLEANUP, new String[] { path }));
 	}
@@ -286,7 +291,7 @@ public class CommandLine {
 		String src,
 		String dest,
 		String message,
-		String revision) {
+		String revision) throws CmdLineException {
 		return execInternal(
 			CMD
 				+ MessageFormat.format(
@@ -295,7 +300,7 @@ public class CommandLine {
 				+ getAuthInfo());
 
 	}
-	public Process copy(String src, String dest) {
+	public Process copy(String src, String dest) throws CmdLineException {
 		return execInternal(
 			CMD
 				+ MessageFormat.format(CMD_COPY_LOCAL, new String[] { src, dest })
@@ -391,7 +396,7 @@ public class CommandLine {
 		String oldRev,
 		String newPath,
 		String newRev,
-		boolean recurse) {
+		boolean recurse) throws CmdLineException {
 		/*
 		Process proc =
 			execInternal(
@@ -618,13 +623,13 @@ public class CommandLine {
 	 * 	  --non-interactive        : do no interactive prompting
 	 * 	  --encoding arg           : treat value as being in charset encoding ARG
 	 */
-	public Process mkdir(String path, String message) {
+	public Process mkdir(String path, String message) throws CmdLineException {
 		return execInternal(
 			CMD
 				+ MessageFormat.format(CMD_MKDIR, new String[] { message, path })
 				+ getAuthInfo());
 	}
-	public Process mkdir(String localPath) {
+	public Process mkdir(String localPath) throws CmdLineException{
 		return execInternal(
 			CMD
 				+ MessageFormat.format(
@@ -958,7 +963,7 @@ public class CommandLine {
 		pass = password;
 	}
 
-	private Process execInternal(String cmd) {
+	private Process execInternal(String cmd) throws CmdLineException {
 		Runtime rt = Runtime.getRuntime();
 
 		/* run the process */
@@ -966,6 +971,7 @@ public class CommandLine {
 		try {
 			proc = rt.exec(cmd);
 		} catch (IOException e) {
+            throw new CmdLineException(e);    
 		}
 
 		return proc;

@@ -106,6 +106,22 @@ public class JhlClientAdapter implements ISVNClientAdapter {
     }
 
     /**
+     * tells if JhlClientAdapter is usable
+     * @return
+     */
+    public static boolean isAvailable() {
+        try {
+            // if library is already loaded, it will not be reloaded
+            System.loadLibrary("svnjavahl");
+            return true;
+        } catch (Exception e) {
+            return false;
+        } catch (UnsatisfiedLinkError e) {
+            return false;
+        }
+    }
+
+    /**
      * the default prompter : never prompts the user
      */
     private class DefaultPromptUserPassword implements PromptUserPassword {

@@ -68,11 +68,36 @@ public class SVNClientAdapterFactory {
     public static int JAVAHL_CLIENT = 1;
     public static int COMMANDLINE_CLIENT = 2;
 
+    /**
+     * creates a new ISVNClientAdapter. You can create a javahl client or a command line
+     * client.
+     * 
+     * @param clientType
+     * @return
+     */
     public static ISVNClientAdapter createSVNClient(int clientType) {
         if (clientType == JAVAHL_CLIENT)
             return new JhlClientAdapter();
         else
             return new CmdLineClientAdapter();
     }
+
+    /**
+     * tells if the given clientType is available or not
+     * 
+     * @param clientType
+     * @return
+     */
+    public static boolean isSVNClientAvailable(int clientType) {
+        if (clientType == COMMANDLINE_CLIENT)
+        {
+            return CmdLineClientAdapter.isAvailable();
+        } 
+        else
+        {
+            return JhlClientAdapter.isAvailable();
+        }
+    }
+
 
 }

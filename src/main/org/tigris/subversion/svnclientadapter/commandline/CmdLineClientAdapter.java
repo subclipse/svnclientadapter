@@ -87,6 +87,19 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 	private CommandLine _cmd = new CommandLine("svn");
 	private List _listeners = new LinkedList();
 
+
+    public static boolean isAvailable() {
+        // this will need to be fixed when path to svn will be customizable 
+        CommandLine cmd = new CommandLine("svn");
+        try {
+            cmd.version();
+            return true;
+        } catch (Exception e)
+        {
+            return false;
+        }
+    }
+
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.subclipse.client.ISVNClientAdapter#addNotifyListener(org.tigris.subversion.subclipse.client.ISVNClientNotifyListener)
 	 */
@@ -188,17 +201,20 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 	public InputStream getContent(SVNUrl arg0, SVNRevision arg1)
 		throws SVNClientException {
 
-		InputStream content = _cmd.cat(toString(arg0), toString(arg1));
+        try {
+		  InputStream content = _cmd.cat(toString(arg0), toString(arg1));
 
-		//read byte-by-byte and put it in a vector.
-		//then take the vector and fill a byteArray.
-		byte[] byteArray;
-		try {
-			byteArray = streamToByteArray(content, false);
+        
+		  //read byte-by-byte and put it in a vector.
+	   	  //then take the vector and fill a byteArray.
+    	  byte[] byteArray;
+		  byteArray = streamToByteArray(content, false);
+          return new ByteArrayInputStream(byteArray);          
 		} catch (IOException e) {
 			throw SVNClientException.wrapException(e);
-		}
-		return new ByteArrayInputStream(byteArray);
+        } catch (CmdLineException e) {
+            throw SVNClientException.wrapException(e);
+        }          
 
 	}
 
@@ -206,7 +222,11 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 	 * @see org.tigris.subversion.subclipse.client.ISVNClientAdapter#mkdir(java.net.URL, java.lang.String)
 	 */
 	public void mkdir(SVNUrl arg0, String arg1) throws SVNClientException {
-		_cmd.mkdir(toString(arg0), arg1);
+        try {
+		  _cmd.mkdir(toString(arg0), arg1);
+        } catch (CmdLineException e) {
+            throw SVNClientException.wrapException(e);
+        }        
 	}
 
 	/* (non-Javadoc)
@@ -257,11 +277,19 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 	 */
 	public void copy(SVNUrl src, SVNUrl dest, String message, SVNRevision rev)
 		throws SVNClientException {
-		_cmd.copy(src.toString(), dest.toString(), message, rev.toString());
+        try {
+		  _cmd.copy(src.toString(), dest.toString(), message, rev.toString());
+        } catch (CmdLineException e) {
+            SVNClientException.wrapException(e);
+        }        
 	}
 
 	public void copy(File srcPath, File destPath) throws SVNClientException {
-		_cmd.copy(srcPath.toString(), destPath.toString());
+		try {
+            _cmd.copy(srcPath.toString(), destPath.toString());
+        } catch (CmdLineException e) {
+            SVNClientException.wrapException(e);
+        }        
 		//sometimes the dir has not yet been created.
 		//wait up to 5 sec for the dir to be created.
 		for (int i = 0; i < 50 && !destPath.exists(); i++) {
@@ -551,18 +579,21 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 		if (newPathRevision == null)
 			newPathRevision = SVNRevision.WORKING;
 
-		InputStream is =
-			_cmd.diff(
-				oldPath,
-				toString(oldPathRevision),
-				newPath,
-				toString(newPathRevision),
-				recurse);
-		try {
-			streamToFile(is, outFile);
+        try {
+            InputStream is =
+                _cmd.diff(
+				    oldPath,
+                    toString(oldPathRevision),
+				    newPath,
+				    toString(newPathRevision),
+				    recurse);
+
+            streamToFile(is, outFile);
 		} catch (IOException e) {
 			//this should never happen
-		}
+        } catch (CmdLineException e) {
+            SVNClientException.wrapException(e);
+        }        
 	}
 
 	public void diff(
@@ -663,7 +694,11 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 	}
 
 	public void mkdir(File file) throws SVNClientException {
-		_cmd.mkdir(toString(file));
+        try {
+            _cmd.mkdir(toString(file));
+        } catch (CmdLineException e) {
+            SVNClientException.wrapException(e);
+        }          
 		//sometimes the dir has not yet been created.
 		//wait up to 5 sec for the dir to be created.
 		for (int i = 0; i < 50 && !file.exists(); i++) {
@@ -763,11 +798,15 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 	 */
 	public void copy(SVNUrl srcUrl, File destPath, SVNRevision revision)
 		throws SVNClientException {
-		_cmd.copy(
-			srcUrl.toString(),
-			destPath.toString(),
-			null,
-			revision.toString());
+		try {
+            _cmd.copy(
+                srcUrl.toString(),
+                destPath.toString(),
+                null,
+                revision.toString());
+        } catch (CmdLineException e) {
+            SVNClientException.wrapException(e);
+        }              
 		// TODO : test
 	}
 
