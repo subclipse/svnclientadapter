@@ -937,7 +937,12 @@ public class JhlClientAdapter implements ISVNClientAdapter {
 					+ " "
 					+ target);
 			notificationHandler.setBaseDir();
-			return JhlConverter.convert(svnClient.logMessages(target, JhlConverter.convert(revisionStart), JhlConverter.convert(revisionEnd)));
+			return JhlConverter.convert(
+                    svnClient.logMessages(
+                            target, 
+                            JhlConverter.convert(revisionStart), 
+                            JhlConverter.convert(revisionEnd),
+                            false)); // don't stop on copy
 		} catch (ClientException e) {
 			notificationHandler.logException(e);
 			throw new SVNClientException(e);
@@ -968,7 +973,12 @@ public class JhlClientAdapter implements ISVNClientAdapter {
 					+ " "
 					+ target);
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
-			return JhlConverter.convert(svnClient.logMessages(target, JhlConverter.convert(revisionStart), JhlConverter.convert(revisionEnd)));
+			return JhlConverter.convert(
+                    svnClient.logMessages(
+                            target, 
+                            JhlConverter.convert(revisionStart), 
+                            JhlConverter.convert(revisionEnd),
+                            false)); // don't stop on copy
 		} catch (ClientException e) {
 			notificationHandler.logException(e);
 			throw new SVNClientException(e);
