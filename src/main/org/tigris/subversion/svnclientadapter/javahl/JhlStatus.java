@@ -113,7 +113,7 @@ public class JhlStatus implements ISVNStatus {
             if (url == null)
                 return null;
             else
-                return new SVNUrl(_s.getUrl());
+                return new SVNUrl(url);
         } catch (MalformedURLException e) {
             //should never happen.
             return null;
@@ -244,8 +244,17 @@ public class JhlStatus implements ISVNStatus {
 	 * (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getUrlCopiedFrom()
 	 */
-	public String getUrlCopiedFrom() {
-		return _s.getUrlCopiedFrom();
+	public SVNUrl getUrlCopiedFrom() {
+		try {
+            String url = _s.getUrlCopiedFrom();
+            if (url == null)
+                return null;
+            else
+                return new SVNUrl(url);
+        } catch (MalformedURLException e) {
+            //should never happen.
+            return null;
+        }
 	}
 
     /* (non-Javadoc)

@@ -144,7 +144,7 @@ public class SVNStatusUnversioned implements ISVNStatus {
         // not managed we must return UNKNOWN
         return SVNNodeKind.UNKNOWN;
 	}
-	public String getUrlCopiedFrom() {
+	public SVNUrl getUrlCopiedFrom() {
 		return null;
 	}
 

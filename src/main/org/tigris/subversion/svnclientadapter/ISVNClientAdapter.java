@@ -577,4 +577,20 @@ public interface ISVNClientAdapter {
 	 */
 	public abstract void createRepository(File path, String repositoryType) throws SVNClientException;
 	
+	/**
+	 * Cancel the current operation
+	 * 
+	 * @throws SVNClientException
+	 */
+	public void cancelOperation() throws SVNClientException;
+	
+	/**
+	 * get information about a file or directory.
+	 * @param file
+	 * @return
+	 * @throws SVNClientException
+	 */
+	public ISVNInfo getInfo(File file) throws SVNClientException;
+	
+	
 }

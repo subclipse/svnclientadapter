@@ -54,15 +54,19 @@
  */ 
 package org.tigris.subversion.svnclientadapter.javahl;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.tigris.subversion.javahl.DirEntry;
 import org.tigris.subversion.javahl.LogMessage;
 import org.tigris.subversion.javahl.NodeKind;
 import org.tigris.subversion.javahl.Revision;
+import org.tigris.subversion.javahl.ScheduleKind;
 import org.tigris.subversion.javahl.Status;
 import org.tigris.subversion.svnclientadapter.ISVNLogMessage;
 import org.tigris.subversion.svnclientadapter.ISVNStatus;
 import org.tigris.subversion.svnclientadapter.SVNNodeKind;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
+import org.tigris.subversion.svnclientadapter.SVNScheduleKind;
 
 /**
  * Convert from javahl types to subversion.svnclientadapter.* types 
@@ -71,6 +75,8 @@ import org.tigris.subversion.svnclientadapter.SVNRevision;
  */
 public class JhlConverter {
 
+	private static Log log = LogFactory.getLog(JhlConverter.class);	
+	
 	private JhlConverter() {
 		//non-instantiable
 	}
@@ -85,7 +91,10 @@ public class JhlConverter {
             case SVNRevision.Kind.previous : return Revision.PREVIOUS;
             case SVNRevision.Kind.unspecified : return new Revision(Revision.Kind.unspecified);
             case SVNRevision.Kind.working : return Revision.WORKING;
-            default: return new Revision(Revision.Kind.unspecified); // should never go here
+            default: {
+        		log.error("unknown revision kind :"+svnRevision.getKind());
+            	return new Revision(Revision.Kind.unspecified); // should never go here
+            }
         }
     }
 
@@ -118,7 +127,10 @@ public class JhlConverter {
             case NodeKind.file : return SVNNodeKind.FILE; 
             case NodeKind.none : return SVNNodeKind.NONE; 
             case NodeKind.unknown : return SVNNodeKind.UNKNOWN;
-            default: return SVNNodeKind.UNKNOWN; // should never go here
+            default: {
+            	log.error("unknown node kind :"+javahlNodeKind);
+            	return SVNNodeKind.UNKNOWN; // should never go here
+            }
         }
     }
 
@@ -157,8 +169,10 @@ public class JhlConverter {
 //                return ISVNStatus.Kind.EXTERNAL;
             case Status.Kind.unversioned :
                 return ISVNStatus.Kind.UNVERSIONED;
-            default :
+            default : {
+            	log.error("unknown status kind :"+kind);
                 return ISVNStatus.Kind.NONE;
+            }
         }
     }
 
@@ -194,5 +208,23 @@ public class JhlConverter {
             jhlStatus[i] = new JhlStatus(status[i]);
         }
         return jhlStatus;
-    }    
+    }
+    
+    public static SVNScheduleKind convertScheduleKind(int kind) {
+        switch (kind) {
+        	case ScheduleKind.normal:
+        		return SVNScheduleKind.NORMAL;
+        	case ScheduleKind.delete:
+        		return SVNScheduleKind.DELETE;
+        	case ScheduleKind.add:
+        		return SVNScheduleKind.ADD;
+        	case ScheduleKind.replace:
+        		return SVNScheduleKind.REPLACE;        	
+        	default : {
+        		log.error("unknown schedule kind :"+kind);
+        		return SVNScheduleKind.NORMAL;
+        	}
+        }
+    }
+    
 }

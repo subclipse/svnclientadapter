@@ -77,6 +77,7 @@ import org.tigris.subversion.javahl.Status;
 import org.tigris.subversion.svnclientadapter.ISVNAnnotations;
 import org.tigris.subversion.svnclientadapter.ISVNClientAdapter;
 import org.tigris.subversion.svnclientadapter.ISVNDirEntry;
+import org.tigris.subversion.svnclientadapter.ISVNInfo;
 import org.tigris.subversion.svnclientadapter.ISVNLogMessage;
 import org.tigris.subversion.svnclientadapter.ISVNNotifyListener;
 import org.tigris.subversion.svnclientadapter.ISVNProperty;
@@ -1548,5 +1549,36 @@ public class JhlClientAdapter implements ISVNClientAdapter {
 			throw new SVNClientException(e);            
 		}        
 	    
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#cancelOperation()
+	 */
+	public void cancelOperation() throws SVNClientException {
+		try {
+			svnClient.cancelOperation();
+		} catch (ClientException e) {
+			notificationHandler.logException(e);
+			throw new SVNClientException(e);			
+		}
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getInfo(java.io.File)
+	 */
+	public ISVNInfo getInfo(File path) throws SVNClientException {
+		try {
+			notificationHandler.setCommand(ISVNNotifyListener.Command.INFO);
+            
+			String target = fileToSVNPath(path, true);
+			notificationHandler.logCommandLine("info "+target);
+			File baseDir = SVNBaseDir.getBaseDir(path);
+			notificationHandler.setBaseDir(baseDir);
+			return new JhlInfo(baseDir,svnClient.info(target));
+		} catch (ClientException e) {
+			notificationHandler.logException(e);
+			throw new SVNClientException(e);            
+		}        
 	}
 }

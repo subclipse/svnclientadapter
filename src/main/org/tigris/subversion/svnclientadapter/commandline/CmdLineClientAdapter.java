@@ -71,6 +71,7 @@ import java.util.Vector;
 import org.tigris.subversion.svnclientadapter.ISVNAnnotations;
 import org.tigris.subversion.svnclientadapter.ISVNClientAdapter;
 import org.tigris.subversion.svnclientadapter.ISVNDirEntry;
+import org.tigris.subversion.svnclientadapter.ISVNInfo;
 import org.tigris.subversion.svnclientadapter.ISVNLogMessage;
 import org.tigris.subversion.svnclientadapter.ISVNNotifyListener;
 import org.tigris.subversion.svnclientadapter.ISVNProperty;
@@ -1184,4 +1185,19 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
         // TODO Auto-generated method stub
         return null;
     }
+
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#cancelOperation()
+	 */
+	public void cancelOperation() throws SVNClientException {
+		// TODO Auto-generated method stub
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getInfo(java.io.File)
+	 */
+	public ISVNInfo getInfo(File file) throws SVNClientException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

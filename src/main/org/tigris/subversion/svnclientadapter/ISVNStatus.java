@@ -173,6 +173,6 @@ public interface ISVNStatus {
      */
 	SVNNodeKind getNodeKind();
 
-	String getUrlCopiedFrom();
+	SVNUrl getUrlCopiedFrom();
 	
 }

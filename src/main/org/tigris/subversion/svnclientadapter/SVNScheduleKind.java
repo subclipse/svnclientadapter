@@ -59,51 +59,47 @@ package org.tigris.subversion.svnclientadapter;
  * @see ISVNInfo#getSchedule()
  */
 public class SVNScheduleKind {
-    private int kind;
+    private String kind;
     
     /** exists, but uninteresting */
-    public static final int normal = 0;
+    public static final SVNScheduleKind NORMAL = new SVNScheduleKind("normal");
 
     /** Slated for addition */
-    public static final int add = 1;
+    public static final SVNScheduleKind ADD = new SVNScheduleKind("add");
 
     /** Slated for deletion */
-    public static final int delete = 2;
+    public static final SVNScheduleKind DELETE = new SVNScheduleKind("delete");
 
     /** Slated for replacement (delete + add) */
-    public static final int replace = 3;    
-    
-    
-    /** exists, but uninteresting */
-    public static final SVNScheduleKind NORMAL = new SVNScheduleKind(0);
-
-    /** Slated for addition */
-    public static final SVNScheduleKind ADD = new SVNScheduleKind(1);
-
-    /** Slated for deletion */
-    public static final SVNScheduleKind DELETE = new SVNScheduleKind(2);
-
-    /** Slated for replacement (delete + add) */
-    public static final SVNScheduleKind REPLACE = new SVNScheduleKind(3);
+    public static final SVNScheduleKind REPLACE = new SVNScheduleKind("replace");
  
-    private SVNScheduleKind(int kind) {
+    private SVNScheduleKind(String kind) {
          this.kind = kind;
     }
 
     public String toString() {
-        return toString( kind );
+        return kind;
+    }
+    
+    /**
+     * returns the ScheduleKind corresponding to the given string or null
+     * @param scheduleKind
+     * @return
+     */
+    public static SVNScheduleKind fromString(String scheduleKind) {
+    	if (NORMAL.toString().equals(scheduleKind)) {
+    		return NORMAL;
+    	} else
+        if (ADD.toString().equals(scheduleKind)) {
+        	return ADD;
+        } else    		
+        if (DELETE.toString().equals(scheduleKind)) {
+        	return DELETE;
+        } else
+        if (REPLACE.toString().equals(scheduleKind)) {
+        	return REPLACE;  
+        } else
+        	return null;
     }
 
-    public static String toString(int kind) {
-        if( kind == 0 )
-            return "normal";
-        else if( kind == 1 )
-            return "add";
-        else if( kind == 2 )
-            return "delete";
-        else if( kind == 3 )
-            return "replace";
-        else
-            return "Unknown kind "+kind;
-    }
 }

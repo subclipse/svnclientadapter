@@ -59,38 +59,47 @@ package org.tigris.subversion.svnclientadapter;
  */
 public class SVNNodeKind
 {
-    private int kind;
+    private String kind;
     
     /* absent */
-    public static final SVNNodeKind NONE = new SVNNodeKind(0);
+    public static final SVNNodeKind NONE = new SVNNodeKind("none");
 
     /* regular file */
-    public static final SVNNodeKind FILE = new SVNNodeKind(1);
+    public static final SVNNodeKind FILE = new SVNNodeKind("file");
 
     /* directory */
-    public static final SVNNodeKind DIR = new SVNNodeKind(2);
+    public static final SVNNodeKind DIR = new SVNNodeKind("directory");
 
     /* something's here, but we don't know what */
-    public static final SVNNodeKind UNKNOWN = new SVNNodeKind(3);
+    public static final SVNNodeKind UNKNOWN = new SVNNodeKind("unknown");
  
-    private SVNNodeKind(int kind) {
+    private SVNNodeKind(String kind) {
          this.kind = kind;
     }
 
     public String toString() {
-        return toString( kind );
+        return kind;
     }
 
-    public static String toString(int kind) {
-        if( kind == 0 )
-            return "NONE";
-        else if( kind == 1 )
-            return "FILE";
-        else if( kind == 2 )
-            return "DIR";
-        else if( kind == 3 )
-            return "UNKNOWN";
-        else
-            return "Unknown kind "+kind;
-    }
+    /**
+     * returns the ScheduleKind corresponding to the given string or null
+     * @param scheduleKind
+     * @return
+     */
+    public static SVNNodeKind fromString(String nodeKind) {
+    	if (NONE.toString().equals(nodeKind)) {
+    		return NONE;
+    	} else
+        if (FILE.toString().equals(nodeKind)) {
+        	return FILE;
+        } else    		
+        if (DIR.toString().equals(nodeKind)) {
+        	return DIR;
+        } else
+        if (UNKNOWN.toString().equals(nodeKind)) {
+        	return UNKNOWN;  
+        } else
+        	return null;
+    }    
+    
 }

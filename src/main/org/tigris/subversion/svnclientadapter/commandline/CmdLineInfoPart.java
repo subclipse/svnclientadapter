@@ -60,9 +60,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import org.tigris.subversion.svnclientadapter.ISVNInfo;
 import org.tigris.subversion.svnclientadapter.SVNNodeKind;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
+import org.tigris.subversion.svnclientadapter.SVNScheduleKind;
 import org.tigris.subversion.svnclientadapter.SVNUrl;
+import org.tigris.subversion.svnclientadapter.SVNRevision.Number;
 
 /**
  * Represents the infos for one resource in the result of a svn info command
@@ -70,16 +73,23 @@ import org.tigris.subversion.svnclientadapter.SVNUrl;
  * @author Philip Schatz (schatz at tigris)
  * @author Cédric Chabanois (cchabanois at no-log.org)
  */
-class CmdLineInfoPart {
+class CmdLineInfoPart implements ISVNInfo {
 
 	//"Constants"
 	private static final String KEY_PATH = "Path";
 	private static final String KEY_URL = "URL";
 	private static final String KEY_REVISION = "Revision";
+	private static final String KEY_REPOSITORY = "Repository";
 	private static final String KEY_NODEKIND = "Node Kind";
 	private static final String KEY_LASTCHANGEDAUTHOR = "Last Changed Author";
 	private static final String KEY_LASTCHANGEDREV = "Last Changed Rev";
 	private static final String KEY_LASTCHANGEDDATE = "Last Changed Date";
+	private static final String KEY_TEXTLASTUPDATED = "Text Last Updated";
+	private static final String KEY_SCHEDULE = "Schedule";
+	private static final String KEY_COPIEDFROMURL = "Copied From URL";
+	private static final String KEY_COPIEDFROMREV = "Copied From Rev";
+	private static final String KEY_PROPSLASTUPDATED = "Properties Last Updated";
+	private static final String KEY_REPOSITORYUUID = "Repository UUID";
 
 	//Fields
 	private Map infoMap = new HashMap();
@@ -106,39 +116,59 @@ class CmdLineInfoPart {
 		load(infoString);
 	}
 
-	//Methods
+
+	/*
+	 * (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNInfo#getLastChangedDate()
+	 */
 	public Date getLastChangedDate() {
 		return (unversioned) ? null : Helper.toDate(get(KEY_LASTCHANGEDDATE));
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNInfo#getLastChangedRevision()
+	 */
 	public SVNRevision.Number getLastChangedRevision() {
 		return (unversioned) ? null : Helper.toRevNum(get(KEY_LASTCHANGEDREV));
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNInfo#getLastCommitAuthor()
+	 */
 	public String getLastCommitAuthor() {
 		return (unversioned) ? null : get(KEY_LASTCHANGEDAUTHOR);
 	}
 
 	public SVNNodeKind getNodeKind() {
-		if ("directory".equals(get(KEY_NODEKIND)))
-			return SVNNodeKind.DIR;
-		if ("file".equals(get(KEY_NODEKIND)))
-			return SVNNodeKind.FILE;
-		return SVNNodeKind.UNKNOWN;
+		return (unversioned) ? null : SVNNodeKind.fromString(get(KEY_NODEKIND));
 	}
 
 	public String getPath() {
 		return get(KEY_PATH);
 	}
-    
+
+	/*
+	 * (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNInfo#getFile()
+	 */
     public File getFile() {
         return new File(getPath()).getAbsoluteFile();
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNInfo#getRevision()
+     */
 	public SVNRevision.Number getRevision() {
 		return (unversioned) ? SVNRevision.INVALID_REVISION : Helper.toRevNum(get(KEY_REVISION));
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNInfo#getUrl()
+	 */
 	public SVNUrl getUrl() {
 		return (unversioned) ? null : Helper.toSVNUrl(get(KEY_URL));
 	}
@@ -177,4 +207,67 @@ class CmdLineInfoPart {
     public boolean isVersioned() {
         return !unversioned;
     }
+
+    
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNInfo#getLastDateTextUpdate()
+	 */
+	public Date getLastDateTextUpdate() {
+		return (unversioned) ? null : Helper.toDate(get(KEY_TEXTLASTUPDATED));	
+	}
+
+
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNInfo#getUuid()
+	 */
+	public String getUuid() {
+		return (unversioned) ? null : get(KEY_REPOSITORYUUID);
+	}
+
+
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNInfo#getRepository()
+	 */
+	public SVNUrl getRepository() {
+		return (unversioned) ? null : Helper.toSVNUrl(get(KEY_REPOSITORY));
+	}
+
+
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNInfo#getSchedule()
+	 */
+	public SVNScheduleKind getSchedule() {
+		return SVNScheduleKind.fromString(get(KEY_SCHEDULE));
+	}
+
+
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNInfo#getLastDatePropsUpdate()
+	 */
+	public Date getLastDatePropsUpdate() {
+		return (unversioned) ? null : Helper.toDate(get(KEY_PROPSLASTUPDATED));
+	}
+
+
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNInfo#isCopied()
+	 */
+	public boolean isCopied() {
+		return (getCopyRev() != null) || (getCopyUrl() != null);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNInfo#getCopyRev()
+	 */
+	public Number getCopyRev() {
+		return (unversioned) ? null : Helper.toRevNum(get(KEY_COPIEDFROMREV));
+	}
+
+
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNInfo#getCopyUrl()
+	 */
+	public SVNUrl getCopyUrl() {
+		return (unversioned) ? null : Helper.toSVNUrl(get(KEY_COPIEDFROMURL));
+	}
 }

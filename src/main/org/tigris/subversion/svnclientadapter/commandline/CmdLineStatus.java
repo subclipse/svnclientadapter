@@ -161,9 +161,8 @@ class CmdLineStatus  implements ISVNStatus {
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.subclipse.client.ISVNClientStatus#getUrlCopiedFrom()
 	 */
-	public String getUrlCopiedFrom() {
-		// TODO : implement
-		return null;
+	public SVNUrl getUrlCopiedFrom() {
+		return infoPart.getCopyUrl();
 	}
 
 	/* (non-Javadoc)
@@ -220,11 +219,19 @@ class CmdLineStatus  implements ISVNStatus {
 		return infoPart.getUrl();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getRepositoryTextStatus()
+	 */
     public Kind getRepositoryTextStatus() {
         // TODO Auto-generated method stub
         return null;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getRepositoryPropStatus()
+     */
     public Kind getRepositoryPropStatus() {
         // TODO Auto-generated method stub
         return null;

@@ -74,7 +74,7 @@ public interface ISVNInfo
      * Retrieves the url of the item
      * @return url of the item
      */
-    public String getUrl();
+    public SVNUrl getUrl();
 
     /**
      * Retrieves the uuid of the repository
@@ -104,7 +104,7 @@ public interface ISVNInfo
      * Retrieves the author of the last commit
      * @return author of the last commit
      */
-    public String getAuthor();
+    public String getLastCommitAuthor();
 
     /**
      * Retrieves the last revision the item was updated to
@@ -143,24 +143,6 @@ public interface ISVNInfo
     public boolean isCopied();
 
     /**
-     * Retrieve if the item was deleted
-     * @return the item was deleted
-     */
-    public boolean isDeleted();
-
-    /**
-     * Retrieve if the item is absent
-     * @return the item is absent
-     */
-    public boolean isAbsent();
-
-    /**
-     * Retrieve if the item is incomplete
-     * @return the item is incomplete
-     */
-    public boolean isIncomplete();
-
-    /**
      * Retrieves the copy source revision
      * @return copy source revision
      */
@@ -170,5 +152,5 @@ public interface ISVNInfo
      * Retrieves the copy source url
      * @return copy source url
      */
-    public String getCopyUrl();
+    public SVNUrl getCopyUrl();
 }
