@@ -156,7 +156,7 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements No
                         statecharBuf[1] = 'G';
                     else if (propState == Notify.Status.changed)
                         statecharBuf[1] = 'U';
-                    logMessage(statecharBuf[0]+statecharBuf[1]+" "+path);                      
+                    logMessage("" + statecharBuf[0] + statecharBuf[1] + " " + path);                      
                 }
                 break;
             case Notify.Action.update_completed :
