@@ -38,15 +38,6 @@ public class SVNStatusUnversioned implements ISVNStatus {
 		this.file = file;
 	}
     
-    public boolean isIgnored() {
-		return isIgnored;
-	}
-	public boolean isManaged() {
-		return false;
-	}
-	public boolean hasRemote() {
-		return false;
-	}
 	public SVNUrl getUrl() {
 		return null;
 	}
@@ -78,21 +69,6 @@ public class SVNStatusUnversioned implements ISVNStatus {
         return SVNStatusKind.UNVERSIONED;
     }
 
-    public boolean isMerged() {
-		return false;
-	}
-	public boolean isDeleted() {
-		return false;
-	}
-	public boolean isModified() {
-		return false;
-	}
-	public boolean isAdded() {
-		return false;
-	}
-    public boolean isLocked() {
-        return false;
-    }
 	public SVNRevision.Number getRevision() {
 		return SVNRevision.INVALID_REVISION;
 	}

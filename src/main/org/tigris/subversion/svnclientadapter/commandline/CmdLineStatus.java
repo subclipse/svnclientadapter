@@ -49,28 +49,6 @@ class CmdLineStatus  implements ISVNStatus {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.tigris.subversion.subclipse.client.ISVNClientStatus#isIgnored()
-	 */
-	public boolean isIgnored() {
-		return statusPart.isIgnored();
-	}
-
-	/* (non-Javadoc)
-	 * @see org.tigris.subversion.subclipse.client.ISVNClientStatus#isManaged()
-	 */
-	public boolean isManaged() {
-		return statusPart.isManaged();
-	}
-
-	/**
-	 * tells if the resource has a remote counter-part
-	 * @return
-	 */
-	public boolean hasRemote() {
-		return statusPart.hasRemote();
-	}
-
-	/* (non-Javadoc)
 	 * @see org.tigris.subversion.subclipse.client.ISVNClientStatus#getTextStatus()
 	 */
 	public SVNStatusKind getTextStatus() {
@@ -83,41 +61,6 @@ class CmdLineStatus  implements ISVNStatus {
 	 */
 	public SVNStatusKind getPropStatus() {
 		return statusPart.getPropStatus();
-	}
-
-	/* (non-Javadoc)
-	 * @see org.tigris.subversion.subclipse.client.ISVNClientStatus#isMerged()
-	 */
-	public boolean isMerged() {
-		return statusPart.isMerged();
-	}
-
-	/* (non-Javadoc)
-	 * @see org.tigris.subversion.subclipse.client.ISVNClientStatus#isDeleted()
-	 */
-	public boolean isDeleted() {
-		return statusPart.isDeleted();
-	}
-
-	/* (non-Javadoc)
-	 * @see org.tigris.subversion.subclipse.client.ISVNClientStatus#isModified()
-	 */
-	public boolean isModified() {
-		return statusPart.isModified();
-	}
-
-	/* (non-Javadoc)
-	 * @see org.tigris.subversion.subclipse.client.ISVNClientStatus#isAdded()
-	 */
-	public boolean isAdded() {
-		return statusPart.isAdded();
-	}
-
-	/* (non-Javadoc)
-	 * @see org.tigris.subversion.subclipse.client.ISVNClientStatus#isCopied()
-	 */
-	public boolean isCopied() {
-		return statusPart.isCopied();
 	}
 
 	/* (non-Javadoc)
@@ -224,10 +167,10 @@ class CmdLineStatus  implements ISVNStatus {
     }
 
     /* (non-Javadoc)
-     * @see org.tigris.subversion.svnclientadapter.ISVNStatus#isLocked()
+     * @see org.tigris.subversion.svnclientadapter.ISVNStatus#isCopied()
      */
-    public boolean isLocked() {
-        return statusPart.isLocked();
+    public boolean isCopied() {
+        return statusPart.isCopied();
     }
 
 }

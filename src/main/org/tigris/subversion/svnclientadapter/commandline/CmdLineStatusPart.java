@@ -117,30 +117,10 @@ class CmdLineStatusPart {
 		}		
 	}
 
-	public boolean isMerged() {
-		return (textStatus == 'G');
-	}
-
-	public boolean isDeleted() {
-		return (textStatus == 'D');
-	}
-
-	public boolean isModified() {
-		return (textStatus == 'M');
-	}
-
-	public boolean isAdded() {
-		return (textStatus == 'A');
-	}
-
 	public boolean isCopied() {
 		return (history == '+');
 	}
 
-    public boolean isLocked() {
-        return (textStatus == 'L');
-    }
-    
     public File getFile() {
         return file.getAbsoluteFile();
     }

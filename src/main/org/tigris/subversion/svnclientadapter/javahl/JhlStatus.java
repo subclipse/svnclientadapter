@@ -43,30 +43,6 @@ public class JhlStatus implements ISVNStatus {
 
 	/*
 	 * (non-Javadoc)
-	 * @see org.tigris.subversion.svnclientadapter.ISVNStatus#isIgnored()
-	 */
-	public boolean isIgnored() {
-		return _s.isIgnored();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see org.tigris.subversion.svnclientadapter.ISVNStatus#isManaged()
-	 */
-	public boolean isManaged() {
-		return _s.isManaged();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see org.tigris.subversion.svnclientadapter.ISVNStatus#hasRemote()
-	 */
-	public boolean hasRemote() {
-		return _s.hasRemote();
-	}
-
-	/*
-	 * (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getUrl()
 	 */
 	public SVNUrl getUrl() {
@@ -130,38 +106,6 @@ public class JhlStatus implements ISVNStatus {
 			kind =  SVNStatusKind.NORMAL;
 		}
 		return kind;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see org.tigris.subversion.svnclientadapter.ISVNStatus#isMerged()
-	 */
-	public boolean isMerged() {
-		return _s.isMerged();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see org.tigris.subversion.svnclientadapter.ISVNStatus#isDeleted()
-	 */
-	public boolean isDeleted() {
-		return _s.isDeleted();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see org.tigris.subversion.svnclientadapter.ISVNStatus#isModified()
-	 */
-	public boolean isModified() {
-		return _s.isModified();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see org.tigris.subversion.svnclientadapter.ISVNStatus#isAdded()
-	 */
-	public boolean isAdded() {
-		return _s.isAdded();
 	}
 
 	/*
@@ -278,13 +222,5 @@ public class JhlStatus implements ISVNStatus {
             return null;
         }
     }
-
-    /* (non-Javadoc)
-     * @see org.tigris.subversion.svnclientadapter.ISVNStatus#isLocked()
-     */
-    public boolean isLocked() {
-        return _s.isLocked();
-    }
-    
     
 }

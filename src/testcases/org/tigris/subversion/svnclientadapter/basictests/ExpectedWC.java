@@ -366,7 +366,7 @@ public class ExpectedWC
                 Assert.assertEquals("wrong revision number in working copy",
                         item.workingCopyRev, tested[i].getRevision());
             Assert.assertEquals("lock status wrong",
-                    item.isLocked, tested[i].isLocked());
+                    item.isLocked, tested[i].getTextStatus().equals(SVNStatusKind.LOCKED));
 //            Assert.assertEquals("switch status wrong",
 //                    item.isSwitched, tested[i].isSwitched());
             Assert.assertEquals("wrong prop status in working copy for "+tested[i].getPath(),

@@ -25,34 +25,6 @@ import java.util.Date;
 public interface ISVNStatus {
 
     /**
-     * tells if resource is ignored
-     * @return
-     */
-    boolean isIgnored();
-
-    /**
-     * tells if resource is managed
-     * @return
-     */
-	boolean isManaged();
-
-    boolean isMerged();
-
-    /**
-     * tells if resource is locally deleted 
-     * @return
-     */
-    boolean isDeleted();
-    
-    
-    /**
-     * tells if resource has a remote counterpart. A resource can be managed
-     * and not have a remote counterpart (file that has just been added)
-     * @return
-     */
-	boolean hasRemote();
-
-    /**
      * get the url of the resource on repository
      * @return
      */
@@ -87,15 +59,6 @@ public interface ISVNStatus {
 	SVNStatusKind getPropStatus();
 
 	SVNStatusKind getRepositoryPropStatus();
-
-
-	/**
-	 * returns true if the resource has been modified.
-	 * modifications to properties are not taken into account.
-	 */
-	boolean isModified();
-
-	boolean isAdded();
 
 	/**
 	 * get the revision of the resource or null if not managed 
@@ -144,9 +107,4 @@ public interface ISVNStatus {
      */
     public File getConflictWorking();
     
-    /**
-     * Returns true if the resource is in a locked state
-     * @return Flag indicating if the resource if currently locked
-     */
-    public boolean isLocked();
 }
