@@ -610,4 +610,11 @@ public interface ISVNClientAdapter {
      */
     public void switchToUrl(File path, SVNUrl url, SVNRevision revision, boolean recurse) throws SVNClientException;
     
+    /**
+     * Set the configuration directory.
+     * @param dir
+     * @throws SVNClientException
+     */
+    public void setConfigDirectory(File dir) throws SVNClientException;
+    
 }

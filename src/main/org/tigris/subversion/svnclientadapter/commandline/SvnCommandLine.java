@@ -76,6 +76,7 @@ public class SvnCommandLine extends CommandLine {
     private SvnOutputParser svnOutputParser = new SvnOutputParser();
     private long revision = Revision.SVN_INVALID_REVNUM;
     private boolean parseSvnOutput = false;
+    private String configDir = null;
     
     
 	//Constructors
@@ -112,7 +113,14 @@ public class SvnCommandLine extends CommandLine {
 		pass = password;
 	}	
 
-	
+    
+    /**
+     * set the directory from which user configuration files will be read
+     */
+    void setConfigDirectory(String dir) {
+    	configDir = dir;
+    }
+    
 	
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.commandline.CommandLine#version()
@@ -157,6 +165,14 @@ public class SvnCommandLine extends CommandLine {
 		return arguments;
 	}
 
+    private ArrayList addConfigInfo(ArrayList arguments) {
+    	if (configDir != null) {
+    		arguments.add("--config-dir");
+            arguments.add(configDir);
+        }
+        return arguments;
+    }
+    
 	/**
 	 * <p>
 	 * Output the content of specified file or URL.</p>
@@ -173,6 +189,7 @@ public class SvnCommandLine extends CommandLine {
 		args.add(validRev(revision));
 		args.add(url);
 		addAuthInfo(args);
+        addConfigInfo(args);
 		
 		Process proc =
 			execProcess(args);
@@ -199,6 +216,7 @@ public class SvnCommandLine extends CommandLine {
 		args.add("-m");
 		args.add(message);
 		addAuthInfo(args);
+        addConfigInfo(args);
 		        
         for (int i = 0; i < path.length;i++) {
         	args.add(path[i]);
@@ -219,6 +237,7 @@ public class SvnCommandLine extends CommandLine {
 		ArrayList args = new ArrayList();
 		args.add("cleanup");
 		args.add(path);
+        addConfigInfo(args);        
 		execVoid(args);
 	}
 
@@ -246,7 +265,7 @@ public class SvnCommandLine extends CommandLine {
 		if (!recursive)
 			args.add("-N");
 		addAuthInfo(args);
-
+        addConfigInfo(args);
 		return execString(args,false);
 	}
 
@@ -287,7 +306,7 @@ public class SvnCommandLine extends CommandLine {
 		args.add(src);
 		args.add(dest);
 		addAuthInfo(args);
-		
+        addConfigInfo(args);		
 		execVoid(args);
 	}
 
@@ -306,6 +325,7 @@ public class SvnCommandLine extends CommandLine {
 		args.add(src);
 		args.add(dest);
 		addAuthInfo(args);
+        addConfigInfo(args);        
 		execVoid(args);
 	}
 
@@ -332,7 +352,7 @@ public class SvnCommandLine extends CommandLine {
 			args.add(target[i]);
 		}
         addAuthInfo(args);
-        
+        addConfigInfo(args);        
 		return execString(args,false);
 	}
 
@@ -356,7 +376,7 @@ public class SvnCommandLine extends CommandLine {
 		args.add(oldPath);
 		args.add("--new");
 		args.add(newPath);
-		        
+        addConfigInfo(args);		        
 		Process proc = execProcess(args);
   
   		InputStream content = proc.getInputStream();
@@ -378,7 +398,7 @@ public class SvnCommandLine extends CommandLine {
 		args.add(path);
 		if (force)
 			args.add("--force");
-			
+        addConfigInfo(args);			
 		execVoid(args);
 	}
 
@@ -403,6 +423,7 @@ public class SvnCommandLine extends CommandLine {
 		args.add("-m");
 		args.add(message);
 		addAuthInfo(args);
+        addConfigInfo(args);        
 		return execString(args,false);
 	}
 
@@ -428,7 +449,7 @@ public class SvnCommandLine extends CommandLine {
         setCommand(ISVNNotifyListener.Command.INFO, false);
 		ArrayList args = new ArrayList();
 		args.add("info");
-
+        addConfigInfo(args);
         for (int i = 0;i < target.length;i++) {
             args.add(target[i]);
         }
@@ -453,7 +474,7 @@ public class SvnCommandLine extends CommandLine {
 		args.add(revision);
 		args.add(url);
 		addAuthInfo(args);
-		
+        addConfigInfo(args);		
 		return execString(args,false);
 	}
 
@@ -475,7 +496,7 @@ public class SvnCommandLine extends CommandLine {
 		args.add("--xml");
         args.add("-v");
 		addAuthInfo(args);
-
+        addConfigInfo(args);
         return execString(args,true);
 	}
 
@@ -495,6 +516,7 @@ public class SvnCommandLine extends CommandLine {
 		args.add(message);
 		args.add(url);
 		addAuthInfo(args);
+        addConfigInfo(args);        
 		execVoid(args);
 	}
     
@@ -503,6 +525,7 @@ public class SvnCommandLine extends CommandLine {
 		ArrayList args = new ArrayList();
 		args.add("mkdir");
 		args.add(localPath);
+        addConfigInfo(args);        
 		execVoid(args);
 	}
 
@@ -540,7 +563,7 @@ public class SvnCommandLine extends CommandLine {
 			args.add("--force");
 		}
 		addAuthInfo(args);				
-	
+        addConfigInfo(args);
 		return execString(args,false);
 	}
 
@@ -557,6 +580,8 @@ public class SvnCommandLine extends CommandLine {
 		args.add("propget");
 		args.add(propName);
 		args.add(path);
+        addAuthInfo(args);
+        addConfigInfo(args);        
         Process proc =
 			execProcess(args);
 		return proc.getInputStream();
@@ -581,7 +606,9 @@ public class SvnCommandLine extends CommandLine {
 			args.add("-R");
 		args.add(propName);
 		args.add(propValue);
-		args.add(target);        
+		args.add(target);
+        addAuthInfo(args);
+        addConfigInfo(args);        
 		execVoid(args);
 	}
     
@@ -599,6 +626,9 @@ public class SvnCommandLine extends CommandLine {
 		if (recurse)
 			args.add("-R");
 		args.add(target);
+        addAuthInfo(args);
+        addConfigInfo(args);        
+        
 		return execString(args,false);
     }
     
@@ -618,6 +648,9 @@ public class SvnCommandLine extends CommandLine {
 			args.add("-R");
 		args.add(propName);
 		args.add(target);	
+        addAuthInfo(args);
+        addConfigInfo(args);        
+        
         execVoid(args);
     }
     
@@ -640,6 +673,9 @@ public class SvnCommandLine extends CommandLine {
 		args.add("-F");
 		args.add(propFile);
 		args.add(target);	
+        addAuthInfo(args);
+        addConfigInfo(args);        
+        
 		execVoid(args);
 	}
 
@@ -659,6 +695,7 @@ public class SvnCommandLine extends CommandLine {
 		for (int i = 0; i < paths.length;i++) {
 			args.add(paths[i]);
 		}
+        addConfigInfo(args);        
 		
 		return execString(args,false);
 	}
@@ -680,7 +717,7 @@ public class SvnCommandLine extends CommandLine {
 		for (int i = 0; i < paths.length;i++) {
 			args.add(paths[i]);
 		}
-		
+        addConfigInfo(args);		
 		return execString(args,false);		
 	}
 
@@ -717,7 +754,8 @@ public class SvnCommandLine extends CommandLine {
             args.add(path[i]);
         }
 		
-        addAuthInfo(args);      
+        addAuthInfo(args);  
+        addConfigInfo(args);        
 		return execString(args,false);
 	}
 
@@ -736,6 +774,7 @@ public class SvnCommandLine extends CommandLine {
 		args.add(validRev(revision));
 		args.add(path);
 		addAuthInfo(args);
+        addConfigInfo(args);        
 		return execString(args,false);
 	}
 
@@ -756,6 +795,7 @@ public class SvnCommandLine extends CommandLine {
 		args.add("-r");
 		args.add(validRev(revisionStart)+":"+validRev(revisionEnd));
 		addAuthInfo(args);
+        addConfigInfo(args);        
 		return execString(args,false);
 	}
 
@@ -771,6 +811,7 @@ public class SvnCommandLine extends CommandLine {
         args.add("-r");
         args.add(validRev(revision));
         addAuthInfo(args);
+        addConfigInfo(args);        
         return execString(args,false);
     }
     

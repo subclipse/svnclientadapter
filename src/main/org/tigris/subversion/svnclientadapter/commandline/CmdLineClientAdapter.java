@@ -1216,5 +1216,12 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
         }
 	}
 
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#setConfigDirectory(java.io.File)
+	 */
+	public void setConfigDirectory(File dir) throws SVNClientException {
+		_cmd.setConfigDirectory(toString(dir));
+	}
+
 
 }

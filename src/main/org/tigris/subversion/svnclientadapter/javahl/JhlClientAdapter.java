@@ -1677,5 +1677,17 @@ public class JhlClientAdapter implements ISVNClientAdapter {
         }        
     	
     }
+
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#setConfigDirectory(java.io.File)
+	 */
+	public void setConfigDirectory(File dir) throws SVNClientException {
+        try {
+        	svnClient.setConfigDirectory(fileToSVNPath(dir,false));
+        } catch (ClientException e) {
+            notificationHandler.logException(e);
+            throw new SVNClientException(e);            
+        }        
+	}
     
 }
