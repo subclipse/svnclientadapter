@@ -141,12 +141,6 @@ public class SVNUrl {
     	return segments[segments.length-1];
     }
     
-    
-    // we cannot easily code an "equals" method because :
-    // protocol is not case-sensitive
-    // url before repository is not always case sensitive
-    // url after repository is case sensitive
-    
     /**
      * 
      * @return the parent url or null if no parent
@@ -163,5 +157,20 @@ public class SVNUrl {
     		return null;
     	}
     }
-   
+    
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	public boolean equals(Object target) {
+	    // this method is not very accurate because :
+	    // protocol is not case-sensitive
+	    // url before repository is not always case sensitive
+	    // url after repository is case sensitive
+		if (this == target)
+			return true;
+		if (!(target instanceof SVNUrl))
+			return false;
+		SVNUrl url = (SVNUrl) target;
+		return get().equals(url.get());
+	}
 }
