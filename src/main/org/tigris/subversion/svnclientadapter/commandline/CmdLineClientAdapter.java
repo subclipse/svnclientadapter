@@ -56,7 +56,6 @@ package org.tigris.subversion.svnclientadapter.commandline;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -349,28 +348,6 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 	public InputStream getContent(File path, SVNRevision revision) throws SVNClientException {
 
 		try {
-			if (revision.equals(SVNRevision.BASE)) {
-				// svn should not contact the repository when we want to get base
-				// file but it does.
-				// Until this is corrected, we get the file directly if we can
-				File file = new File(path.getParentFile(),".svn/text-base/"+path.getName()+".svn-base");
-				try {
-					FileInputStream in = new FileInputStream(file);
-					
-					// the file exist, we will not execute svn but we still want
-					// to log the command 
-					notificationHandler.setCommand(ISVNNotifyListener.Command.CAT);
-					notificationHandler.logCommandLine(
-							"cat -r "
-							+ revision.toString()
-							+ " "
-							+ toString(path));
-					return in;
-				} catch (FileNotFoundException e) {
-					// we do nothing, we will use svnClient.fileContent instead				
-				}
-			}			
-
 			InputStream content = _cmd.cat(toString(path), toString(revision));
 
 			//read byte-by-byte and put it in a vector.
