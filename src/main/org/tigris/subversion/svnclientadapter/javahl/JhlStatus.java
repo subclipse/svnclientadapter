@@ -91,7 +91,11 @@ public class JhlStatus implements ISVNStatus {
 
 	public SVNUrl getUrl() {
 		try {
-            return new SVNUrl(_s.getUrl());
+            String url = _s.getUrl();
+            if (url == null)
+                return null;
+            else
+                return new SVNUrl(_s.getUrl());
         } catch (MalformedURLException e) {
             //should never happen.
             return null;

@@ -75,6 +75,8 @@ public class SVNUrl {
 
     public SVNUrl(String svnUrl) throws MalformedURLException {
         this.svnUrl = svnUrl;
+        if(svnUrl == null)
+            throw new MalformedURLException("Svn url cannot be null. Is this  a versioned resource?");
         parseUrl();
     }
 
@@ -86,10 +88,6 @@ public class SVNUrl {
         // for now, we don't verify the url, we let subversion do it
         // we just make sure the protocol is one we support
         // (scheme)://(optional_stuff)
-
-        if(svnUrl == null){
-            return;
-        }
 
         int i = svnUrl.indexOf("://");
         if (i == -1)
