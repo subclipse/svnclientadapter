@@ -16,7 +16,6 @@
 package org.tigris.subversion.svnclientadapter;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -139,21 +138,6 @@ public abstract class SVNNotificationHandler {
 	public void setBaseDir() {
 		this.baseDir = new File(".");
 	}
-    
-    private File getCanonicalFile(String path) {
-		File f;
-		try {
-			f = new File(path);
-			if (f.isAbsolute()) {
-				f = f.getCanonicalFile();
-			} else {
-				f = new File(baseDir,path).getCanonicalFile();
-			}
-			return f;
-		} catch (IOException e) {
-			return null;
-		}
-    }
     
     private File getAbsoluteFile(String path) {
 		File f = new File(path);

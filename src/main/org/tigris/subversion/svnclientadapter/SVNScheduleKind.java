@@ -47,8 +47,8 @@ public class SVNScheduleKind {
     	return kind;
     }
     
-    public SVNScheduleKind fromInt(int kind) {
-        switch(kind) 
+    public SVNScheduleKind fromInt(int scheduleKind) {
+        switch(scheduleKind) 
         {
             case normal: 
                 return NORMAL;

@@ -64,7 +64,7 @@ public class SVNClientException extends Exception {
 			}
 			t = target;
 		}
-		return new SVNClientException(e);
+		return new SVNClientException(t);
 	}
 
 }
