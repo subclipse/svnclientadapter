@@ -69,6 +69,9 @@ public class TestsConfig {
     
     private TestsConfig() throws SVNClientException {
         clientType = System.getProperty("test.clientType");
+        if (clientType == null) {
+            clientType = "javahl";
+        }
         System.out.println("Using "+clientType+" factory ...");
         
         rootDirectoryName = System.getProperty("test.rootdir");
