@@ -54,11 +54,20 @@
  */ 
 package org.tigris.subversion.svnclientadapter.commandline;
 
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.StringTokenizer;
 
+import javax.xml.parsers.DocumentBuilderFactory;
+
 import org.tigris.subversion.svnclientadapter.ISVNLogMessage;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 
 /**
  * <p>Implements a Log message using "svn log".</p>
@@ -71,6 +80,8 @@ class CmdLineLogMessage implements ISVNLogMessage {
 	private String author;
 	private Date date;
 	private String msg;
+	
+	CmdLineLogMessage(){}
 
 	CmdLineLogMessage(StringTokenizer st) {
 		//NOTE: the leading dashes are ommitted by ClientAdapter.
@@ -145,5 +156,50 @@ class CmdLineLogMessage implements ISVNLogMessage {
 	 */
 	public String getMessage() {
 		return msg;
+	}
+	
+	public static CmdLineLogMessage[] createLogMessages(String cmdLineResults){
+		Collection logMessages = new ArrayList();
+		
+		try {
+			// Create a builder factory
+			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+			factory.setValidating(false);
+    
+			// Create the builder and parse the file
+			InputSource source = new InputSource(new StringReader(cmdLineResults));
+
+			Document doc = factory.newDocumentBuilder().parse(source);
+			
+			NodeList nodes = doc.getElementsByTagName("logentry");
+			
+			for(int i = 0; i < nodes.getLength(); i++){
+				Node logEntry = nodes.item(i);
+				
+				CmdLineLogMessage logMessage = new CmdLineLogMessage();
+
+				Node authorNode = logEntry.getFirstChild();
+				Node dateNode = authorNode.getNextSibling();
+				Node msgNode = dateNode.getNextSibling();
+				Node revisionAttribute = logEntry.getAttributes().getNamedItem("revision");
+
+				logMessage.rev = Helper.toRevNum(revisionAttribute.getNodeValue());
+				logMessage.author = authorNode.getFirstChild().getNodeValue();
+				logMessage.date = Helper.convertXMLDate(dateNode.getFirstChild().getNodeValue());
+				Node msgTextNode = msgNode.getFirstChild();
+				if(msgTextNode != null)
+					logMessage.msg = msgTextNode.getNodeValue();
+				else
+					logMessage.msg = ""; 
+
+				logMessages.add(logMessage);				
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		} 
+		
+		return (CmdLineLogMessage[]) logMessages.toArray(new CmdLineLogMessage[logMessages.size()]);		
+	
 	}
 }

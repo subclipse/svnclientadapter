@@ -77,6 +77,10 @@ class Helper {
 	private static DateFormat df =
 		new SimpleDateFormat("yyyy-MM-dd hh:mm:ss Z");
 
+	// 2003-10-13T12:54:42.957948Z
+	private static DateFormat xmlFormat =
+		new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss");
+
 	/**
 	 * A non-instantiable class
 	 */
@@ -109,7 +113,50 @@ class Helper {
 			return null;
 		}
 	}
+	
+	static Date convertXMLDate(String date) {
+		if (date == null)
+			return null;
+		try {
+			return xmlFormat.parse(date);
+		} catch (ParseException e1) {
+			return null;
+		}
+	}
 
+	static String getXMLOrFail(Process proc) throws CmdLineException {
+		//First see if we have an error.
+		//assume no error. find the text.
+		InputStream in = proc.getInputStream();
+		String message = toXMLString(in);
+		if (message.length() > 0) {
+			proc.destroy();
+			return message;
+		}
+
+		InputStream err = proc.getErrorStream();
+		String errMessage = toString(err);
+		proc.destroy();
+		throw new CmdLineException(errMessage);
+	}
+	
+	private static String toXMLString(InputStream stream)
+		throws CmdLineException {
+		StringBuffer sb = new StringBuffer();
+
+		BufferedReader br = new BufferedReader(new InputStreamReader(stream));
+		String st;
+		try {
+			while((st=br.readLine())!=null){
+				sb.append(st);
+			}
+		} catch (IOException e) {
+			throw CmdLineException.wrapException(e);
+		}
+
+		return sb.toString();
+	}	
+	
 	static String getStringOrFail(Process proc) throws CmdLineException {
 		//First see if we have an error.
 		//assume no error. find the text.

@@ -229,14 +229,7 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 
 		try {
 			String messages = _cmd.log(toString(arg0), revRange);
-
-			StringTokenizer st = new StringTokenizer(messages, Helper.NEWLINE);
-			st.nextToken();
-			while (st.hasMoreTokens()) {
-				tempLogs.add(new CmdLineLogMessage(st));
-			}
-
-			return (ISVNLogMessage[]) tempLogs.toArray(new ISVNLogMessage[tempLogs.size()]);
+			return CmdLineLogMessage.createLogMessages(messages);			
 		} catch (CmdLineException e) {
 			throw SVNClientException.wrapException(e);
 		}
@@ -705,15 +698,8 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 
 		try {
 			String messages = _cmd.log(toString(path), revRange);
-
-			StringTokenizer st = new StringTokenizer(messages, Helper.NEWLINE);
-			st.nextToken();
-			while (st.hasMoreTokens()) {
-				tempLogs.add(new CmdLineLogMessage(st));
-			}
-
-			return (ISVNLogMessage[]) tempLogs.toArray(new ISVNLogMessage[tempLogs.size()]);
-		} catch (CmdLineException e) {
+			return CmdLineLogMessage.createLogMessages(messages);
+			} catch (CmdLineException e) {
 			throw SVNClientException.wrapException(e);
 		}
 	}

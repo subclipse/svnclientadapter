@@ -89,7 +89,7 @@ class CommandLine {
 	private static String CMD_IMPORT = "import {0} {1} {2} -m \"{3}\"";
 	private static String CMD_INFO = "info {0}";
 	private static String CMD_LIST = "list -v -r {0} {1}";
-	private static String CMD_LOG = "log -r {0} {1}";
+	private static String CMD_LOG = "log -r {0} {1} --xml";
 	private static String CMD_MKDIR = "mkdir -m \"{0}\" {1}";
 	private static String CMD_MKDIR_LOCAL = "mkdir {0}";
 	private static String CMD_MOVE = "mv -r {0} {1} {2} {3} --force";
@@ -344,7 +344,7 @@ class CommandLine {
 	 *   messages from.
 	 */
 	String log(String target, String revision) throws CmdLineException {
-		return execString(
+		return execXMLString(
 			MessageFormat.format(CMD_LOG, new String[] { validRev(revision), target })
 				+ getAuthInfo());
 	}
@@ -515,6 +515,31 @@ class CommandLine {
 		}
 
 		return proc;
+	}
+
+	/**
+	 * runs the process and returns the results.
+	 * @param cmd
+	 * @return String
+	 */
+	private String execXMLString(String svnCommand) throws CmdLineException {
+		String line;
+		StringBuffer sb = new StringBuffer();
+		StringBuffer sbErr = new StringBuffer();
+
+		Process proc = execProcess(svnCommand);
+
+		try {
+			String result = Helper.getXMLOrFail(proc);
+			if (!listeners.isEmpty())
+				logMessageAndCompleted(result);
+			return result;
+		} catch (CmdLineException e) {
+			if (!listeners.isEmpty())
+				logException(e);
+			throw e;
+		}
+
 	}
 
 	/**
