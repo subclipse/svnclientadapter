@@ -77,6 +77,7 @@ import org.tigris.subversion.svnclientadapter.SVNClientException;
 import org.tigris.subversion.svnclientadapter.SVNKeywords;
 import org.tigris.subversion.svnclientadapter.SVNNodeKind;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
+import org.tigris.subversion.svnclientadapter.SVNStatusUnversioned;
 import org.tigris.subversion.svnclientadapter.SVNUrl;
 
 /**
@@ -194,7 +195,7 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
             if (isManagedDir(dir)) {
                 pathsList.add(toString(file));
             } else {
-                statuses[i] = new CmdLineStatusUnversioned(file,false);
+                statuses[i] = new SVNStatusUnversioned(file,false);
             }
         }
         String[] paths = (String[])pathsList.toArray(new String[pathsList.size()]);

@@ -52,7 +52,7 @@
  * <http://www.apache.org/>.
  *
  */
-package org.tigris.subversion.svnclientadapter.javahl;
+package org.tigris.subversion.svnclientadapter;
 
 import java.io.File;
 import java.util.Date;
@@ -67,16 +67,23 @@ import org.tigris.subversion.svnclientadapter.SVNUrl;
  * A special status class that is used if a File/Folder is not versioned.</p>
  * 
  * @author Philip Schatz (schatz at tigris)
+ * @author Cédric Chabanois (cchabanois at no-log.org)
  */
-class JhlStatusUnversioned implements ISVNStatus {
+public class SVNStatusUnversioned implements ISVNStatus {
     private File file;
+    private boolean isIgnored = false;
 	
-    public JhlStatusUnversioned(File file) {
+    public SVNStatusUnversioned(File file, boolean isIgnored) {
         this.file = file;
+        this.isIgnored = isIgnored; // a file can be unversioned and ignored ...
     }
     
+	public SVNStatusUnversioned(File file) {
+		this.file = file;
+	}
+    
     public boolean isIgnored() {
-		return false;
+		return isIgnored;
 	}
 	public boolean isManaged() {
 		return false;

@@ -59,6 +59,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.tigris.subversion.svnclientadapter.ISVNStatus;
+import org.tigris.subversion.svnclientadapter.SVNStatusUnversioned;
 
 /**
  * Statuses
@@ -115,7 +116,7 @@ public class CmdLineStatuses {
                 } else {
                     isIgnored = cmdLineStatusPart.isIgnored(); 
                 }
-                statuses.add(new CmdLineStatusUnversioned(cmdLineInfoPart.getFile(),isIgnored));              
+                statuses.add(new SVNStatusUnversioned(cmdLineInfoPart.getFile(),isIgnored));              
             } else {
                 statuses.add(new CmdLineStatus(cmdLineStatusPart,cmdLineInfoPart)); 
             }

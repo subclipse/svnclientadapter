@@ -81,7 +81,7 @@ import org.tigris.subversion.svnclientadapter.SVNClientException;
 import org.tigris.subversion.svnclientadapter.SVNKeywords;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
 import org.tigris.subversion.svnclientadapter.SVNUrl;
-
+import org.tigris.subversion.svnclientadapter.SVNStatusUnversioned;
 
 /**
  * An adapter for SVNClient. Easier and safer to use than SVNClient
@@ -353,7 +353,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
             } catch (ClientException e) {
                 if (e.getAprError() == SVN_ERR_WC_NOT_DIRECTORY) {
                     // when there is no .svn dir, an exception is thrown ...
-                    statuses[i] = new JhlStatusUnversioned(path[i]);
+                    statuses[i] = new SVNStatusUnversioned(path[i]);
                 } else
                 {
                     notificationHandler.logException(e);
