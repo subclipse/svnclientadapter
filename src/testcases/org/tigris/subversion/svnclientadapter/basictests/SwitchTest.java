@@ -52,20 +52,20 @@ public class SwitchTest extends SVNTest {
 	    // switch A/D/H to /A/D/G
 	    File adhPath = new File(thisTest.getWCPath() + "/A/D/H");
 	    SVNUrl adgURL = new SVNUrl(thisTest.getUrl() + "/A/D/G");
-	    thisTest.getWc().setItemIsSwitched("A/D/H",true);
-	    thisTest.getWc().removeItem("A/D/H/chi");
-	    thisTest.getWc().removeItem("A/D/H/omega");
-	    thisTest.getWc().removeItem("A/D/H/psi");
-	    thisTest.getWc().addItem("A/D/H/pi",
-	            thisTest.getWc().getItemContent("A/D/G/pi"));
-	    thisTest.getWc().addItem("A/D/H/rho",
-	            thisTest.getWc().getItemContent("A/D/G/rho"));
-	    thisTest.getWc().addItem("A/D/H/tau",
-	            thisTest.getWc().getItemContent("A/D/G/tau"));
+	    thisTest.getExpectedWC().setItemIsSwitched("A/D/H",true);
+	    thisTest.getExpectedWC().removeItem("A/D/H/chi");
+	    thisTest.getExpectedWC().removeItem("A/D/H/omega");
+	    thisTest.getExpectedWC().removeItem("A/D/H/psi");
+	    thisTest.getExpectedWC().addItem("A/D/H/pi",
+	            thisTest.getExpectedWC().getItemContent("A/D/G/pi"));
+	    thisTest.getExpectedWC().addItem("A/D/H/rho",
+	            thisTest.getExpectedWC().getItemContent("A/D/G/rho"));
+	    thisTest.getExpectedWC().addItem("A/D/H/tau",
+	            thisTest.getExpectedWC().getItemContent("A/D/G/tau"));
 	    client.switchToUrl(adhPath, adgURL, SVNRevision.HEAD, true);
 	
 	    // check the status of the working copy
-	    thisTest.checkStatus();
+	    thisTest.checkStatusesExpectedWC();
 	}
 
 }

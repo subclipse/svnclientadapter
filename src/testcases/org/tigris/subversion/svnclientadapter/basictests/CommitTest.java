@@ -38,18 +38,18 @@ public class CommitTest extends SVNTest {
         PrintWriter muPW = new PrintWriter(new FileOutputStream(mu, true));
         muPW.print("appended mu text");
         muPW.close();
-        thisTest.getWc().setItemWorkingCopyRevision("A/mu", 2);
-        thisTest.getWc().setItemContent("A/mu",
-                thisTest.getWc().getItemContent("A/mu") + "appended mu text");
+        thisTest.getExpectedWC().setItemWorkingCopyRevision("A/mu", 2);
+        thisTest.getExpectedWC().setItemContent("A/mu",
+                thisTest.getExpectedWC().getItemContent("A/mu") + "appended mu text");
 
         // modify file A/D/G/rho
         File rho = new File(thisTest.getWorkingCopy(), "A/D/G/rho");
         PrintWriter rhoPW = new PrintWriter(new FileOutputStream(rho, true));
         rhoPW.print("new appended text for rho");
         rhoPW.close();
-        thisTest.getWc().setItemWorkingCopyRevision("A/D/G/rho", 2);
-        thisTest.getWc().setItemContent("A/D/G/rho",
-                thisTest.getWc().getItemContent("A/D/G/rho")
+        thisTest.getExpectedWC().setItemWorkingCopyRevision("A/D/G/rho", 2);
+        thisTest.getExpectedWC().setItemContent("A/D/G/rho",
+                thisTest.getExpectedWC().getItemContent("A/D/G/rho")
                 + "new appended text for rho");
 
         // commit the changes
@@ -58,7 +58,7 @@ public class CommitTest extends SVNTest {
                         true));
 
         // check the status of the working copy
-        thisTest.checkStatus();
+        thisTest.checkStatusesExpectedWC();
     }
 
     

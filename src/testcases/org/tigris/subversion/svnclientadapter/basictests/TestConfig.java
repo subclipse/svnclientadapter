@@ -15,9 +15,14 @@ public class TestConfig {
     /**
      * the directory of the sample repository.
      */
-    public File sampleRepos;
+    public File reposDirectory;
     /**
      * the initial working copy of the sample repository.
      */
-    public ExpectedWC sampleWC;
+    public ExpectedWC expectedWC;
+    
+    /**
+     * the initial repository
+     */
+    public ExpectedRepository expectedRepository;
 }

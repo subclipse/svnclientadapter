@@ -51,18 +51,18 @@ public class AddTest extends SVNTest {
 	
 	    // add dir
 	    client.addDirectory(dir, true);
-	    thisTest.getWc().addItem("dir", null);
-	    thisTest.getWc().setItemTextStatus("dir",SVNStatusKind.ADDED);
-	    thisTest.getWc().addItem("dir/foo.c", "");
-	    thisTest.getWc().setItemTextStatus("dir/foo.c",SVNStatusKind.ADDED);
-	    thisTest.getWc().addItem("dir/foo.o", "");
-	    thisTest.getWc().setItemTextStatus("dir/foo.o",SVNStatusKind.IGNORED);
+	    thisTest.getExpectedWC().addItem("dir", null);
+	    thisTest.getExpectedWC().setItemTextStatus("dir",SVNStatusKind.ADDED);
+	    thisTest.getExpectedWC().addItem("dir/foo.c", "");
+	    thisTest.getExpectedWC().setItemTextStatus("dir/foo.c",SVNStatusKind.ADDED);
+	    thisTest.getExpectedWC().addItem("dir/foo.o", "");
+	    thisTest.getExpectedWC().setItemTextStatus("dir/foo.o",SVNStatusKind.IGNORED);
 	
         // disabled so that javasvn tests pass 
 //        thisTest.getWc().setItemNodeKind("dir/foo.o", SVNNodeKind.UNKNOWN);
 	
 	    // test the working copy status
-	    thisTest.checkStatus();
+	    thisTest.checkStatusesExpectedWC();
 	}
 
 }

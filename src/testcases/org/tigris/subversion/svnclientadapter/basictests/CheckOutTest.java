@@ -51,22 +51,22 @@ public class CheckOutTest extends SVNTest {
         PrintWriter muPW = new PrintWriter(new FileOutputStream(mu, true));
         muPW.print("appended mu text");
         muPW.close();
-        thisTest.getWc().setItemTextStatus("A/mu", SVNStatusKind.MODIFIED);
+        thisTest.getExpectedWC().setItemTextStatus("A/mu", SVNStatusKind.MODIFIED);
 
         // delete A/B/lambda without svn
         File lambda = new File(thisTest.getWorkingCopy(), "A/B/lambda");
         lambda.delete();
-        thisTest.getWc().setItemTextStatus("A/B/lambda", SVNStatusKind.MISSING);
+        thisTest.getExpectedWC().setItemTextStatus("A/B/lambda", SVNStatusKind.MISSING);
 
         // remove A/D/G
         client.remove(new File[]{new File(thisTest.getWCPath() + "/A/D/G")}, false);
-        thisTest.getWc().setItemTextStatus("A/D/G", SVNStatusKind.DELETED);
-        thisTest.getWc().setItemTextStatus("A/D/G/pi", SVNStatusKind.DELETED);
-        thisTest.getWc().setItemTextStatus("A/D/G/rho", SVNStatusKind.DELETED);
-        thisTest.getWc().setItemTextStatus("A/D/G/tau", SVNStatusKind.DELETED);
+        thisTest.getExpectedWC().setItemTextStatus("A/D/G", SVNStatusKind.DELETED);
+        thisTest.getExpectedWC().setItemTextStatus("A/D/G/pi", SVNStatusKind.DELETED);
+        thisTest.getExpectedWC().setItemTextStatus("A/D/G/rho", SVNStatusKind.DELETED);
+        thisTest.getExpectedWC().setItemTextStatus("A/D/G/tau", SVNStatusKind.DELETED);
 
         // check the status of the working copy
-        thisTest.checkStatus();
+        thisTest.checkStatusesExpectedWC();
     }
 
 	public void testBasicCheckoutDeleted() throws Throwable
@@ -76,37 +76,37 @@ public class CheckOutTest extends SVNTest {
 	
 	    // delete A/D and its content
 	    client.remove(new File[] {new File(thisTest.getWCPath()+"/A/D")}, true);
-	    thisTest.getWc().setItemTextStatus("A/D", SVNStatusKind.DELETED);
-	    thisTest.getWc().setItemTextStatus("A/D/G", SVNStatusKind.DELETED);
-	    thisTest.getWc().setItemTextStatus("A/D/G/rho", SVNStatusKind.DELETED);
-	    thisTest.getWc().setItemTextStatus("A/D/G/pi", SVNStatusKind.DELETED);
-	    thisTest.getWc().setItemTextStatus("A/D/G/tau", SVNStatusKind.DELETED);
-	    thisTest.getWc().setItemTextStatus("A/D/H", SVNStatusKind.DELETED);
-	    thisTest.getWc().setItemTextStatus("A/D/H/chi", SVNStatusKind.DELETED);
-	    thisTest.getWc().setItemTextStatus("A/D/H/psi", SVNStatusKind.DELETED);
-	    thisTest.getWc().setItemTextStatus("A/D/H/omega", SVNStatusKind.DELETED);
-	    thisTest.getWc().setItemTextStatus("A/D/gamma", SVNStatusKind.DELETED);
+	    thisTest.getExpectedWC().setItemTextStatus("A/D", SVNStatusKind.DELETED);
+	    thisTest.getExpectedWC().setItemTextStatus("A/D/G", SVNStatusKind.DELETED);
+	    thisTest.getExpectedWC().setItemTextStatus("A/D/G/rho", SVNStatusKind.DELETED);
+	    thisTest.getExpectedWC().setItemTextStatus("A/D/G/pi", SVNStatusKind.DELETED);
+	    thisTest.getExpectedWC().setItemTextStatus("A/D/G/tau", SVNStatusKind.DELETED);
+	    thisTest.getExpectedWC().setItemTextStatus("A/D/H", SVNStatusKind.DELETED);
+	    thisTest.getExpectedWC().setItemTextStatus("A/D/H/chi", SVNStatusKind.DELETED);
+	    thisTest.getExpectedWC().setItemTextStatus("A/D/H/psi", SVNStatusKind.DELETED);
+	    thisTest.getExpectedWC().setItemTextStatus("A/D/H/omega", SVNStatusKind.DELETED);
+	    thisTest.getExpectedWC().setItemTextStatus("A/D/gamma", SVNStatusKind.DELETED);
 	
 	    // check the working copy status
-	    thisTest.checkStatus();
+	    thisTest.checkStatusesExpectedWC();
 	
 	    // commit the change
 	    assertEquals("wrong revision from commit",2,
 	            client.commit(new File[]{thisTest.getWCPath()}, "log message",
 	                    true));
-	    thisTest.getWc().removeItem("A/D");
-	    thisTest.getWc().removeItem("A/D/G");
-	    thisTest.getWc().removeItem("A/D/G/rho");
-	    thisTest.getWc().removeItem("A/D/G/pi");
-	    thisTest.getWc().removeItem("A/D/G/tau");
-	    thisTest.getWc().removeItem("A/D/H");
-	    thisTest.getWc().removeItem("A/D/H/chi");
-	    thisTest.getWc().removeItem("A/D/H/psi");
-	    thisTest.getWc().removeItem("A/D/H/omega");
-	    thisTest.getWc().removeItem("A/D/gamma");
+	    thisTest.getExpectedWC().removeItem("A/D");
+	    thisTest.getExpectedWC().removeItem("A/D/G");
+	    thisTest.getExpectedWC().removeItem("A/D/G/rho");
+	    thisTest.getExpectedWC().removeItem("A/D/G/pi");
+	    thisTest.getExpectedWC().removeItem("A/D/G/tau");
+	    thisTest.getExpectedWC().removeItem("A/D/H");
+	    thisTest.getExpectedWC().removeItem("A/D/H/chi");
+	    thisTest.getExpectedWC().removeItem("A/D/H/psi");
+	    thisTest.getExpectedWC().removeItem("A/D/H/omega");
+	    thisTest.getExpectedWC().removeItem("A/D/gamma");
 	
 	    // check the working copy status
-	    thisTest.checkStatus();
+	    thisTest.checkStatusesExpectedWC();
 	
 	    // check out the previous revision
 	    client.checkout(new SVNUrl(thisTest.getUrl()+"/A/D"), new File(thisTest.getWCPath()+"/new_D"),

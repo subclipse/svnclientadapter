@@ -18,22 +18,50 @@ public class CopyTest extends SVNTest {
 
         client.copy(src, dst);
 
-        thisTest.getWc().addItem("A/C/mu", null);
-        thisTest.getWc().setItemTextStatus("A/C/mu", SVNStatusKind.ADDED);
-        thisTest.getWc().setItemIsCopied("A/C/mu", true);
+        thisTest.getExpectedWC().addItem("A/C/mu", null);
+        thisTest.getExpectedWC().setItemTextStatus("A/C/mu", SVNStatusKind.ADDED);
+        thisTest.getExpectedWC().setItemIsCopied("A/C/mu", true);
 
         // test the working copy status
-        thisTest.checkStatus();
+        thisTest.checkStatusesExpectedWC();
 
         // try to copy an entire directory
         src = new File(thisTest.getWorkingCopy() + "/A/D");
         dst = new File(thisTest.getWorkingCopy() + "/A/E");
         client.copy(src, dst);
-        thisTest.getWc().addItem("A/E", null);
-        thisTest.getWc().setItemTextStatus("A/E", SVNStatusKind.ADDED);
-        thisTest.getWc().setItemIsCopied("A/E", true);
-        thisTest.getWc().addItem("A/E/G/tau", null);
-        thisTest.getWc().setItemTextStatus("A/E/G/tau", SVNStatusKind.NORMAL);
+        thisTest.getExpectedWC().addItem("A/E", null);
+        thisTest.getExpectedWC().setItemTextStatus("A/E", SVNStatusKind.ADDED);
+        thisTest.getExpectedWC().setItemIsCopied("A/E", true);
+        
+        thisTest.getExpectedWC().addItem("A/E/gamma", null);
+        thisTest.getExpectedWC().setItemTextStatus("A/E/gamma", SVNStatusKind.NORMAL);
+        thisTest.getExpectedWC().setItemIsCopied("A/E/gamma", true);
+        thisTest.getExpectedWC().addItem("A/E/H", null);
+        thisTest.getExpectedWC().setItemTextStatus("A/E/H", SVNStatusKind.NORMAL);
+        thisTest.getExpectedWC().setItemIsCopied("A/E/H", true);
+        thisTest.getExpectedWC().addItem("A/E/H/chi", null);
+        thisTest.getExpectedWC().setItemTextStatus("A/E/H/chi", SVNStatusKind.NORMAL);
+        thisTest.getExpectedWC().setItemIsCopied("A/E/H/chi", true);
+        thisTest.getExpectedWC().addItem("A/E/H/psi", null);
+        thisTest.getExpectedWC().setItemTextStatus("A/E/H/psi", SVNStatusKind.NORMAL);
+        thisTest.getExpectedWC().setItemIsCopied("A/E/H/psi", true);
+        thisTest.getExpectedWC().addItem("A/E/H/omega", null);
+        thisTest.getExpectedWC().setItemTextStatus("A/E/H/omega", SVNStatusKind.NORMAL);
+        thisTest.getExpectedWC().setItemIsCopied("A/E/H/omega", true);
+        thisTest.getExpectedWC().addItem("A/E/G", null);
+        thisTest.getExpectedWC().setItemTextStatus("A/E/G", SVNStatusKind.NORMAL);
+        thisTest.getExpectedWC().setItemIsCopied("A/E/G", true);
+        thisTest.getExpectedWC().addItem("A/E/G/pi", null);
+        thisTest.getExpectedWC().setItemTextStatus("A/E/G/pi", SVNStatusKind.NORMAL);
+        thisTest.getExpectedWC().setItemIsCopied("A/E/G/pi", true);
+        thisTest.getExpectedWC().addItem("A/E/G/rho", null);
+        thisTest.getExpectedWC().setItemTextStatus("A/E/G/rho", SVNStatusKind.NORMAL);
+        thisTest.getExpectedWC().setItemIsCopied("A/E/G/rho", true);
+        thisTest.getExpectedWC().addItem("A/E/G/tau", null);
+        thisTest.getExpectedWC().setItemTextStatus("A/E/G/tau", SVNStatusKind.NORMAL);
+        thisTest.getExpectedWC().setItemIsCopied("A/E/G/tau", true);
+        
+        thisTest.checkStatusesExpectedWC();
     }
 
     public void testCopyUrl2Url() throws Throwable {
@@ -44,6 +72,17 @@ public class CopyTest extends SVNTest {
         client.copy(new SVNUrl(thisTest.getUrl() + "/A/B"), new SVNUrl(thisTest
                 .getUrl()
                 + "/B"), "log msg", SVNRevision.HEAD);
+        
+        // update the working copy
+        client.update(thisTest.getWCPath(), SVNRevision.HEAD, true);        
+        
+        thisTest.getExpectedWC().addItem("B", null);
+        thisTest.getExpectedWC().addItem("B/lambda", "This is the file 'lambda'.");
+        thisTest.getExpectedWC().addItem("B/E", null);
+        thisTest.getExpectedWC().addItem("B/E/alpha", "This is the file 'alpha'.");
+        thisTest.getExpectedWC().addItem("B/E/beta", "This is the file 'beta'.");
+        thisTest.getExpectedWC().addItem("B/F", null);
+        thisTest.checkStatusesExpectedWC();
     }
 
 }

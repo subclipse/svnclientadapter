@@ -43,18 +43,18 @@ public class UpdateTest extends SVNTest {
         PrintWriter muPW = new PrintWriter(new FileOutputStream(mu, true));
         muPW.print("appended mu text");
         muPW.close();
-        thisTest.getWc().setItemWorkingCopyRevision("A/mu", 2);
-        thisTest.getWc().setItemContent("A/mu",
-                thisTest.getWc().getItemContent("A/mu") + "appended mu text");
+        thisTest.getExpectedWC().setItemWorkingCopyRevision("A/mu", 2);
+        thisTest.getExpectedWC().setItemContent("A/mu",
+                thisTest.getExpectedWC().getItemContent("A/mu") + "appended mu text");
 
         // modify A/D/G/rho
         File rho = new File(thisTest.getWorkingCopy(), "A/D/G/rho");
         PrintWriter rhoPW = new PrintWriter(new FileOutputStream(rho, true));
         rhoPW.print("new appended text for rho");
         rhoPW.close();
-        thisTest.getWc().setItemWorkingCopyRevision("A/D/G/rho", 2);
-        thisTest.getWc().setItemContent("A/D/G/rho",
-                thisTest.getWc().getItemContent("A/D/G/rho")
+        thisTest.getExpectedWC().setItemWorkingCopyRevision("A/D/G/rho", 2);
+        thisTest.getExpectedWC().setItemContent("A/D/G/rho",
+                thisTest.getExpectedWC().getItemContent("A/D/G/rho")
                 + "new appended text for rho");
 
         // commit the changes
@@ -63,23 +63,23 @@ public class UpdateTest extends SVNTest {
                         true));
 
         // check the status of the working copy
-        thisTest.checkStatus();
+        thisTest.checkStatusesExpectedWC();
 
         // update the backup test
         assertEquals("wrong revision number from update",2,
                 client.update(backupTest.getWCPath(), SVNRevision.HEAD, true));
 
         // set the expected working copy layout for the backup test
-        backupTest.getWc().setItemWorkingCopyRevision("A/mu", 2);
-        backupTest.getWc().setItemContent("A/mu",
-                backupTest.getWc().getItemContent("A/mu") + "appended mu text");
-        backupTest.getWc().setItemWorkingCopyRevision("A/D/G/rho", 2);
-        backupTest.getWc().setItemContent("A/D/G/rho",
-                backupTest.getWc().getItemContent("A/D/G/rho")
+        backupTest.getExpectedWC().setItemWorkingCopyRevision("A/mu", 2);
+        backupTest.getExpectedWC().setItemContent("A/mu",
+                backupTest.getExpectedWC().getItemContent("A/mu") + "appended mu text");
+        backupTest.getExpectedWC().setItemWorkingCopyRevision("A/D/G/rho", 2);
+        backupTest.getExpectedWC().setItemContent("A/D/G/rho",
+                backupTest.getExpectedWC().getItemContent("A/D/G/rho")
                 + "new appended text for rho");
 
         // check the status of the working copy of the backup test
-        backupTest.checkStatus();
+        backupTest.checkStatusesExpectedWC();
     }
 
     /**
@@ -95,28 +95,28 @@ public class UpdateTest extends SVNTest {
         // append 10 lines to A/mu
         File mu = new File(thisTest.getWorkingCopy(), "A/mu");
         PrintWriter muPW = new PrintWriter(new FileOutputStream(mu, true));
-        String muContent = thisTest.getWc().getItemContent("A/mu");
+        String muContent = thisTest.getExpectedWC().getItemContent("A/mu");
         for (int i = 2; i < 11; i++)
         {
             muPW.print("\nThis is line " + i + " in mu");
             muContent = muContent + "\nThis is line " + i + " in mu";
         }
         muPW.close();
-        thisTest.getWc().setItemWorkingCopyRevision("A/mu", 2);
-        thisTest.getWc().setItemContent("A/mu", muContent);
+        thisTest.getExpectedWC().setItemWorkingCopyRevision("A/mu", 2);
+        thisTest.getExpectedWC().setItemContent("A/mu", muContent);
 
         // append 10 line to A/D/G/rho
         File rho = new File(thisTest.getWorkingCopy(), "A/D/G/rho");
         PrintWriter rhoPW = new PrintWriter(new FileOutputStream(rho, true));
-        String rhoContent = thisTest.getWc().getItemContent("A/D/G/rho");
+        String rhoContent = thisTest.getExpectedWC().getItemContent("A/D/G/rho");
         for (int i = 2; i < 11; i++)
         {
             rhoPW.print("\nThis is line " + i + " in rho");
             rhoContent = rhoContent + "\nThis is line " + i + " in rho";
         }
         rhoPW.close();
-        thisTest.getWc().setItemWorkingCopyRevision("A/D/G/rho", 2);
-        thisTest.getWc().setItemContent("A/D/G/rho", rhoContent);
+        thisTest.getExpectedWC().setItemWorkingCopyRevision("A/D/G/rho", 2);
+        thisTest.getExpectedWC().setItemContent("A/D/G/rho", rhoContent);
 
         // commit the changes
         assertEquals("wrong revision number from commit",2,
@@ -124,28 +124,28 @@ public class UpdateTest extends SVNTest {
                         true));
 
         // check the status of the first working copy
-        thisTest.checkStatus();
+        thisTest.checkStatusesExpectedWC();
 
         // create a backup copy of the working copy
         OneTest backupTest = thisTest.copy(".backup");
 
         // change the last line of A/mu in the first working copy
         muPW = new PrintWriter(new FileOutputStream(mu, true));
-        muContent = thisTest.getWc().getItemContent("A/mu");
+        muContent = thisTest.getExpectedWC().getItemContent("A/mu");
         muPW.print(" Appended to line 10 of mu");
         muContent = muContent + " Appended to line 10 of mu";
         muPW.close();
-        thisTest.getWc().setItemWorkingCopyRevision("A/mu", 3);
-        thisTest.getWc().setItemContent("A/mu", muContent);
+        thisTest.getExpectedWC().setItemWorkingCopyRevision("A/mu", 3);
+        thisTest.getExpectedWC().setItemContent("A/mu", muContent);
 
         // change the last line of A/mu in the first working copy
         rhoPW = new PrintWriter(new FileOutputStream(rho, true));
-        rhoContent = thisTest.getWc().getItemContent("A/D/G/rho");
+        rhoContent = thisTest.getExpectedWC().getItemContent("A/D/G/rho");
         rhoPW.print(" Appended to line 10 of rho");
         rhoContent = rhoContent + " Appended to line 10 of rho";
         rhoPW.close();
-        thisTest.getWc().setItemWorkingCopyRevision("A/D/G/rho", 3);
-        thisTest.getWc().setItemContent("A/D/G/rho", rhoContent);
+        thisTest.getExpectedWC().setItemWorkingCopyRevision("A/D/G/rho", 3);
+        thisTest.getExpectedWC().setItemContent("A/D/G/rho", rhoContent);
 
         // commit these changes to the repository
         assertEquals("wrong revision number from commit",3,
@@ -153,7 +153,7 @@ public class UpdateTest extends SVNTest {
                         true));
 
         // check the status of the first working copy
-        thisTest.checkStatus();
+        thisTest.checkStatusesExpectedWC();
 
         // modify the first line of A/mu in the backup working copy
         mu = new File(backupTest.getWorkingCopy(), "A/mu");
@@ -166,10 +166,10 @@ public class UpdateTest extends SVNTest {
             muContent = muContent + "\nThis is line " + i + " in mu";
         }
         muPW.close();
-        backupTest.getWc().setItemWorkingCopyRevision("A/mu", 3);
+        backupTest.getExpectedWC().setItemWorkingCopyRevision("A/mu", 3);
         muContent = muContent + " Appended to line 10 of mu";
-        backupTest.getWc().setItemContent("A/mu", muContent);
-        backupTest.getWc().setItemTextStatus("A/mu", SVNStatusKind.MODIFIED);
+        backupTest.getExpectedWC().setItemContent("A/mu", muContent);
+        backupTest.getExpectedWC().setItemTextStatus("A/mu", SVNStatusKind.MODIFIED);
 
         // modify the first line of A/D/G/rho in the backup working copy
         rho = new File(backupTest.getWorkingCopy(), "A/D/G/rho");
@@ -182,17 +182,17 @@ public class UpdateTest extends SVNTest {
             rhoContent = rhoContent + "\nThis is line " + i + " in rho";
         }
         rhoPW.close();
-        backupTest.getWc().setItemWorkingCopyRevision("A/D/G/rho", 3);
+        backupTest.getExpectedWC().setItemWorkingCopyRevision("A/D/G/rho", 3);
         rhoContent = rhoContent + " Appended to line 10 of rho";
-        backupTest.getWc().setItemContent("A/D/G/rho", rhoContent);
-        backupTest.getWc().setItemTextStatus("A/D/G/rho", SVNStatusKind.MODIFIED);
+        backupTest.getExpectedWC().setItemContent("A/D/G/rho", rhoContent);
+        backupTest.getExpectedWC().setItemTextStatus("A/D/G/rho", SVNStatusKind.MODIFIED);
 
         // update the backup working copy
         assertEquals("wrong revision number from update",3,
                 client.update(backupTest.getWCPath(), SVNRevision.HEAD, true));
 
         // check the status of the backup working copy
-        backupTest.checkStatus();
+        backupTest.checkStatusesExpectedWC();
     }    
     
     

@@ -23,32 +23,32 @@ public class CleanupTest extends SVNTest {
         PrintWriter pw = new PrintWriter(new FileOutputStream(adminLock));
         pw.print("stop looking!");
         pw.close();
-        thisTest.getWc().setItemIsLocked("A/B", true);
+        thisTest.getExpectedWC().setItemIsLocked("A/B", true);
 
         // create a lock file in A/D/G
         adminLock = new File(thisTest.getWorkingCopy(),"A/D/G/.svn/lock");
         pw = new PrintWriter(new FileOutputStream(adminLock));
         pw.print("stop looking!");
         pw.close();
-        thisTest.getWc().setItemIsLocked("A/D/G", true);
+        thisTest.getExpectedWC().setItemIsLocked("A/D/G", true);
 
         // create a lock file in A/C
         adminLock = new File(thisTest.getWorkingCopy(),"A/C/.svn/lock");
         pw = new PrintWriter(new FileOutputStream(adminLock));
         pw.print("stop looking!");
         pw.close();
-        thisTest.getWc().setItemIsLocked("A/C", true);
+        thisTest.getExpectedWC().setItemIsLocked("A/C", true);
 
         // test the status of the working copy
-        thisTest.checkStatus();
+        thisTest.checkStatusesExpectedWC();
 
         // run cleanup
         client.cleanup(thisTest.getWCPath());
-        thisTest.getWc().setItemIsLocked("A/B", false);
-        thisTest.getWc().setItemIsLocked("A/D/G", false);
-        thisTest.getWc().setItemIsLocked("A/C", false);
+        thisTest.getExpectedWC().setItemIsLocked("A/B", false);
+        thisTest.getExpectedWC().setItemIsLocked("A/D/G", false);
+        thisTest.getExpectedWC().setItemIsLocked("A/C", false);
 
         // test the status of the working copy
-        thisTest.checkStatus();
+        thisTest.checkStatusesExpectedWC();
     }
 }

@@ -45,17 +45,17 @@ public class MkdirTest extends SVNTest {
         client.mkdir(new SVNUrl(thisTest.getUrl() + "/Y/Z"),"log_msg");
 
         // add the new directories the expected working copy layout
-        thisTest.getWc().addItem("Y", null);
-        thisTest.getWc().setItemWorkingCopyRevision("Y", 3); // should be 2 ... ?
-        thisTest.getWc().addItem("Y/Z", null);
-        thisTest.getWc().setItemWorkingCopyRevision("Y/Z", 3);
+        thisTest.getExpectedWC().addItem("Y", null);
+        thisTest.getExpectedWC().setItemWorkingCopyRevision("Y", 3); // should be 2 ... ?
+        thisTest.getExpectedWC().addItem("Y/Z", null);
+        thisTest.getExpectedWC().setItemWorkingCopyRevision("Y/Z", 3);
 
         // update the working copy
         assertEquals("wrong revision from update",3,
                 client.update(thisTest.getWCPath(), SVNRevision.HEAD, true));
 
         // check the status of the working copy
-        thisTest.checkStatus();
+        thisTest.checkStatusesExpectedWC();
     }
 
 	/**
@@ -69,10 +69,10 @@ public class MkdirTest extends SVNTest {
 	
 	    //  remove A/D/gamma
 	    client.remove(new File[] {new File(thisTest.getWCPath()+"/A/D/gamma")}, false);
-	    thisTest.getWc().setItemTextStatus("A/D/gamma", SVNStatusKind.DELETED);
+	    thisTest.getExpectedWC().setItemTextStatus("A/D/gamma", SVNStatusKind.DELETED);
 	
 	    // check the working copy status
-	    thisTest.checkStatus();
+	    thisTest.checkStatusesExpectedWC();
 	
 	    try
 	    {
@@ -87,16 +87,16 @@ public class MkdirTest extends SVNTest {
 	    }
 	
 	    // check the working copy status
-	    thisTest.checkStatus();
+	    thisTest.checkStatusesExpectedWC();
 	
 	    // commit the deletion
 	    assertEquals("wrong revision number from commit",2,
 	            client.commit(new File[]{thisTest.getWCPath()},"log message",
 	                    true));
-	    thisTest.getWc().removeItem("A/D/gamma");
+	    thisTest.getExpectedWC().removeItem("A/D/gamma");
 	
 	    // check the working copy status
-	    thisTest.checkStatus();
+	    thisTest.checkStatusesExpectedWC();
 	
 	    try
 	    {
@@ -111,21 +111,21 @@ public class MkdirTest extends SVNTest {
 	    }
 	
 	    // check the working copy status
-	    thisTest.checkStatus();
+	    thisTest.checkStatusesExpectedWC();
 	
 	    // update the working copy
 	    client.update(thisTest.getWCPath(), SVNRevision.HEAD, true);
 	
 	    // check the working copy status
-	    thisTest.checkStatus();
+	    thisTest.checkStatusesExpectedWC();
 	
 	    // now creating the directory should succeed
 	    client.mkdir(new File(thisTest.getWCPath()+"/A/D/gamma"));
-	    thisTest.getWc().addItem("A/D/gamma", null);
-	    thisTest.getWc().setItemTextStatus("A/D/gamma", SVNStatusKind.ADDED);
+	    thisTest.getExpectedWC().addItem("A/D/gamma", null);
+	    thisTest.getExpectedWC().setItemTextStatus("A/D/gamma", SVNStatusKind.ADDED);
 	
 	    // check the working copy status
-	    thisTest.checkStatus();
+	    thisTest.checkStatusesExpectedWC();
 	}
     
     

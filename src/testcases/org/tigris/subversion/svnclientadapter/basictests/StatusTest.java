@@ -30,7 +30,7 @@ public class StatusTest extends SVNTest {
         OneTest thisTest = new OneTest("basicStatus",getGreekTestConfig());
 
         // check the status of the working copy
-        thisTest.checkStatus();
+        thisTest.checkStatusesExpectedWC();
     }    
     
 }

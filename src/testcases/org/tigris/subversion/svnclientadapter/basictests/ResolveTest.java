@@ -44,22 +44,22 @@ public class ResolveTest extends SVNTest {
         // append a line to A/mu in the first working copy
         File mu = new File(thisTest.getWorkingCopy(), "A/mu");
         PrintWriter muPW = new PrintWriter(new FileOutputStream(mu, true));
-        String muContent = thisTest.getWc().getItemContent("A/mu");
+        String muContent = thisTest.getExpectedWC().getItemContent("A/mu");
         muPW.print("\nOriginal appended text for mu");
         muContent = muContent + "\nOriginal appended text for mu";
         muPW.close();
-        thisTest.getWc().setItemWorkingCopyRevision("A/mu", 2);
-        thisTest.getWc().setItemContent("A/mu", muContent);
+        thisTest.getExpectedWC().setItemWorkingCopyRevision("A/mu", 2);
+        thisTest.getExpectedWC().setItemContent("A/mu", muContent);
 
         // append a line to A/D/G/rho in the first working copy
         File rho = new File(thisTest.getWorkingCopy(), "A/D/G/rho");
         PrintWriter rhoPW = new PrintWriter(new FileOutputStream(rho, true));
-        String rhoContent = thisTest.getWc().getItemContent("A/D/G/rho");
+        String rhoContent = thisTest.getExpectedWC().getItemContent("A/D/G/rho");
         rhoPW.print("\nOriginal appended text for rho");
         rhoContent = rhoContent + "\nOriginal appended text for rho";
         rhoPW.close();
-        thisTest.getWc().setItemWorkingCopyRevision("A/D/G/rho", 2);
-        thisTest.getWc().setItemContent("A/D/G/rho", rhoContent);
+        thisTest.getExpectedWC().setItemWorkingCopyRevision("A/D/G/rho", 2);
+        thisTest.getExpectedWC().setItemContent("A/D/G/rho", rhoContent);
 
         // commit the changes in the first working copy
         assertEquals("wrong revision number from commit",2,
@@ -67,7 +67,7 @@ public class ResolveTest extends SVNTest {
                         true));
 
         // test the status of the working copy after the commit
-        thisTest.checkStatus();
+        thisTest.checkStatusesExpectedWC();
 
         // append a different line to A/mu in the backup working copy
         mu = new File(backupTest.getWorkingCopy(), "A/mu");
@@ -78,20 +78,20 @@ public class ResolveTest extends SVNTest {
                 "This is the file 'mu'.\n"+
                 "Original appended text for mu>>>>>>> .r2";
         muPW.close();
-        backupTest.getWc().setItemWorkingCopyRevision("A/mu", 2);
-        backupTest.getWc().setItemContent("A/mu", muContent);
-        backupTest.getWc().setItemTextStatus("A/mu", SVNStatusKind.CONFLICTED);
-        backupTest.getWc().addItem("A/mu.r1", "");
+        backupTest.getExpectedWC().setItemWorkingCopyRevision("A/mu", 2);
+        backupTest.getExpectedWC().setItemContent("A/mu", muContent);
+        backupTest.getExpectedWC().setItemTextStatus("A/mu", SVNStatusKind.CONFLICTED);
+        backupTest.getExpectedWC().addItem("A/mu.r1", "");
 //        backupTest.getWc().setItemNodeKind("A/mu.r1", SVNNodeKind.UNKNOWN);
-        backupTest.getWc().setItemTextStatus("A/mu.r1",
+        backupTest.getExpectedWC().setItemTextStatus("A/mu.r1",
                 SVNStatusKind.UNVERSIONED);
-        backupTest.getWc().addItem("A/mu.r2", "");
+        backupTest.getExpectedWC().addItem("A/mu.r2", "");
 //        backupTest.getWc().setItemNodeKind("A/mu.r2", SVNNodeKind.UNKNOWN);
-        backupTest.getWc().setItemTextStatus("A/mu.r2",
+        backupTest.getExpectedWC().setItemTextStatus("A/mu.r2",
                 SVNStatusKind.UNVERSIONED);
-        backupTest.getWc().addItem("A/mu.mine", "");
+        backupTest.getExpectedWC().addItem("A/mu.mine", "");
 //        backupTest.getWc().setItemNodeKind("A/mu.mine", SVNNodeKind.UNKNOWN);
-        backupTest.getWc().setItemTextStatus("A/mu.mine",
+        backupTest.getExpectedWC().setItemTextStatus("A/mu.mine",
                 SVNStatusKind.UNVERSIONED);
 
         // append a different line to A/D/G/rho in the backup working copy
@@ -103,23 +103,23 @@ public class ResolveTest extends SVNTest {
                 "his is the file 'rho'.\n"+
                 "Original appended text for rho>>>>>>> .r2";
         rhoPW.close();
-        backupTest.getWc().setItemWorkingCopyRevision("A/D/G/rho", 2);
-        backupTest.getWc().setItemContent("A/D/G/rho", rhoContent);
-        backupTest.getWc().setItemTextStatus("A/D/G/rho",
+        backupTest.getExpectedWC().setItemWorkingCopyRevision("A/D/G/rho", 2);
+        backupTest.getExpectedWC().setItemContent("A/D/G/rho", rhoContent);
+        backupTest.getExpectedWC().setItemTextStatus("A/D/G/rho",
                 SVNStatusKind.CONFLICTED);
-        backupTest.getWc().addItem("A/D/G/rho.r1", "");
+        backupTest.getExpectedWC().addItem("A/D/G/rho.r1", "");
 //        backupTest.getWc().setItemNodeKind("A/D/G/rho.r1", SVNNodeKind.UNKNOWN);
-        backupTest.getWc().setItemTextStatus("A/D/G/rho.r1",
+        backupTest.getExpectedWC().setItemTextStatus("A/D/G/rho.r1",
                 SVNStatusKind.UNVERSIONED);
-        backupTest.getWc().addItem("A/D/G/rho.r2", "");
+        backupTest.getExpectedWC().addItem("A/D/G/rho.r2", "");
 //        backupTest.getWc().setItemNodeKind("A/D/G/rho.r2", SVNNodeKind.UNKNOWN);
-        backupTest.getWc().setItemTextStatus("A/D/G/rho.r2",
+        backupTest.getExpectedWC().setItemTextStatus("A/D/G/rho.r2",
                 SVNStatusKind.UNVERSIONED);
-        backupTest.getWc().addItem("A/D/G/rho.mine", "");
+        backupTest.getExpectedWC().addItem("A/D/G/rho.mine", "");
 
         // commented so that svn test pass
         //        backupTest.getWc().setItemNodeKind("A/D/G/rho.mine", SVNNodeKind.UNKNOWN);
-        backupTest.getWc().setItemTextStatus("A/D/G/rho.mine",
+        backupTest.getExpectedWC().setItemTextStatus("A/D/G/rho.mine",
                 SVNStatusKind.UNVERSIONED);
 
         // update the backup working copy from the repository
@@ -127,24 +127,24 @@ public class ResolveTest extends SVNTest {
                 client.update(backupTest.getWCPath(), SVNRevision.HEAD, true));
 
         // check the status of the backup working copy
-        backupTest.checkStatus();
+        backupTest.checkStatusesExpectedWC();
 
         // flag A/mu as resolved
         client.resolved(new File(backupTest.getWCPath()+"/A/mu"));
-        backupTest.getWc().setItemTextStatus("A/mu", SVNStatusKind.MODIFIED);
-        backupTest.getWc().removeItem("A/mu.r1");
-        backupTest.getWc().removeItem("A/mu.r2");
-        backupTest.getWc().removeItem("A/mu.mine");
+        backupTest.getExpectedWC().setItemTextStatus("A/mu", SVNStatusKind.MODIFIED);
+        backupTest.getExpectedWC().removeItem("A/mu.r1");
+        backupTest.getExpectedWC().removeItem("A/mu.r2");
+        backupTest.getExpectedWC().removeItem("A/mu.mine");
 
         // flag A/D/G/rho as resolved
         client.resolved(new File(backupTest.getWCPath()+"/A/D/G/rho"));
-        backupTest.getWc().setItemTextStatus("A/D/G/rho", SVNStatusKind.MODIFIED);
-        backupTest.getWc().removeItem("A/D/G/rho.r1");
-        backupTest.getWc().removeItem("A/D/G/rho.r2");
-        backupTest.getWc().removeItem("A/D/G/rho.mine");
+        backupTest.getExpectedWC().setItemTextStatus("A/D/G/rho", SVNStatusKind.MODIFIED);
+        backupTest.getExpectedWC().removeItem("A/D/G/rho.r1");
+        backupTest.getExpectedWC().removeItem("A/D/G/rho.r2");
+        backupTest.getExpectedWC().removeItem("A/D/G/rho.mine");
 
         // check the status after the conflicts are flaged as resolved
-        backupTest.checkStatus();
+        backupTest.checkStatusesExpectedWC();
     }
     
     

@@ -21,10 +21,10 @@ import java.io.File;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.tigris.subversion.svnclientadapter.ISVNDirEntry;
 import org.tigris.subversion.svnclientadapter.ISVNStatus;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
 import org.tigris.subversion.svnclientadapter.SVNUrl;
-import org.tigris.subversion.svnclientadapter.utils.SvnServer;
 
 /**
  * this internal class represent the repository and the working copy for one
@@ -54,8 +54,10 @@ public class OneTest {
 	/**
 	 * the expected layout of the working copy after the next subversion command
 	 */
-	protected ExpectedWC wc;
+	protected ExpectedWC expectedWC;
 
+    protected ExpectedRepository expectedRepository;
+    
     protected TestConfig config;
     
 	/**
@@ -67,7 +69,8 @@ public class OneTest {
 	protected OneTest(String testName, TestConfig config) throws Exception {
 		this.testName = testName;
         this.config = config;
-		this.wc = config.sampleWC.copy();
+		this.expectedWC = config.expectedWC.copy();
+        this.expectedRepository = config.expectedRepository.copy();
 		repository = createStartRepository(testName);
 		url = testsConfig.makeReposUrl(repository);
 		workingCopy = createStartWorkingCopy(repository, testName);
@@ -100,7 +103,7 @@ public class OneTest {
 		repository = orig.getRepository();
         config = orig.getTestConfig();
 		url = orig.getUrl();
-		wc = orig.wc.copy();
+		expectedWC = orig.expectedWC.copy();
 		workingCopy = createStartWorkingCopy(repository, testName);
 	}
 
@@ -154,9 +157,18 @@ public class OneTest {
 	 * 
 	 * @return the expected working copy content
 	 */
-	public ExpectedWC getWc() {
-		return wc;
+	public ExpectedWC getExpectedWC() {
+		return expectedWC;
 	}
+    
+    /**
+     * Returns the expected repository content
+     * 
+     * @return the expected repository content
+     */
+    public ExpectedRepository getExpectedRepository() {
+        return expectedRepository;
+    }
     
 	/**
 	 * @return Returns the testsConfig.
@@ -178,7 +190,7 @@ public class OneTest {
 		File repos = new File(testsConfig.repositories, testName);
         log.debug("Creating repository for test "+testName+" at "+repos.toString());        
 		FileUtils.removeDirectoryWithContent(repos);
-		FileUtils.copyFiles(config.sampleRepos, repos);
+		FileUtils.copyFiles(config.reposDirectory, repos);
 
 		return repos;
 	}
@@ -204,7 +216,8 @@ public class OneTest {
 		// checkout the repository
 		config.client.checkout(url, workingCopy, SVNRevision.HEAD, true);
 		// sanity check the working with its expected status
-		checkStatus();
+		checkStatusesExpectedWC();
+        checkEntriesExpectedRepository();
 		return workingCopy;
 	}
 
@@ -213,9 +226,18 @@ public class OneTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void checkStatus() throws Exception {
+	public void checkStatusesExpectedWC() throws Exception {
 		ISVNStatus[] states = config.client.getStatus(workingCopy, true, true);
-		wc.check(states, workingCopy.getAbsolutePath());
+		expectedWC.check(states, workingCopy.getAbsolutePath());
 	}
+    
+    /**
+     * Check if repository has expected entries
+     * @throws Exception
+     */
+    public void checkEntriesExpectedRepository() throws Exception {
+        ISVNDirEntry[] entries = config.client.getList(getUrl(), SVNRevision.HEAD, true);
+        expectedRepository.check(entries,"", true);
+    }
 }
 

@@ -53,15 +53,15 @@ public class ImportTest extends SVNTest {
 	    // update the working
 	    assertEquals("wrong revision from update",2,
 	            client.update(thisTest.getWCPath(), SVNRevision.HEAD, true));
-	    thisTest.getWc().addItem("dirA", null);
-	    thisTest.getWc().setItemWorkingCopyRevision("dirA",2);
-	    thisTest.getWc().addItem("dirA/dirB", null);
-	    thisTest.getWc().setItemWorkingCopyRevision("dirA/dirB",2);
-	    thisTest.getWc().addItem("dirA/dirB/new_file", "some text");
-	    thisTest.getWc().setItemWorkingCopyRevision("dirA/dirB/new_file",2);
+	    thisTest.getExpectedWC().addItem("dirA", null);
+	    thisTest.getExpectedWC().setItemWorkingCopyRevision("dirA",2);
+	    thisTest.getExpectedWC().addItem("dirA/dirB", null);
+	    thisTest.getExpectedWC().setItemWorkingCopyRevision("dirA/dirB",2);
+	    thisTest.getExpectedWC().addItem("dirA/dirB/new_file", "some text");
+	    thisTest.getExpectedWC().setItemWorkingCopyRevision("dirA/dirB/new_file",2);
 	
 	    // test the working copy status
-	    thisTest.checkStatus();
+	    thisTest.checkStatusesExpectedWC();
 	}
 
 	/**
@@ -96,11 +96,11 @@ public class ImportTest extends SVNTest {
 	    // udpate the working copy
 	    assertEquals("wrong revision from update", 2,
 	            client.update(thisTest.getWCPath(), SVNRevision.HEAD, true));
-	    thisTest.getWc().addItem("dir", null);
-	    thisTest.getWc().addItem("dir/foo.c", "");
+	    thisTest.getExpectedWC().addItem("dir", null);
+	    thisTest.getExpectedWC().addItem("dir/foo.c", "");
 	
 	    // test the working copy status
-	    thisTest.checkStatus();
+	    thisTest.checkStatusesExpectedWC();
 	}
 
 }

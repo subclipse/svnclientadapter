@@ -36,19 +36,19 @@ public class LsTest extends SVNTest {
 	
 	    // list the repository root dir
 	    ISVNDirEntry[] entries = client.getList(thisTest.getWCPath(), SVNRevision.HEAD, false);
-	    thisTest.getWc().check(entries,"", false);
+	    thisTest.getExpectedWC().check(entries,"", false);
 	
 	    // list directory A
 	    entries = client.getList(new File(thisTest.getWCPath()+"/A"), SVNRevision.HEAD, false);
-	    thisTest.getWc().check(entries,"A", false);
+	    thisTest.getExpectedWC().check(entries,"A", false);
 	
 	    // list directory A in BASE revision
 	    entries = client.getList(new File(thisTest.getWCPath()+"/A"), SVNRevision.BASE, false);
-	    thisTest.getWc().check(entries,"A", false);
+	    thisTest.getExpectedWC().check(entries,"A", false);
 	
 	    // list file A/mu
 	    entries = client.getList(new File(thisTest.getWCPath()+"/A/mu"), SVNRevision.HEAD, false);
-	    thisTest.getWc().check(entries,"A/mu");
+	    thisTest.getExpectedWC().check(entries,"A/mu");
 	}
 
     public void testBasicLsUrl() throws Throwable {
@@ -56,13 +56,38 @@ public class LsTest extends SVNTest {
         OneTest thisTest = new OneTest("basicLsUrl",getGreekTestConfig());
         
         ISVNDirEntry[] entries = client.getList(thisTest.getUrl(), SVNRevision.HEAD, true);
-        thisTest.getWc().check(entries,"", true);       
+        thisTest.getExpectedRepository().check(entries,"", true);       
         
         // list directory A
         entries = client.getList(new SVNUrl(thisTest.getUrl()+"/A"), SVNRevision.HEAD, false);
-        thisTest.getWc().check(entries,"A", false);
-        
-        
+        thisTest.getExpectedRepository().check(entries,"A", false);
     }
     
+    public void testGetDirEntryUrl() throws Throwable {
+        // create the working copy
+        OneTest thisTest = new OneTest("basicGetDirEntryUrl",getGreekTestConfig());
+        
+        // get the dirEntry of a directory first
+        ISVNDirEntry entry = client.getDirEntry(new SVNUrl(thisTest.getUrl()+"/A"), SVNRevision.HEAD);
+        assertNotNull(entry);
+        
+        // then of a file
+        entry = client.getDirEntry(new SVNUrl(thisTest.getUrl()+"/A/mu"), SVNRevision.HEAD);
+        assertNotNull(entry);
+    }
+    
+    public void testGetDirEntryFile() throws Throwable {
+        // create the working copy
+        OneTest thisTest = new OneTest("basicGetDirEntryFile",getGreekTestConfig());
+        
+        ISVNDirEntry entry;
+        
+        // directory
+        entry = client.getDirEntry(new File(thisTest.getWCPath()+"/A"), SVNRevision.HEAD);
+        assertNotNull(entry);
+        
+        // file
+        entry = client.getDirEntry(new File(thisTest.getWCPath()+"/A/mu"), SVNRevision.HEAD);
+        assertNotNull(entry);
+    }
 }

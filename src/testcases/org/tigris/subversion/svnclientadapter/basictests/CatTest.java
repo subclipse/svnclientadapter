@@ -53,7 +53,7 @@ public class CatTest extends SVNTest {
                 + "/A/mu"), SVNRevision.HEAD);
         byte[] content = new byte[is.available()];
         is.read(content);
-        byte[] testContent = thisTest.getWc().getItemContent("A/mu").getBytes();
+        byte[] testContent = thisTest.getExpectedWC().getItemContent("A/mu").getBytes();
 
         // the content should be the same
         assertTrue("content changed", Arrays.equals(content, testContent));
@@ -71,7 +71,7 @@ public class CatTest extends SVNTest {
                 + "/A/mu"), SVNRevision.BASE);
         byte[] content = new byte[is.available()];
         is.read(content);
-        byte[] testContent = thisTest.getWc().getItemContent("A/mu").getBytes();
+        byte[] testContent = thisTest.getExpectedWC().getItemContent("A/mu").getBytes();
 
         // the content should be the same
         assertTrue("content changed", Arrays.equals(content, testContent));
@@ -89,7 +89,7 @@ public class CatTest extends SVNTest {
                 + "/A/mu"), new SVNRevision.DateSpec(new Date()));
         byte[] content = new byte[is.available()];
         is.read(content);
-        byte[] testContent = thisTest.getWc().getItemContent("A/mu").getBytes();
+        byte[] testContent = thisTest.getExpectedWC().getItemContent("A/mu").getBytes();
 
         // the content should be the same
         assertTrue("content changed", Arrays.equals(content, testContent));
@@ -102,7 +102,7 @@ public class CatTest extends SVNTest {
                 + "/A/mu"), SVNRevision.HEAD);
         byte[] content = new byte[is.available()];
         is.read(content);
-        byte[] testContent = thisTest.getWc().getItemContent("A/mu").getBytes();
+        byte[] testContent = thisTest.getExpectedWC().getItemContent("A/mu").getBytes();
 
         // the content should be the same
         assertTrue("content is not the same", Arrays.equals(content,
