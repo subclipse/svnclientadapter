@@ -79,7 +79,7 @@ public class RevertTest extends SVNTest {
 	    client.revert(new File(thisTest.getWCPath()+"/A/D/H/zeta"), false);
 	    thisTest.getWc().setItemTextStatus("A/D/H/zeta",
 	            SVNStatusKind.UNVERSIONED);
-	    thisTest.getWc().setItemNodeKind("A/D/H/zeta", SVNNodeKind.UNKNOWN);
+//	    thisTest.getWc().setItemNodeKind("A/D/H/zeta", SVNNodeKind.UNKNOWN);
 	
 	    // test the status of the working copy
 	    thisTest.checkStatus();

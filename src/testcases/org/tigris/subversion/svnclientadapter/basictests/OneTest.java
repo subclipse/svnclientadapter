@@ -19,6 +19,8 @@ package org.tigris.subversion.svnclientadapter.basictests;
 
 import java.io.File;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.tigris.subversion.svnclientadapter.ISVNStatus;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
 import org.tigris.subversion.svnclientadapter.SVNUrl;
@@ -29,7 +31,8 @@ import org.tigris.subversion.svnclientadapter.utils.SvnServer;
  * test.
  */
 public class OneTest {
-	protected String testName;
+    private static Log log = LogFactory.getLog(OneTest.class);	
+    protected String testName;
 
     protected TestsConfig testsConfig = TestsConfig.getTestsConfig();
     
@@ -171,8 +174,9 @@ public class OneTest {
 	 * @throws Exception
 	 */
 	protected File createStartRepository(String testName) throws Exception {
-		// build a clean repository directory
+        // build a clean repository directory
 		File repos = new File(testsConfig.repositories, testName);
+        log.debug("Creating repository for test "+testName+" at "+repos.toString());        
 		FileUtils.removeDirectoryWithContent(repos);
 		FileUtils.copyFiles(config.sampleRepos, repos);
 
@@ -194,6 +198,8 @@ public class OneTest {
 		// build a clean working directory
 		SVNUrl url = testsConfig.makeReposUrl(repos);
 		workingCopy = new File(testsConfig.workingCopies, testName);
+        log.debug("Creating working copy at "+workingCopy.toString());
+        
 		FileUtils.removeDirectoryWithContent(workingCopy);
 		// checkout the repository
 		config.client.checkout(url, workingCopy, SVNRevision.HEAD, true);

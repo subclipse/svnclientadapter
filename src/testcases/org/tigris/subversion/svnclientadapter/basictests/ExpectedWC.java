@@ -45,7 +45,7 @@ public class ExpectedWC
      * the map of the items of the working copy. The relative path is the key
      * for the map
      */
-    Map items = new HashMap();
+    private Map items = new HashMap();
 
     /**
      * Generate from the expected state of the working copy a new working copy
@@ -102,6 +102,14 @@ public class ExpectedWC
         return (Item) items.get(path);
     }
 
+    /**
+     * get the number of items in WC
+     * @return
+     */
+    public int size() {
+        return items.size();
+    }
+    
     /**
      * Remove the item at a path
      * @param path  the path, where the item is removed
@@ -351,7 +359,7 @@ public class ExpectedWC
             if (path.length() > workingCopyPath.length() + 1)
             {
                 Assert.assertEquals("missing '/' in status path",
-                        path.charAt(workingCopyPath.length()), '/');
+                        '/', path.charAt(workingCopyPath.length()));
                 path = path.substring(workingCopyPath.length() + 1);
             }
             else
@@ -359,23 +367,28 @@ public class ExpectedWC
                 path = "";
 
             Item item = (Item) items.get(path);
-            Assert.assertNotNull("status not found in working copy", item);
-            Assert.assertEquals("wrong text status in working copy",
+            Assert.assertNotNull("status not found in working copy for "+path, item);
+            Assert.assertEquals("wrong text status in working copy for "+path,
                     item.textStatus, tested[i].getTextStatus());
             if (item.workingCopyRev != SVNRevision.INVALID_REVISION)
-                Assert.assertEquals("wrong revision number in working copy",
+                Assert.assertEquals("wrong revision number in working copy for "+path,
                         item.workingCopyRev, tested[i].getRevision());
-            Assert.assertEquals("lock status wrong",
+            Assert.assertEquals("lock status wrong for "+path,
                     item.isLocked, tested[i].getTextStatus().equals(SVNStatusKind.LOCKED));
 //            Assert.assertEquals("switch status wrong",
 //                    item.isSwitched, tested[i].isSwitched());
-            Assert.assertEquals("wrong prop status in working copy for "+tested[i].getPath(),
+            Assert.assertEquals("wrong prop status in working copy for "+path,
                     item.propStatus, tested[i].getPropStatus());
             if (item.myContent != null)
             {
-                Assert.assertEquals("state says file, working copy not",
-                        tested[i].getNodeKind(),
-                        item.nodeKind == SVNNodeKind.NONE ? SVNNodeKind.FILE : item.nodeKind);
+                // file
+                
+                // if Item.nodeKind == NONE ==> do not check
+                if (item.nodeKind != SVNNodeKind.NONE) {
+                    Assert.assertEquals("state says file, working copy not for "+path,
+                            item.nodeKind,
+                            tested[i].getNodeKind());
+                }
                 if (tested[i].getTextStatus() == SVNStatusKind.NORMAL ||
                         item.checkContent)
                 {
@@ -389,15 +402,17 @@ public class ExpectedWC
                         buffer.append((char) ch);
                     }
                     rd.close();
-                    Assert.assertEquals("content mismatch", buffer.toString(),
-                            item.myContent);
+                    Assert.assertEquals("content mismatch for "+path, 
+                            item.myContent, buffer.toString());
                 }
             }
             else
             {
-                Assert.assertEquals("state says dir, working copy not",
-                        tested[i].getNodeKind(),
-                        item.nodeKind == SVNNodeKind.NONE ? SVNNodeKind.DIR : item.nodeKind);
+                if (item.nodeKind != SVNNodeKind.NONE) {
+                    Assert.assertEquals("state says dir, working copy not for "+path,
+                            item.nodeKind,
+                            tested[i].getNodeKind());
+                }
             }
             item.touched = true;
         }
@@ -493,4 +508,5 @@ public class ExpectedWC
             return new Item(this, owner);
         }
     }
+    
 }

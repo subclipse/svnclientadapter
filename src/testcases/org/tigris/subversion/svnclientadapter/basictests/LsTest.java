@@ -21,6 +21,7 @@ import java.io.File;
 
 import org.tigris.subversion.svnclientadapter.ISVNDirEntry;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
+import org.tigris.subversion.svnclientadapter.SVNUrl;
 
 public class LsTest extends SVNTest {
 
@@ -50,4 +51,18 @@ public class LsTest extends SVNTest {
 	    thisTest.getWc().check(entries,"A/mu");
 	}
 
+    public void testBasicLsUrl() throws Throwable {
+        // create the working copy
+        OneTest thisTest = new OneTest("basicLsUrl",getGreekTestConfig());
+        
+        ISVNDirEntry[] entries = client.getList(thisTest.getUrl(), SVNRevision.HEAD, true);
+        thisTest.getWc().check(entries,"", true);       
+        
+        // list directory A
+        entries = client.getList(new SVNUrl(thisTest.getUrl()+"/A"), SVNRevision.HEAD, false);
+        thisTest.getWc().check(entries,"A", false);
+        
+        
+    }
+    
 }

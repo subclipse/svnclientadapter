@@ -31,6 +31,8 @@ public class TestsConfig {
 
     public String clientType;    
     
+    public String adminClientType;
+    
     /**
      * common root URL for all tests. Can be set by system property "test.rooturl". 
      * If not set, the file url of the rootDirectoryName is used.
@@ -74,6 +76,15 @@ public class TestsConfig {
         }
         System.out.println("Using "+clientType+" factory ...");
         
+        adminClientType = System.getProperty("test.adminClientType");
+        if (adminClientType == null) {
+            adminClientType = clientType;
+        }
+        if (adminClientType.equals("javasvn")) {
+            adminClientType = "javahl";
+        }
+        System.out.println("Using "+adminClientType+" factory for admin commands...");
+        
         rootDirectoryName = System.getProperty("test.rootdir");
         if (rootDirectoryName == null)
             rootDirectoryName = System.getProperty("user.dir");
@@ -97,6 +108,9 @@ public class TestsConfig {
         } else
         if (protocol.equals("svn")) {
         	rootUrlStr = "svn://localhost";
+        } else
+        if (protocol.equals("http")) {
+            rootUrlStr = "http://localhost:8080/svn/repos";
         }
         
         

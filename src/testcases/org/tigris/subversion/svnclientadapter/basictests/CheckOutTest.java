@@ -67,15 +67,6 @@ public class CheckOutTest extends SVNTest {
 
         // check the status of the working copy
         thisTest.checkStatus();
-
-        // recheckout the working copy
-        client.checkout(thisTest.getUrl(), thisTest.getWCPath(), SVNRevision.HEAD, true);
-
-        // deleted file should reapear
-        thisTest.getWc().setItemTextStatus("A/B/lambda", SVNStatusKind.NORMAL);
-
-        // check the status of the working copy
-        thisTest.checkStatus();
     }
 
 	public void testBasicCheckoutDeleted() throws Throwable

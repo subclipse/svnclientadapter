@@ -22,11 +22,14 @@ import java.io.IOException;
 
 import junit.framework.TestCase;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.tigris.subversion.svnclientadapter.ISVNClientAdapter;
 import org.tigris.subversion.svnclientadapter.SVNClientAdapterFactory;
 import org.tigris.subversion.svnclientadapter.SVNClientException;
 import org.tigris.subversion.svnclientadapter.commandline.CmdLineClientAdapterFactory;
 import org.tigris.subversion.svnclientadapter.javahl.JhlClientAdapterFactory;
+import org.tigris.subversion.svnclientadapter.javasvn.JavaSvnClientAdapterFactory;
 import org.tigris.subversion.svnclientadapter.utils.SvnServer;
 
 /**
@@ -34,7 +37,9 @@ import org.tigris.subversion.svnclientadapter.utils.SvnServer;
  */
 public abstract class SVNTest extends TestCase
 {
-    protected ISVNClientAdapter client;    
+    private static Log log = LogFactory.getLog(SVNTest.class);
+    protected ISVNClientAdapter client;   
+    protected ISVNClientAdapter clientAdmin;
     
     /**
      * the directory "local_tmp" in the rootDir. This will be used for the
@@ -60,6 +65,7 @@ public abstract class SVNTest extends TestCase
     private SvnServer svnServer;
     
     static {
+        log.debug("Initializing client adapters factories");
         try {
             JhlClientAdapterFactory.setup();
         } catch (SVNClientException e) {
@@ -70,6 +76,12 @@ public abstract class SVNTest extends TestCase
         } catch (SVNClientException e1) {
             // can't register this factory
         }
+        try {
+            JavaSvnClientAdapterFactory.setup();
+        } catch (SVNClientException e1) {
+            // can't register this factory
+        }
+        
     }
 
     /**
@@ -94,7 +106,12 @@ public abstract class SVNTest extends TestCase
         client = SVNClientAdapterFactory.createSVNClient(testsConfig.clientType);
         client.setUsername("cedric");
         client.setPassword("cedricpass");
-//        client.setConfigDirectory(conf.getAbsolutePath());
+//      client.setConfigDirectory(conf.getAbsolutePath());
+        
+        clientAdmin = SVNClientAdapterFactory.createSVNClient(testsConfig.adminClientType);
+        clientAdmin.setUsername("cedric");
+        clientAdmin.setPassword("cedricpass");
+
         
         startServer(testsConfig.rootDir);
     }
@@ -131,10 +148,12 @@ public abstract class SVNTest extends TestCase
             
             // create the repository
             File greekRepos = new File(localTmp, "repos");
-            client.createRepository(greekRepos,ISVNClientAdapter.REPOSITORY_FSFS);
+            log.debug("Creating repository :"+greekRepos.toString());
+            clientAdmin.createRepository(greekRepos,ISVNClientAdapter.REPOSITORY_FSFS);
             FileUtils.copyFile(new File("test/svnserve.conf"),new File(greekRepos,"conf/svnserve.conf"));
             FileUtils.copyFile(new File("test/passwd"),new File(greekRepos,"conf/passwd"));
-            client.doImport(greekFiles, testsConfig.makeReposUrl(greekRepos),
+            log.debug("Importing from : "+greekFiles.toString()+" to repository :"+greekRepos.toString());
+            clientAdmin.doImport(greekFiles, testsConfig.makeReposUrl(greekRepos),
                     logMessage, true );
             
             greekTestConfig = new TestConfig();
