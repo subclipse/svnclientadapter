@@ -103,13 +103,21 @@ class CmdLineRemoteDirEntry implements ISVNDirEntry {
 			//do nothing
 		}
 
-		revision = new SVNRevision.Number(Long.parseLong(line.substring(1, 9).trim()));
+        // "%7"SVN_REVNUM_T_FMT" %-8.8s %10s %12s %s%s
+		revision = new SVNRevision.Number(Long.parseLong(line.substring(0, 7).trim()));
 		nodeKind = (folder) ? SVNNodeKind.DIR : SVNNodeKind.FILE;
-		lastCommitAuthor = line.substring(9, 18).trim();
+		lastCommitAuthor = line.substring(8, 16).trim();
 
-		size = Long.parseLong(line.substring(18, 27).trim());
-
-        String dateString = line.substring(28, 40);
+        String sizeStr = line.substring(17, 27).trim();
+        if (sizeStr.equals("")) {
+            // since svn revision 7530, the file size column is left blank for directories
+            size = 0;
+        }
+        else {
+		    size = Long.parseLong(sizeStr);
+        }
+        
+        String dateString = line.substring(28, 39);
         
         try {
             // two formats are possible (see ls-cmd.c) depending on the numbers of days between current date

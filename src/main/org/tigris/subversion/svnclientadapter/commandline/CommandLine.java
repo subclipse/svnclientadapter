@@ -286,7 +286,7 @@ class CommandLine {
 		execVoid(
 			MessageFormat.format(
 				CMD_EXPORT,
-				new String[] { url, path, validRev(revision), (force) ? "--force" : "" }));
+				new String[] { validRev(revision), url, path, (force) ? "--force" : "" }));
 	}
 
 	/**
