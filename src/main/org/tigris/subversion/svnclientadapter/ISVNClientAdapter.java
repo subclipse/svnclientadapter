@@ -18,7 +18,7 @@
  *
  * 3. The end-user documentation included with the redistribution,
  *    if any, must include the following acknowledgment:
- *       "This product includes software developed by the
+ *       "This product includes software develby the
  *        Apache Software Foundation (http://www.apache.org/)."
  *    Alternately, this acknowledgment may appear in the software itself,
  *    if and wherever such third-party acknowledgments normally appear.
@@ -422,4 +422,13 @@ public interface ISVNClientAdapter {
 		File outFile,
 		boolean recurse)
 		throws SVNClientException;
+        
+    public abstract SVNKeywords getKeywords(File path) throws SVNClientException;    
+    
+    public abstract void setKeywords(File path, SVNKeywords keywords, boolean recurse) throws SVNClientException;
+    
+    public abstract SVNKeywords addKeywords(File path, SVNKeywords keywords) throws SVNClientException;
+    
+    public SVNKeywords removeKeywords(File path, SVNKeywords keywords) throws SVNClientException;
+
 }

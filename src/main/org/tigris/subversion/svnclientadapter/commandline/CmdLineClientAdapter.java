@@ -73,6 +73,7 @@ import org.tigris.subversion.svnclientadapter.ISVNNotifyListener;
 import org.tigris.subversion.svnclientadapter.ISVNProperty;
 import org.tigris.subversion.svnclientadapter.ISVNStatus;
 import org.tigris.subversion.svnclientadapter.SVNClientException;
+import org.tigris.subversion.svnclientadapter.SVNKeywords;
 import org.tigris.subversion.svnclientadapter.SVNNodeKind;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
 import org.tigris.subversion.svnclientadapter.SVNUrl;
@@ -835,4 +836,22 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 		}
 		return byteArray;
 	}
+    
+    public SVNKeywords getKeywords(File path) throws SVNClientException {
+        return null;
+    }
+        
+    
+    public void setKeywords(File path, SVNKeywords keywords, boolean recurse) throws SVNClientException {
+    }
+    
+    public SVNKeywords addKeywords(File path, SVNKeywords keywords) throws SVNClientException {
+        return null;
+    }
+    
+    public SVNKeywords removeKeywords(File path, SVNKeywords keywords) throws SVNClientException {
+        return null;
+    }
+    
+    
 }
