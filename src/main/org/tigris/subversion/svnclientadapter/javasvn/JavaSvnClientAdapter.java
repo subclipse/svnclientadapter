@@ -1018,9 +1018,10 @@ public class JavaSvnClientAdapter extends AbstractClientAdapter {
      *      org.tigris.subversion.svnclientadapter.SVNRevision)
      */
     public ISVNLogMessage[] getLogMessages(SVNUrl url,
-            SVNRevision revisionStart, SVNRevision revisionEnd)
+            SVNRevision revisionStart, SVNRevision revisionEnd, boolean fetchChangePath)
             throws SVNClientException {
         try {
+        	// TODO: fetchChangePath is still to be implemented
             notificationHandler.setCommand(ISVNNotifyListener.Command.LOG);
             notificationHandler.logCommandLine("log -r "
                     + revisionStart.toString() + ":" + revisionEnd.toString()

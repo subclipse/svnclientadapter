@@ -907,19 +907,21 @@ public class JhlClientAdapter extends AbstractClientAdapter {
             notificationHandler.logException(e);
             throw new SVNClientException(e);
         }         
-    }
-
-    /**
+    } 
+	
+	/**
      * Get the log messages for a set of revision(s) 
      * @param url
      * @param revisionStart
      * @param revisionEnd
+	 * @param fetchChangePath
      * @return
      */
 	public ISVNLogMessage[] getLogMessages(
 		SVNUrl url,
 		SVNRevision revisionStart,
-		SVNRevision revisionEnd)
+		SVNRevision revisionEnd,
+		boolean fetchChangePath)
 		throws SVNClientException {
 		try {
 			notificationHandler.setCommand(ISVNNotifyListener.Command.LOG);
@@ -938,7 +940,7 @@ public class JhlClientAdapter extends AbstractClientAdapter {
                             JhlConverter.convert(revisionStart), 
                             JhlConverter.convert(revisionEnd),
                             false,  // don't stop on copy
-                            true)); // discover paths
+							fetchChangePath)); // discover paths
 		} catch (ClientException e) {
 			notificationHandler.logException(e);
 			throw new SVNClientException(e);

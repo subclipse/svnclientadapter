@@ -77,7 +77,7 @@ public class LogTest extends SVNTest {
 
         ISVNLogMessage lm[] = client.getLogMessages(new SVNUrl(thisTest
                 .getUrl()
-                + "/iota"), new SVNRevision.Number(1), SVNRevision.HEAD);
+                + "/iota"), new SVNRevision.Number(1), SVNRevision.HEAD, true);
         assertEquals("wrong number of objects", 2, lm.length);
         assertEquals("wrong message", "Log Message", lm[0].getMessage());
         assertEquals("wrong message", "iota modified", lm[1].getMessage());

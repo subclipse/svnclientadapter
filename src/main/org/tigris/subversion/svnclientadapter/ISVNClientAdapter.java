@@ -337,12 +337,28 @@ public interface ISVNClientAdapter {
 	 * @param url
 	 * @param revisionStart
 	 * @param revisionEnd
+	 * @param fetchChangePath
 	 * @return
 	 */
 	public abstract ISVNLogMessage[] getLogMessages(
 		SVNUrl url,
 		SVNRevision revisionStart,
 		SVNRevision revisionEnd)
+		throws SVNClientException;
+	
+	/**
+	 * Get the log messages for a set of revision(s) 
+	 * @param url
+	 * @param revisionStart
+	 * @param revisionEnd
+	 * @param fetchChangePath
+	 * @return
+	 */
+	public abstract ISVNLogMessage[] getLogMessages(
+		SVNUrl url,
+		SVNRevision revisionStart,
+		SVNRevision revisionEnd,
+		boolean fetchChangePath)
 		throws SVNClientException;
 	/**
 	 * Get the log messages for a set of revision(s)

@@ -466,7 +466,29 @@ public class SvnCommandLine extends CommandLine {
 		args.add(validRev(revision));
 		args.add(target);
 		args.add("--xml");
-        args.add("-v");
+		addAuthInfo(args);
+        addConfigInfo(args);
+        return execString(args,true);
+	}
+	
+	/**
+	 * <p>
+	 * Show the log messages for a set of revision(s) and/or file(s).</p>
+	 * <p> The difference to the methode log is the parameter -v
+	 * 
+	 * @param target Local path or URL.
+	 * @param revision Optional revision range to get log
+	 *   messages from.
+	 */
+	String log_v(String target, String revision) throws CmdLineException {
+        setCommand(ISVNNotifyListener.Command.LOG, false);		
+		ArrayList args = new ArrayList();
+		args.add("log");
+		args.add("-r");
+		args.add(validRev(revision));
+		args.add(target);
+		args.add("--xml");
+		args.add("-v");
 		addAuthInfo(args);
         addConfigInfo(args);
         return execString(args,true);

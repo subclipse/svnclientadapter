@@ -167,6 +167,16 @@ class CmdLineLogMessage implements ISVNLogMessage {
 				Node dateNode = authorNode.getNextSibling();
                 Node pathsNode = dateNode.getNextSibling();
                 Node msgNode = pathsNode.getNextSibling();
+                // TODO: mybe get the nodes by their name
+                // if the msgNode is empty, the pathsNode is the msgNode
+                int pathsNodeLength = 0;
+                if (msgNode == null) {
+                	msgNode = pathsNode;
+                	pathsNode = null;
+                } else {
+                	pathsNodeLength = pathsNode.getChildNodes().getLength();
+                }
+                
 				Node revisionAttribute = logEntry.getAttributes().getNamedItem("revision");
 
                 SVNRevision.Number rev = Helper.toRevNum(revisionAttribute.getNodeValue());
@@ -179,8 +189,8 @@ class CmdLineLogMessage implements ISVNLogMessage {
 				else
 					msg = "";
                 
-                ISVNLogMessageChangePath[] logMessageChangePath = new ISVNLogMessageChangePath[pathsNode.getChildNodes().getLength()];
-                for (int j = 0; j < pathsNode.getChildNodes().getLength();j++) {
+                ISVNLogMessageChangePath[] logMessageChangePath = new ISVNLogMessageChangePath[pathsNodeLength];
+                for (int j = 0; j < pathsNodeLength;j++) {
                 	Node pathNode = pathsNode.getChildNodes().item(j);
                     String path = pathNode.getFirstChild().getNodeValue();
                     NamedNodeMap attributes = pathNode.getAttributes();

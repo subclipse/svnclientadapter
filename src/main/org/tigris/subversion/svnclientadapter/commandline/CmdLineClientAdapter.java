@@ -337,13 +337,18 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.subclipse.client.ISVNClientAdapter#getLogMessages(java.net.URL, org.tigris.subversion.subclipse.client.ISVNRevision, org.tigris.subversion.subclipse.client.ISVNRevision)
 	 */
-	public ISVNLogMessage[] getLogMessages(SVNUrl arg0, SVNRevision arg1, SVNRevision arg2)
+	public ISVNLogMessage[] getLogMessages(SVNUrl arg0, SVNRevision arg1, SVNRevision arg2, boolean fetchChangePath)
 		throws SVNClientException {
 		List tempLogs = new java.util.LinkedList();
 		String revRange = toString(arg1) + ":" + toString(arg2);
 
 		try {
-			String messages = _cmd.log(toString(arg0), revRange);
+			String messages;
+			if (fetchChangePath) {
+			  messages = _cmd.log_v(toString(arg0), revRange);
+			} else {
+			  messages = _cmd.log(toString(arg0), revRange);	
+			}
 			return CmdLineLogMessage.createLogMessages(messages);			
 		} catch (CmdLineException e) {
 			throw SVNClientException.wrapException(e);
