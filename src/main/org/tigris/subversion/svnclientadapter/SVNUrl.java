@@ -55,6 +55,8 @@
 package org.tigris.subversion.svnclientadapter;
 
 import java.net.MalformedURLException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -65,6 +67,7 @@ import java.net.MalformedURLException;
  * We just want a string which represent a SVN url which can be used with our JNI
  * methods.
  *
+ *
  * @author Cédric Chabanois 
  *         <a href="mailto:cchabanois@ifrance.com">cchabanois@ifrance.com</a>
  *
@@ -72,6 +75,7 @@ import java.net.MalformedURLException;
 public class SVNUrl {
     private String svnUrl;
     private String protocol; // http, file, svn or svn+ssh
+    private String[] segments;
 
     public SVNUrl(String svnUrl) throws MalformedURLException {
         this.svnUrl = svnUrl;
@@ -100,6 +104,11 @@ public class SVNUrl {
             (!protocol.equalsIgnoreCase("svn+ssh")) ) {
             throw new MalformedURLException("Invalid svn url :"+svnUrl);
         }
+        String toSplit = svnUrl.substring(i+3);
+		if (toSplit.length() == 0) {
+			throw new MalformedURLException("Invalid svn url :"+svnUrl);
+		}        
+        segments = toSplit.split("/");
     }
 
     public String get() {
@@ -114,11 +123,38 @@ public class SVNUrl {
         return get();
     }
     
-    /**
-     * @return the name of the file in the url
-     */
-    public String getFile() {
-        int i = svnUrl.lastIndexOf('/');
-        return svnUrl.substring(i+1);
+    public String getSegment(int i) {
+    	return segments[i];
     }
+    
+    public String[] getSegments() {
+    	return segments;
+    }
+    
+    public String getLastSegment() {
+    	return segments[segments.length-1];
+    }
+    
+    
+    // we cannot easily code an "equals" method because :
+    // protocol is not case-sensitive
+    // url before repository is not always case sensitive
+    // url after repository is case sensitive
+    
+    /**
+     * 
+     * @return the parent url or null if no parent
+     */
+    public SVNUrl getParent() {
+    	try {
+    		String url = svnUrl;
+    		if (url.endsWith("/")) { // remove ending "/" if any
+    			url = url.substring(0,url.length()-1);
+    		}
+    		return new SVNUrl(url.substring(0,url.lastIndexOf('/')+1));
+    	} catch (MalformedURLException e) {
+    		return null;
+    	}
+    }
+   
 }

@@ -80,8 +80,8 @@ import org.tigris.subversion.svnclientadapter.SVNAnnotations;
 import org.tigris.subversion.svnclientadapter.SVNClientException;
 import org.tigris.subversion.svnclientadapter.SVNKeywords;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
-import org.tigris.subversion.svnclientadapter.SVNUrl;
 import org.tigris.subversion.svnclientadapter.SVNStatusUnversioned;
+import org.tigris.subversion.svnclientadapter.SVNUrl;
 
 /**
  * An adapter for SVNClient. Easier and safer to use than SVNClient
@@ -319,6 +319,24 @@ public class JhlClientAdapter implements ISVNClientAdapter {
         }
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getDirEntry(org.tigris.subversion.svnclientadapter.SVNUrl, org.tigris.subversion.svnclientadapter.SVNRevision)
+	 */
+	public ISVNDirEntry getDirEntry(SVNUrl url, SVNRevision revision)
+		throws SVNClientException {
+		
+		// list give the DirEntrys of the elements of a directory or the DirEntry
+		// of a file
+		ISVNDirEntry[] entries = getList(url.getParent(), revision,false);
+		String expectedPath = url.getSegment(url.getSegments().length-1);
+		for (int i = 0; i < entries.length;i++) {
+			if (entries[i].getPath().equals(expectedPath)) {
+				return entries[i];
+			}
+		}
+		return null; // not found
+	}
 
     /**
      * Returns the status of a single file in the path.

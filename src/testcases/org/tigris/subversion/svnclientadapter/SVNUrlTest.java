@@ -36,10 +36,22 @@ public class SVNUrlTest extends TestCase
        SVNUrl http = new SVNUrl("HTTP://svn.collab.net/repos/subclipse/");
     }
     
-    public void testGetFile() throws Exception {
-       SVNUrl url1 = new SVNUrl("http://svn.collab.net/repos/subclipse/myfile.txt");
-       assertEquals("myfile.txt",url1.getFile());
-       SVNUrl url2 = new SVNUrl("http://svn.collab.net/repos/subclipse/");
-       assertEquals("",url2.getFile());
+    public void testGetParent() throws Exception {
+		SVNUrl url1 = new SVNUrl("http://svn.collab.net/repos/subclipse/myfile.txt");
+		assertEquals("http://svn.collab.net/repos/subclipse/",url1.getParent().toString());
+		assertEquals("http://svn.collab.net/repos/",url1.getParent().getParent().toString());		  		
+		assertEquals("http://svn.collab.net/",url1.getParent().getParent().getParent().toString());
+		assertEquals(null,url1.getParent().getParent().getParent().getParent());
+    }
+    
+    public void testSegments() throws Exception {
+		SVNUrl url1 = new SVNUrl("http://svn.collab.net/repos/subclipse/myfile.txt");
+		assertEquals(4, url1.getSegments().length);
+		assertEquals("svn.collab.net", url1.getSegment(0));
+		assertEquals("repos", url1.getSegment(1));
+		assertEquals("subclipse", url1.getSegment(2));
+		assertEquals("myfile.txt", url1.getSegment(3));
+		
+		assertEquals(3, url1.getParent().getSegments().length);
     }
 }

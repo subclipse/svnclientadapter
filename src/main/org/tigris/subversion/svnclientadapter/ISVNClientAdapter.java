@@ -136,6 +136,17 @@ public interface ISVNClientAdapter {
 		SVNRevision revision,
 		boolean recurse)
 		throws SVNClientException;
+	
+	/**
+	 * get the dirEntry for the given url
+	 * @param url
+	 * @param revision
+	 * @return
+	 * @throws SVNClientException
+	 */
+	public ISVNDirEntry getDirEntry(SVNUrl url, SVNRevision revision)
+			throws SVNClientException;
+		
 	/**
 	 * Returns the status of a single file in the path.
 	 *

@@ -255,6 +255,26 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 		}
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getDirEntry(org.tigris.subversion.svnclientadapter.SVNUrl, org.tigris.subversion.svnclientadapter.SVNRevision)
+	 */
+	public ISVNDirEntry getDirEntry(SVNUrl url, SVNRevision revision)
+		throws SVNClientException {
+		
+		// list give the DirEntrys of the elements of a directory or the DirEntry
+		// of a file
+		ISVNDirEntry[] entries = getList(url.getParent(),revision,false);
+		
+		String expectedPath = url.getSegment(url.getSegments().length-1);
+		for (int i = 0; i < entries.length;i++) {
+			if (entries[i].getPath().equals(expectedPath)) {
+				return entries[i];
+			}
+		}
+		return null; // not found
+	}
+
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.subclipse.client.ISVNClientAdapter#remove(java.io.File[], boolean)
 	 */

@@ -171,6 +171,10 @@ public class JhlConverter {
 		return entries;
 	}
 
+	static JhlDirEntry convert(DirEntry dirEntry) {
+		return new JhlDirEntry(dirEntry);
+	}
+
 	static ISVNLogMessage[] convert(LogMessage[] msg) {
 		JhlLogMessage[] messages = new JhlLogMessage[msg.length];
 		for(int i=0; i < msg.length; i++) {
