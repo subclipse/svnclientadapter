@@ -54,14 +54,12 @@
  */ 
 package org.tigris.subversion.svnclientadapter.javahl;
 
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 
-import org.tigris.subversion.javahl.ClientException;
 import org.tigris.subversion.javahl.NodeKind;
 import org.tigris.subversion.javahl.Notify;
 import org.tigris.subversion.svnclientadapter.ISVNNotifyListener;
+import org.tigris.subversion.svnclientadapter.SVNNotificationHandler;
 
 
 
@@ -76,26 +74,9 @@ import org.tigris.subversion.svnclientadapter.ISVNNotifyListener;
  *         <a href="mailto:cchabanois@ifrance.com">cchabanois@ifrance.com</a>
  *
  */
-public class JhlNotificationHandler implements Notify {
-    private List notifylisteners = new ArrayList();
+public class JhlNotificationHandler extends SVNNotificationHandler implements Notify {
     private boolean receivedSomeChange;
     private boolean sentFirstTxdelta;
-    private int command;    
-    
-    /**
-     * Add a notification listener
-     */
-    public void add(ISVNNotifyListener listener) {
-        notifylisteners.add(listener);
-    }
-
-    /**
-     * Remove a notification listener 
-     */
-    public void remove(ISVNNotifyListener listener) {
-        notifylisteners.remove(listener);
-    }
-    
     
     /**
      * Handler for Subversion notifications.
@@ -118,10 +99,7 @@ public class JhlNotificationHandler implements Notify {
         int propState,
         long revision) {
 
-        for(Iterator it=notifylisteners.iterator(); it.hasNext();) {
-            ISVNNotifyListener listener = (ISVNNotifyListener)it.next();
-            listener.onNotify(path, JhlConverter.convertNodeKind(kind));
-        }                        
+        notifyListenersOfChange(path, JhlConverter.convertNodeKind(kind));
 
         switch (action) {
             case Notify.Action.skip :
@@ -230,56 +208,9 @@ public class JhlNotificationHandler implements Notify {
     }
 
         
-    private void logMessage(String message) {
-        for(Iterator it=notifylisteners.iterator(); it.hasNext();) {
-            ISVNNotifyListener listener = (ISVNNotifyListener)it.next();
-            listener.logMessage(message);
-        }                        
-    }
-
-    private void logError(String message) {
-        for(Iterator it=notifylisteners.iterator(); it.hasNext();) {
-            ISVNNotifyListener listener = (ISVNNotifyListener)it.next();
-            listener.logError(message);
-        }                        
-    }
-
-    private void logCompleted(String message) {
-        for(Iterator it=notifylisteners.iterator(); it.hasNext();) {
-            ISVNNotifyListener listener = (ISVNNotifyListener)it.next();
-            listener.logCompleted(message);
-        }                        
-    }
-
-        
     public void setCommand(int command) {
         receivedSomeChange = false;
         sentFirstTxdelta = false;
-        this.command = command;        
-        for(Iterator it=notifylisteners.iterator(); it.hasNext();) {
-            ISVNNotifyListener listener = (ISVNNotifyListener)it.next();
-            listener.setCommand(command);
-        }            
+        super.setCommand(command);
     }
-    
-    public void setCommandLine(String commandLine) {
-        for(Iterator it=notifylisteners.iterator(); it.hasNext();) {
-            ISVNNotifyListener listener = (ISVNNotifyListener)it.next();
-            listener.logCommandLine(commandLine);
-        }                        
-    }
-
-    /**
-     * Called when a method of SVNClientAdapter throw an exception
-     */        
-    public void setException(ClientException clientException) {
-        Throwable e = clientException;
-        while (e != null) {
-            logError(e.getMessage());
-            e = e.getCause();                
-        }
-    }
-        
-
-
 }

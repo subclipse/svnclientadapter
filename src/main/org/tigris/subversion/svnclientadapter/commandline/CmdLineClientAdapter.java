@@ -91,32 +91,76 @@ import org.tigris.subversion.svnclientadapter.SVNUrl;
 public class CmdLineClientAdapter implements ISVNClientAdapter {
 
 	//Fields
-	private CommandLine _cmd = new CommandLine("svn");
+    private CmdLineNotificationHandler notificationHandler = new CmdLineNotificationHandler();
+	private CommandLine _cmd = new CommandLine("svn",notificationHandler);
+    private String version = null;
+    private final static String[] checkedVersions = 
+    {
+        "svn, version 0.35.1 (r8050)" 
+    };
 
 	//Methods
 	public static boolean isAvailable() {
 		// this will need to be fixed when path to svn will be customizable 
-		CommandLine cmd = new CommandLine("svn");
+		CommandLine cmd = new CommandLine("svn", new CmdLineNotificationHandler());
 		try {
-			cmd.version();
-			return true;
+			String version = cmd.version();
+    		return true;
 		} catch (Exception e) {
 			return false;
 		}
 	}
-
+    
+    /**
+     * @return something like "svn, version 0.35.1 (r8050)"
+     */
+    public String getVersion() throws SVNClientException {
+        if (version != null)
+            return version;
+        try {
+            version = _cmd.version();
+            int i = version.indexOf("\n\r");
+            version = version.substring(0,i);
+            return version;
+        } catch (CmdLineException e) {
+            throw SVNClientException.wrapException(e); 
+        }
+    }
+    
+    /**
+     * tells if this version of svn has been tested with this version of
+     * command line interface
+     * @return
+     */
+    public boolean checkedVersion() {
+        String version;
+        try {
+            version = getVersion();
+        } catch (SVNClientException e) {
+            return false;
+        }
+        for (int i = 0; i < checkedVersions.length;i++) {
+            if (version.equals(checkedVersions[i]))
+                return true;
+        }
+        return false;
+    }
+    
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.subclipse.client.ISVNClientAdapter#addNotifyListener(org.tigris.subversion.subclipse.client.ISVNClientNotifyListener)
 	 */
 	public void addNotifyListener(ISVNNotifyListener listener) {
-		_cmd.listeners.add(listener);
+        notificationHandler.add(listener);
+       if (!checkedVersion()) {
+            listener.logError("Warning : this version of svn has not been tested with command line client interface. Some commands will perhaps not work"); 
+       }
 	}
 
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.subclipse.client.ISVNClientAdapter#removeNotifyListener(org.tigris.subversion.subclipse.client.ISVNClientNotifyListener)
 	 */
 	public void removeNotifyListener(ISVNNotifyListener listener) {
-		_cmd.listeners.remove(listener);
+        notificationHandler.remove(listener);
 	}
 
 	/* (non-Javadoc)
@@ -451,13 +495,6 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 		}
 	}
 
-	private void notifyListenersOfChange(String path, SVNNodeKind type) {
-		for (Iterator i = _cmd.listeners.iterator(); i.hasNext();) {
-			ISVNNotifyListener listener = (ISVNNotifyListener) i.next();
-			listener.onNotify(path, type);
-		}
-	}
-
 	private long refreshChangedResources(String changedResourcesList) {
 		StringTokenizer st = new StringTokenizer(changedResourcesList, Helper.NEWLINE);
 		while (st.hasMoreTokens()) {
@@ -482,7 +519,7 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 			//check to see if this is a file or a dir.
 			File f = new File(fileName);
 
-			notifyListenersOfChange(fileName, f.isDirectory() ? SVNNodeKind.DIR : SVNNodeKind.FILE);
+            notificationHandler.notifyListenersOfChange(fileName, f.isDirectory() ? SVNNodeKind.DIR : SVNNodeKind.FILE);
 		}
 		return SVNRevision.SVN_INVALID_REVNUM;
 	}

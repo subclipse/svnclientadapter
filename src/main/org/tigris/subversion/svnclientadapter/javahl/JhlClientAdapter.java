@@ -206,10 +206,10 @@ public class JhlClientAdapter implements ISVNClientAdapter {
     public void addFile(File file) throws SVNClientException {
         try{
             notificationHandler.setCommand(ISVNNotifyListener.Command.ADD);
-            notificationHandler.setCommandLine("add -N "+file.toString());
+            notificationHandler.logCommandLine("add -N "+file.toString());
             svnClient.add(fileToSVNPath(file, true), false);
         } catch (ClientException e) {
-            notificationHandler.setException(e);
+            notificationHandler.logException(e);
             throw new SVNClientException(e);
         }        
     }
@@ -222,13 +222,13 @@ public class JhlClientAdapter implements ISVNClientAdapter {
         throws SVNClientException {
         try {
             notificationHandler.setCommand(ISVNNotifyListener.Command.ADD);            
-            notificationHandler.setCommandLine(
+            notificationHandler.logCommandLine(
                 "add"+
                 (recurse?"":"-N")+
                 " "+dir.toString());
             svnClient.add(fileToSVNPath(dir, true), recurse);
         } catch (ClientException e) {
-            notificationHandler.setException(e);
+            notificationHandler.logException(e);
             throw new SVNClientException(e);
         }
     }
@@ -250,7 +250,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
         throws SVNClientException {
         try {
             notificationHandler.setCommand(ISVNNotifyListener.Command.CHECKOUT);
-            notificationHandler.setCommandLine(
+            notificationHandler.logCommandLine(
                 "checkout" +
                 (recurse?"":" -N") + 
                 " -r "+revision.toString()+
@@ -261,7 +261,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
                 JhlConverter.convert(revision),
                 recurse);
         } catch (ClientException e) {
-            notificationHandler.setException(e);
+            notificationHandler.logException(e);
             throw new SVNClientException(e);
         }
     }
@@ -289,11 +289,11 @@ public class JhlClientAdapter implements ISVNClientAdapter {
                 files[i] = fileToSVNPath((File) paths[i], true);
                 commandLine+=" "+files[i].toString();
             }
-            notificationHandler.setCommandLine(commandLine);
+            notificationHandler.logCommandLine(commandLine);
 
             return svnClient.commit(files, message, recurse);
         } catch (ClientException e) {
-            notificationHandler.setException(e);
+            notificationHandler.logException(e);
             throw new SVNClientException(e);
         }
 
@@ -312,10 +312,10 @@ public class JhlClientAdapter implements ISVNClientAdapter {
         try {
             notificationHandler.setCommand(ISVNNotifyListener.Command.LS);
             String commandLine = "list -r "+revision.toString()+(recurse?"-R":"")+" "+url.toString();
-            notificationHandler.setCommandLine(commandLine);		
+            notificationHandler.logCommandLine(commandLine);		
             return JhlConverter.convert(svnClient.list(url.toString(), JhlConverter.convert(revision), recurse));
         } catch (ClientException e) {
-            notificationHandler.setException(e);
+            notificationHandler.logException(e);
             throw new SVNClientException(e);
         }
 	}
@@ -331,7 +331,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
             throws SVNClientException {
         notificationHandler.setCommand(ISVNNotifyListener.Command.STATUS);
         String filePathSVN = fileToSVNPath(path, true);
-        notificationHandler.setCommandLine("status -N "+filePathSVN);
+        notificationHandler.logCommandLine("status -N "+filePathSVN);
         try {
             return new JhlStatus(svnClient.singleStatus(filePathSVN, false));
         } catch (ClientException e) {
@@ -359,7 +359,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
                 ));
             } else
             {
-                notificationHandler.setException(e);
+                notificationHandler.logException(e);
                 throw new SVNClientException(e);
             }
         }
@@ -375,11 +375,11 @@ public class JhlClientAdapter implements ISVNClientAdapter {
 		throws SVNClientException {
 		notificationHandler.setCommand(ISVNNotifyListener.Command.STATUS);
 		String filePathSVN = fileToSVNPath(path, true);
-		notificationHandler.setCommandLine("status " + filePathSVN);
+		notificationHandler.logCommandLine("status " + filePathSVN);
 		try {
 			return JhlConverter.convert(svnClient.status(filePathSVN, true, false, getAll));
 		} catch (ClientException e) {
-			notificationHandler.setException(e);
+			notificationHandler.logException(e);
 			throw new SVNClientException(e);
 		}
 	}
@@ -396,11 +396,11 @@ public class JhlClientAdapter implements ISVNClientAdapter {
 
 			String src = fileToSVNPath(srcPath, true);
 			String dest = fileToSVNPath(destPath, true);
-			notificationHandler.setCommandLine("copy " + src + " " + dest);
+			notificationHandler.logCommandLine("copy " + src + " " + dest);
 			svnClient.copy(src, dest, "", Revision.HEAD);
 			// last two parameters are not used
 		} catch (ClientException e) {
-			notificationHandler.setException(e);
+			notificationHandler.logException(e);
 			throw new SVNClientException(e);
 		}
 	}
@@ -417,11 +417,11 @@ public class JhlClientAdapter implements ISVNClientAdapter {
 			notificationHandler.setCommand(ISVNNotifyListener.Command.COPY);
 			String src = fileToSVNPath(srcPath, true);
 			String dest = destUrl.toString();
-			notificationHandler.setCommandLine("copy " + src + " " + dest);
+			notificationHandler.logCommandLine("copy " + src + " " + dest);
 			svnClient.copy(src, dest, message, Revision.HEAD);
 			// last parameter is not used
 		} catch (ClientException e) {
-			notificationHandler.setException(e);
+			notificationHandler.logException(e);
 			throw new SVNClientException(e);
 		}
 	}
@@ -438,10 +438,10 @@ public class JhlClientAdapter implements ISVNClientAdapter {
 			notificationHandler.setCommand(ISVNNotifyListener.Command.COPY);
 			String src = srcUrl.toString();
 			String dest = fileToSVNPath(destPath, true);
-			notificationHandler.setCommandLine("copy " + src + " " + dest);
+			notificationHandler.logCommandLine("copy " + src + " " + dest);
 			svnClient.copy(src, dest, "", JhlConverter.convert(revision));
 		} catch (ClientException e) {
-			notificationHandler.setException(e);
+			notificationHandler.logException(e);
 			throw new SVNClientException(e);
 		}
 	}
@@ -462,11 +462,11 @@ public class JhlClientAdapter implements ISVNClientAdapter {
 			notificationHandler.setCommand(ISVNNotifyListener.Command.COPY);
 			String src = srcUrl.toString();
 			String dest = destUrl.toString();
-			notificationHandler.setCommandLine("copy " + src + " " + dest);
+			notificationHandler.logCommandLine("copy " + src + " " + dest);
 
 			svnClient.copy(src, dest, message, JhlConverter.convert(revision));
 		} catch (ClientException e) {
-			notificationHandler.setException(e);
+			notificationHandler.logException(e);
 			throw new SVNClientException(e);
 		}
 	}
@@ -488,11 +488,11 @@ public class JhlClientAdapter implements ISVNClientAdapter {
                 targets[i] = url[i].toString(); 
                 commandLine += " "+targets[i];
             }
-            notificationHandler.setCommandLine(commandLine);
+            notificationHandler.logCommandLine(commandLine);
 		    svnClient.remove(targets,message,false);
             
         } catch (ClientException e) {
-            notificationHandler.setException(e);
+            notificationHandler.logException(e);
             throw new SVNClientException(e);
         }           
 	}
@@ -519,11 +519,11 @@ public class JhlClientAdapter implements ISVNClientAdapter {
                 commandLine += " "+targets[i];
             }
             
-            notificationHandler.setCommandLine(commandLine);
+            notificationHandler.logCommandLine(commandLine);
    
             svnClient.remove(targets,"",force);
         } catch (ClientException e) {
-            notificationHandler.setException(e);
+            notificationHandler.logException(e);
             throw new SVNClientException(e);
         }           
 	}
@@ -546,12 +546,12 @@ public class JhlClientAdapter implements ISVNClientAdapter {
 			notificationHandler.setCommand(ISVNNotifyListener.Command.EXPORT);
 			String src = srcUrl.toString();
 			String dest = fileToSVNPath(destPath, true);
-			notificationHandler.setCommandLine(
+			notificationHandler.logCommandLine(
 				"export -r " + revision.toString() + ' ' + src + ' ' + dest);
 
 			svnClient.doExport(src, dest, JhlConverter.convert(revision), force);
 		} catch (ClientException e) {
-			notificationHandler.setException(e);
+			notificationHandler.logException(e);
 			throw new SVNClientException(e);
 		}
 	}
@@ -570,11 +570,11 @@ public class JhlClientAdapter implements ISVNClientAdapter {
 			notificationHandler.setCommand(ISVNNotifyListener.Command.EXPORT);
 			String src = fileToSVNPath(srcPath, true);
 			String dest = fileToSVNPath(destPath, true);
-			notificationHandler.setCommandLine("export " + src + ' ' + dest);
+			notificationHandler.logCommandLine("export " + src + ' ' + dest);
 			// in this case, revision is not used but must be valid
 			svnClient.doExport(src, dest, Revision.HEAD, force);
 		} catch (ClientException e) {
-			notificationHandler.setException(e);
+			notificationHandler.logException(e);
 			throw new SVNClientException(e);
 		}
 	}
@@ -599,7 +599,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
 			notificationHandler.setCommand(ISVNNotifyListener.Command.IMPORT);
 			String src = fileToSVNPath(path, true);
 			String dest = url.toString();
-			notificationHandler.setCommandLine(
+			notificationHandler.logCommandLine(
 				"import -m \""
 					+ message
 					+ "\" "
@@ -609,7 +609,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
 					+ dest);
 			svnClient.doImport(src, dest, message, recurse);
 		} catch (ClientException e) {
-			notificationHandler.setException(e);
+			notificationHandler.logException(e);
 			throw new SVNClientException(e);
 		}
 	}
@@ -624,11 +624,11 @@ public class JhlClientAdapter implements ISVNClientAdapter {
         try {
             notificationHandler.setCommand(ISVNNotifyListener.Command.MKDIR);
 		    String target = url.toString();
-            notificationHandler.setCommandLine(
+            notificationHandler.logCommandLine(
                 "mkdir -m \""+message+"\" "+target);
             svnClient.mkdir(new String[] { target },message);
         } catch (ClientException e) {
-            notificationHandler.setException(e);
+            notificationHandler.logException(e);
             throw new SVNClientException(e);
         }                   	
 	}
@@ -642,11 +642,11 @@ public class JhlClientAdapter implements ISVNClientAdapter {
         try {
             notificationHandler.setCommand(ISVNNotifyListener.Command.MKDIR);
             String target = fileToSVNPath(file, true);
-            notificationHandler.setCommandLine(
+            notificationHandler.logCommandLine(
                 "mkdir "+target);
             svnClient.mkdir(new String[] { target },"");
         } catch (ClientException e) {
-            notificationHandler.setException(e);
+            notificationHandler.logException(e);
             throw new SVNClientException(e);
         }           	
 	}
@@ -663,11 +663,11 @@ public class JhlClientAdapter implements ISVNClientAdapter {
             notificationHandler.setCommand(ISVNNotifyListener.Command.MOVE);
 		    String src = fileToSVNPath(srcPath, true);
             String dest = fileToSVNPath(destPath, true);
-            notificationHandler.setCommandLine(
+            notificationHandler.logCommandLine(
                     "move "+src+' '+dest);        
             svnClient.move(src,dest,"",Revision.HEAD,force);
         } catch (ClientException e) {
-            notificationHandler.setException(e);
+            notificationHandler.logException(e);
             throw new SVNClientException(e);
         }                   	
 	}
@@ -688,7 +688,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
 			notificationHandler.setCommand(ISVNNotifyListener.Command.MOVE);
 			String src = srcUrl.toString();
 			String dest = destUrl.toString();
-			notificationHandler.setCommandLine(
+			notificationHandler.logCommandLine(
 				"move -m \""
 					+ message
 					+ "\" -r "
@@ -699,7 +699,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
 					+ dest);
 			svnClient.move(src, dest, message, JhlConverter.convert(revision), false);
 		} catch (ClientException e) {
-			notificationHandler.setException(e);
+			notificationHandler.logException(e);
 			throw new SVNClientException(e);
 		}
 	}	
@@ -716,7 +716,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
 		try {
 			notificationHandler.setCommand(ISVNNotifyListener.Command.UPDATE);
 			String target = fileToSVNPath(path, true);
-			notificationHandler.setCommandLine(
+			notificationHandler.logCommandLine(
 				"update -r "
 					+ revision.toString()
 					+ ' '
@@ -724,7 +724,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
 					+ target);
 			svnClient.update(target, JhlConverter.convert(revision), recurse);
 		} catch (ClientException e) {
-			notificationHandler.setException(e);
+			notificationHandler.logException(e);
 			throw new SVNClientException(e);
 		}
 	}
@@ -739,13 +739,13 @@ public class JhlClientAdapter implements ISVNClientAdapter {
         try {
             notificationHandler.setCommand(ISVNNotifyListener.Command.REVERT);
             String target = fileToSVNPath(path, true);
-            notificationHandler.setCommandLine(
+            notificationHandler.logCommandLine(
                 "revert "+
                 (recurse?"":"-N ")+
                 target); 
             svnClient.revert(target,recurse);
         } catch (ClientException e) {
-            notificationHandler.setException(e);
+            notificationHandler.logException(e);
             throw new SVNClientException(e);
         }         
     }
@@ -765,7 +765,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
 		try {
 			notificationHandler.setCommand(ISVNNotifyListener.Command.LOG);
 			String target = url.toString();
-			notificationHandler.setCommandLine(
+			notificationHandler.logCommandLine(
 				"log -r "
 					+ revisionStart.toString()
 					+ ":"
@@ -775,7 +775,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
 
 			return JhlConverter.convert(svnClient.logMessages(target, JhlConverter.convert(revisionStart), JhlConverter.convert(revisionEnd)));
 		} catch (ClientException e) {
-			notificationHandler.setException(e);
+			notificationHandler.logException(e);
 			throw new SVNClientException(e);
 		}
 	} 
@@ -794,9 +794,9 @@ public class JhlClientAdapter implements ISVNClientAdapter {
 		throws SVNClientException {
 		try {
 			notificationHandler.setCommand(
-				ISVNNotifyListener.Command.UNDEFINED);
+				ISVNNotifyListener.Command.LOG);
 			String target = fileToSVNPath(path, true);
-			notificationHandler.setCommandLine(
+			notificationHandler.logCommandLine(
 				"log -r "
 					+ revisionStart.toString()
 					+ ":"
@@ -805,7 +805,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
 					+ target);
 			return JhlConverter.convert(svnClient.logMessages(target, JhlConverter.convert(revisionStart), JhlConverter.convert(revisionEnd)));
 		} catch (ClientException e) {
-			notificationHandler.setException(e);
+			notificationHandler.logException(e);
 			throw new SVNClientException(e);
 		}
 	}    
@@ -829,12 +829,17 @@ public class JhlClientAdapter implements ISVNClientAdapter {
 		throws SVNClientException {
 		try {
 			notificationHandler.setCommand(
-				ISVNNotifyListener.Command.UNDEFINED);
+				ISVNNotifyListener.Command.CAT);
+            notificationHandler.logCommandLine(
+                            "cat -r "
+                                + revision.toString()
+                                + " "
+                                + url.toString());                
 			byte[] contents = svnClient.fileContent(url.toString(), JhlConverter.convert(revision));
 			InputStream input = new ByteArrayInputStream(contents);
 			return input;
 		} catch (ClientException e) {
-			notificationHandler.setException(e);
+			notificationHandler.logException(e);
 			throw new SVNClientException(e);
 		}
 	}
@@ -857,7 +862,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
 			notificationHandler.setCommand(ISVNNotifyListener.Command.PROPSET);
 
 			String target = fileToSVNPath(path, true);
-			notificationHandler.setCommandLine(
+			notificationHandler.logCommandLine(
 				"propset "
 					+ propertyName
 					+ " \""
@@ -867,7 +872,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
 
 			svnClient.propertySet(target, propertyName, propertyValue, recurse);
 		} catch (ClientException e) {
-			notificationHandler.setException(e);
+			notificationHandler.logException(e);
 			throw new SVNClientException(e);
 		}
 	}
@@ -885,7 +890,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
 			notificationHandler.setCommand(ISVNNotifyListener.Command.PROPSET);
 
 			String target = fileToSVNPath(path, true);
-			notificationHandler.setCommandLine(
+			notificationHandler.logCommandLine(
 				"propset "
 					+ propertyName
 					+ "-F \""
@@ -901,7 +906,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
 
 			svnClient.propertySet(target, propertyName, propertyBytes, recurse);
 		} catch (ClientException e) {
-			notificationHandler.setException(e);
+			notificationHandler.logException(e);
 			throw new SVNClientException(e);
 		}
 	}
@@ -917,10 +922,10 @@ public class JhlClientAdapter implements ISVNClientAdapter {
 	public ISVNProperty propertyGet(File path, String propertyName)
 		throws SVNClientException {
 		try {
-			notificationHandler.setCommand(ISVNNotifyListener.Command.PROPSET);
+			notificationHandler.setCommand(ISVNNotifyListener.Command.PROPGET);
 
 			String target = fileToSVNPath(path, true);
-			notificationHandler.setCommandLine(
+			notificationHandler.logCommandLine(
 				"propget " + propertyName + " " + target);
 
 			PropertyData propData = svnClient.propertyGet(target, propertyName);
@@ -929,7 +934,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
             else
 			    return new JhlPropertyData(propData);
 		} catch (ClientException e) {
-			notificationHandler.setException(e);
+			notificationHandler.logException(e);
 			throw new SVNClientException(e);
 		}
 
@@ -947,11 +952,11 @@ public class JhlClientAdapter implements ISVNClientAdapter {
             notificationHandler.setCommand(ISVNNotifyListener.Command.PROPDEL);
             
             String target = fileToSVNPath(path, true);
-            notificationHandler.setCommandLine("propdel "+propertyName+" "+target);
+            notificationHandler.logCommandLine("propdel "+propertyName+" "+target);
                     
             svnClient.propertySet(target, propertyName, (String)null, recurse);
         } catch (ClientException e) {
-            notificationHandler.setException(e);
+            notificationHandler.logException(e);
             throw new SVNClientException(e);            
         }        
     }
@@ -1128,11 +1133,11 @@ public class JhlClientAdapter implements ISVNClientAdapter {
             if (!newPath.equals(oldPath))
                 commandLine += "--new "+newTarget+" ";
             
-            notificationHandler.setCommandLine(commandLine);
+            notificationHandler.logCommandLine(commandLine);
             
             svnClient.diff(oldTarget,JhlConverter.convert(oldPathRevision),newTarget,JhlConverter.convert(newPathRevision), svnOutFile, recurse);
         } catch (ClientException e) {
-            notificationHandler.setException(e);
+            notificationHandler.logException(e);
             throw new SVNClientException(e);            
         }
     }
@@ -1175,11 +1180,11 @@ public class JhlClientAdapter implements ISVNClientAdapter {
             if (!newUrl.equals(oldUrl))
                 commandLine += newUrl+" ";
             
-            notificationHandler.setCommandLine(commandLine);
+            notificationHandler.logCommandLine(commandLine);
             
             svnClient.diff(oldUrl.toString(),JhlConverter.convert(oldUrlRevision),newUrl.toString(),JhlConverter.convert(newUrlRevision), svnOutFile, recurse);
         } catch (ClientException e) {
-            notificationHandler.setException(e);
+            notificationHandler.logException(e);
             throw new SVNClientException(e);            
         }
     }
@@ -1208,11 +1213,11 @@ public class JhlClientAdapter implements ISVNClientAdapter {
             if(revisionEnd != SVNRevision.HEAD || !revisionStart.equals(new SVNRevision.Number(1)))
                 commandLine = commandLine + "-r " + revisionStart.toString() + ":" + revisionEnd.toString() + " ";
             commandLine = commandLine + target.toString();
-            notificationHandler.setCommandLine(commandLine);
+            notificationHandler.logCommandLine(commandLine);
             annotations = svnClient.blame(target, JhlConverter.convert(revisionStart), JhlConverter.convert(revisionEnd));
             return new SVNAnnotations(annotations);
         } catch (ClientException e) { 
-            notificationHandler.setException(e);
+            notificationHandler.logException(e);
             throw new SVNClientException(e);
         }
     }

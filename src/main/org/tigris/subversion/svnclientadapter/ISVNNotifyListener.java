@@ -82,18 +82,42 @@ public interface ISVNNotifyListener {
         public static final int PROPDEL = 15;
         public static final int REVERT = 16;
         public static final int DIFF = 17;
+        public static final int CAT = 18;
+        public static final int INFO = 19;
+        public static final int PROPGET = 20;
     }    
 
     public void setCommand(int command);
     
+    /**
+     * called at the beginning of the command
+     * @param commandLine
+     */
     public void logCommandLine(String commandLine);
     
+    /**
+     * called multiple times during the execution of a command
+     * @param message
+     */
     public void logMessage(String message);
     
+    /**
+     * called when an error happen during a command
+     * @param message
+     */
     public void logError(String message);
-    
+
+    /**
+     * called when a command has completed
+     * @param message
+     */    
     public void logCompleted(String message);
     
+    /**
+     * called when a subversion action happen on a file (add, delete, update ...)
+     * @param path the path of the file or dir
+     * @param kind file or dir
+     */
     public void onNotify(String path, SVNNodeKind kind);
     
 }
