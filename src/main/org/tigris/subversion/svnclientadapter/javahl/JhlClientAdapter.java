@@ -1667,4 +1667,40 @@ public class JhlClientAdapter implements ISVNClientAdapter {
         }
     }
     
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#merge(java.lang.String, org.tigris.subversion.svnclientadapter.SVNRevision, java.lang.String, org.tigris.subversion.svnclientadapter.SVNRevision, java.lang.String, boolean, boolean)
+	 */
+	public void merge(SVNUrl path1, SVNRevision revision1, SVNUrl path2,
+			SVNRevision revision2, File localPath, boolean force,
+			boolean recurse) throws SVNClientException {
+ 
+		try {
+            notificationHandler.setCommand(ISVNNotifyListener.Command.MERGE);
+            
+            String target = fileToSVNPath(localPath, false);
+            String commandLine = "merge";
+            if (!recurse) {
+            	commandLine += " -N";
+            }
+            if (force) {
+            	commandLine += " --force";
+            }
+            if (path1.toString().equals(path2.toString())) {
+            	commandLine += " -r" + revision1.toString() + ":" + revision2.toString() + " " + path1;
+            } else {
+            	commandLine += " " + path1 + "@" + revision1.toString() + " " + path2 + "@" + revision2.toString();
+            }
+            commandLine += " " + target;
+            notificationHandler.logCommandLine(commandLine);
+            File baseDir = SVNBaseDir.getBaseDir(localPath);
+            notificationHandler.setBaseDir(baseDir);
+
+            svnClient.merge(path1.toString(), JhlConverter.convert(revision1), path2.toString(), JhlConverter.convert(revision2), target, force, recurse );
+            
+        } catch (ClientException e) {
+            notificationHandler.logException(e);
+            throw new SVNClientException(e);            
+        }        
+
+	}
 }

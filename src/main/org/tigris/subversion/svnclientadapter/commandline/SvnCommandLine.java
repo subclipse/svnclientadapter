@@ -776,7 +776,32 @@ public class SvnCommandLine extends CommandLine {
         return execString(args,false);
     }
     
-	/*
+    /**
+     * Update the working copy to mirror a new URL within the repository.
+     */
+    String merge(String path1, String revision1, String path2, String revision2, String localPath, boolean force, boolean recurse) throws CmdLineException {
+        setCommand(ISVNNotifyListener.Command.MERGE, true);
+        ArrayList args = new ArrayList();
+        args.add("merge");
+        if (!recurse)
+        	args.add("-N");
+        if (force)
+        	args.add("--force");
+        if (path1.equals(path2)) {
+        	args.add("-r");
+        	args.add(validRev(revision1) + ":" + validRev(revision2));
+        	args.add(path1);
+        } else {
+        	args.add(path1 + "@" + validRev(revision1));
+        	args.add(path2 + "@" + validRev(revision2));
+        }
+        args.add(localPath);
+        addAuthInfo(args);
+        addConfigInfo(args);        
+        return execString(args,false);
+    }
+
+    /*
 	 * (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.commandline.CommandLine#notifyFromSvnOutput(java.lang.String)
 	 */
