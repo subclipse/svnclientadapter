@@ -130,6 +130,9 @@ public class JhlClientAdapter implements ISVNClientAdapter {
 	        	//workaround to solve Subclipse ISSUE #83
 	        	String os = System.getProperty("osgi.os");
 				if( "win32".equals(os) ) {
+					System.loadLibrary("libapr");
+					System.loadLibrary("libapriconv");
+					System.loadLibrary("libaprutil");
 					System.loadLibrary("libeay32");
 					System.loadLibrary("libdb42");
 					System.loadLibrary("ssleay32");
