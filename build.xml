@@ -11,7 +11,7 @@
   <property file="build.properties"/>
 
   <path id="project.classpath">
-    <pathelement location="${javahl.jar}"/>
+    <pathelement location="${svnjavahl.jar}"/>
   </path>
 
   <!-- ================================================================= -->
