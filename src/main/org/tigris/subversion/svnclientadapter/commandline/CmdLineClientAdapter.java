@@ -22,14 +22,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
+import org.tigris.subversion.svnclientadapter.AbstractClientAdapter;
 import org.tigris.subversion.svnclientadapter.ISVNAnnotations;
-import org.tigris.subversion.svnclientadapter.ISVNClientAdapter;
 import org.tigris.subversion.svnclientadapter.ISVNDirEntry;
 import org.tigris.subversion.svnclientadapter.ISVNInfo;
 import org.tigris.subversion.svnclientadapter.ISVNLogMessage;
@@ -38,7 +37,6 @@ import org.tigris.subversion.svnclientadapter.ISVNProperty;
 import org.tigris.subversion.svnclientadapter.ISVNStatus;
 import org.tigris.subversion.svnclientadapter.SVNBaseDir;
 import org.tigris.subversion.svnclientadapter.SVNClientException;
-import org.tigris.subversion.svnclientadapter.SVNKeywords;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
 import org.tigris.subversion.svnclientadapter.SVNStatusUnversioned;
 import org.tigris.subversion.svnclientadapter.SVNUrl;
@@ -53,7 +51,7 @@ import org.tigris.subversion.svnclientadapter.StringUtils;
  * @author Philip Schatz (schatz at tigris)
  * @author Cédric Chabanois (cchabanois at no-log.org)
  */
-public class CmdLineClientAdapter implements ISVNClientAdapter {
+public class CmdLineClientAdapter extends AbstractClientAdapter {
 
 	//Fields
     private CmdLineNotificationHandler notificationHandler = new CmdLineNotificationHandler();
@@ -740,61 +738,6 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 
     /*
      * (non-Javadoc)
-     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getIgnoredPatterns(java.io.File)
-     */
-	public List getIgnoredPatterns(File path) throws SVNClientException {
-		if (!path.isDirectory())
-			return null;
-		List list = new ArrayList();
-		ISVNProperty pd = propertyGet(path, "svn:ignore");
-		if (pd == null)
-			return list;
-		String patterns = pd.getValue();
-		StringTokenizer st = new StringTokenizer(patterns, "\n");
-		while (st.hasMoreTokens()) {
-			String entry = st.nextToken();
-			if (!entry.equals(""))
-				list.add(entry);
-		}
-		return list;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.tigris.subversion.subclipse.client.ISVNClientAdapter#addToIgnoredPatterns(java.io.File, java.lang.String)
-	 */
-	public void addToIgnoredPatterns(File file, String pattern) throws SVNClientException {
-		List patterns = getIgnoredPatterns(file);
-		if (patterns == null) // not a directory
-			return;
-
-		// verify that the pattern has not already been added
-		for (Iterator it = patterns.iterator(); it.hasNext();) {
-			if (((String) it.next()).equals(pattern))
-				return; // already added
-		}
-
-		patterns.add(pattern);
-		setIgnoredPatterns(file, patterns);
-	}
-
-    /*
-     * (non-Javadoc)
-     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#setIgnoredPatterns(java.io.File, java.util.List)
-     */
-	public void setIgnoredPatterns(File path, List patterns) throws SVNClientException {
-		if (!path.isDirectory())
-			return;
-		StringBuffer values = new StringBuffer();
-		for (Iterator it = patterns.iterator(); it.hasNext();) {
-			String pattern = (String) it.next();
-			values.append('\n');
-			values.append(pattern);
-		}
-		propertySet(path, "svn:ignore", values.toString(), false);
-	}
-
-    /*
-     * (non-Javadoc)
      * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#mkdir(java.io.File)
      */
 	public void mkdir(File file) throws SVNClientException {
@@ -962,76 +905,6 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 			byteArray[i] = b.byteValue();
 		}
 		return byteArray;
-	}
-
-    /*
-     * (non-Javadoc)
-     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getKeywords(java.io.File)
-     */
-	public SVNKeywords getKeywords(File path) throws SVNClientException {
-		// copied directly from JhlClientAdapter
-		ISVNProperty prop = propertyGet(path, ISVNProperty.KEYWORDS);
-		if (prop == null)
-			return new SVNKeywords();
-
-		// value is a space-delimited list of the keywords names
-		String value = prop.getValue();
-
-		return new SVNKeywords(value);
-	}
-
-    /*
-     * (non-Javadoc)
-     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#setKeywords(java.io.File, org.tigris.subversion.svnclientadapter.SVNKeywords, boolean)
-     */
-	public void setKeywords(File path, SVNKeywords keywords, boolean recurse)
-		throws SVNClientException {
-		// copied directly from JhlClientAdapter
-		propertySet(path, ISVNProperty.KEYWORDS, keywords.toString(), recurse);
-	}
-
-    /*
-     * (non-Javadoc)
-     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#addKeywords(java.io.File, org.tigris.subversion.svnclientadapter.SVNKeywords)
-     */
-	public SVNKeywords addKeywords(File path, SVNKeywords keywords) throws SVNClientException {
-		// copied directly from JhlClientAdapter
-		SVNKeywords currentKeywords = getKeywords(path);
-		if (keywords.isHeadUrl())
-			currentKeywords.setHeadUrl(true);
-		if (keywords.isId())
-			currentKeywords.setId(true);
-		if (keywords.isLastChangedBy())
-			currentKeywords.setLastChangedBy(true);
-		if (keywords.isLastChangedDate())
-			currentKeywords.setLastChangedBy(true);
-		if (keywords.isLastChangedRevision())
-			currentKeywords.setLastChangedRevision(true);
-		setKeywords(path, currentKeywords, false);
-
-		return currentKeywords;
-	}
-
-    /*
-     * (non-Javadoc)
-     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#removeKeywords(java.io.File, org.tigris.subversion.svnclientadapter.SVNKeywords)
-     */
-	public SVNKeywords removeKeywords(File path, SVNKeywords keywords) throws SVNClientException {
-		// copied directly from JhlClientAdapter
-		SVNKeywords currentKeywords = getKeywords(path);
-		if (keywords.isHeadUrl())
-			currentKeywords.setHeadUrl(false);
-		if (keywords.isId())
-			currentKeywords.setId(false);
-		if (keywords.isLastChangedBy())
-			currentKeywords.setLastChangedBy(false);
-		if (keywords.isLastChangedDate())
-			currentKeywords.setLastChangedBy(false);
-		if (keywords.isLastChangedRevision())
-			currentKeywords.setLastChangedRevision(false);
-		setKeywords(path, currentKeywords, false);
-
-		return currentKeywords;
 	}
 
 	private ISVNAnnotations annotate(String target, SVNRevision revisionStart, SVNRevision revisionEnd) throws SVNClientException {

@@ -37,8 +37,8 @@ import org.tigris.subversion.javahl.SVNClient;
 import org.tigris.subversion.javahl.SVNClientInterface;
 import org.tigris.subversion.javahl.SVNClientSynchronized;
 import org.tigris.subversion.javahl.Status;
+import org.tigris.subversion.svnclientadapter.AbstractClientAdapter;
 import org.tigris.subversion.svnclientadapter.ISVNAnnotations;
-import org.tigris.subversion.svnclientadapter.ISVNClientAdapter;
 import org.tigris.subversion.svnclientadapter.ISVNDirEntry;
 import org.tigris.subversion.svnclientadapter.ISVNInfo;
 import org.tigris.subversion.svnclientadapter.ISVNLogMessage;
@@ -60,7 +60,7 @@ import org.tigris.subversion.svnclientadapter.SVNUrl;
  * @author Panagiotis Korros (pkorros at bigfoot.com) 
  *
  */
-public class JhlClientAdapter implements ISVNClientAdapter {
+public class JhlClientAdapter extends AbstractClientAdapter {
     final private static int SVN_ERR_WC_NOT_DIRECTORY = 155007;
 
     private SVNClientSynchronized svnClient;
@@ -1252,139 +1252,6 @@ public class JhlClientAdapter implements ISVNClientAdapter {
         }        
     }
     
-    /**
-     * get the ignored patterns for the given directory
-     * if path is not a directory, returns null 
-     */
-    public List getIgnoredPatterns(File path) throws SVNClientException {
-        if (!path.isDirectory())
-            return null;
-        List list = new ArrayList();
-        ISVNProperty pd = propertyGet(path, ISVNProperty.IGNORE);
-        if (pd == null)
-            return list;
-        String patterns = pd.getValue();
-        StringTokenizer st = new StringTokenizer(patterns,"\n");
-        while (st.hasMoreTokens()) {
-            String entry = st.nextToken();
-            if (!entry.equals(""))
-                list.add(entry);
-        }
-        return list;
-    }
-    
-    /**
-     * add a pattern to svn:ignore property
-     * @param must be a directory 
-     * @throws SVNClientException
-     */
-    public void addToIgnoredPatterns(File path, String pattern)  throws SVNClientException {
-        List patterns = getIgnoredPatterns(path);
-        if (patterns == null) // not a directory
-            return;
- 
-        // verify that the pattern has not already been added
-        for (Iterator it = patterns.iterator(); it.hasNext();) {
-            if (((String)it.next()).equals(pattern))
-                return; // already added
-        }
-            
-        patterns.add(pattern);
-        setIgnoredPatterns(path,patterns);
-    }
-
-    /**
-     * returns the keywords used for substitution for the given resource
-     * @param path
-     * @return
-     * @throws SVNClientException
-     */ 
-    public SVNKeywords getKeywords(File path) throws SVNClientException {
-        ISVNProperty prop = propertyGet(path, ISVNProperty.KEYWORDS);
-        if (prop == null)
-            return new SVNKeywords(); 
-
-        // value is a space-delimited list of the keywords names
-        String value = prop.getValue();
-        
-        return new SVNKeywords(value);
-    }
-
-    /**
-     * set the keywords substitution for the given resource
-     * @param path
-     * @param keywords
-     * @param recurse
-     * @throws SVNClientException
-     */
-    public void setKeywords(File path, SVNKeywords keywords, boolean recurse) throws SVNClientException {
-        propertySet(path, ISVNProperty.KEYWORDS, keywords.toString(), recurse);
-    }
-
-    /**
-     * add some keyword to the keywords substitution list
-     * @param path
-     * @param keywords
-     * @return
-     * @throws SVNClientException
-     */
-    public SVNKeywords addKeywords(File path, SVNKeywords keywords) throws SVNClientException {
-        SVNKeywords currentKeywords = getKeywords(path);
-        if (keywords.isHeadUrl())
-            currentKeywords.setHeadUrl(true);
-        if (keywords.isId())
-            currentKeywords.setId(true);
-        if (keywords.isLastChangedBy())
-            currentKeywords.setLastChangedBy(true);
-        if (keywords.isLastChangedDate())
-            currentKeywords.setLastChangedBy(true);
-        if (keywords.isLastChangedRevision())
-            currentKeywords.setLastChangedRevision(true);
-        setKeywords(path,currentKeywords,false);
-        
-        return currentKeywords;                
-    }
-
-    /**
-     * remove some keywords to the keywords substitution list
-     * @param path
-     * @param keywords
-     * @return
-     * @throws SVNClientException
-     */
-    public SVNKeywords removeKeywords(File path, SVNKeywords keywords) throws SVNClientException {
-        SVNKeywords currentKeywords = getKeywords(path);
-        if (keywords.isHeadUrl())
-            currentKeywords.setHeadUrl(false);
-        if (keywords.isId())
-            currentKeywords.setId(false);
-        if (keywords.isLastChangedBy())
-            currentKeywords.setLastChangedBy(false);
-        if (keywords.isLastChangedDate())
-            currentKeywords.setLastChangedBy(false);
-        if (keywords.isLastChangedRevision())
-            currentKeywords.setLastChangedRevision(false);
-        setKeywords(path,currentKeywords,false);
-        
-        return currentKeywords;                
-    }
-
-
-    
-    /**
-     * set the ignored patterns for the given directory 
-     */
-    public void setIgnoredPatterns(File path, List patterns) throws SVNClientException {
-        if (!path.isDirectory())
-            return;
-        String value ="";
-        for (Iterator it = patterns.iterator(); it.hasNext();) {
-            String pattern = (String)it.next();
-            value = value + '\n' + pattern;    
-        }
-        propertySet(path, ISVNProperty.IGNORE, value, false);       
-    }
-
     /**
      * display the differences between two paths. 
      */
