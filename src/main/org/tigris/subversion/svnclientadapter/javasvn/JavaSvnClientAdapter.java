@@ -62,6 +62,7 @@ import org.tmatesoft.svn.core.io.SVNRepositoryLocation;
 import org.tmatesoft.svn.core.io.SVNSimpleCredentialsProvider;
 import org.tmatesoft.svn.util.DebugLog;
 import org.tmatesoft.svn.util.PathUtil;
+import org.tmatesoft.svn.util.SVNUtil;
 
 /**
  * 
@@ -121,8 +122,26 @@ public class JavaSvnClientAdapter implements ISVNClientAdapter {
         this.myPassword = password;
     }
 
-    private ISVNWorkspace getWorkspace(File file) throws SVNException {
-        ISVNWorkspace ws = SVNWorkspaceManager.createWorkspace("file", file
+    private ISVNWorkspace getRootWorkspace(File file) throws SVNException  {
+        ISVNWorkspace ws = SVNUtil.createWorkspace(file.getAbsolutePath());
+        ws.setCredentials(myUserName, myPassword);
+        ws.addWorkspaceListener(notificationHandler);
+        ws.setGlobalIgnore("*.o *.lo *.la #*# .*.rej *.rej .*~ *~ .#*");
+        return ws;
+    }
+
+    private ISVNWorkspace getRootWorkspace(File[] files) throws SVNException {
+        ISVNWorkspace ws;
+        if (files.length == 1) {
+            ws = getRootWorkspace(files[0]);
+        } else {
+            ws = getRootWorkspace(SVNBaseDir.getRootDir(files));
+        }
+        return ws;
+    }
+
+    private ISVNWorkspace getWorkspace(File dir) throws SVNException {
+        ISVNWorkspace ws = SVNWorkspaceManager.createWorkspace("file", dir
                 .getAbsolutePath());
         ws.setCredentials(myUserName, myPassword);
         ws.addWorkspaceListener(notificationHandler);
@@ -130,6 +149,10 @@ public class JavaSvnClientAdapter implements ISVNClientAdapter {
         return ws;
     }
 
+    private String getWorkspacePath(ISVNWorkspace ws, File path) {
+        return SVNUtil.getWorkspacePath(ws, path.getAbsolutePath());
+    }
+    
     private SVNRepository getRepository(SVNRepositoryLocation reposLocation)
             throws SVNException {
         SVNRepository repository = SVNRepositoryFactory.create(reposLocation);
@@ -153,10 +176,10 @@ public class JavaSvnClientAdapter implements ISVNClientAdapter {
         notificationHandler.setCommand(ISVNNotifyListener.Command.ADD);
         notificationHandler.logCommandLine("add -N " + file.toString());
 
-        String target = file.getName();
         try {
-            ISVNWorkspace ws = getWorkspace(file.getParentFile());
-            ws.add(target, false, false);
+            ISVNWorkspace ws = getRootWorkspace(file.getParentFile());
+            ws.add(getWorkspacePath(ws, file), false,
+                    false);
         } catch (SVNException e) {
             notificationHandler.logException(e);
             throw new SVNClientException(e);
@@ -171,10 +194,10 @@ public class JavaSvnClientAdapter implements ISVNClientAdapter {
      */
     public void addDirectory(File dir, boolean recurse)
             throws SVNClientException {
-        String target = dir.getName();
         try {
-            ISVNWorkspace ws = getWorkspace(dir.getParentFile());
-            ws.add(target, false, recurse);
+            ISVNWorkspace ws = getRootWorkspace(dir.getParentFile());
+            ws.add(getWorkspacePath(ws, dir), false,
+                    recurse);
         } catch (SVNException e) {
             notificationHandler.logException(e);
             throw new SVNClientException(e);
@@ -227,30 +250,12 @@ public class JavaSvnClientAdapter implements ISVNClientAdapter {
             }
             notificationHandler.logCommandLine(commandLine);
 
-            if (paths.length > 1) {
-                File rootPath = SVNBaseDir.getRootDir(paths);
-                String[] relativePaths = new String[paths.length];
-                for (int i = 0; i < relativePaths.length;i++) {
-                    relativePaths[i] = SVNBaseDir.getRelativePath(rootPath, paths[i]);
-                }
-    
-                ISVNWorkspace ws = getWorkspace(rootPath);
-    
-                return ws.commit(relativePaths, message, recurse);
-            } else {
-                File workspaceDir;
-                String target;
-                if (paths[0].isFile()) {
-                    workspaceDir = paths[0].getParentFile();
-                    target = paths[0].getName();
-                } else {
-                    workspaceDir = paths[0];
-                    target = "";
-                }
-                ISVNWorkspace ws = getWorkspace(workspaceDir);
-                return ws.commit(target, message, recurse);
+            ISVNWorkspace ws = getRootWorkspace(paths);
+            String[] workspacePaths = new String[paths.length];
+            for (int i = 0; i < workspacePaths.length; i++) {
+                workspacePaths[i] = getWorkspacePath(ws, paths[i]);
             }
-
+            return ws.commit(workspacePaths, message, recurse);
         } catch (SVNException e) {
             notificationHandler.logException(e);
             throw new SVNClientException(e);
@@ -331,10 +336,11 @@ public class JavaSvnClientAdapter implements ISVNClientAdapter {
         for (int i = 0; i < path.length; i++) {
             File file = path[i];
             try {
-                final ISVNWorkspace ws = getWorkspace(file.getParentFile());
-                SVNStatus status = ws.status(file.getName(), false);
-                statuses[i] = new JavaSvnStatus(file, ws.getProperties(file
-                        .getName(), false, true), status);
+                ISVNWorkspace ws = getRootWorkspace(file);
+                String workspacePath = getWorkspacePath(ws, file);
+                SVNStatus status = ws.status(workspacePath, false);
+                statuses[i] = new JavaSvnStatus(file, ws.getProperties(
+                        workspacePath, false, true), status);
             } catch (SVNException e) {
                 notificationHandler.logException(e);
                 throw new SVNClientException(e);
@@ -367,16 +373,12 @@ public class JavaSvnClientAdapter implements ISVNClientAdapter {
         notificationHandler.logCommandLine("status "
                 + (contactServer ? "-u " : "") + path.toString());
 
-        String target = "";
-        if (!path.isDirectory()) {
-            path = path.getParentFile();
-            target = path.getName();
-        }
         final String root = path.getAbsolutePath();
         final Collection statuses = new LinkedList();
         try {
-            final ISVNWorkspace ws = getWorkspace(path);
-            long revision = ws.status(target, contactServer,
+            final ISVNWorkspace ws = getRootWorkspace(path);
+            String workspacePath = getWorkspacePath(ws, path);
+            long revision = ws.status(workspacePath, contactServer,
                     new ISVNStatusHandler() {
                         public void handleStatus(String p, SVNStatus status) {
                             try {
@@ -473,9 +475,9 @@ public class JavaSvnClientAdapter implements ISVNClientAdapter {
             notificationHandler.logCommandLine(commandLine);
 
             for (int i = 0; i < file.length; i++) {
-                String target = file[i].getName();
-                ISVNWorkspace ws = getWorkspace(file[i].getParentFile());
-                ws.delete(target);
+                ISVNWorkspace ws = getRootWorkspace(file[i]);
+                String workspacePath = getWorkspacePath(ws, file[i]);
+                ws.delete(workspacePath);
             }
         } catch (SVNException e) {
             notificationHandler.logException(e);
@@ -524,7 +526,7 @@ public class JavaSvnClientAdapter implements ISVNClientAdapter {
         notificationHandler.logCommandLine("import -m \"" + message + "\" "
                 + (recurse ? "" : "-N ") + path.toString() + ' ' + dest);
         try {
-            ISVNWorkspace ws = getWorkspace(path);
+            ISVNWorkspace ws = getRootWorkspace(path);
             ws.commit(SVNRepositoryLocation.parseURL(url.toString()), message);
         } catch (SVNException e) {
             notificationHandler.logException(e);
@@ -549,7 +551,17 @@ public class JavaSvnClientAdapter implements ISVNClientAdapter {
      * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#mkdir(java.io.File)
      */
     public void mkdir(File file) throws SVNClientException {
-        notImplementedYet();
+        try {
+            notificationHandler.setCommand(ISVNNotifyListener.Command.MKDIR);
+            notificationHandler.logCommandLine(
+                    "mkdir "+file.toString());
+
+            ISVNWorkspace ws = getRootWorkspace(file);
+            ws.add(getWorkspacePath(ws, file), true, false);
+        } catch (SVNException e) {
+            notificationHandler.logException(e);
+            throw new SVNClientException(e);
+        }               
     }
 
     /*
@@ -662,18 +674,18 @@ public class JavaSvnClientAdapter implements ISVNClientAdapter {
                 + " " + path.toString());
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        String name = path.getName();
         try {
-            ISVNWorkspace ws = getWorkspace(path.getParentFile());
+            ISVNWorkspace ws = getRootWorkspace(path);
+            String workspacePath = getWorkspacePath(ws, path);
             if (SVNRevision.BASE.equals(revision)) {
-                ws.getFileContent(name).getBaseFileContent(bos);
+                ws.getFileContent(workspacePath).getBaseFileContent(bos);
                 return new ByteArrayInputStream(bos.toByteArray());
             } else if (SVNRevision.WORKING.equals(revision)) {
-                ws.getFileContent(name).getWorkingCopyContent(bos);
+                ws.getFileContent(workspacePath).getWorkingCopyContent(bos);
                 return new ByteArrayInputStream(bos.toByteArray());
             }
             SVNRepository repository = getRepository(ws.getLocation(null));
-            repository.getFile(name,
+            repository.getFile(workspacePath,
                     JavaSvnConverter.convertRevision(revision), null, bos);
             return new ByteArrayInputStream(bos.toByteArray());
         } catch (SVNException e) {
@@ -690,7 +702,20 @@ public class JavaSvnClientAdapter implements ISVNClientAdapter {
      */
     public void propertySet(File path, String propertyName,
             String propertyValue, boolean recurse) throws SVNClientException {
-        notImplementedYet();
+        try {
+            notificationHandler.setCommand(ISVNNotifyListener.Command.PROPSET);
+
+            notificationHandler.logCommandLine("propset "
+                    + (recurse ? "-R " : "") + propertyName + " \""
+                    + propertyValue + "\" " + path.toString());
+
+            ISVNWorkspace ws = getRootWorkspace(path);
+            ws.setPropertyValue(getWorkspacePath(ws, path), propertyName,
+                    propertyValue, recurse);
+        } catch (SVNException e) {
+            notificationHandler.logException(e);
+            throw new SVNClientException(e);
+        }
     }
 
     /*
