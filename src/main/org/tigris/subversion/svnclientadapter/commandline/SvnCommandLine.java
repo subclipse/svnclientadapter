@@ -30,6 +30,7 @@ import org.tigris.subversion.svnclientadapter.commandline.parser.SvnOutputParser
  *  
  * @author Philip Schatz (schatz at tigris)
  * @author Cédric Chabanois (cchabanois at no-log.org)
+ * @author John M Flinchbaugh (john at hjsoft.com)
  */
 public class SvnCommandLine extends CommandLine {
 	private String user;
@@ -174,6 +175,7 @@ public class SvnCommandLine extends CommandLine {
         setCommand(ISVNNotifyListener.Command.COMMIT, true);
 		ArrayList args = new ArrayList();
 		args.add("ci");
+		args.add("--force-log");
 		args.add("-m");
 		args.add(message);
 		addAuthInfo(args);
@@ -264,6 +266,7 @@ public class SvnCommandLine extends CommandLine {
 			args.add("-r");
 			args.add(validRev(revision));
 		}
+		args.add("--force-log");
 		args.add("-m");
 		args.add(message);
 		args.add(src);
@@ -305,6 +308,7 @@ public class SvnCommandLine extends CommandLine {
 		ArrayList args = new ArrayList();
 		args.add("rm");
 		if (message != null) {
+			args.add("--force-log");
 			args.add("-m");
 			args.add(message);
 		}
@@ -383,6 +387,7 @@ public class SvnCommandLine extends CommandLine {
         if (!recursive) {
         	args.add("-N");
         }
+		args.add("--force-log");
 		args.add("-m");
 		args.add(message);
 		addAuthInfo(args);
@@ -475,6 +480,7 @@ public class SvnCommandLine extends CommandLine {
         setCommand(ISVNNotifyListener.Command.MKDIR, true);
 		ArrayList args = new ArrayList();
 		args.add("mkdir");
+		args.add("--force-log");
 		args.add("-m");
 		args.add(message);
 		args.add(url);
@@ -519,6 +525,7 @@ public class SvnCommandLine extends CommandLine {
 		args.add(source);
 		args.add(dest);
 		if (message != null) {
+			args.add("--force-log");
 			args.add("-m");
 			args.add(message);
 		}
