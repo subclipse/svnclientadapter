@@ -70,6 +70,10 @@ public class AnnotateInputStream extends InputStream {
     
     public AnnotateInputStream(ISVNAnnotations annotations) {
 		this.annotations = annotations;
+		initialize();
+    }
+    
+    private void initialize() {
     	currentLine = annotations.getLine(0);
         currentLineNumber = 0;
         currentPos = 0;
@@ -114,5 +118,11 @@ public class AnnotateInputStream extends InputStream {
     public int available() throws IOException {
         return available;
     }
-    
+	
+	/* (non-Javadoc)
+	 * @see java.io.InputStream#reset()
+	 */
+	public synchronized void reset() throws IOException {
+		initialize();
+	}
 }
