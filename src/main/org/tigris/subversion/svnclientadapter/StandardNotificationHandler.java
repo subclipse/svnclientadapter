@@ -120,7 +120,7 @@ public class StandardNotificationHandler implements ISVNNotifyListener {
 
 		switch (action) {
 			case Notify.Action.skip :
-				log(LOG_MESSAGE,"Skipped " + path);
+                log(LOG_MESSAGE,"Skipped " + path);
 				break;
 			case Notify.Action.update_delete :
 				log(LOG_MESSAGE,"D  " + path);
@@ -196,6 +196,13 @@ public class StandardNotificationHandler implements ISVNNotifyListener {
                         log(LOG_COMPLETED,"Update complete."); 
 	           	}
 				break;
+            case Notify.Action.status_external :
+              log(LOG_MESSAGE,"Performing status on external item at "+path);
+              break;
+            case Notify.Action.status_completed :
+              if (revision >= 0)
+                log(LOG_MESSAGE,"Status against revision: "+ revision);
+              break;                
 			case Notify.Action.commit_modified :
                 log(LOG_MESSAGE,"Sending        "+path);
 				break;

@@ -59,8 +59,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -75,6 +73,7 @@ import org.tigris.subversion.javahl.PropertyData;
 import org.tigris.subversion.javahl.Revision;
 import org.tigris.subversion.javahl.SVNClient;
 import org.tigris.subversion.javahl.Status;
+
 
 /**
  * An adapter for SVNClient. Easier and safer to use than SVNClient
@@ -389,12 +388,12 @@ public class SVNClientAdapter {
      * @param path File to gather status.
      * @return a Status
      */
-    public Status[] getStatusRecursively(File path) throws ClientException {
+    public Status[] getStatusRecursively(File path,boolean getAll) throws ClientException {
         notificationHandler.setCommand(ISVNNotifyListener.COMMAND_STATUS);
         String filePathSVN = fileToSVNPath(path);
         notificationHandler.setCommandLine("status "+filePathSVN);
         try {
-            return svnClient.status(filePathSVN,true, false);
+            return svnClient.status(filePathSVN,true, false, getAll);
         } catch (ClientException e) {
             notificationHandler.setException(e);
             throw e;
