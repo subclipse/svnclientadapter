@@ -106,29 +106,62 @@ public class SVNBaseDir {
 	 * @throws SVNClientException
 	 */
 	static public File getBaseDir(File[] files) throws SVNClientException {
-		try {
-			File[] canonicalFiles = new File[files.length];
-			 for (int i = 0; i < files.length;i++) {
-				canonicalFiles[i] = files[i].getCanonicalFile();
-			}
-	 
-			// first get the common part between all files
-			File commonPart = canonicalFiles[0];
-			for (int i = 0; i < files.length;i++) {
-				commonPart = getCommonPart(commonPart, canonicalFiles[i]);
-				if (commonPart == null) {
-					return null;		 
-				}
-			}
-		
-			// get the common part between current directory and other files
-			commonPart = getCommonPart(commonPart, new File("."));
-			return commonPart;
-		} catch(IOException e) {
-			throw SVNClientException.wrapException(e);
-		}
-		 
+        File rootDir = getRootDir(files);
+
+        // get the common part between current directory and other files
+        File baseDir = getCommonPart(rootDir, new File("."));
+        return baseDir;
 	}
 
+	/**
+     * get the root directory for a set of files ie the ancestor of all given files
+	 * @param files
+	 * @return
+	 * @throws SVNClientException
+	 */
+    static public File getRootDir(File[] files) throws SVNClientException {
+        try {
+            File[] canonicalFiles = new File[files.length];
+             for (int i = 0; i < files.length;i++) {
+                canonicalFiles[i] = files[i].getCanonicalFile();
+            }
+     
+            // first get the common part between all files
+            File commonPart = canonicalFiles[0];
+            for (int i = 0; i < files.length;i++) {
+                commonPart = getCommonPart(commonPart, canonicalFiles[i]);
+                if (commonPart == null) {
+                    return null;         
+                }
+            }
+            if (commonPart.isFile()) {
+                return commonPart.getParentFile();
+            } else {
+                return commonPart;
+            }
+        } catch(IOException e) {
+            throw SVNClientException.wrapException(e);
+        }
+    }
 
+    /**
+     * get path of file relative to rootDir 
+     * @param rootDir
+     * @param file
+     * @return
+     * @throws SVNClientException
+     */
+    static public String getRelativePath(File rootDir, File file) throws SVNClientException {
+        try {
+            String rootPath = rootDir.getCanonicalPath();
+            String filePath = file.getCanonicalPath();
+            if (!filePath.startsWith(rootPath)) {
+                return null;
+            }
+            return filePath.substring(rootPath.length());
+        } catch (IOException e) {
+            throw SVNClientException.wrapException(e);
+        }
+    }
+    
 }

@@ -17,7 +17,10 @@ package org.tigris.subversion.svnclientadapter.javasvn;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.tigris.subversion.javahl.Revision;
+import org.tigris.subversion.svnclientadapter.SVNClientException;
 import org.tigris.subversion.svnclientadapter.SVNNodeKind;
+import org.tigris.subversion.svnclientadapter.SVNRevision;
 import org.tigris.subversion.svnclientadapter.SVNStatusKind;
 import org.tmatesoft.svn.core.SVNProperty;
 import org.tmatesoft.svn.core.SVNStatus;
@@ -65,6 +68,23 @@ public class JavaSvnConverter {
             nodeKind = SVNNodeKind.FILE;
         }        
         return nodeKind;
+    }    
+    
+    /**
+     * this method 
+     * @param revision
+     * @return
+     * @throws SVNClientException
+     */
+    public static long convertRevision(SVNRevision revision) throws SVNClientException {
+        if (revision.getKind() == SVNRevision.Kind.head) {
+            return -2;
+        } else
+        if (revision.getKind() == SVNRevision.Kind.number) {
+            return ((SVNRevision.Number) revision).getNumber();
+        } else {
+            throw new SVNClientException("Only HEAD and revision number are supported");
+        }
     }    
     
 }

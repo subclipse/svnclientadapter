@@ -20,7 +20,6 @@ import java.net.MalformedURLException;
 import java.util.Date;
 import java.util.Map;
 
-import org.tigris.subversion.javahl.NodeKind;
 import org.tigris.subversion.svnclientadapter.ISVNStatus;
 import org.tigris.subversion.svnclientadapter.SVNNodeKind;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
@@ -70,7 +69,7 @@ public class JavaSvnStatus implements ISVNStatus {
         this.textStatus = JavaSvnConverter.convertStatusKind(status.getContentsStatus());
 
         this.propStatus = JavaSvnConverter.convertStatusKind(status.getPropertiesStatus());
-
+        
         this.repositoryTextStatus = JavaSvnConverter.convertStatusKind(status.getRepositoryContentsStatus());
         this.repositoryPropStatus = JavaSvnConverter.convertStatusKind(status.getRepositoryPropertiesStatus());
         
