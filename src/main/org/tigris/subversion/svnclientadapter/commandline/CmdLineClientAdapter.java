@@ -58,6 +58,8 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -107,7 +109,7 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 		try {
 			path = file.getCanonicalPath();
 			String infoLine = _cmd.info(path);
-			String statusLine = _cmd.status(path, false);
+			String statusLine = _cmd.status(path, false);			
 			return new CmdLineStatus(statusLine, infoLine);
 		} catch (IOException e) {
 			throw SVNClientException.wrapException(e);
@@ -167,11 +169,15 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 	 */
 	public void revert(File arg0, boolean arg1) throws SVNClientException {
 		try {
-			_cmd.revert(arg0.getCanonicalPath(), arg1);
-			
+			String changedFiles = _cmd.revert(arg0.getCanonicalPath(), arg1);
+			refreshChangedResources(changedFiles);			
 		} catch (IOException e) {
 			throw SVNClientException.wrapException(e);
 		}
+		catch (CmdLineException e) {
+			throw SVNClientException.wrapException(e);
+		}
+				
 	}
 
 	/* (non-Javadoc)
@@ -349,7 +355,8 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 	 */
 	public void addFile(File file) throws SVNClientException {
 		try {
-			_cmd.add(file.getCanonicalPath(), false);
+			String changedResources = _cmd.add(file.getCanonicalPath(), false);
+			refreshChangedResources(changedResources);			
 		} catch (IOException e) {
 			throw SVNClientException.wrapException(e);
 		} catch (CmdLineException e) {
@@ -420,16 +427,6 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 		} catch (IOException e) {
 			throw SVNClientException.wrapException(e);
 		}
-	}
-
-	/* (non-Javadoc)
-	 * @see org.tigris.subversion.subclipse.client.ISVNClientAdapter#getStatusRecursively(java.io.File)
-	 */
-	public ISVNStatus[] getStatusRecursively(File file)
-		throws SVNClientException {
-		// TODO Auto-generated method stub
-		System.out.println("[CommandLineClientAdapter] getStatusRecursively.");
-		return null;
 	}
 
 	/* (non-Javadoc)
@@ -590,11 +587,31 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
         // TODO : implement
     }
 
-    public ISVNStatus[] getStatusRecursively(File path, boolean getAll)
+    public ISVNStatus[] getStatusRecursively(File file, boolean getAll)
         throws SVNClientException {
-        // TODO : implement
-        return null;
-    }
+			Collection statuses = new ArrayList();
+			String path = null;
+			try {
+				path = file.getCanonicalPath();
+				
+				String statusLines = _cmd.recursiveStatus(path);
+				StringTokenizer st = new StringTokenizer(statusLines, Helper.NEWLINE);
+
+				while (st.hasMoreTokens()) {
+					String line = st.nextToken();
+					String fileName = line.substring(CmdLineStatus.STATUS_FILE_WIDTH, line.length());
+					String infoLine = _cmd.info(fileName);
+			
+					statuses.add(new CmdLineStatus(line, infoLine));
+				} 
+
+			} catch (IOException e) {
+				throw SVNClientException.wrapException(e);
+			} catch (CmdLineException e) {
+				throw SVNClientException.wrapException(e);
+			}
+			return (ISVNStatus[])statuses.toArray(new ISVNStatus[statuses.size()]);
+        }
 
     public void propertySet(
         File path,
