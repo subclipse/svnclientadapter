@@ -20,9 +20,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
-import org.tigris.subversion.javahl.ClientException;
-
-
 public interface ISVNClientAdapter {
 
     public final static String REPOSITORY_BDB = "bdb";
