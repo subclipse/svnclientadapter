@@ -616,9 +616,16 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 	 * @return the revision
 	 */
 	private long refreshChangedResources(String changedResourcesList) {
+		// TODO : create a new Class and parse svn output using regexp
+		// this way, we will be able to get more information from the ouput
+		// (what kind of notification it is ...)
+		// Moreover, there are some cases not handled actually (ex : "A  (bin)  %s")
 		StringTokenizer st = new StringTokenizer(changedResourcesList, Helper.NEWLINE);
 		while (st.hasMoreTokens()) {
 			String line = st.nextToken();
+
+			// See see subversion/clients/cmdline/notify.c for possible outputs
+			// Note that if you are here, this means no error occured
 
 			//check and see if we are at the last line (nothing to do)
 			if (line.startsWith("At revision "))
