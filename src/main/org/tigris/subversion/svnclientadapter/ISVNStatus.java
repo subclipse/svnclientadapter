@@ -57,8 +57,6 @@ package org.tigris.subversion.svnclientadapter;
 import java.io.File;
 import java.util.Date;
 
-import org.tigris.subversion.javahl.StatusKind;
-
 /**
  * 
  * @author philip schatz
