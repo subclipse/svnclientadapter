@@ -87,6 +87,7 @@ public interface ISVNNotifyListener {
         public static final int CAT = 18;
         public static final int INFO = 19;
         public static final int PROPGET = 20;
+		public static final int PROPLIST = 21;
     }    
 
     public void setCommand(int command);

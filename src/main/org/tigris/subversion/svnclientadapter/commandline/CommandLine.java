@@ -516,6 +516,8 @@ class CommandLine {
 		return proc.getInputStream();
 	}
 
+
+
 	/**
 	 * <p>
 	 * Set <tt>propName</tt> to <tt>propVal</tt> on files, dirs, or revisions.</p>
@@ -536,6 +538,23 @@ class CommandLine {
 		args.add(target);        
 		execVoid(args);
 	}
+    
+    /**
+     * List the properties for the given file or dir
+     * 
+     * @param target
+     * @return
+     * @throws CmdLineException
+     */
+    String proplist(String target, boolean recurse) throws CmdLineException {
+		notificationHandler.setCommand(ISVNNotifyListener.Command.PROPLIST);
+		ArrayList args = new ArrayList();
+		args.add("proplist");
+		if (recurse)
+			args.add("-R");
+		args.add(target);
+		return execString(args,false);
+    }
     
     /**
      * Remove <tt>propName</tt> from files, dirs. 

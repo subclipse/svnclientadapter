@@ -62,6 +62,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.Vector;
@@ -76,7 +77,6 @@ import org.tigris.subversion.svnclientadapter.SVNAnnotations;
 import org.tigris.subversion.svnclientadapter.SVNBaseDir;
 import org.tigris.subversion.svnclientadapter.SVNClientException;
 import org.tigris.subversion.svnclientadapter.SVNKeywords;
-import org.tigris.subversion.svnclientadapter.SVNNodeKind;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
 import org.tigris.subversion.svnclientadapter.SVNStatusUnversioned;
 import org.tigris.subversion.svnclientadapter.SVNUrl;
@@ -1059,4 +1059,30 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
         return null;
     }
 
+	/*
+	 * (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getProperties(java.io.File)
+	 */
+	public ISVNProperty[] getProperties(File path) throws SVNClientException {
+		try {
+			String propertiesString = _cmd.proplist(toString(path), false);
+			String propertyName;
+			List properties = new LinkedList();
+			
+			StringTokenizer st = new StringTokenizer(propertiesString, Helper.NEWLINE);
+			while (st.hasMoreTokens()) {
+				String propertyLine = st.nextToken();
+				if (propertyLine.startsWith("Properties on '")) {
+				} else {
+					propertyName = propertyLine.substring(2);
+					properties.add(propertyGet(path,propertyName));
+				}
+			}
+			return (ISVNProperty[]) properties.toArray(new ISVNProperty[0]);
+			
+		} catch (CmdLineException e) {
+			throw SVNClientException.wrapException(e);
+		}
+	}
+	
 }

@@ -492,4 +492,13 @@ public interface ISVNClientAdapter {
      */
     public abstract SVNAnnotations blame(SVNUrl svnurl, SVNRevision revisionStart, SVNRevision revisionEnd)
         throws SVNClientException;
+        
+    /**
+     * Get all the properties for the given file or dir
+     * @param path
+     * @return
+     * @throws SVNClientException
+     */    
+	public abstract ISVNProperty[] getProperties(File path) throws SVNClientException;
+        
 }

@@ -890,6 +890,35 @@ public class JhlClientAdapter implements ISVNClientAdapter {
 		}
 	}
 
+	/**
+	 * returns the svn properties for the given file or directory
+	 * @param path
+	 * @return
+	 * @throws SVNClientException
+	 */
+	public ISVNProperty[] getProperties(File path) throws SVNClientException {
+		try {
+			notificationHandler.setCommand(ISVNNotifyListener.Command.PROPLIST);
+			String target = fileToSVNPath(path, true);
+			notificationHandler.logCommandLine(
+					"proplist "+ target);
+			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
+			PropertyData[] propertiesData = svnClient.properties(target);
+			if (propertiesData == null) {
+				// no properties
+				return new JhlPropertyData[0];
+			}
+			JhlPropertyData[] svnProperties = new JhlPropertyData[propertiesData.length];
+			for (int i = 0; i < propertiesData.length;i++) {
+				svnProperties[i] = new JhlPropertyData(propertiesData[i]);  
+			}
+			return svnProperties;
+		} catch (ClientException e) {
+			notificationHandler.logException(e);
+			throw new SVNClientException(e);
+		}		
+	}
+
     /**
      * set a property
      * @param path
