@@ -92,10 +92,15 @@ public class CmdLineLogMessage implements ISVNLogMessage {
 		//Now, we have the header, so set the internal variables
 		
 		//set info gotten from top-left.
-		StringTokenizer leftToken = new StringTokenizer(left, " :");
-		leftToken.nextToken(); //discard first bit.
-		rev = Helper.toRevNum(leftToken.nextToken());
-		author = leftToken.nextToken();
+		StringTokenizer leftToken = new StringTokenizer(left, ":");
+		String revStr = leftToken.nextToken().trim(); //discard first bit.
+		rev = Helper.toRevNum(revStr.substring(4, revStr.length()));
+		
+		// author is optional
+		if(leftToken.hasMoreTokens())
+			author = leftToken.nextToken();
+		else
+			author = "";
 		
 		//set info from top-mid (date)
 		date = Helper.toDate(middle.trim());
