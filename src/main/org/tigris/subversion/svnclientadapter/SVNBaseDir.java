@@ -45,6 +45,10 @@ public class SVNBaseDir {
      *         SVNClientException
      */
     static File getCommonPart(File file1, File file2) {
+    		if (file1 == null)
+    			return null;
+    		if (file2 == null)
+    			return null;
         String file1AbsPath;
         String file2AbsPath;
         file1AbsPath = file1.getAbsolutePath();
