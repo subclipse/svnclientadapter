@@ -30,6 +30,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.tigris.subversion.javahl.ClientException;
 import org.tigris.subversion.svnclientadapter.ISVNAnnotations;
 import org.tigris.subversion.svnclientadapter.ISVNClientAdapter;
 import org.tigris.subversion.svnclientadapter.ISVNDirEntry;
@@ -45,6 +46,7 @@ import org.tigris.subversion.svnclientadapter.SVNKeywords;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
 import org.tigris.subversion.svnclientadapter.SVNUrl;
 import org.tigris.subversion.svnclientadapter.SVNUrlUtils;
+import org.tigris.subversion.svnclientadapter.javahl.JhlConverter;
 import org.tmatesoft.svn.core.ISVNStatusHandler;
 import org.tmatesoft.svn.core.ISVNWorkspace;
 import org.tmatesoft.svn.core.SVNProperty;
@@ -502,11 +504,12 @@ public class JavaSvnClientAdapter implements ISVNClientAdapter {
      */
     public ISVNDirEntry getDirEntry(File path, SVNRevision revision)
             throws SVNClientException {
-        // list give the DirEntrys of the elements of a directory or the DirEntry
+        // list give the DirEntrys of the elements of a directory or the
+        // DirEntry
         // of a file
-        ISVNDirEntry[] entries = getList(path.getParentFile(), revision,false);
+        ISVNDirEntry[] entries = getList(path.getParentFile(), revision, false);
         String expectedPath = path.getName();
-        for (int i = 0; i < entries.length;i++) {
+        for (int i = 0; i < entries.length; i++) {
             if (entries[i].getPath().equals(expectedPath)) {
                 return entries[i];
             }
@@ -765,8 +768,9 @@ public class JavaSvnClientAdapter implements ISVNClientAdapter {
             boolean force) throws SVNClientException {
         try {
             notificationHandler.setCommand(ISVNNotifyListener.Command.EXPORT);
-            notificationHandler.logCommandLine(
-                "export -r " + revision.toString() + ' ' + srcUrl.toString() + ' ' + destPath.toString());
+            notificationHandler.logCommandLine("export -r "
+                    + revision.toString() + ' ' + srcUrl.toString() + ' '
+                    + destPath.toString());
 
             if (force) {
                 FSUtil.deleteAll(destPath);
@@ -774,7 +778,8 @@ public class JavaSvnClientAdapter implements ISVNClientAdapter {
             destPath.mkdirs();
 
             ISVNWorkspace ws = getWorkspace(destPath);
-            SVNRepositoryLocation location = SVNRepositoryLocation.parseURL(srcUrl.toString());
+            SVNRepositoryLocation location = SVNRepositoryLocation
+                    .parseURL(srcUrl.toString());
             SVNRepository repository = getRepository(location);
 
             long revNumber = getRevisionNumber(revision, repository, null, null);
@@ -887,7 +892,20 @@ public class JavaSvnClientAdapter implements ISVNClientAdapter {
      */
     public void move(File srcPath, File destPath, boolean force)
             throws SVNClientException {
-        notImplementedYet();
+        // use force when you want to move file even if there are local
+        // modifications
+        try {
+            notificationHandler.setCommand(ISVNNotifyListener.Command.MOVE);
+            notificationHandler.logCommandLine("move " + srcPath + ' '
+                    + destPath);
+
+            ISVNWorkspace ws = getRootWorkspace(srcPath);
+            ws.copy(getWorkspacePath(ws, srcPath), getWorkspacePath(ws,
+                    destPath), true);
+        } catch (SVNException e) {
+            notificationHandler.logException(e);
+            throw new SVNClientException(e);
+        }
     }
 
     /*
@@ -899,7 +917,43 @@ public class JavaSvnClientAdapter implements ISVNClientAdapter {
      */
     public void move(SVNUrl srcUrl, SVNUrl destUrl, String message,
             SVNRevision revision) throws SVNClientException {
-        notImplementedYet();
+        ISVNEditor editor = null;
+        try {
+            notificationHandler.setCommand(ISVNNotifyListener.Command.MOVE);
+            notificationHandler.logCommandLine("move -m \"" + message
+                    + "\" -r " + revision.toString() + ' ' + srcUrl + ' '
+                    + destUrl);
+
+            SVNUrl rootUrl = SVNUrlUtils.getCommonRootUrl(srcUrl, destUrl);
+            if (rootUrl == null) {
+                throw new SVNException(
+                        "srcUrl and destUrl should be within the same repository");
+            }
+            SVNRepository repository = getRepository(rootUrl);
+            long revNumber = getRevisionNumber(revision, repository, null, null);
+
+            String deletePath = getRepositoryPath(repository, srcUrl);
+            String destPath = getRepositoryPath(repository, destUrl);
+            
+            editor = repository.getCommitEditor(message, null);
+            editor.openRoot(-1);
+
+            editor.addDir(destPath, deletePath, revNumber);
+            editor.closeDir();
+            editor.deleteEntry(deletePath, revNumber);
+
+            editor.closeDir();
+            editor.closeEdit();
+        } catch (SVNException e) {
+            if (editor != null) {
+                try {
+                    editor.abortEdit();
+                } catch (SVNException es) {
+                }
+            }
+            notificationHandler.logException(e);
+            throw new SVNClientException(e);
+        }
     }
 
     /*
