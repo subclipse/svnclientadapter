@@ -330,9 +330,9 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.subclipse.client.ISVNClientAdapter#addDirectory(java.io.File, boolean)
 	 */
-	public void addDirectory(File file, boolean b) throws SVNClientException {
+	public void addDirectory(File file, boolean recurse) throws SVNClientException {
 		try {
-			_cmd.add(toString(file), true);
+			_cmd.add(toString(file), recurse);
 		} catch (CmdLineException e) {
 			//if something is already in svn and we
 			//try to add it, we get a warning.
@@ -463,7 +463,7 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 			if (line.startsWith("At revision "))
 				return Long.parseLong(line.substring(12, line.length() - 1));
 			if (line.startsWith("Updated to revision "))
-				return Long.parseLong(line.substring(18, line.length() - 1));
+				return Long.parseLong(line.substring(20, line.length() - 1));
 			if (line.startsWith("Committed revision "))
 				return Long.parseLong(line.substring(19, line.length() - 1));
 			if (line.startsWith("Checked out revision "))
