@@ -129,7 +129,7 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 			String statusLine = _cmd.status(path, false);
 			return new CmdLineStatus(statusLine, infoLine);
 		} catch (CmdLineException e) {
-			if (e.getMessage().startsWith("svn: Path is not a working copy directory")) {
+            if (e.getMessage().indexOf("is not a working copy") >= 0) {
 				return new CmdLineStatusUnversioned();
 			}
 			throw SVNClientException.wrapException(e);
