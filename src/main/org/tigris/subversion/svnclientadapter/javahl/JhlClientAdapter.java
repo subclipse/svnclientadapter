@@ -519,8 +519,13 @@ public class JhlClientAdapter implements ISVNClientAdapter {
 					getAll));    // retrieve all entries; otherwise, retrieve only "interesting" entries (local mods and/or
                                  // out-of-date).
 		} catch (ClientException e) {
-			notificationHandler.logException(e);
-			throw new SVNClientException(e);
+			if (e.getAprError() == SVN_ERR_WC_NOT_DIRECTORY) {
+				// when there is no .svn dir, an exception is thrown ...
+				return new ISVNStatus[] {new SVNStatusUnversioned(path)};
+			} else {
+				notificationHandler.logException(e);
+				throw new SVNClientException(e);
+			}
 		}
     }
 
