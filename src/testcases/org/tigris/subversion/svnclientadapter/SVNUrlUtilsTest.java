@@ -24,7 +24,13 @@ public class SVNUrlUtilsTest extends TestCase {
                 new SVNUrl("http://svn.collab.net/repos/subclipse/mydir/mydir2/myfile.txt")
         };
         assertEquals(null, SVNUrlUtils.getCommonRootUrl(urls));
-        
+    }
+    
+    public void testRelativePath() throws Exception {
+        SVNUrl url = new SVNUrl("http://svn.collab.net:81/repos/subclipse/myfile.txt");
+        SVNUrl rootUrl = new SVNUrl("http://svn.collab.net:81/repos");
+        assertEquals("subclipse/myfile.txt",SVNUrlUtils.getRelativePath(rootUrl,url));
+        assertEquals("",SVNUrlUtils.getRelativePath(rootUrl,rootUrl));
     }
     
 }

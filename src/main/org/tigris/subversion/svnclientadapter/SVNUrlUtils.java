@@ -61,5 +61,24 @@ public class SVNUrlUtils {
         }
         return commonRoot;
     }
+
+    /**
+     * get path of url relative to rootUrl 
+     * @param rootUrl
+     * @param url
+     * @return relative path or null if rootUrl is not a parent of url
+     */
+    public static String getRelativePath(SVNUrl rootUrl, SVNUrl url) {
+        String rootUrlStr = rootUrl.toString();
+        String urlStr = url.toString();
+        if (urlStr.indexOf(rootUrlStr) == -1) {
+            return null;
+        }
+        if (urlStr.length() == rootUrlStr.length()) {
+            return "";
+        }
+        return urlStr.substring(rootUrlStr.length()+1);
+    }
+    
     
 }
