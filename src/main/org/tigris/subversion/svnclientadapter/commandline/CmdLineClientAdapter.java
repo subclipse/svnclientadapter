@@ -118,12 +118,16 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
         if (version != null)
             return version;
         try {
+            // we don't want to log this ...
+            notificationHandler.disableLog();
             version = _cmd.version();
             int i = version.indexOf("\n\r");
             version = version.substring(0,i);
             return version;
         } catch (CmdLineException e) {
             throw SVNClientException.wrapException(e); 
+        } finally {
+            notificationHandler.enableLog();
         }
     }
     

@@ -65,6 +65,7 @@ import java.util.List;
 public abstract class SVNNotificationHandler {
     protected List notifylisteners = new ArrayList();
     protected int command;
+    protected boolean logEnabled = true;
         
     /**
      * Add a notification listener
@@ -80,12 +81,23 @@ public abstract class SVNNotificationHandler {
         notifylisteners.remove(listener);
     }
     
+    public void enableLog() {
+        logEnabled = true;
+    }
     
-    
+    /**
+     * disable logging. Note that errors and exceptions are not disabled
+     */
+    public void disableLog() {
+        logEnabled = false;
+    }
+        
     public void logMessage(String message) {
-        for(Iterator it=notifylisteners.iterator(); it.hasNext();) {
-            ISVNNotifyListener listener = (ISVNNotifyListener)it.next();
-            listener.logMessage(message);
+        if (logEnabled) {
+            for(Iterator it=notifylisteners.iterator(); it.hasNext();) {
+                ISVNNotifyListener listener = (ISVNNotifyListener)it.next();
+                listener.logMessage(message);
+            }
         }                        
     }
 
@@ -97,9 +109,11 @@ public abstract class SVNNotificationHandler {
     }
 
     public void logCompleted(String message) {
-        for(Iterator it=notifylisteners.iterator(); it.hasNext();) {
-            ISVNNotifyListener listener = (ISVNNotifyListener)it.next();
-            listener.logCompleted(message);
+        if (logEnabled) {
+            for(Iterator it=notifylisteners.iterator(); it.hasNext();) {
+                ISVNNotifyListener listener = (ISVNNotifyListener)it.next();
+                listener.logCompleted(message);
+            }
         }                        
     }    
 
@@ -112,9 +126,11 @@ public abstract class SVNNotificationHandler {
     }
     
     public void logCommandLine(String commandLine) {
-        for(Iterator it=notifylisteners.iterator(); it.hasNext();) {
-            ISVNNotifyListener listener = (ISVNNotifyListener)it.next();
-            listener.logCommandLine(commandLine);
+        if (logEnabled) {
+            for(Iterator it=notifylisteners.iterator(); it.hasNext();) {
+                ISVNNotifyListener listener = (ISVNNotifyListener)it.next();
+                listener.logCommandLine(commandLine);
+            }
         }                        
     }
 
