@@ -260,8 +260,10 @@ public class SvnCommandLine extends CommandLine {
         setCommand(ISVNNotifyListener.Command.COPY, true);        
 		ArrayList args = new ArrayList();
 		args.add("cp");
-		args.add("-r");
-		args.add(validRev(revision));
+		if (revision != null) {
+			args.add("-r");
+			args.add(validRev(revision));
+		}
 		args.add("-m");
 		args.add(message);
 		args.add(src);

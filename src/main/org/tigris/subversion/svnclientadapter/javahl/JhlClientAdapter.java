@@ -562,7 +562,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
 			String dest = destUrl.toString();
 			notificationHandler.logCommandLine("copy " + src + " " + dest);
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(srcPath));
-			svnClient.copy(src, dest, message, Revision.HEAD);
+			svnClient.copy(src, dest, message, Revision.WORKING);
 			// last parameter is not used
 		} catch (ClientException e) {
 			notificationHandler.logException(e);
