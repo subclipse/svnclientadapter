@@ -83,6 +83,9 @@ public class CommandLine {
 	private static String CMD_REVERT = " revert {0} {1}";
 	private static String CMD_STATUS =
 		" status -v -N {0} {1} --non-interactive";
+	private static String CMD_RECURSIVE_STATUS =
+		" status -v {0} --non-interactive";
+
 	private static String CMD_UPDATE = " up -r {0} {1} --non-interactive";
 	private static String AUTH_INFO =
 		" --username \"{0}\" --password \"{1}\"";
@@ -510,13 +513,13 @@ public class CommandLine {
 	 *   -R [--recursive]         : descend recursively
 	 *   -q [--quiet]             : print as little as possible
 	 */
-	public Process revert(String paths, boolean recursive) {
+	public String revert(String paths, boolean recursive) throws CmdLineException {
 		String recursiveFlag = (recursive) ? "-R" : "";
-		return execInternal(
+		return exec(
 			CMD
 				+ MessageFormat.format(
 					CMD_REVERT,
-					new String[] { recursiveFlag, paths }));
+					new String[] { recursiveFlag, paths }));					
 	}
 
 	/**
@@ -600,6 +603,14 @@ public class CommandLine {
 				+ MessageFormat.format(CMD_STATUS, new String[] { flags, path })
 				+ getAuthInfo());
 	}
+	
+	public String recursiveStatus(String path)
+		throws CmdLineException {
+		return exec(
+			CMD
+				+ MessageFormat.format(CMD_RECURSIVE_STATUS, new String[] { path })
+				+ getAuthInfo());
+	}	
 
 	/**
 	 * update (up): Bring changes from the repository into the working copy.
@@ -655,7 +666,7 @@ public class CommandLine {
 
 	private Process execInternal(String cmd) {
 		Runtime rt = Runtime.getRuntime();
-		System.out.println("CommandLine:starting [" + cmd + "]");
+//		System.out.println("CommandLine:starting [" + cmd + "]");
 
 		/* run the process */
 		Process proc = null;
