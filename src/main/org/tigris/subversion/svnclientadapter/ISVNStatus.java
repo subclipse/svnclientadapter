@@ -121,12 +121,16 @@ public interface ISVNStatus {
 	String getLastCommitAuthor();
 
 	Kind getTextStatus();
+
+	Kind getRepositoryTextStatus();
 	
 	/**
 	 * will return either Kind.NORMAL, Kind.CONFLICTED or Kind.MODIFIED
 	 * 
 	 */
 	Kind getPropStatus();
+
+	Kind getRepositoryPropStatus();
 
 	boolean isMerged();
 

@@ -93,7 +93,12 @@ public class Sample {
 			System.out.println("error :" +message);
 		}
     
-		public void logCompleted(String message) {
+        public void logRevision(long revision) {
+			// when command completes against revision
+			System.out.println("revision :" +revision);
+        }
+
+        public void logCompleted(String message) {
 			// when command completed
 			System.out.println(message);
 		}

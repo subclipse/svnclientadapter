@@ -248,4 +248,18 @@ public class JhlStatus implements ISVNStatus {
 		return _s.getUrlCopiedFrom();
 	}
 
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getRepositoryTextStatus()
+     */
+    public Kind getRepositoryTextStatus() {
+        return JhlConverter.convertStatusKind(_s.getRepositoryTextStatus());
+    }
+
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getRepositoryPropStatus()
+     */
+    public Kind getRepositoryPropStatus() {
+        return JhlConverter.convertStatusKind(_s.getRepositoryPropStatus());
+    }
+
 }

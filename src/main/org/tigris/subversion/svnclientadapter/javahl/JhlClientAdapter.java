@@ -57,7 +57,6 @@ package org.tigris.subversion.svnclientadapter.javahl;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -461,24 +460,39 @@ public class JhlClientAdapter implements ISVNClientAdapter {
      */
     public ISVNStatus[] getStatus(File path, boolean descend, boolean getAll)
 		throws SVNClientException {
+		return getStatus(path, descend,getAll,false);
+	}
+	
+
+    /**
+     * Returns the status of files and directory recursively
+     *
+     * @param path File to gather status.
+     * @param descend get recursive status information
+     * @param getAll get status information for all files
+     * @param contactServer contact server to get remote changes
+     *  
+     * @return a Status
+     */
+    public ISVNStatus[] getStatus(File path, boolean descend, boolean getAll, boolean contactServer) throws SVNClientException {
 		notificationHandler.setCommand(ISVNNotifyListener.Command.STATUS);
 		String filePathSVN = fileToSVNPath(path, true);
-		notificationHandler.logCommandLine("status " + filePathSVN);
+		notificationHandler.logCommandLine("status " + (contactServer?"-u ":"")+ filePathSVN);
 		notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
 		try {
 			return JhlConverter.convert(
                 svnClient.status(
                     filePathSVN,  
                     descend,     // If descend is true, recurse fully, else do only immediate children.
-                    false,       // If update is set, contact the repository and augment the status structures with information about out-of-dateness     
+                    contactServer,       // If update is set, contact the repository and augment the status structures with information about out-of-dateness     
 					getAll));    // retrieve all entries; otherwise, retrieve only "interesting" entries (local mods and/or
                                  // out-of-date).
 		} catch (ClientException e) {
 			notificationHandler.logException(e);
 			throw new SVNClientException(e);
 		}
-	}
-	
+    }
+
     /**
      * copy and schedule for addition (with history)
      * @param srcPath

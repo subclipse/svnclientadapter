@@ -93,7 +93,7 @@ public interface ISVNNotifyListener {
     }    
 
     public void setCommand(int command);
-    
+
     /**
      * called at the beginning of the command
      * @param commandLine
@@ -113,11 +113,20 @@ public interface ISVNNotifyListener {
     public void logError(String message);
 
     /**
+     * Called when a command has completed to report
+     * that the command completed against the specified
+     * revision.
+     *  
+     * @param commandLine
+     */
+    public void logRevision(long revision);
+
+    /**
      * called when a command has completed
      * @param message
      */    
     public void logCompleted(String message);
-    
+
     /**
      * called when a subversion action happen on a file (add, delete, update ...)
      * @param path the canonical path of the file or dir

@@ -57,11 +57,6 @@ package org.tigris.subversion.svnclientadapter;
 import java.io.File;
 import java.util.Date;
 
-import org.tigris.subversion.svnclientadapter.ISVNStatus;
-import org.tigris.subversion.svnclientadapter.SVNNodeKind;
-import org.tigris.subversion.svnclientadapter.SVNRevision;
-import org.tigris.subversion.svnclientadapter.SVNUrl;
-
 /**
  * <p>
  * A special status class that is used if a File/Folder is not versioned.</p>
@@ -111,7 +106,15 @@ public class SVNStatusUnversioned implements ISVNStatus {
 		return ISVNStatus.Kind.NORMAL;
 	}
 	
-	public boolean isMerged() {
+    public Kind getRepositoryTextStatus() {
+        return ISVNStatus.Kind.UNVERSIONED;
+    }
+
+    public Kind getRepositoryPropStatus() {
+        return ISVNStatus.Kind.UNVERSIONED;
+    }
+
+    public boolean isMerged() {
 		return false;
 	}
 	public boolean isDeleted() {
@@ -144,4 +147,5 @@ public class SVNStatusUnversioned implements ISVNStatus {
 	public String getUrlCopiedFrom() {
 		return null;
 	}
+
 }

@@ -220,4 +220,14 @@ class CmdLineStatus  implements ISVNStatus {
 		return infoPart.getUrl();
 	}
 
+    public Kind getRepositoryTextStatus() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public Kind getRepositoryPropStatus() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 }

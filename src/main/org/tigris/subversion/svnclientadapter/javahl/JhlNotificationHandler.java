@@ -162,6 +162,8 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements No
             case Notify.Action.update_completed :
                 notify = false;
                 if (revision >= 0) {
+                    logRevision( revision );
+
                     if (command == ISVNNotifyListener.Command.EXPORT) {
                         logCompleted("Exported revision "+revision+".");
                     }                       
@@ -196,8 +198,10 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements No
               break;
             case Notify.Action.status_completed :
               notify = false;
-              if (revision >= 0)
+              if (revision >= 0) {
+                logRevision(revision);
                 logMessage("Status against revision: "+ revision);
+              }
               break;                
             case Notify.Action.commit_modified :
                 logMessage("Sending        "+path);

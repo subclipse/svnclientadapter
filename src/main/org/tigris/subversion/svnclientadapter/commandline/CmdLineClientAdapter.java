@@ -1198,4 +1198,12 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 			SVNClientException.wrapException(e);
 		}		
 	}
+
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getStatus(java.io.File, boolean, boolean, boolean)
+     */
+    public ISVNStatus[] getStatus(File path, boolean descend, boolean getAll, boolean contactServer) throws SVNClientException {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }
