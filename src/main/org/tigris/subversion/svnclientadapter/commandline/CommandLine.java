@@ -94,9 +94,9 @@ class CommandLine {
 	private static String CMD_MKDIR_LOCAL = "mkdir {0}";
 	private static String CMD_MOVE = "mv -r {0} {1} {2} {3} --force";
 	private static String CMD_PROPGET = "propget {0} {1}";
-	private static String CMD_PROPSET = "propset {0} \"{1}\" {2}";
-	private static String CMD_PROPSET_FILE = "propset {0} -F \"{1}\" {2}";
-    private static String CMD_PROPDEL = "propdel {0} {1}";
+	private static String CMD_PROPSET = "propset {0} {1} \"{2}\" {3}";
+	private static String CMD_PROPSET_FILE = "propset {0} {1} -F \"{2}\" {3}";
+    private static String CMD_PROPDEL = "propdel {0} {1} {2}";
 	private static String CMD_REVERT = "revert {0} {1}";
 	private static String CMD_STATUS = "status -v -N {0} {1}";
 	private static String CMD_RECURSIVE_STATUS = "status -v {0}";
@@ -414,7 +414,8 @@ class CommandLine {
 	 */
 	void propset(String propName, String propValue, String target, boolean recurse)
 		throws CmdLineException {
-		execVoid(MessageFormat.format(CMD_PROPSET, new String[] { propName, propValue, target }));
+        String flags = (recurse) ? "-R" : "";
+		execVoid(MessageFormat.format(CMD_PROPSET, new String[] { flags, propName, propValue, target }));
 	}
     
     /**
@@ -426,7 +427,8 @@ class CommandLine {
      * @throws CmdLineException
      */
     void propdel(String propName, String target, boolean recurse) throws CmdLineException {
-        execVoid(MessageFormat.format(CMD_PROPDEL, new String[] { propName, target }));
+        String flags = (recurse) ? "-R" : "";
+        execVoid(MessageFormat.format(CMD_PROPDEL, new String[] { flags, propName, target }));
     }
     
 	/**
@@ -439,8 +441,9 @@ class CommandLine {
 	 */
 	void propsetFile(String propName, String propFile, String target, boolean recurse)
 		throws CmdLineException {
+        String flags = (recurse) ? "-R" : "";
 		execVoid(
-			MessageFormat.format(CMD_PROPSET_FILE, new String[] { propName, propFile, target }));
+			MessageFormat.format(CMD_PROPSET_FILE, new String[] { flags, propName, propFile, target }));
 	}
 
 	/**
