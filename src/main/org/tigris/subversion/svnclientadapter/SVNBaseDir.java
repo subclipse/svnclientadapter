@@ -75,12 +75,13 @@ public class SVNBaseDir {
 
 	/**
 	 * get the common directory between file1 and file2 or null if the files have nothing in common
+	 * it always returns a directory unless file1 is the same file than file2
 	 * @param file1
 	 * @param file2
 	 * @return
 	 * @throws SVNClientException
 	 */
-	static private File getCommonPart(File file1, File file2) throws SVNClientException {
+	static File getCommonPart(File file1, File file2) throws SVNClientException {
 		String file1CanonPath;
 		String file2CanonPath;
 		try {
@@ -93,29 +94,40 @@ public class SVNBaseDir {
 		if (file1CanonPath.equals(file2CanonPath)) {
 			return new File(file1CanonPath);
 		}
+
+		String separator = File.separator;
+		if (File.separator.equals("\\")) {
+			separator = "\\\\";
+		}
+		String[] file1Parts = file1CanonPath.split(separator);
+		String[] file2Parts = file2CanonPath.split(separator);
 		
-		int latestSeparator = -1;
-		int file1Length = file1CanonPath.length();
-		int file2Length = file2CanonPath.length(); 
+		int parts1Length = file1Parts.length;
+		int parts2Length = file2Parts.length; 
 		
-		int minLength = (file1Length < file2Length) ? file1Length : file2Length;
+		int minLength = (parts1Length < parts2Length) ? parts1Length : parts2Length;
 			
-		char char1;
-		char char2;
+		String part1;
+		String part2;
+		StringBuffer commonsPart = new StringBuffer();
 		for (int i = 0; i < minLength;i++) {
-			char1 = file1CanonPath.charAt(i);
-			char2 = file2CanonPath.charAt(i);
-			if (char1 != char2) {
+			part1 = file1Parts[i];
+			part2 = file2Parts[i];
+			if (!part1.equals(part2)) {
 				break;				
 			}
-			if (char1 == File.separatorChar) {
-				latestSeparator = i;
+			if (commonsPart.length() == 0) {
+				commonsPart.append(part1);
+			} else
+			{
+				commonsPart.append(File.separatorChar);
+				commonsPart.append(part1);
 			}
 		}
-		if (latestSeparator == -1) {
+		if (commonsPart.length() == 0) {
 			return null; // the two files have nothing in common (one on disk c: and the other on d: for ex)
 		}
-		return new File(file1CanonPath.substring(0,latestSeparator+1));
+		return new File(commonsPart.toString());
 	}
 
 	/**
@@ -129,7 +141,8 @@ public class SVNBaseDir {
 	} 
 
 	/**
-	 * get the base directory for a set of files
+	 * get the base directory for a set of files or null if there is no base directory
+	 * for the set of files
 	 * @param files
 	 * @return
 	 * @throws SVNClientException
