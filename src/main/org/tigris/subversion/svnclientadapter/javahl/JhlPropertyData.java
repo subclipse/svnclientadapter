@@ -52,48 +52,43 @@
  * <http://www.apache.org/>.
  *
  */ 
-package org.tigris.subversion.svnclientadapter;
+package org.tigris.subversion.svnclientadapter.javahl;
 
+import org.tigris.subversion.javahl.PropertyData;
+import org.tigris.subversion.svnclientadapter.ISVNProperty;
 
 /**
+ * adapter : convert from PropertyData to ISVNProperty
  * 
- * @author Cédric Chabanois 
- *         <a href="mailto:cchabanois@ifrance.com">cchabanois@ifrance.com</a>
+ * @author philip schatz
  */
-public interface ISVNNotifyListener {
+public class JhlPropertyData implements ISVNProperty
+{
+    private PropertyData _propertyData;
     
     
-    public static final class Command {
-        public static final int UNDEFINED = 0;
-        public static final int ADD = 1;
-        public static final int CHECKOUT = 2;
-        public static final int COMMIT = 3;
-        public static final int UPDATE = 4;
-        public static final int MOVE = 5;
-        public static final int COPY = 6;
-        public static final int REMOVE = 7;
-        public static final int EXPORT = 8;
-        public static final int IMPORT = 9;    
-        public static final int MKDIR = 10;
-        public static final int LS = 11;
-        public static final int STATUS = 12;
-        public static final int LOG = 13;
-        public static final int PROPSET = 14;
-        public static final int PROPDEL = 15;
-        public static final int REVERT = 16;
-        public static final int DIFF = 17;
-    }    
+    JhlPropertyData(PropertyData propertyData)
+    {
+        _propertyData = propertyData;
+    }
 
-    public void setCommand(int command);
+    public String getName()
+    {
+        return _propertyData.getName();
+    }
+
+    public String getValue()
+    {
+        return _propertyData.getValue();
+    }
+
+    public String getPath()
+    {
+        return _propertyData.getPath();
+    }
     
-    public void logCommandLine(String commandLine);
-    
-    public void logMessage(String message);
-    
-    public void logError(String message);
-    
-    public void logCompleted(String message);
-    
-    public void onNotify(String path, SVNNodeKind kind);
-    
+    public byte[] getData()
+    {
+        return _propertyData.getData();
+    }
 }

@@ -53,67 +53,21 @@
  *
  */ 
 package org.tigris.subversion.svnclientadapter;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.util.Date;
-import java.util.Locale;
 
-import org.tigris.subversion.javahl.Revision;
+import java.util.Date;
+
 
 /**
- * @author Cédric Chabanois 
- *         <a href="mailto:cchabanois@ifrance.com">cchabanois@ifrance.com</a>
- *
+ * @author Philip Schatz <a href="mailto:schatzp@purdue.edu">schatzp@purdue.edu</a>
+ * 
  */
-public class RevisionUtils {
+public interface ISVNLogMessage {
 
-	
-	/**
-	 * get a revision from a string
-	 * revision can be :
-	 * - a date with the following format : MM/DD/YYYY HH:MM AM_PM
-	 * - a revision number
-	 * - HEAD, BASE, COMMITED or PREV
-	 * 
-	 * @param revision
-	 * @return Revision
-	 */
-	public static Revision getRevision(String revision) throws ParseException {
-		
-		// try special KEYWORDS
-		if (revision.compareToIgnoreCase("HEAD") == 0)
-			return Revision.HEAD; // latest in repository
-		else
-		if (revision.compareToIgnoreCase("BASE") == 0)
-			return new Revision(Revision.Kind.base); // base revision of item's working copy
-		else
-		if (revision.compareToIgnoreCase("COMMITED") == 0)
-			return new Revision(Revision.Kind.committed); // revision of item's last commit
-		else
-		if (revision.compareToIgnoreCase("PREV") == 0) // revision before item's last commit
-			return new Revision(Revision.Kind.previous);
-		
-		// try revision number
-		try
-		{
-			int revisionNumber = Integer.parseInt(revision);
-			if (revisionNumber >= 0)
-				return new Revision.Number(revisionNumber); 
-		} catch (NumberFormatException e)
-		{
-		}
-		
-		// try date
-		DateFormat df = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, Locale.US);
-		try
-		{
-			Date revisionDate = df.parse(revision);
-			return new Revision.DateSpec(revisionDate);
-		} catch (ParseException e)
-		{
-		}
-		
-		throw new ParseException("Invalid revision. Revision should be a number, a date in MM/DD/YYYY HH:MM AM_PM format or HEAD, BASE, COMMITED or PREV",0);
-	}
+	public abstract SVNRevision.Number getRevision();
 
+	public abstract String getAuthor();
+
+	public abstract Date getDate();
+
+	public abstract String getMessage();
 }

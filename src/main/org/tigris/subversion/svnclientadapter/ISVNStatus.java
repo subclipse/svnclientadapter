@@ -54,46 +54,86 @@
  */ 
 package org.tigris.subversion.svnclientadapter;
 
+import java.util.Date;
 
 /**
  * 
- * @author Cédric Chabanois 
- *         <a href="mailto:cchabanois@ifrance.com">cchabanois@ifrance.com</a>
+ * @author philip schatz
  */
-public interface ISVNNotifyListener {
-    
-    
-    public static final class Command {
-        public static final int UNDEFINED = 0;
-        public static final int ADD = 1;
-        public static final int CHECKOUT = 2;
-        public static final int COMMIT = 3;
-        public static final int UPDATE = 4;
-        public static final int MOVE = 5;
-        public static final int COPY = 6;
-        public static final int REMOVE = 7;
-        public static final int EXPORT = 8;
-        public static final int IMPORT = 9;    
-        public static final int MKDIR = 10;
-        public static final int LS = 11;
-        public static final int STATUS = 12;
-        public static final int LOG = 13;
-        public static final int PROPSET = 14;
-        public static final int PROPDEL = 15;
-        public static final int REVERT = 16;
-        public static final int DIFF = 17;
-    }    
+public interface ISVNStatus {
 
-    public void setCommand(int command);
-    
-    public void logCommandLine(String commandLine);
-    
-    public void logMessage(String message);
-    
-    public void logError(String message);
-    
-    public void logCompleted(String message);
-    
-    public void onNotify(String path, SVNNodeKind kind);
-    
+    /**
+     * <p>
+     * Base class for enumerating the possible types for a <code>Status</code>.
+     * </p>
+     */
+    public static class Kind {
+        private final String _Name;
+
+        public static Kind NONE = new Kind("non-svn");
+        public static Kind NORMAL = new Kind("normal");
+        public static Kind ADDED = new Kind("added");
+        public static Kind ABSENT = new Kind("absent");
+        public static Kind DELETED = new Kind("deleted");
+        public static Kind REPLACED = new Kind("replaced");
+        public static Kind MODIFIED = new Kind("modified");
+        public static Kind MERGED = new Kind("merged");
+        public static Kind CONFLICTED = new Kind("conflicted");
+        public static Kind IGNORED = new Kind("ignored");
+        public static Kind INCOMPLETE = new Kind("incomplete");
+        public static Kind UNVERSIONED = new Kind("unversioned");
+        
+        
+        //Constructors
+        /**
+         * <p>
+         * Constructs a <code>Type</code> for the given a type name.</p>
+         *
+         *
+         * @param type Name of the type.
+         * @throws IllegalArgumentException If the parameter is invalid.
+         */
+        private Kind(String name) throws IllegalArgumentException {
+            _Name = name;
+        }
+        
+        public String toString() {
+            return _Name;
+        }
+
+    }
+
+	boolean isIgnored();
+
+	boolean isManaged();
+
+	boolean hasRemote();
+
+	SVNUrl getUrl();
+
+	SVNRevision.Number getLastChangedRevision();
+
+	Date getLastChangedDate();
+
+	String getLastCommitAuthor();
+
+	Kind getTextStatus();
+
+	boolean isMerged();
+
+	boolean isDeleted();
+
+	boolean isModified();
+
+	boolean isAdded();
+
+	SVNRevision.Number getRevision();
+
+	boolean isCopied();
+	
+	String getPath();
+
+	SVNNodeKind getNodeKind();
+
+	String getUrlCopiedFrom();
 }

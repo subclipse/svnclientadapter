@@ -52,48 +52,102 @@
  * <http://www.apache.org/>.
  *
  */ 
-package org.tigris.subversion.svnclientadapter;
+package org.tigris.subversion.svnclientadapter.javahl;
 
+import java.net.MalformedURLException;
+import java.util.Date;
+
+import org.tigris.subversion.javahl.Status;
+import org.tigris.subversion.svnclientadapter.ISVNStatus;
+import org.tigris.subversion.svnclientadapter.SVNNodeKind;
+import org.tigris.subversion.svnclientadapter.SVNRevision;
+import org.tigris.subversion.svnclientadapter.SVNUrl;
 
 /**
- * 
- * @author Cédric Chabanois 
- *         <a href="mailto:cchabanois@ifrance.com">cchabanois@ifrance.com</a>
+ * adapter : convert from Status to ISVNStatus
+ *  
+ * @author philip schatz
  */
-public interface ISVNNotifyListener {
-    
-    
-    public static final class Command {
-        public static final int UNDEFINED = 0;
-        public static final int ADD = 1;
-        public static final int CHECKOUT = 2;
-        public static final int COMMIT = 3;
-        public static final int UPDATE = 4;
-        public static final int MOVE = 5;
-        public static final int COPY = 6;
-        public static final int REMOVE = 7;
-        public static final int EXPORT = 8;
-        public static final int IMPORT = 9;    
-        public static final int MKDIR = 10;
-        public static final int LS = 11;
-        public static final int STATUS = 12;
-        public static final int LOG = 13;
-        public static final int PROPSET = 14;
-        public static final int PROPDEL = 15;
-        public static final int REVERT = 16;
-        public static final int DIFF = 17;
-    }    
+public class JhlStatus implements ISVNStatus {
 
-    public void setCommand(int command);
-    
-    public void logCommandLine(String commandLine);
-    
-    public void logMessage(String message);
-    
-    public void logError(String message);
-    
-    public void logCompleted(String message);
-    
-    public void onNotify(String path, SVNNodeKind kind);
-    
+	private Status _s;
+
+	public JhlStatus(Status status) {
+		super();
+		_s = status;
+	}
+
+	public boolean isIgnored() {
+		return _s.isIgnored();
+	}
+
+	public boolean isManaged() {
+		return _s.isManaged();
+	}
+
+	public boolean hasRemote() {
+		return _s.hasRemote();
+	}
+
+	public SVNUrl getUrl() {
+		try {
+            return new SVNUrl(_s.getUrl());
+        } catch (MalformedURLException e) {
+            //should never happen.
+            return null;
+        }
+	}
+
+	public SVNRevision.Number getLastChangedRevision() {
+		return (SVNRevision.Number)JhlConverter.convert(_s.getLastChangedRevision());
+	}
+
+	public Date getLastChangedDate() {
+		return _s.getLastChangedDate();
+	}
+
+	public String getLastCommitAuthor() {
+		return _s.getLastCommitAuthor();
+	}
+
+	public ISVNStatus.Kind getTextStatus() {
+        return JhlConverter.convertStatusKind(_s.getTextStatus());
+	}
+
+	public boolean isMerged() {
+		return _s.isMerged();
+	}
+
+	public boolean isDeleted() {
+		return _s.isDeleted();
+	}
+
+	public boolean isModified() {
+		return _s.isModified();
+	}
+
+	public boolean isAdded() {
+		return _s.isAdded();
+	}
+
+	public SVNRevision.Number getRevision() {
+		return (SVNRevision.Number)JhlConverter.convert(_s.getRevision());
+	}
+
+	public boolean isCopied() {
+		return _s.isCopied();
+	}
+
+	public String getPath() {
+		return _s.getPath();
+	}
+
+	public SVNNodeKind getNodeKind() {
+        return JhlConverter.convertNodeKind(_s.getNodeKind());
+	}
+
+	public String getUrlCopiedFrom() {
+		return _s.getUrlCopiedFrom();
+	}
+
 }

@@ -52,48 +52,57 @@
  * <http://www.apache.org/>.
  *
  */ 
-package org.tigris.subversion.svnclientadapter;
+package org.tigris.subversion.svnclientadapter.javahl;
 
+import java.util.Date;
+
+import org.tigris.subversion.javahl.LogMessage;
+import org.tigris.subversion.svnclientadapter.ISVNLogMessage;
+import org.tigris.subversion.svnclientadapter.SVNRevision;
 
 /**
+ * adapter : convert from LogMessage to ISVNLogMessage
  * 
- * @author Cédric Chabanois 
- *         <a href="mailto:cchabanois@ifrance.com">cchabanois@ifrance.com</a>
+ * @author philip schatz
  */
-public interface ISVNNotifyListener {
-    
-    
-    public static final class Command {
-        public static final int UNDEFINED = 0;
-        public static final int ADD = 1;
-        public static final int CHECKOUT = 2;
-        public static final int COMMIT = 3;
-        public static final int UPDATE = 4;
-        public static final int MOVE = 5;
-        public static final int COPY = 6;
-        public static final int REMOVE = 7;
-        public static final int EXPORT = 8;
-        public static final int IMPORT = 9;    
-        public static final int MKDIR = 10;
-        public static final int LS = 11;
-        public static final int STATUS = 12;
-        public static final int LOG = 13;
-        public static final int PROPSET = 14;
-        public static final int PROPDEL = 15;
-        public static final int REVERT = 16;
-        public static final int DIFF = 17;
-    }    
+public class JhlLogMessage implements ISVNLogMessage {
 
-    public void setCommand(int command);
-    
-    public void logCommandLine(String commandLine);
-    
-    public void logMessage(String message);
-    
-    public void logError(String message);
-    
-    public void logCompleted(String message);
-    
-    public void onNotify(String path, SVNNodeKind kind);
-    
+	private LogMessage _m;
+
+	/**
+	 * 
+	 */
+	public JhlLogMessage(LogMessage msg) {
+		super();
+		_m = msg;
+	}
+
+	/**
+	 * 
+	 */
+	public SVNRevision.Number getRevision() {
+		return (SVNRevision.Number)JhlConverter.convert(_m.getRevision());
+	}
+
+	/**
+	 * 
+	 */
+	public String getAuthor() {
+		return _m.getAuthor();
+	}
+
+	/**
+	 * 
+	 */
+	public Date getDate() {
+		return _m.getDate();
+	}
+
+	/**
+	 * 
+	 */
+	public String getMessage() {
+		return _m.getMessage();
+	}
+
 }
