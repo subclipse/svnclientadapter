@@ -98,8 +98,9 @@ public class AnnotateInputStream extends InputStream {
         }
         int character;
         if (currentPos == currentLine.length())
-            return '\n';
-        character = currentLine.charAt(currentPos);
+        	character = '\n';
+        else
+        	character = currentLine.charAt(currentPos);
         currentPos++;
         available--;
         return character;
