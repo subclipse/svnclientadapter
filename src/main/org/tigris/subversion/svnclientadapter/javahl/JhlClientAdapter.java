@@ -907,7 +907,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
      * @param path
      * @param propertyName
      * @param propertyValue
-     * @return
+     * @return the property or null if property was not found
      * @throws ClientException
      */
 	public ISVNProperty propertyGet(File path, String propertyName)
@@ -920,7 +920,10 @@ public class JhlClientAdapter implements ISVNClientAdapter {
 				"propget " + propertyName + " " + target);
 
 			PropertyData propData = svnClient.propertyGet(target, propertyName);
-			return new JhlPropertyData(propData);
+            if (propData == null)
+                return null;
+            else
+			    return new JhlPropertyData(propData);
 		} catch (ClientException e) {
 			notificationHandler.setException(e);
 			throw new SVNClientException(e);
@@ -971,7 +974,9 @@ public class JhlClientAdapter implements ISVNClientAdapter {
     }
     
     /**
-     * add a pattern to svn:ignore property 
+     * add a pattern to svn:ignore property
+     * @param must be a directory 
+     * @throws SVNClientException
      */
     public void addToIgnoredPatterns(File path, String pattern)  throws SVNClientException {
         List patterns = getIgnoredPatterns(path);
