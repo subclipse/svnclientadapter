@@ -97,6 +97,7 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements No
                 receivedSomeChange = true;
                 break;
             case Notify.Action.update_update :
+                boolean error = false;
                 if (!((kind == NodeKind.dir)
                     && ((propState == Notify.Status.inapplicable)
                         || (propState == Notify.Status.unknown)
@@ -104,21 +105,38 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements No
                     receivedSomeChange = true;
                     char[] statecharBuf = new char[] { ' ', ' ' };
                     if (kind == NodeKind.file) {
-                        if (contentState == Notify.Status.conflicted)
+                        if (contentState == Notify.Status.conflicted) {
                             statecharBuf[0] = 'C';
-                        else if (contentState == Notify.Status.merged)
+                            error = true;
+                        }
+                        else if (contentState == Notify.Status.merged) {
                             statecharBuf[0] = 'G';
+                            error = true;
+                        }
                         else if (contentState == Notify.Status.changed)
                             statecharBuf[0] = 'U';
+                        else if (contentState == Notify.Status.unchanged && command == ISVNNotifyListener.Command.MERGE
+                                && propState < Notify.Status.obstructed)
+                            break;
                     }
-                    if (propState == Notify.Status.conflicted)
+                    if (propState == Notify.Status.conflicted) {
                         statecharBuf[1] = 'C';
-                    else if (propState == Notify.Status.merged)
+                        error = true;
+                    }
+                    else if (propState == Notify.Status.merged) {
                         statecharBuf[1] = 'G';
+                        error = true;
+                    }
                     else if (propState == Notify.Status.changed)
                         statecharBuf[1] = 'U';
-                    logMessage("" + statecharBuf[0] + statecharBuf[1] + " " + path);                      
+                    if (error)
+                        logError("" + statecharBuf[0] + statecharBuf[1] + " " + path);                      
+                    else
+                        logMessage("" + statecharBuf[0] + statecharBuf[1] + " " + path);                      
                 }
+                break;
+            case Notify.Action.update_external :
+                logMessage("Updating external location at: " + path);
                 break;
             case Notify.Action.update_completed :
                 notify = false;
