@@ -1,0 +1,55 @@
+<!-- This file is an ANT build script. ANT is a Java based build tool. -->
+<!-- It is available from http://jakarta.apache.org/ant/               -->
+
+<project name="svnClientAdapter" default="all" basedir=".">
+
+<!-- 
+       $Id$
+  -->
+
+  <!-- all properties are in build.properties -->
+  <property file="build.properties"/>
+
+  <path id="project.classpath">
+    <pathelement location="${jsvn.jar}"/>
+  </path>
+
+  <!-- ================================================================= -->
+  <!-- cleans everything                                                 -->
+  <!-- ================================================================= -->
+  <target name="clean">
+    <delete dir="${build.lib.dir}"/>
+    <delete dir="${build.classes.dir}"/>
+  </target>
+
+  <!-- ================================================================= -->
+  <!-- compile                                                           -->
+  <!-- ================================================================= -->
+  <target name="compile" description="compile all sources files">
+    <mkdir dir="${build.classes.dir}" />
+    <javac srcdir="${src.main.dir}"
+           destdir="${build.classes.dir}"
+           debug="${debug}"
+           includes="**"
+	   classpathref="project.classpath">
+    </javac>
+  </target>
+
+  <!-- ================================================================= -->
+  <!-- create svnClientAdapter.jar                                       -->
+  <!-- ================================================================= -->
+  <target name="svnClientAdapter.jar" depends="compile" description="generate svnClientAdapter.jar">
+    <mkdir dir="${build.lib.dir}" />
+    <jar jarfile="${build.lib.dir}/svnClientAdapter.jar"
+         basedir="${build.classes.dir}"
+	 includes="**/*.class"
+	 excludes="**/*Test*.class">
+    </jar>
+  </target>
+
+
+  <!-- create all jar files -->
+  <target name="all" depends="svnClientAdapter.jar">
+  </target>
+
+</project>
