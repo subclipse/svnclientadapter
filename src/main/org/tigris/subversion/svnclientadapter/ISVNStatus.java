@@ -54,6 +54,7 @@
  */ 
 package org.tigris.subversion.svnclientadapter;
 
+import java.io.File;
 import java.util.Date;
 
 /**
@@ -134,7 +135,17 @@ public interface ISVNStatus {
 	boolean isCopied();
 	
 	String getPath();
+    
+    /**
+     * 
+     * @return the absolute file corresponding to this resource
+     */
+    File getFile();
 
+    /**
+     * @return return the nodekind of the managed resource
+     * if resource is not managed, SVNNodeKind.UNKNOWN is returned 
+     */
 	SVNNodeKind getNodeKind();
 
 	String getUrlCopiedFrom();

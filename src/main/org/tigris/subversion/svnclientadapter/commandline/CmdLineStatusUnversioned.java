@@ -54,6 +54,7 @@
  */
 package org.tigris.subversion.svnclientadapter.commandline;
 
+import java.io.File;
 import java.util.Date;
 
 import org.tigris.subversion.svnclientadapter.ISVNStatus;
@@ -68,8 +69,16 @@ import org.tigris.subversion.svnclientadapter.SVNUrl;
  * @author Philip Schatz (schatz at tigris)
  */
 class CmdLineStatusUnversioned implements ISVNStatus {
-	public boolean isIgnored() {
-		return true;
+    private File file;
+    private boolean isIgnored;
+	
+    public CmdLineStatusUnversioned(File file, boolean isIgnored) {
+        this.file = file;
+        this.isIgnored = isIgnored;
+    }
+    
+    public boolean isIgnored() {
+		return isIgnored;
 	}
 	public boolean isManaged() {
 		return false;
@@ -111,10 +120,16 @@ class CmdLineStatusUnversioned implements ISVNStatus {
 		return false;
 	}
 	public String getPath() {
-		return null;
+		return file.getPath();
 	}
+    public File getFile() {
+        return file.getAbsoluteFile();
+    }
+    
 	public SVNNodeKind getNodeKind() {
-		return SVNNodeKind.UNKNOWN;
+        // getNodeKind returns the kind of the managed resource. If file is
+        // not managed we must return UNKNOWN
+        return SVNNodeKind.UNKNOWN;
 	}
 	public String getUrlCopiedFrom() {
 		return null;

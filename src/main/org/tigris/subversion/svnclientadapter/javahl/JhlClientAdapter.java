@@ -65,7 +65,6 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 import org.tigris.subversion.javahl.ClientException;
-import org.tigris.subversion.javahl.NodeKind;
 import org.tigris.subversion.javahl.PromptUserPassword;
 import org.tigris.subversion.javahl.PropertyData;
 import org.tigris.subversion.javahl.Revision;
@@ -329,41 +328,40 @@ public class JhlClientAdapter implements ISVNClientAdapter {
      */
     public ISVNStatus getSingleStatus(File path) 
             throws SVNClientException {
+        return getStatus(new File[] {path})[0];
+    }
+    
+    /**
+     * Returns the status of the given resources
+     */
+    public ISVNStatus[] getStatus(File[] path) 
+            throws SVNClientException {
         notificationHandler.setCommand(ISVNNotifyListener.Command.STATUS);
-        String filePathSVN = fileToSVNPath(path, true);
-        notificationHandler.logCommandLine("status -N "+filePathSVN);
-        try {
-            Status status = svnClient.singleStatus(filePathSVN, false);
-            return new JhlStatus(status);                
-        } catch (ClientException e) {
-            if (e.getAprError() == SVN_ERR_WC_NOT_DIRECTORY) {
-                // when there is no .svn dir, an exception is thrown ...
-                return new JhlStatus(new Status(
-                    filePathSVN,
-                    null,
-                    path.isDirectory()?NodeKind.dir:NodeKind.file,
-                    -1, // revision
-                	-1, // lastchangedrevision
-                	0, // lastchangedDate
-                	null, // lastcommitauthor
-					path.exists() ? Status.Kind.unversioned : Status.Kind.none, // textType
-					path.exists() ? Status.Kind.unversioned : Status.Kind.none, // propType
-                	Status.Kind.none, // repositoryTextStatus
-					Status.Kind.none, // repositoryPropStatus
-                	false, // locked
-                	false, // copied
-                	"", // conflictOld
-                	"", // conflictNew
-                	"",  // conflictWorking
-                    null, // url copied from
-                    -1    // revision copied from
-                ));
-            } else
-            {
-                notificationHandler.logException(e);
-                throw new SVNClientException(e);
+        String filePathSVN[] = new String[path.length];
+        String commandLine = "status -N --no-ignore"; 
+        for (int i = 0; i < filePathSVN.length;i++) {
+            filePathSVN[i] = fileToSVNPath(path[i], true);
+            commandLine+=" "+filePathSVN[i]; 
+        }
+        notificationHandler.logCommandLine(commandLine);
+
+        ISVNStatus[] statuses = new ISVNStatus[path.length]; 
+        for (int i = 0; i < filePathSVN.length;i++) {
+            try {
+                Status status = svnClient.singleStatus(filePathSVN[i], false);
+                statuses[i] = new JhlStatus(status);                
+            } catch (ClientException e) {
+                if (e.getAprError() == SVN_ERR_WC_NOT_DIRECTORY) {
+                    // when there is no .svn dir, an exception is thrown ...
+                    statuses[i] = new JhlStatusUnversioned(path[i]);
+                } else
+                {
+                    notificationHandler.logException(e);
+                    throw new SVNClientException(e);
+                }
             }
         }
+        return statuses;
     }
 
     /**
@@ -372,13 +370,19 @@ public class JhlClientAdapter implements ISVNClientAdapter {
      * @param path File to gather status.
      * @return a Status
      */
-	public ISVNStatus[] getStatusRecursively(File path, boolean getAll)
+    public ISVNStatus[] getStatus(File path, boolean descend)
 		throws SVNClientException {
 		notificationHandler.setCommand(ISVNNotifyListener.Command.STATUS);
 		String filePathSVN = fileToSVNPath(path, true);
 		notificationHandler.logCommandLine("status " + filePathSVN);
 		try {
-			return JhlConverter.convert(svnClient.status(filePathSVN, true, false, getAll));
+			return JhlConverter.convert(
+                svnClient.status(
+                    filePathSVN,  
+                    descend,     // If descend is true, recurse fully, else do only immediate children.
+                    false,       // If update is set, contact the repository and augment the status structures with information about out-of-dateness     
+                    true));    // retrieve all entries; otherwise, retrieve only "interesting" entries (local mods and/or
+                                 // out-of-date).
 		} catch (ClientException e) {
 			notificationHandler.logException(e);
 			throw new SVNClientException(e);

@@ -55,78 +55,49 @@
 package org.tigris.subversion.svnclientadapter.commandline;
 
 import java.io.File;
-import java.util.StringTokenizer;
+import java.util.Date;
 
 import org.tigris.subversion.svnclientadapter.ISVNStatus;
 import org.tigris.subversion.svnclientadapter.SVNNodeKind;
+import org.tigris.subversion.svnclientadapter.SVNUrl;
+import org.tigris.subversion.svnclientadapter.SVNRevision.Number;
 
 /**
  * <p>
  * Implements a ISVNStatus using "svn status" and "svn info".</p>
  * 
  * @author Philip Schatz (schatz at tigris)
+ * @author Cédric Chabanois (cchabanois at no-log.org)
  */
-class CmdLineStatus extends CmdLineInfo implements ISVNStatus {
-
-	//"Constants"
-	public static final int STATUS_FILE_WIDTH = 40;
-
-	//Fields
-	private char flag = '?';
-	private char history;
+class CmdLineStatus  implements ISVNStatus {
+    private CmdLineStatusPart statusPart;
+    private CmdLineInfoPart infoPart;
 
 	/**
 	 * <p>
-	 * Creates a new status. Takes in 2 lines, one of the
-	 * "svn status" information, and one is the "svn info"
-	 * line.</p>
-	 * 
-	 * @param statusLine Generated from "svn status"
-	 * @param infoLine Generated from "svn info"
+	 * Creates a new status 
+	 * </p>
+     * Don't use this constructor if statusPart is null : use CmdLineStatusUnversioned instead 
+	 * @param statusLinePart Generated from "svn status"
+	 * @param infoLinePart Generated from "svn info"
 	 */
-	CmdLineStatus(String statusLine, String infoLine) {
-		super(infoLine);
-		setStatus(statusLine);
-	}
-
-	//Methods
-	private void setStatus(String statusLine) {
-
-		// if the status is for a DIR then find the single line
-		if (getNodeKind() == SVNNodeKind.DIR) {
-			StringTokenizer st = new StringTokenizer(statusLine, Helper.NEWLINE);
-
-			while (st.hasMoreTokens()) {
-				String line = st.nextToken();
-
-				String fileName = line.substring(STATUS_FILE_WIDTH, line.length());
-				File file1 = new File(fileName);
-				File file2 = new File(getPath());
-
-				if (file1.equals(file2)) {
-					statusLine = line;
-					break;
-				}
-			}
-		}
-
-		char[] l = statusLine.toCharArray();
-		flag = l[0];
-		history = l[3];
+	CmdLineStatus(CmdLineStatusPart statusPart, CmdLineInfoPart infoPart) {
+        this.statusPart = statusPart;
+        this.infoPart = infoPart;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.subclipse.client.ISVNClientStatus#isIgnored()
 	 */
 	public boolean isIgnored() {
-		return (flag == 'I');
+		return statusPart.isIgnored();
 	}
 
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.subclipse.client.ISVNClientStatus#isManaged()
 	 */
 	public boolean isManaged() {
-		return flag != '?';
+		return statusPart.isManaged();
 	}
 
 	/**
@@ -134,42 +105,14 @@ class CmdLineStatus extends CmdLineInfo implements ISVNStatus {
 	 * @return
 	 */
 	public boolean hasRemote() {
-		ISVNStatus.Kind textStatus = getTextStatus();
-		return ((isManaged()) && (textStatus != ISVNStatus.Kind.ADDED));
+		return statusPart.hasRemote();
 	}
 
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.subclipse.client.ISVNClientStatus#getTextStatus()
 	 */
 	public ISVNStatus.Kind getTextStatus() {
-		switch (flag) {
-			case ' ' : // none or normal
-				return ISVNStatus.Kind.NORMAL;
-			case 'A' :
-				return ISVNStatus.Kind.ADDED;
-            case '!' : // missing or incomplete
-                return ISVNStatus.Kind.MISSING;
-			case 'D' :
-				return ISVNStatus.Kind.DELETED;
-            case 'R' :
-                return ISVNStatus.Kind.REPLACED;
-			case 'M' :
-				return ISVNStatus.Kind.MODIFIED;
-            case 'G' :
-                return ISVNStatus.Kind.MERGED;
-			case 'C' :
-				return ISVNStatus.Kind.CONFLICTED;
-            case '~' :
-                return ISVNStatus.Kind.OBSTRUCTED;
-			case 'I' :
-				return ISVNStatus.Kind.IGNORED;
-            case 'X' :
-                return ISVNStatus.Kind.EXTERNAL;
-			case '?' :
-				return ISVNStatus.Kind.UNVERSIONED;
-			default :
-				return ISVNStatus.Kind.NONE;
-		}
+        return statusPart.getTextStatus();
 	}
 
 	/* (non-Javadoc)
@@ -184,36 +127,90 @@ class CmdLineStatus extends CmdLineInfo implements ISVNStatus {
 	 * @see org.tigris.subversion.subclipse.client.ISVNClientStatus#isDeleted()
 	 */
 	public boolean isDeleted() {
-		return (flag == 'D');
+		return statusPart.isDeleted();
 	}
 
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.subclipse.client.ISVNClientStatus#isModified()
 	 */
 	public boolean isModified() {
-		return (flag == 'M');
+		return statusPart.isModified();
 	}
 
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.subclipse.client.ISVNClientStatus#isAdded()
 	 */
 	public boolean isAdded() {
-		return (flag == 'A');
+		return statusPart.isAdded();
 	}
 
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.subclipse.client.ISVNClientStatus#isCopied()
 	 */
 	public boolean isCopied() {
-		return (history == '+');
+		return statusPart.isCopied();
 	}
 
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.subclipse.client.ISVNClientStatus#getUrlCopiedFrom()
 	 */
 	public String getUrlCopiedFrom() {
-		// TODO Auto-generated method stub
+		// TODO : implement
 		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getLastChangedDate()
+	 */
+	public Date getLastChangedDate() {
+		return infoPart.getLastChangedDate();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getLastChangedRevision()
+	 */
+	public Number getLastChangedRevision() {
+		return infoPart.getLastChangedRevision();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getLastCommitAuthor()
+	 */
+	public String getLastCommitAuthor() {
+		return infoPart.getLastCommitAuthor();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getNodeKind()
+	 */
+	public SVNNodeKind getNodeKind() {
+		return infoPart.getNodeKind();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getPath()
+	 */
+	public String getPath() {
+		return infoPart.getPath();
+	}
+    
+    public File getFile() {
+        return new File(getPath()).getAbsoluteFile();
+    }
+    
+
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getRevision()
+	 */
+	public Number getRevision() {
+		return infoPart.getRevision();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getUrl()
+	 */
+	public SVNUrl getUrl() {
+		return infoPart.getUrl();
 	}
 
 }

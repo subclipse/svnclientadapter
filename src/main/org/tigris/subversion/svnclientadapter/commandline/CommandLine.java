@@ -87,7 +87,7 @@ class CommandLine {
 	String version() throws CmdLineException {
 		ArrayList args = new ArrayList();
 		args.add("--version");
-		return execString(args);
+		return execString(args,false);
 	}
 
 	/**
@@ -106,7 +106,7 @@ class CommandLine {
 		if (!recursive)
 			args.add("-N");
 		args.add(path);
-		return execString(args);
+		return execString(args,false);
 	}
 
 	private ArrayList addAuthInfo(ArrayList arguments) {
@@ -167,7 +167,7 @@ class CommandLine {
         	args.add(path[i]);
         }
         
-		return execString(args);
+		return execString(args,false);
 	}
 
 	/**
@@ -210,7 +210,7 @@ class CommandLine {
 			args.add("-N");
 		addAuthInfo(args);
 
-		return execString(args);
+		return execString(args,false);
 	}
 
 	/**
@@ -293,7 +293,7 @@ class CommandLine {
 		}
         addAuthInfo(args);
         
-		return execString(args);
+		return execString(args,false);
 	}
 
 	/**
@@ -362,7 +362,7 @@ class CommandLine {
 		args.add("-m");
 		args.add(message);
 		addAuthInfo(args);
-		return execString(args);
+		return execString(args,false);
 	}
 
 	/**
@@ -378,12 +378,21 @@ class CommandLine {
 	 * @param path
 	 * @return
 	 */
-	String info(String path) throws CmdLineException {
+	String info(String[] target) throws CmdLineException {
+        if (target.length == 0) {
+            // otherwise we would do a "svn info" without args
+            return ""; 
+        }
+        
         notificationHandler.setCommand(ISVNNotifyListener.Command.INFO);
 		ArrayList args = new ArrayList();
 		args.add("info");
-		args.add(path);
-		return execString(args);
+
+        for (int i = 0;i < target.length;i++) {
+            args.add(target[i]);
+        }
+
+		return execString(args,false);
 	}
 
 	/**
@@ -404,7 +413,7 @@ class CommandLine {
 		args.add(url);
 		addAuthInfo(args);
 		
-		return execString(args);
+		return execString(args,false);
 	}
 
 	/**
@@ -425,7 +434,7 @@ class CommandLine {
 		args.add("--xml");
 		addAuthInfo(args);
 
-        return execXMLString(args);
+        return execString(args,true);
 	}
 
 	/**
@@ -486,7 +495,7 @@ class CommandLine {
 		}
 		addAuthInfo(args);				
 	
-		return execString(args);
+		return execString(args,false);
 	}
 
 	/**
@@ -586,7 +595,7 @@ class CommandLine {
 			args.add(paths[i]);
 		}
 		
-		return execString(args);
+		return execString(args,false);
 	}
 
 	/**
@@ -596,35 +605,28 @@ class CommandLine {
 	 * @param path Local path of resource to get status of.
 	 * @param checkUpdates Check for updates on server.
 	 */
-	String status(String path, boolean checkUpdates) throws CmdLineException {
+	String status(String path[], boolean descend, boolean checkUpdates) throws CmdLineException {
+        if (path.length == 0) {
+            // otherwise we would do a "svn status" without args
+            return ""; 
+        }
+
         notificationHandler.setCommand(ISVNNotifyListener.Command.STATUS);
 		ArrayList args = new ArrayList();
 		args.add("status");
-		args.add("-v");
-		args.add("-N");
+        args.add("-v");
+		if (!descend) 
+            args.add("-N");
 		if (checkUpdates)
 			args.add("-u");
-		args.add(path);
-		addAuthInfo(args);      
-		return execString(args);
-	}
-
-	/**
-	 * <p>
-	 * Obtain the status of a directory and its children
-	 * recursively.</p>
-	 * 
-	 * @param path Local path of directory to use.
-	 * @throws CmdLineException
-	 */
-	String recursiveStatus(String path) throws CmdLineException {
-        notificationHandler.setCommand(ISVNNotifyListener.Command.STATUS);
-		ArrayList args = new ArrayList();
-		args.add("status");
-		args.add("-v");
-		args.add(path);
-		addAuthInfo(args);        
-		return execString(args);
+        args.add("--no-ignore"); // disregard default and svn:ignore property ignores
+		
+        for (int i = 0; i < path.length;i++) { 
+            args.add(path[i]);
+        }
+		
+        addAuthInfo(args);      
+		return execString(args,false);
 	}
 
 	/**
@@ -642,7 +644,7 @@ class CommandLine {
 		args.add(validRev(revision));
 		args.add(path);
 		addAuthInfo(args);
-		return execString(args);
+		return execString(args,false);
 	}
 
 	/**
@@ -701,80 +703,35 @@ class CommandLine {
 	 * @param cmd
 	 * @return String
 	 */
-	private String execXMLString(ArrayList svnArguments) throws CmdLineException {
+	private String execString(ArrayList svnArguments, boolean coalesceLines) throws CmdLineException {
 		Process proc = execProcess(svnArguments);
 
+        CmdLineStreamPumper outPumper = new CmdLineStreamPumper(proc.getInputStream(),coalesceLines);
+        CmdLineStreamPumper errPumper = new CmdLineStreamPumper(proc.getErrorStream());
+
+        Thread threadOutPumper = new Thread(outPumper);
+        Thread threadErrPumper = new Thread(errPumper);
+        threadOutPumper.start();         
+        threadErrPumper.start();
+        try {
+            outPumper.waitFor();
+            errPumper.waitFor();
+        } catch (InterruptedException e) {
+        }
+        
 		try {
-			String result = getXMLOrFail(proc);
-			logMessageAndCompleted(result);
-			return result;
+            String errMessage = errPumper.toString();
+            if (errMessage.length() > 0) {
+                throw new CmdLineException(errMessage);        
+            }
+            String outputString = outPumper.toString(); 
+
+			logMessageAndCompleted(outputString);
+			return outputString;
 		} catch (CmdLineException e) {
             notificationHandler.logException(e);
 			throw e;
 		}
-
-	}
-
-    /**
-     * get a string from the inputstream of the given process or throws an 
-     * exception if an error occurred 
-     */
-    private String getStringOrFail(Process proc) throws CmdLineException {
-        //First see if we have an error.
-        //assume no error. find the text.
-        InputStream in = proc.getInputStream();
-        String message = Helper.toString(in);
-        if (message.length() > 0) {
-            proc.destroy();
-            return message;
-        }
-
-        InputStream err = proc.getErrorStream();
-        String errMessage = Helper.toString(err);
-        proc.destroy();
-        throw new CmdLineException(errMessage);
-    }
-
-    /**
-     * same as getStringOrFail but without \n\r between each line
-     * @param proc
-     * @return
-     * @throws CmdLineException
-     */
-    private String getXMLOrFail(Process proc) throws CmdLineException {
-        //First see if we have an error.
-        //assume no error. find the text.
-        InputStream in = proc.getInputStream();
-        String message = Helper.toXMLString(in);
-        if (message.length() > 0) {
-            proc.destroy();
-            return message;
-        }
-
-        InputStream err = proc.getErrorStream();
-        String errMessage = Helper.toString(err);
-        proc.destroy();
-        throw new CmdLineException(errMessage);
-    }
-
-
-	/**
-	 * runs the process and returns the results.
-	 * @param cmd
-	 * @return String
-	 */
-	private String execString(ArrayList svnArguments) throws CmdLineException {
-		Process proc = execProcess(svnArguments);
-
-		try {
-			String result = getStringOrFail(proc);
-			logMessageAndCompleted(result);
-			return result;
-		} catch (CmdLineException e) {
-            notificationHandler.logException(e);
-			throw e;
-		}
-
 	}
 
     /**
@@ -783,7 +740,7 @@ class CommandLine {
      * @throws CmdLineException
      */
 	private void execVoid(ArrayList svnArguments) throws CmdLineException {
-		execString(svnArguments);
+		execString(svnArguments,false);
 	}
 
 	private void logMessageAndCompleted(String messages) {

@@ -142,15 +142,27 @@ public interface ISVNClientAdapter {
 	 * @param path File to gather status.
 	 * @return a Status
 	 */
-	public abstract ISVNStatus getSingleStatus(File path)
+    public abstract ISVNStatus getSingleStatus(File path)
+        throws SVNClientException;
+        
+    /**
+     * Returns the status of given resources
+     * @param path
+     * @return
+     * @throws SVNClientException
+     */    
+	public abstract ISVNStatus[] getStatus(File[] path)
 		throws SVNClientException;
 	/**
-	 * Returns the status of files and directory recursively
-	 *
+	 * Returns the status of path and its children.
+     * If descend is true, recurse fully, else do only immediate children.
+     * If getAll is set, retrieve all entries; otherwise, retrieve only 
+     * "interesting" entries (local mods and/or out-of-date).
+     *
 	 * @param path File to gather status.
 	 * @return a Status
 	 */
-	public abstract ISVNStatus[] getStatusRecursively(File path, boolean getAll)
+	public abstract ISVNStatus[] getStatus(File path, boolean descend)
 		throws SVNClientException;
 	/**
 	 * copy and schedule for addition (with history)

@@ -54,6 +54,7 @@
  */ 
 package org.tigris.subversion.svnclientadapter.javahl;
 
+import java.io.File;
 import java.net.MalformedURLException;
 import java.util.Date;
 
@@ -147,8 +148,13 @@ public class JhlStatus implements ISVNStatus {
 		return _s.getPath();
 	}
 
+    public File getFile() {
+        return new File(getPath()).getAbsoluteFile();
+    }
+
 	public SVNNodeKind getNodeKind() {
-        return JhlConverter.convertNodeKind(_s.getNodeKind());
+        SVNNodeKind nodeKind = JhlConverter.convertNodeKind(_s.getNodeKind());
+        return nodeKind;
 	}
 
 	public String getUrlCopiedFrom() {

@@ -62,7 +62,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.Vector;
@@ -168,27 +167,60 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
         notificationHandler.remove(listener);
 	}
 
+    private boolean isManagedDir(File dir) {
+        File entries = new File(dir,".svn/entries");
+        return entries.exists();
+    }
+
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.subclipse.client.ISVNClientAdapter#getSingleStatus(java.io.File)
 	 */
-	public ISVNStatus getSingleStatus(File file) throws SVNClientException {
+	public ISVNStatus[] getStatus(File[] files) throws SVNClientException {
+        
+        ISVNStatus[] statuses = new ISVNStatus[files.length]; 
+        
+        // all files that are in nonmanaged dirs are unversioned
+        ArrayList pathsList = new ArrayList();
+        for (int i = 0; i < files.length;i++) {
+            if (isManagedDir(files[i].getParentFile())) {
+                pathsList.add(toString(files[i]));
+            } else {
+                statuses[i] = new CmdLineStatusUnversioned(files[i],false);
+            }
+        }
+        String[] paths = (String[])pathsList.toArray(new String[pathsList.size()]);
+        
+        // we must do a svn status and svn info only on resources that are in versioned dirs
+        // because otherwise svn will stop after the first "svn: 'resource' is not a working copy" 
+        CmdLineStatuses cmdLineStatuses;
         try {
-			String path = toString(file);
-			String infoLine = _cmd.info(path);
-			String statusLine = _cmd.status(path, false);
-            
-            return new CmdLineStatus(statusLine, infoLine); 
+            String cmdLineInfoStrings = _cmd.info(paths);
+            String cmdLineStatusStrings = _cmd.status(paths, false, false);
+            cmdLineStatuses = new CmdLineStatuses(cmdLineInfoStrings,cmdLineStatusStrings);
 		} catch (CmdLineException e) {
-            if (e.getMessage().indexOf("is not a working copy") >= 0) {
-			    return new CmdLineStatusUnversioned();
-			}
-            if ((e.getMessage().equals("")) && (!file.exists())) {
-                // a file that does not exist and that has not been deleted is a non versionned resource
-                return new CmdLineStatusUnversioned();                
-            } 
 			throw SVNClientException.wrapException(e);
 		}
+        
+        for (int i = 0; i < cmdLineStatuses.size();i++) {
+            ISVNStatus status = cmdLineStatuses.get(i);
+            for (int j=0; j < files.length;j++) {
+                if (files[j].getAbsoluteFile().equals(status.getFile())) {
+                    statuses[j] = status;
+                }
+            }
+        }
+        
+        return statuses;        
 	}
+
+    /*
+     * (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getSingleStatus(java.io.File)
+     */
+    public ISVNStatus getSingleStatus(File path) 
+             throws SVNClientException {
+        return getStatus(new File[] {path})[0];
+    }
 
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.subclipse.client.ISVNClientAdapter#getList(java.net.URL, org.tigris.subversion.subclipse.client.ISVNRevision, boolean)
@@ -481,20 +513,33 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.subclipse.client.ISVNClientAdapter#getStatusRecursively(java.io.File,boolean)
 	 */
-	public ISVNStatus[] getStatusRecursively(File file, boolean getAll) throws SVNClientException {
-		String path = null;
-		List statuses = new LinkedList();
+    public ISVNStatus[] getStatus(File path, boolean descend)     
+	   throws SVNClientException {
 		try {
-			String statusLines = _cmd.recursiveStatus(toString(file));
-			StringTokenizer st = new StringTokenizer(statusLines, Helper.NEWLINE);
-			while (st.hasMoreTokens()) {
-				String statusLine = st.nextToken();
-				String infoLine = _cmd.info(statusLine.substring(7));
-				CmdLineStatus status = new CmdLineStatus(statusLine, infoLine);
-				statuses.add(status);
-			}
+			// first we get the status of the files
+            String statusLinesString = _cmd.status(new String[] { toString(path) },descend,false);
 
-			return (ISVNStatus[]) statuses.toArray(new ISVNStatus[statuses.size()]);
+            String[] parts = statusLinesString.split(Helper.NEWLINE);
+            CmdLineStatusPart[] cmdLineStatusParts = new CmdLineStatusPart[parts.length];
+            String[] targetsInfo = new String[parts.length];
+            for (int i = 0; i < parts.length;i++) {
+                cmdLineStatusParts[i] = new CmdLineStatusPart(parts[i]);
+                targetsInfo[i] = cmdLineStatusParts[i].getFile().toString();
+            }
+
+            // this is not enough, so we get info from the files
+            String infoLinesString = _cmd.info(targetsInfo);
+                 
+            parts = infoLinesString.split(Helper.NEWLINE+Helper.NEWLINE);
+            CmdLineInfoPart[] cmdLineInfoParts = new CmdLineInfoPart[parts.length];
+            for (int i = 0; i < parts.length;i++) {
+                cmdLineInfoParts[i] = new CmdLineInfoPart(parts[i]);
+            }                 
+
+            CmdLineStatuses cmdLineStatuses = new CmdLineStatuses(cmdLineInfoParts, cmdLineStatusParts);
+            
+            return cmdLineStatuses.toArray();
+
 		} catch (CmdLineException e) {
 			if (e.getMessage().startsWith("svn: Path is not a working copy directory")) {
 				return new ISVNStatus[0];
@@ -782,7 +827,6 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
      * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#doExport(java.io.File, java.io.File, boolean)
      */
 	public void doExport(File srcPath, File destPath, boolean force) throws SVNClientException {
-		// TODO : test
 		try {
 			_cmd.export(toString(srcPath), toString(destPath), null, force);
 		} catch (CmdLineException e) {
@@ -795,7 +839,6 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
      * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#copy(java.io.File, org.tigris.subversion.svnclientadapter.SVNUrl, java.lang.String)
      */
 	public void copy(File srcPath, SVNUrl destUrl, String message) throws SVNClientException {
-		// TODO : test
 		try {
 			_cmd.copy(toString(srcPath), toString(destUrl), message, null);
 		} catch (CmdLineException e) {
