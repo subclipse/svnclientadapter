@@ -39,7 +39,7 @@ public class LogTest extends SVNTest {
 	    assertEquals("wrong number of objects", 1, lm.length);
 	    assertEquals("wrong message", "Log Message", lm[0].getMessage());
 	    assertEquals("wrong revision", 1, lm[0].getRevision().getNumber());
-	    assertEquals("wrong user", "jrandom", lm[0].getAuthor());
+	    assertEquals("wrong user", "cedric", lm[0].getAuthor());
 	    assertNotNull("changed paths set", lm[0].getChangedPaths());
 	    ISVNLogMessageChangePath cp[] = lm[0].getChangedPaths();
 	    assertEquals("wrong number of chang pathes", 20, cp.length);
