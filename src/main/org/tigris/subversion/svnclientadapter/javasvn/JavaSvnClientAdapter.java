@@ -30,6 +30,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.tigris.subversion.javahl.ClientException;
+import org.tigris.subversion.javahl.PropertyData;
 import org.tigris.subversion.svnclientadapter.AbstractClientAdapter;
 import org.tigris.subversion.svnclientadapter.ISVNAnnotations;
 import org.tigris.subversion.svnclientadapter.ISVNDirEntry;
@@ -45,6 +47,7 @@ import org.tigris.subversion.svnclientadapter.SVNInfoUnversioned;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
 import org.tigris.subversion.svnclientadapter.SVNUrl;
 import org.tigris.subversion.svnclientadapter.SVNUrlUtils;
+import org.tigris.subversion.svnclientadapter.javahl.JhlPropertyData;
 import org.tigris.subversion.svnclientadapter.javasvn.JavaSvnDirEntry;
 import org.tigris.subversion.svnclientadapter.javasvn.JavaSvnInfo;
 import org.tigris.subversion.svnclientadapter.javasvn.JavaSvnLogMessage;
@@ -1163,8 +1166,24 @@ public class JavaSvnClientAdapter extends AbstractClientAdapter {
      */
     public ISVNProperty propertyGet(File path, String propertyName)
             throws SVNClientException {
-        notImplementedYet("propertyGet");
-        return null;
+        try {
+            notificationHandler.setCommand(ISVNNotifyListener.Command.PROPGET);
+
+            notificationHandler.logCommandLine("propget " + propertyName + " "
+                    + path);
+
+            String value = null;
+            ISVNWorkspace ws = getRootWorkspace(path);
+            value = ws.getPropertyValue(getWorkspacePath(ws, path), propertyName);
+            if (value == null) {
+                return null;
+            }
+            return new JavaSvnPropertyData(path, propertyName, value, value.getBytes());
+
+        } catch (SVNException e) {
+            notificationHandler.logException(e);
+            throw new SVNClientException(e);
+        }
     }
 
     /*
@@ -1175,7 +1194,16 @@ public class JavaSvnClientAdapter extends AbstractClientAdapter {
      */
     public void propertyDel(File path, String propertyName, boolean recurse)
             throws SVNClientException {
-        notImplementedYet("propertyDel");
+        try {
+            notificationHandler.setCommand(ISVNNotifyListener.Command.PROPDEL);
+            notificationHandler.logCommandLine("propdel "+propertyName+" "+path);
+
+            ISVNWorkspace ws = getRootWorkspace(path);
+            ws.setPropertyValue(getWorkspacePath(ws, path), propertyName, null, recurse);
+        } catch (SVNException e) {
+            notificationHandler.logException(e);
+            throw new SVNClientException(e);            
+        }  
     }
 
     /*
