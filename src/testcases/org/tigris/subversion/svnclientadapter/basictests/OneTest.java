@@ -104,6 +104,7 @@ public class OneTest {
         config = orig.getTestConfig();
 		url = orig.getUrl();
 		expectedWC = orig.expectedWC.copy();
+        expectedRepository = orig.expectedRepository.copy();
 		workingCopy = createStartWorkingCopy(repository, testName);
 	}
 
