@@ -28,6 +28,7 @@ public class SVNUrlTest extends TestCase
     
     public void testHttpsURL() throws Exception {
         SVNUrl https = new SVNUrl("https://svn.collab.net/repos/subclipse/");
+        assertEquals("https://svn.collab.net/repos/subclipse",https.toString());
     }
     
     

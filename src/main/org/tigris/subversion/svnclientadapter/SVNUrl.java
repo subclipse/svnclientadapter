@@ -83,8 +83,8 @@ public class SVNUrl {
         // we make sure the url does not end with "/" because
         // in svn 1.0.2 (at least) if a non-canonical path is passed to 
         // svn_path_join(base, component, pool), the assertion "assert (is_canonical (base, blen));" will fail
-        if (svnUrl.endsWith("/")) { // remove ending "/" if any
-        	svnUrl = svnUrl.substring(0,svnUrl.length()-1);
+        if (this.svnUrl.endsWith("/")) { // remove ending "/" if any
+        	this.svnUrl = this.svnUrl.substring(0,this.svnUrl.length()-1);
 		}
         
         parseUrl();
