@@ -72,8 +72,19 @@ class SvnActionRE {
 	private RE re;
 	private int action;
 	private int contentStatus = Notify.Status.unknown;
+	private int propStatus = Notify.Status.unknown;
 	private String[] notificationProperties;
 	
+	/**
+	 * each parenthesized subexpression in the regular expression can be associated to a notificationProperty
+	 * which is either PATH, CONTENTSTATE, PROPSTATE or REVISION
+	 * @see Notify#Action
+	 * @see SvnOutputParser
+	 * @param re the regular expression to parse the svn line
+	 * @param action the action corresponding to this line
+	 * @param notificationProperties an array containing some of the following constants
+	 * PATH, CONTENTSTATE, PROPSTATE, REVISION
+	 */
 	public SvnActionRE(String re, int action, String[] notificationProperties) {
 		this.re = new RE('^'+re+'$');
 		this.action = action;
@@ -91,11 +102,23 @@ class SvnActionRE {
 		this.action = action;
 		this.notificationProperties = new String[] { };
 	}
-	
+
+	public SvnActionRE(String re, int action, int contentStatus, int propStatus) {
+		this(re,action);
+		this.contentStatus = contentStatus;
+		this.propStatus = propStatus;
+	}
 	
 	public SvnActionRE(String re, int action, int contentStatus, String[] notificationProperties) {
 		this(re,action,notificationProperties);
 		this.contentStatus = contentStatus;
+	}
+	
+	
+	public SvnActionRE(String re, int action, int contentStatus, int propStatus,String[] notificationProperties) {
+		this(re,action,notificationProperties);
+		this.contentStatus = contentStatus;
+		this.propStatus = propStatus;
 	}
 	
 	/**
@@ -173,6 +196,9 @@ class SvnActionRE {
 	 * @see Notify#Status
 	 */
 	public int getPropStatus() {
+		if (propStatus != Notify.Status.unknown) {
+			return propStatus;
+		}
 		int index = getIndex(PROPSTATE);
 		if (index == -1) {
 			return Notify.Status.unknown;

@@ -304,9 +304,8 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 	 */
 	public void revert(File file, boolean recursive) throws SVNClientException {
 		try {
-			String changedFiles = _cmd.revert(new String[] { toString(file) }, recursive);
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(file));
-			refreshChangedResources(changedFiles);
+			String changedFiles = _cmd.revert(new String[] { toString(file) }, recursive);
 		} catch (CmdLineException e) {
 			throw SVNClientException.wrapException(e);
 		}
@@ -460,10 +459,9 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 	public void move(SVNUrl url, SVNUrl destUrl, String message, SVNRevision revision)
 		throws SVNClientException {
 		try {
+			notificationHandler.setBaseDir(new File("."));
 			String changedResources =
 				_cmd.move(toString(url), toString(destUrl), message, toString(revision));
-			notificationHandler.setBaseDir(new File("."));
-			refreshChangedResources(changedResources);
 		} catch (CmdLineException e) {
 			SVNClientException.wrapException(e);
 		}
@@ -474,10 +472,9 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 	 */
 	public void move(File file, File file2, boolean b) throws SVNClientException {
 		try {
+			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(new File[] {file,file2}));
 			String changedResources =
 				_cmd.move(toString(file), toString(file2), null, null);
-			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(new File[] {file,file2}));
-			refreshChangedResources(changedResources);
 		} catch (CmdLineException e) {
 			throw SVNClientException.wrapException(e);
 		}
@@ -507,9 +504,8 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 	 */
 	public void addDirectory(File file, boolean recurse) throws SVNClientException {
 		try {
-            String changedResources = _cmd.add(toString(file), recurse);
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(file));
-            refreshChangedResources(changedResources);
+			String changedResources = _cmd.add(toString(file), recurse);
 		} catch (CmdLineException e) {
 			//if something is already in svn and we
 			//try to add it, we get a warning.
@@ -525,9 +521,8 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 	 */
 	public void addFile(File file) throws SVNClientException {
 		try {
-			String changedResources = _cmd.add(toString(file), false);
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(file));
-			refreshChangedResources(changedResources);
+			String changedResources = _cmd.add(toString(file), false);
 		} catch (CmdLineException e) {
 			//if something is already in svn and we
 			//try to add it, we get a warning.
@@ -547,9 +542,9 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 			paths[i] = toString(parents[i]);
 		}
 		try {
-			String changedResources = _cmd.checkin(paths, comment);
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(parents));
-			return refreshChangedResources(changedResources);
+			String changedResources = _cmd.checkin(paths, comment);
+			return _cmd.getRevision();
 		} catch (CmdLineException e) {
 			if ("".equals(e.getMessage()))
 				return SVNRevision.SVN_INVALID_REVNUM;
@@ -559,9 +554,9 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 				//to be removed.
 				for (int i = 0; i < 50; i++) {
 					try {
-						String changedResources = _cmd.checkin(paths, comment);
 						notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(parents));
-						return refreshChangedResources(changedResources);
+						String changedResources = _cmd.checkin(paths, comment);
+						return _cmd.getRevision();
 					} catch (CmdLineException e1) {
 						try {
 							Thread.sleep(100);
@@ -580,9 +575,8 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 	 */
 	public void update(File file, SVNRevision revision, boolean b) throws SVNClientException {
 		try {
-			String changedResources = _cmd.update(toString(file), toString(revision));
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(file));
-			refreshChangedResources(changedResources);
+			String changedResources = _cmd.update(toString(file), toString(revision));
 		} catch (CmdLineException e) {
 			throw SVNClientException.wrapException(e);
 		}
@@ -594,10 +588,8 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 	public void checkout(SVNUrl url, File destPath, SVNRevision revision, boolean b)
 		throws SVNClientException {
 		try {
-			String changedResources = _cmd.checkout(toString(url), toString(destPath), toString(revision), b);
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(destPath));
-			refreshChangedResources(changedResources);
-
+			String changedResources = _cmd.checkout(toString(url), toString(destPath), toString(revision), b);
 		} catch (CmdLineException e) {
 			throw SVNClientException.wrapException(e);
 		}
@@ -639,45 +631,6 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 			}
 			throw SVNClientException.wrapException(e);
 		}
-	}
-
-	/**
-	 * notify the listeners about all the files that changed
-	 * @param changedResourcesList : the output of the svn command
-	 * @param baseDir : the base dir for changed resources when the path is not absolute 
-	 * @return the revision
-	 */
-	private long refreshChangedResources(String changedResourcesList) {
-		// TODO : create a new Class and parse svn output using regexp
-		// this way, we will be able to get more information from the ouput
-		// (what kind of notification it is ...)
-		// Moreover, there are some cases not handled actually (ex : "A  (bin)  %s")
-		StringTokenizer st = new StringTokenizer(changedResourcesList, Helper.NEWLINE);
-		while (st.hasMoreTokens()) {
-			String line = st.nextToken();
-
-			// See see subversion/clients/cmdline/notify.c for possible outputs
-			// Note that if you are here, this means no error occured
-
-			//check and see if we are at the last line (nothing to do)
-			if (line.startsWith("At revision "))
-				return Long.parseLong(line.substring(12, line.length() - 1));
-			if (line.startsWith("Updated to revision "))
-				return Long.parseLong(line.substring(20, line.length() - 1));
-			if (line.startsWith("Committed revision "))
-				return Long.parseLong(line.substring(19, line.length() - 1));
-			if (line.startsWith("Checked out revision "))
-				return Long.parseLong(line.substring(21, line.length() - 1));
-
-			//Jump to the next line if we encounter this: (when checking in)
-			if (line.startsWith("Transmitting file data "))
-				continue;
-
-			String path = line.substring(line.indexOf(' ')).trim();
-
-            notificationHandler.notifyListenersOfChange(path);
-		}
-		return SVNRevision.SVN_INVALID_REVNUM;
 	}
 
 	private void diff(
@@ -1179,7 +1132,7 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
 			String changedFiles = _cmd.resolved(new String[] { toString(path) }, false);
 			
-			// no notification, we will do notification ourselves
+			// there is no notification when we do svn resolve, we will do notification ourselves
 			notificationHandler.notifyListenersOfChange(path.getAbsolutePath());	
 		} catch (CmdLineException e) {
 			throw SVNClientException.wrapException(e);

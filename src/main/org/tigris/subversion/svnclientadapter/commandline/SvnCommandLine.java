@@ -57,7 +57,10 @@ package org.tigris.subversion.svnclientadapter.commandline;
 import java.io.InputStream;
 import java.util.ArrayList;
 
+import org.tigris.subversion.javahl.Notify;
+import org.tigris.subversion.javahl.Revision;
 import org.tigris.subversion.svnclientadapter.ISVNNotifyListener;
+import org.tigris.subversion.svnclientadapter.commandline.parser.SvnOutputParser;
 
 /**
  * <p>
@@ -72,8 +75,11 @@ public class SvnCommandLine extends CommandLine {
 
 	private static String user;
 	private static String pass;	
-
-	
+    private SvnOutputParser svnOutputParser = new SvnOutputParser();
+    private long revision = Revision.SVN_INVALID_REVNUM;
+    private boolean dontParseSvnOutput = false;
+    
+    
 	//Constructors
 	SvnCommandLine(String svnPath,CmdLineNotificationHandler notificationHandler) {
 		super(svnPath,notificationHandler);
@@ -107,7 +113,21 @@ public class SvnCommandLine extends CommandLine {
 	void setPassword(String password) {
 		pass = password;
 	}	
+
 	
+	
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.commandline.CommandLine#version()
+	 */
+	String version() throws CmdLineException {
+		try {
+			dontParseSvnOutput = true;
+			String result = super.version();
+			return result;
+		} finally {
+			dontParseSvnOutput = false;
+		}
+	}
 	/**
 	 * <p>
 	 * Adds an unversioned file into the repository.</p>
@@ -118,7 +138,7 @@ public class SvnCommandLine extends CommandLine {
 	 *   recursively.
 	 */
 	String add(String path, boolean recursive) throws CmdLineException {
-		notificationHandler.setCommand(ISVNNotifyListener.Command.ADD);
+		setCommand(ISVNNotifyListener.Command.ADD);
 		ArrayList args = new ArrayList();
 		args.add("add");
 		if (!recursive)
@@ -147,7 +167,7 @@ public class SvnCommandLine extends CommandLine {
 	 * @return An stream containing the contents of the file.
 	 */
 	InputStream cat(String url, String revision) throws CmdLineException {
-        notificationHandler.setCommand(ISVNNotifyListener.Command.CAT);
+        setCommand(ISVNNotifyListener.Command.CAT);
 		ArrayList args = new ArrayList();
 		args.add("cat");
 		args.add("-r");
@@ -174,7 +194,7 @@ public class SvnCommandLine extends CommandLine {
 	 * @throws CmdLineException
 	 */
 	String checkin(String[] path, String message) throws CmdLineException {
-        notificationHandler.setCommand(ISVNNotifyListener.Command.COMMIT);
+        setCommand(ISVNNotifyListener.Command.COMMIT);
 		ArrayList args = new ArrayList();
 		args.add("ci");
 		args.add("-m");
@@ -196,7 +216,7 @@ public class SvnCommandLine extends CommandLine {
 	 * @param path The local path to clean up.
 	 */
 	void cleanup(String path) throws CmdLineException {
-//        notificationHandler.setCommand(ISVNNotifyListener.Command.CLEANUP);
+        setCommand(ISVNNotifyListener.Command.CLEANUP);
 		ArrayList args = new ArrayList();
 		args.add("cleanup");
 		args.add(path);
@@ -216,7 +236,7 @@ public class SvnCommandLine extends CommandLine {
 	 */
 	String checkout(String url, String destination, String revision, boolean recursive)
 		throws CmdLineException {
-        notificationHandler.setCommand(ISVNNotifyListener.Command.CHECKOUT);
+        setCommand(ISVNNotifyListener.Command.CHECKOUT);
 		ArrayList args = new ArrayList();
 		args.add("co");
 		args.add("-r");
@@ -258,7 +278,7 @@ public class SvnCommandLine extends CommandLine {
 	 * @param revision Optional revision to copy from. 
 	 */
 	void copy(String src, String dest, String message, String revision) throws CmdLineException {
-        notificationHandler.setCommand(ISVNNotifyListener.Command.COPY);        
+        setCommand(ISVNNotifyListener.Command.COPY);        
 		ArrayList args = new ArrayList();
 		args.add("cp");
 		args.add("-r");
@@ -281,7 +301,7 @@ public class SvnCommandLine extends CommandLine {
 	 * @throws CmdLineException
 	 */
 	void copy(String src, String dest) throws CmdLineException {
-        notificationHandler.setCommand(ISVNNotifyListener.Command.COPY);
+        setCommand(ISVNNotifyListener.Command.COPY);
 		ArrayList args = new ArrayList();
 		args.add("cp");
 		args.add(src);
@@ -299,7 +319,7 @@ public class SvnCommandLine extends CommandLine {
 	 *   URL.
 	 */
 	String delete(String[] target, String message) throws CmdLineException {
-        notificationHandler.setCommand(ISVNNotifyListener.Command.REMOVE);
+        setCommand(ISVNNotifyListener.Command.REMOVE);
 		ArrayList args = new ArrayList();
 		args.add("rm");
 		if (message != null) {
@@ -321,7 +341,7 @@ public class SvnCommandLine extends CommandLine {
 	 */
 	InputStream diff(String oldPath, String oldRev, String newPath, String newRev, boolean recurse)
 		throws CmdLineException {
-        notificationHandler.setCommand(ISVNNotifyListener.Command.DIFF);
+        setCommand(ISVNNotifyListener.Command.DIFF);
 		ArrayList args = new ArrayList();
 		args.add("diff");
 		args.add("-r");
@@ -347,7 +367,7 @@ public class SvnCommandLine extends CommandLine {
 	 * 
 	 */
 	void export(String url, String path, String revision, boolean force) throws CmdLineException {
-        notificationHandler.setCommand(ISVNNotifyListener.Command.EXPORT);        
+        setCommand(ISVNNotifyListener.Command.EXPORT);        
 		ArrayList args = new ArrayList();
 		args.add("export");
 		args.add("-r");
@@ -371,7 +391,7 @@ public class SvnCommandLine extends CommandLine {
 	 */
 	String importFiles(String url, String path, String module, String message)
 		throws CmdLineException {
-        notificationHandler.setCommand(ISVNNotifyListener.Command.IMPORT);
+        setCommand(ISVNNotifyListener.Command.IMPORT);
 		ArrayList args = new ArrayList();
 		args.add("import");
 		args.add(url);
@@ -402,7 +422,7 @@ public class SvnCommandLine extends CommandLine {
             return ""; 
         }
         
-        notificationHandler.setCommand(ISVNNotifyListener.Command.INFO);
+        setCommand(ISVNNotifyListener.Command.INFO);
 		ArrayList args = new ArrayList();
 		args.add("info");
 
@@ -422,7 +442,7 @@ public class SvnCommandLine extends CommandLine {
 	 *   Defaults to <tt>HEAD</tt>.
 	 */
 	String list(String url, String revision) throws CmdLineException {
-        notificationHandler.setCommand(ISVNNotifyListener.Command.LS);
+        setCommand(ISVNNotifyListener.Command.LS);
 		ArrayList args = new ArrayList();
 		args.add("list");
 		args.add("-v");
@@ -443,7 +463,7 @@ public class SvnCommandLine extends CommandLine {
 	 *   messages from.
 	 */
 	String log(String target, String revision) throws CmdLineException {
-        notificationHandler.setCommand(ISVNNotifyListener.Command.LOG);		
+        setCommand(ISVNNotifyListener.Command.LOG);		
 		ArrayList args = new ArrayList();
 		args.add("log");
 		args.add("-r");
@@ -464,7 +484,7 @@ public class SvnCommandLine extends CommandLine {
 	 * @param message Commit message to send.
 	 */
 	void mkdir(String url, String message) throws CmdLineException {
-        notificationHandler.setCommand(ISVNNotifyListener.Command.MKDIR);
+        setCommand(ISVNNotifyListener.Command.MKDIR);
 		ArrayList args = new ArrayList();
 		args.add("mkdir");
 		args.add("-m");
@@ -475,7 +495,7 @@ public class SvnCommandLine extends CommandLine {
 	}
     
 	void mkdir(String localPath) throws CmdLineException {
-        notificationHandler.setCommand(ISVNNotifyListener.Command.MKDIR);
+        setCommand(ISVNNotifyListener.Command.MKDIR);
 		ArrayList args = new ArrayList();
 		args.add("mkdir");
 		args.add(localPath);
@@ -500,7 +520,7 @@ public class SvnCommandLine extends CommandLine {
 	 */
 	String move(String source, String dest, String message, String revision)
 		throws CmdLineException {
-        notificationHandler.setCommand(ISVNNotifyListener.Command.MOVE);            
+        setCommand(ISVNNotifyListener.Command.MOVE);            
 		ArrayList args = new ArrayList();
 		args.add("mv");
 		args.add("-r");
@@ -524,7 +544,7 @@ public class SvnCommandLine extends CommandLine {
 	 * @param propName Property name whose value we wish to find.
 	 */
 	InputStream propget(String path, String propName) throws CmdLineException {
-        notificationHandler.setCommand(ISVNNotifyListener.Command.PROPGET);
+        setCommand(ISVNNotifyListener.Command.PROPGET);
 		ArrayList args = new ArrayList();
 		args.add("propget");
 		args.add(propName);
@@ -546,7 +566,7 @@ public class SvnCommandLine extends CommandLine {
 	 */
 	void propset(String propName, String propValue, String target, boolean recurse)
 		throws CmdLineException {
-        notificationHandler.setCommand(ISVNNotifyListener.Command.PROPSET);
+        setCommand(ISVNNotifyListener.Command.PROPSET);
 		ArrayList args = new ArrayList();
 		args.add("propset");
 		if (recurse)
@@ -565,7 +585,7 @@ public class SvnCommandLine extends CommandLine {
      * @throws CmdLineException
      */
     String proplist(String target, boolean recurse) throws CmdLineException {
-		notificationHandler.setCommand(ISVNNotifyListener.Command.PROPLIST);
+		setCommand(ISVNNotifyListener.Command.PROPLIST);
 		ArrayList args = new ArrayList();
 		args.add("proplist");
 		if (recurse)
@@ -583,7 +603,7 @@ public class SvnCommandLine extends CommandLine {
      * @throws CmdLineException
      */
     void propdel(String propName, String target, boolean recurse) throws CmdLineException {
-        notificationHandler.setCommand(ISVNNotifyListener.Command.PROPDEL);
+        setCommand(ISVNNotifyListener.Command.PROPDEL);
 		ArrayList args = new ArrayList();
 		args.add("propdel");
 		if (recurse)
@@ -603,7 +623,7 @@ public class SvnCommandLine extends CommandLine {
 	 */
 	void propsetFile(String propName, String propFile, String target, boolean recurse)
 		throws CmdLineException {
-        notificationHandler.setCommand(ISVNNotifyListener.Command.PROPSET);
+        setCommand(ISVNNotifyListener.Command.PROPSET);
 		ArrayList args = new ArrayList();
 		args.add("propset");
 		if (recurse)
@@ -623,7 +643,7 @@ public class SvnCommandLine extends CommandLine {
 	 * @param recursive <tt>true</tt> if reverting subdirectories. 
 	 */
 	String revert(String[] paths, boolean recursive) throws CmdLineException {
-        notificationHandler.setCommand(ISVNNotifyListener.Command.REVERT);
+        setCommand(ISVNNotifyListener.Command.REVERT);
 		ArrayList args = new ArrayList();
 		args.add("revert");
 		if (recursive)
@@ -644,7 +664,7 @@ public class SvnCommandLine extends CommandLine {
 	 * @throws CmdLineException
 	 */
 	String resolved(String[] paths, boolean recursive) throws CmdLineException {
-		notificationHandler.setCommand(ISVNNotifyListener.Command.RESOLVED);
+		setCommand(ISVNNotifyListener.Command.RESOLVED);
 		ArrayList args = new ArrayList();
 		args.add("resolved");
 		if (recursive)
@@ -671,7 +691,7 @@ public class SvnCommandLine extends CommandLine {
             return ""; 
         }
 
-        notificationHandler.setCommand(ISVNNotifyListener.Command.STATUS);
+        setCommand(ISVNNotifyListener.Command.STATUS);
 		ArrayList args = new ArrayList();
 		args.add("status");
         args.add("-v");
@@ -699,7 +719,7 @@ public class SvnCommandLine extends CommandLine {
 	 * @param revision Optional revision to update to.
 	 */
 	String update(String path, String revision) throws CmdLineException {
-        notificationHandler.setCommand(ISVNNotifyListener.Command.UPDATE);
+        setCommand(ISVNNotifyListener.Command.UPDATE);
 		ArrayList args = new ArrayList();
 		args.add("up");
 		args.add("-r");
@@ -708,6 +728,62 @@ public class SvnCommandLine extends CommandLine {
 		addAuthInfo(args);
 		return execString(args,false);
 	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.commandline.CommandLine#notifyFromSvnOutput(java.lang.String)
+	 */
+	protected void notifyFromSvnOutput(String svnOutput) {
+		this.revision = Revision.SVN_INVALID_REVNUM;
+		// we call the super implementation : handles logMessage and logCompleted
+		super.notifyFromSvnOutput(svnOutput);
+
+		if (dontParseSvnOutput == false) {
+			// we parse the svn output
+			Notify notify = new Notify() {
+		
+				public void onNotify(
+						String path,
+				        int action,
+				        int kind,
+				        String mimeType,
+				        int contentState,
+				        int propState,
+				        long revision) {
+					// we only call notifyListenersOfChange and logRevision
+					// logMessage and logCompleted have already been called
+					if (path != null) {
+						notificationHandler.notifyListenersOfChange(path);
+					}
+					if (revision != Revision.SVN_INVALID_REVNUM) {
+						SvnCommandLine.this.revision = revision;
+						notificationHandler.logRevision(revision);
+					}
+				}
+				
+			};
+			
+		
+			try {
+				svnOutputParser.addListener(notify);
+				svnOutputParser.parse(svnOutput);
+			} finally {
+				svnOutputParser.removeListener(notify);			
+			}
+		}
+		
+	}
 	
+	private void setCommand(int command) {
+		notificationHandler.setCommand(command);
+	}
 	
-}
+	/**
+	 * get the revision notified for latest command. If an error occured, the value
+	 * of revision must be ignored
+	 * @return Returns the revision.
+	 */
+	public long getRevision() {
+		return revision;
+	}
+}	

@@ -155,7 +155,7 @@ abstract class CommandLine {
             }
             String outputString = outPumper.toString(); 
 
-			logMessageAndCompleted(outputString);
+            notifyFromSvnOutput(outputString);
 			return outputString;
 		} catch (CmdLineException e) {
             notificationHandler.logException(e);
@@ -172,8 +172,13 @@ abstract class CommandLine {
 		execString(svnArguments,false);
 	}
 
-	protected void logMessageAndCompleted(String messages) {
-		StringTokenizer st = new StringTokenizer(messages, Helper.NEWLINE);
+	/**
+	 * notify the listeners from the output. This is the default implementation
+     *
+	 * @param svnOutput
+	 */
+    protected void notifyFromSvnOutput(String svnOutput) {
+		StringTokenizer st = new StringTokenizer(svnOutput, Helper.NEWLINE);
 		int size = st.countTokens();
 		//do everything but the last line
 		for (int i = 1; i < size; i++) {
@@ -183,7 +188,9 @@ abstract class CommandLine {
 		//log the last line as the completed message.
 		if (size > 0)
             notificationHandler.logCompleted(st.nextToken());
-	}
-
+    }
+    	
+	
+	
 }
 

@@ -51,7 +51,19 @@ public class SvnOutputParserTest extends TestCase {
 		assertEquals("/home/cedric/project/mytarget.txt",notification[0].path);
 		assertEquals(Notify.Status.unchanged,notification[0].contentState);
 		assertEquals(Notify.Status.changed,notification[0].propState);
+
+		parser.parse("C  /home/cedric/project/mytarget.txt");
+		assertEquals("/home/cedric/project/mytarget.txt",notification[0].path);
+		assertEquals(Notify.Status.conflicted,notification[0].contentState);
+		assertEquals(Notify.Status.unchanged,notification[0].propState);
 		
+		
+		parser.parse("At revision 53.");
+		assertEquals(53, notification[0].revision);
+
+		notification[0] = null;
+		parser.parse("P  /home/cedric/project/mytarget.txt");
+		assertEquals(null, notification[0]);
 	}
 	
 }

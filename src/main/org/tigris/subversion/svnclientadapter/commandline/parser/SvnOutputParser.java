@@ -59,6 +59,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.tigris.subversion.javahl.NodeKind;
 import org.tigris.subversion.javahl.Notify;
 
@@ -68,21 +70,23 @@ import org.tigris.subversion.javahl.Notify;
  * @author Cédric Chabanois (cchabanois at no-log.org)
  */
 public class SvnOutputParser {
+	private static Log log = LogFactory.getLog(SvnOutputParser.class);
+	
 	private static final String NEWLINE = "\n\r";
 	
 	// See see subversion/clients/cmdline/notify.c for possible outputs	
 	private SvnActionRE[] svnActionsRE = new SvnActionRE[] { 
 		new SvnActionRE("Skipped missing target: '(.+)'",Notify.Action.skip, Notify.Status.missing,new String[] { SvnActionRE.PATH } ),
 		new SvnActionRE("Skipped '(.+)'",Notify.Action.skip,SvnActionRE.PATH),
-		new SvnActionRE("D  (.+)",Notify.Action.update_delete,SvnActionRE.PATH),
-		new SvnActionRE("A  (.+)",Notify.Action.update_add,SvnActionRE.PATH),
+		new SvnActionRE("D  ([^ ].+)",Notify.Action.update_delete,SvnActionRE.PATH),
+		new SvnActionRE("A  ([^ ].+)",Notify.Action.update_add,SvnActionRE.PATH),
 		new SvnActionRE("Restored '(.+)'",Notify.Action.restore,SvnActionRE.PATH),
 		new SvnActionRE("Reverted '(.+)'",Notify.Action.revert,SvnActionRE.PATH),
 		new SvnActionRE("Failed to revert '(.+)' -- try updating instead\\.",Notify.Action.failed_revert,SvnActionRE.PATH),
 		new SvnActionRE("Resolved conflicted state of '(.+)'",Notify.Action.resolved,SvnActionRE.PATH),
-		new SvnActionRE("A  (bin)  (.+)",Notify.Action.add,SvnActionRE.PATH),
-		new SvnActionRE("A         (.+)",Notify.Action.add,SvnActionRE.PATH),
-		new SvnActionRE("D         (.+)",Notify.Action.delete,SvnActionRE.PATH),
+		new SvnActionRE("A  (bin)  ([^ ].+)",Notify.Action.add,SvnActionRE.PATH),
+		new SvnActionRE("A         ([^ ].+)",Notify.Action.add,SvnActionRE.PATH),
+		new SvnActionRE("D         ([^ ].+)",Notify.Action.delete,SvnActionRE.PATH),
 		new SvnActionRE("([CGU ])([CGU ]) (.+)",Notify.Action.update_update,new String[] {SvnActionRE.CONTENTSTATE, SvnActionRE.PROPSTATE,SvnActionRE.PATH}),
 		new SvnActionRE("Fetching external item into '(.+)'",Notify.Action.update_external,SvnActionRE.PATH),
 		new SvnActionRE("Exported external at revision (\\d+)\\.",Notify.Action.update_completed,SvnActionRE.REVISION),
@@ -93,12 +97,12 @@ public class SvnOutputParser {
 		new SvnActionRE("Updated to revision (\\d+)\\.",Notify.Action.update_completed,SvnActionRE.REVISION),
 		new SvnActionRE("External at revision (\\d+)\\.",Notify.Action.update_completed,SvnActionRE.REVISION),
 		new SvnActionRE("At revision (\\d+)\\.",Notify.Action.update_completed,SvnActionRE.REVISION),
-		new SvnActionRE("External export complete\\.",Notify.Action.update_completed),
-		new SvnActionRE("Export complete\\.",Notify.Action.update_completed),
-		new SvnActionRE("External checkout complete\\.",Notify.Action.update_completed),
-		new SvnActionRE("Checkout complete\\.",Notify.Action.update_completed),
-		new SvnActionRE("External update complete\\.",Notify.Action.update_completed),
-		new SvnActionRE("Update complete\\.",Notify.Action.update_completed),
+		new SvnActionRE("External export complete\\.",Notify.Action.update_completed, Notify.Status.inapplicable, Notify.Status.inapplicable),
+		new SvnActionRE("Export complete\\.",Notify.Action.update_completed, Notify.Status.inapplicable, Notify.Status.inapplicable),
+		new SvnActionRE("External checkout complete\\.",Notify.Action.update_completed, Notify.Status.inapplicable, Notify.Status.inapplicable),
+		new SvnActionRE("Checkout complete\\.",Notify.Action.update_completed, Notify.Status.inapplicable, Notify.Status.inapplicable),
+		new SvnActionRE("External update complete\\.",Notify.Action.update_completed, Notify.Status.inapplicable, Notify.Status.inapplicable),
+		new SvnActionRE("Update complete\\.",Notify.Action.update_completed, Notify.Status.inapplicable, Notify.Status.inapplicable),
 		new SvnActionRE("Performing status on external item at '(.+)'",Notify.Action.status_external,SvnActionRE.PATH),
 		new SvnActionRE("Status against revision:  *(\\d+)",Notify.Action.status_completed,SvnActionRE.REVISION),
 		new SvnActionRE("Sending        (.+)",Notify.Action.commit_modified,SvnActionRE.PATH),
@@ -138,20 +142,36 @@ public class SvnOutputParser {
 		while (st.hasMoreTokens()) {
 			String line = st.nextToken();
 			
-			SvnActionRE svnActionRE = getMatchingSvnActionRE(line);
-			if (svnActionRE != null) {
-				notifyListeners(svnActionRE);
+			synchronized(this) {
+				// only one client must access a given SvnActionRE at a time
+				SvnActionRE svnActionRE = getMatchingSvnActionRE(line);
+				if (svnActionRE != null) {
+					notifyListeners(svnActionRE);
+				} else {
+					// if we don't find a matching svnActionRE, we just log it
+					log.warn("Can't find a svn action for svn output line : "+line);
+				}
 			}
 		}
 	}
 
+	/**
+	 * return the matching svn action or null if none matches 
+	 * @param line
+	 * @return
+	 */
 	private SvnActionRE getMatchingSvnActionRE(String line) {
+		SvnActionRE result = null;
 		for (int i = 0; i < svnActionsRE.length;i++) {
 			if (svnActionsRE[i].match(line)) {
-				return svnActionsRE[i];
+				if (result != null) {
+					log.error("Multiple regular expressions match : "+line);
+				} else {
+					result = svnActionsRE[i]; 
+				}
 			}
 		}
-		return null;
+		return result;
 	}
 
 	private void notifyListeners(SvnActionRE svnActionRE) {
