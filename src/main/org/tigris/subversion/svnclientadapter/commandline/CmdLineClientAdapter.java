@@ -1127,5 +1127,25 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 			throw SVNClientException.wrapException(e);
 		}
 	}
+
+	/**
+	 * Remove 'conflicted' state on working copy files or directories
+	 * @param path
+	 * @throws SVNClientException
+	 */    
+	public void resolved(File path) 
+		throws SVNClientException
+	{
+		try {
+			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
+			String changedFiles = _cmd.resolved(new String[] { toString(path) }, false);
+			
+			// no notification, we will do notification ourselves
+			notificationHandler.notifyListenersOfChange(path.getAbsolutePath());	
+		} catch (CmdLineException e) {
+			throw SVNClientException.wrapException(e);
+		}
+		
+	}
 	
 }

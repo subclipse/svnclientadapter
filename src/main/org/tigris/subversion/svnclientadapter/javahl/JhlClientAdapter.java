@@ -70,6 +70,7 @@ import org.tigris.subversion.javahl.PromptUserPassword;
 import org.tigris.subversion.javahl.PropertyData;
 import org.tigris.subversion.javahl.Revision;
 import org.tigris.subversion.javahl.SVNClient;
+import org.tigris.subversion.javahl.SVNClientInterface;
 import org.tigris.subversion.javahl.SVNClientSynchronized;
 import org.tigris.subversion.javahl.Status;
 import org.tigris.subversion.svnclientadapter.ISVNClientAdapter;
@@ -89,8 +90,7 @@ import org.tigris.subversion.svnclientadapter.SVNUrl;
 /**
  * An adapter for SVNClient. Easier and safer to use than SVNClient
  *
- * @author Cédric Chabanois 
- *         <a href="mailto:cchabanois@ifrance.com">cchabanois@ifrance.com</a>
+ * @author Cédric Chabanois (cchabanois at no-log.org) 
  *
  */
 public class JhlClientAdapter implements ISVNClientAdapter {
@@ -123,6 +123,14 @@ public class JhlClientAdapter implements ISVNClientAdapter {
             return false;
         }
     }
+
+	/**
+	 * for users who want to directly use underlying javahl SVNClientInterface
+	 * @return
+	 */
+	public SVNClientInterface getSVNClient() {
+		return svnClient;
+	}
  
     /**
      * the default prompter : never prompts the user
@@ -1372,6 +1380,34 @@ public class JhlClientAdapter implements ISVNClientAdapter {
             notificationHandler.logException(e);
             throw new SVNClientException(e);
         }
+    }
+        
+    
+    /**
+     * Remove 'conflicted' state on working copy files or directories
+     * @param path
+     * @throws SVNClientException
+     */    
+    public void resolved(File path) 
+    	throws SVNClientException
+    {
+		try {
+			notificationHandler.setCommand(ISVNNotifyListener.Command.RESOLVED);
+            
+			String target = fileToSVNPath(path, true);
+			notificationHandler.logCommandLine("resolved "+target);
+			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
+			svnClient.resolved(target,false);
+
+			// there is no notification (Notify.notify is not called) whereas
+			// the status of the file has changed. We do it ourselves
+			notificationHandler.notifyListenersOfChange(path.getAbsolutePath());
+				
+		} catch (ClientException e) {
+			notificationHandler.logException(e);
+			throw new SVNClientException(e);            
+		}        
+   	
     }
         
 }

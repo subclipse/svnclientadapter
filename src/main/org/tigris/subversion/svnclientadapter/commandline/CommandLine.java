@@ -618,6 +618,28 @@ class CommandLine {
 	}
 
 	/**
+	 * Remove 'conflicted' state on working copy files or directories.
+	 *
+	 * @param paths
+	 * @param recursive
+	 * @return
+	 * @throws CmdLineException
+	 */
+	String resolved(String[] paths, boolean recursive) throws CmdLineException {
+		notificationHandler.setCommand(ISVNNotifyListener.Command.RESOLVED);
+		ArrayList args = new ArrayList();
+		args.add("resolved");
+		if (recursive)
+			args.add("-R");
+		for (int i = 0; i < paths.length;i++) {
+			args.add(paths[i]);
+		}
+		
+		return execString(args,false);		
+	}
+
+
+	/**
 	 * <p>
 	 * Print the status of working copy files and directories.</p>
 	 *   

@@ -511,5 +511,12 @@ public interface ISVNClientAdapter {
      * @throws SVNClientException
      */    
 	public abstract ISVNProperty[] getProperties(File path) throws SVNClientException;
+
+	/**
+	 * Remove 'conflicted' state on working copy files or directories
+	 * @param path
+	 * @throws SVNClientException
+	 */ 	
+	public abstract void resolved(File path) throws SVNClientException;
         
 }
