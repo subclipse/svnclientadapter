@@ -55,8 +55,6 @@
 package org.tigris.subversion.svnclientadapter;
 
 import java.net.MalformedURLException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  *

@@ -1,3 +1,8 @@
+* 0.9.1 
+- svnjavahl.dll, svnjavahl.jar updated to "Javahl bindings for Subversion 1.0.0 on Win32."
+- getDirEntry added to ISVNClientAdapter.java
+- CmdLineClientAdapter.getStatus bug corrected (the topmost directory of a working copy was always considered as unversioned)
+- many modifications to CmdLineStatus
 * 0.8.6 - modifications to command line interface. Should work better now on Linux
 * 0.8.5 - 
 * 0.1.0 - Initial Release
