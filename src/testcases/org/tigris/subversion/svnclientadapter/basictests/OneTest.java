@@ -66,7 +66,7 @@ public class OneTest {
 	 * 
 	 * @throws Exception
 	 */
-	protected OneTest(String testName, TestConfig config) throws Exception {
+	public OneTest(String testName, TestConfig config) throws Exception {
 		this.testName = testName;
         this.config = config;
 		this.expectedWC = config.expectedWC.copy();
