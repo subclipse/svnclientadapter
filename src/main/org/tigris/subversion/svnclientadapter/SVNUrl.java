@@ -50,10 +50,16 @@ public class SVNUrl {
      * @throws MalformedURLException
      */
     private void parseUrl(String svnUrl) throws MalformedURLException{
-        int i = svnUrl.indexOf("://");
+        String parsed = svnUrl;
+
+        // SVNUrl have this format :
+        // scheme://host[:port]/path
+        
+        // parse protocol
+        int i = parsed.indexOf("://");
         if (i == -1)
             throw new MalformedURLException("Invalid svn url :"+svnUrl);
-        protocol = svnUrl.substring(0,i).toLowerCase();
+        protocol = parsed.substring(0,i).toLowerCase();
         if ((!protocol.equalsIgnoreCase("http")) &&
             (!protocol.equalsIgnoreCase("https")) &&
             (!protocol.equalsIgnoreCase("file")) &&
@@ -61,27 +67,37 @@ public class SVNUrl {
             (!protocol.equalsIgnoreCase("svn+ssh")) ) {
             throw new MalformedURLException("Invalid svn url :"+svnUrl);
         }
-        String toSplit = svnUrl.substring(i+3);
-		if (toSplit.length() == 0) {
+        parsed = parsed.substring(i+3);
+		if (parsed.length() == 0) {
 			throw new MalformedURLException("Invalid svn url :"+svnUrl);
-		}        
-        segments = StringUtils.split(toSplit,'/');
-        segments[0] = segments[0].toLowerCase(); // lowercase host 
-        
-        // parse host & port
-        String[] hostport = StringUtils.split(segments[0],':');
-        if (hostport.length == 2) {
-            this.host = hostport[0];
+		}
+
+        // parse host & port        
+        i = parsed.indexOf("/");
+        if (i == -1) {
+            i = parsed.length();
+        }
+        String hostPort = parsed.substring(0,i).toLowerCase();
+        String[] hostportArray = StringUtils.split(hostPort,':');
+        if (hostportArray.length == 2) {
+            this.host = hostportArray[0];
             try {
-                this.port = Integer.parseInt(hostport[1]);
+                this.port = Integer.parseInt(hostportArray[1]);
             } catch (NumberFormatException e) {
                 throw new MalformedURLException("Invalid svn url :"+svnUrl);
             }
         } else {
-            this.host = hostport[0];
+            this.host = hostportArray[0];
             this.port = getDefaultPort(protocol);
         }
         
+        // parse path
+        if (i < parsed.length()) {
+            parsed = parsed.substring(i+1);
+        } else {
+            parsed = "";
+        }
+        segments = StringUtils.split(parsed,'/');
     }
 
     /**
@@ -112,8 +128,8 @@ public class SVNUrl {
         if (getPort() != getDefaultPort(getProtocol())) {
             result += ':'+getPort();
         }
-        String[] segments = getSegments();
-        for (int i = 1; i < segments.length;i++) {
+        String[] segments = getPathSegments();
+        for (int i = 0; i < segments.length;i++) {
             result+='/'+segments[i];
         }
         return result; 
@@ -143,20 +159,15 @@ public class SVNUrl {
         return get();
     }
     
-    public String getSegment(int i) {
-    	return segments[i];
-    }
-    
     /**
-     * get the segments of the url. 
-     * segment[0] is host and port, other segments is the path
+     * get the path of the url. 
      * @return
      */
-    public String[] getSegments() {
+    public String[] getPathSegments() {
     	return segments;
     }
     
-    public String getLastSegment() {
+    public String getLastPathSegment() {
     	return segments[segments.length-1];
     }
     

@@ -226,7 +226,7 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 		// of a file
 		ISVNDirEntry[] entries = getList(url.getParent(),revision,false);
 		
-		String expectedPath = url.getSegment(url.getSegments().length-1);
+		String expectedPath = url.getLastPathSegment();
 		for (int i = 0; i < entries.length;i++) {
 			if (entries[i].getPath().equals(expectedPath)) {
 				return entries[i];

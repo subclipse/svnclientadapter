@@ -26,6 +26,13 @@ public class SVNUrlTest extends TestCase
         }
     }
     
+    public void testHostPortUrl() throws Exception {
+        SVNUrl svnurl= new SVNUrl("https://svn.collab.net");
+        assertEquals("https://svn.collab.net",svnurl.toString());
+        svnurl= new SVNUrl("https://svn.collab.net/");
+        assertEquals("https://svn.collab.net",svnurl.toString());
+    }
+   
     public void testHttpsURL() throws Exception {
         SVNUrl https = new SVNUrl("https://svn.collab.net/repos/subclipse/");
         assertEquals("https://svn.collab.net/repos/subclipse",https.toString());
@@ -47,13 +54,12 @@ public class SVNUrlTest extends TestCase
     
     public void testSegments() throws Exception {
 		SVNUrl url1 = new SVNUrl("http://svn.collab.net/repos/subclipse/myfile.txt");
-		assertEquals(4, url1.getSegments().length);
-		assertEquals("svn.collab.net", url1.getSegment(0));
-		assertEquals("repos", url1.getSegment(1));
-		assertEquals("subclipse", url1.getSegment(2));
-		assertEquals("myfile.txt", url1.getSegment(3));
+		assertEquals(3, url1.getPathSegments().length);
+		assertEquals("repos", url1.getPathSegments()[0]);
+		assertEquals("subclipse", url1.getPathSegments()[1]);
+		assertEquals("myfile.txt", url1.getPathSegments()[2]);
 		
-		assertEquals(3, url1.getParent().getSegments().length);
+		assertEquals(2, url1.getParent().getPathSegments().length);
     }
     
     public void testHostPort() throws Exception {
