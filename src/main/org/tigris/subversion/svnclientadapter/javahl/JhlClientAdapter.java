@@ -1209,7 +1209,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
                 commandLine = commandLine + "-r " + revisionStart.toString() + ":" + revisionEnd.toString() + " ";
             commandLine = commandLine + target.toString();
             notificationHandler.setCommandLine(commandLine);
-            annotations = svnClient.blame(target, JhlConverter.convert(revisionStart), JhlConverter.convert(revisionEnd),false);
+            annotations = svnClient.blame(target, JhlConverter.convert(revisionStart), JhlConverter.convert(revisionEnd));
             return new SVNAnnotations(annotations);
         } catch (ClientException e) { 
             notificationHandler.setException(e);

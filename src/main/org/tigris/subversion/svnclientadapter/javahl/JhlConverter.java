@@ -146,9 +146,10 @@ public class JhlConverter {
             case Status.Kind.obstructed :
                 return ISVNStatus.Kind.OBSTRUCTED;
             case Status.Kind.ignored :
-                return ISVNStatus.Kind.IGNORED;                
-            case Status.Kind.external:
-                return ISVNStatus.Kind.EXTERNAL;
+                return ISVNStatus.Kind.IGNORED;  
+            // Status.Kind.external should be added to javahl ...              
+//            case Status.Kind.external:
+//                return ISVNStatus.Kind.EXTERNAL;
             case Status.Kind.unversioned :
                 return ISVNStatus.Kind.UNVERSIONED;
             default :
