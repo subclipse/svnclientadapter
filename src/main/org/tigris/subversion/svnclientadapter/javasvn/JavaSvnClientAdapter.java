@@ -53,6 +53,7 @@ import org.tmatesoft.svn.core.SVNWorkspaceManager;
 import org.tmatesoft.svn.core.internal.io.dav.DAVRepositoryFactory;
 import org.tmatesoft.svn.core.internal.io.svn.SVNRepositoryFactoryImpl;
 import org.tmatesoft.svn.core.internal.ws.fs.FSEntryFactory;
+import org.tmatesoft.svn.core.internal.ws.fs.FSUtil;
 import org.tmatesoft.svn.core.io.ISVNEditor;
 import org.tmatesoft.svn.core.io.ISVNLogEntryHandler;
 import org.tmatesoft.svn.core.io.SVNDirEntry;
@@ -762,7 +763,26 @@ public class JavaSvnClientAdapter implements ISVNClientAdapter {
      */
     public void doExport(SVNUrl srcUrl, File destPath, SVNRevision revision,
             boolean force) throws SVNClientException {
-        notImplementedYet();
+        try {
+            notificationHandler.setCommand(ISVNNotifyListener.Command.EXPORT);
+            notificationHandler.logCommandLine(
+                "export -r " + revision.toString() + ' ' + srcUrl.toString() + ' ' + destPath.toString());
+
+            if (force) {
+                FSUtil.deleteAll(destPath);
+            }
+            destPath.mkdirs();
+
+            ISVNWorkspace ws = getWorkspace(destPath);
+            SVNRepositoryLocation location = SVNRepositoryLocation.parseURL(srcUrl.toString());
+            SVNRepository repository = getRepository(location);
+
+            long revNumber = getRevisionNumber(revision, repository, null, null);
+            ws.checkout(location, revNumber, true);
+        } catch (SVNException e) {
+            notificationHandler.logException(e);
+            throw new SVNClientException(e);
+        }
     }
 
     /*
