@@ -15,11 +15,12 @@
  */
 package org.tigris.subversion.svnclientadapter;
 
-import org.tigris.subversion.svnclientadapter.commandline.CmdLineClientAdapter;
-import org.tigris.subversion.svnclientadapter.javahl.JhlClientAdapter;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * Factory for SVNClientAdapter 
+ * Abstract Factory for SVNClientAdapter. Real factories should extend this class and 
+ * register themselves with the method #registerAdapterFactory 
  *
  * @author Cédric Chabanois 
  *         <a href="mailto:cchabanois@ifrance.com">cchabanois@ifrance.com</a>
@@ -28,11 +29,20 @@ import org.tigris.subversion.svnclientadapter.javahl.JhlClientAdapter;
  *         <a href="mailto:pkorros@bigfoot.com">pkorros@bigfoot.com</a>
  * 
  */
-public class SVNClientAdapterFactory {
+public abstract class SVNClientAdapterFactory {
+    
+    private static Map ourFactoriesMap;
+    
+    // the first factory added is the preferred one
+    private static SVNClientAdapterFactory preferredFactory; 
+    
+    /**
+     * Real Factories should implement these methods.
+     */
+    protected abstract ISVNClientAdapter createSVNClientImpl();
 
-    public static int JAVAHL_CLIENT = 1;
-    public static int COMMANDLINE_CLIENT = 2;
-
+    protected abstract String getClientType();
+    
     /**
      * creates a new ISVNClientAdapter. You can create a javahl client or a command line
      * client.
@@ -41,11 +51,14 @@ public class SVNClientAdapterFactory {
      * @return the client adapter that was requested or null if that client adapter is not
      *         available or doesn't exist.
      */
-    public static ISVNClientAdapter createSVNClient(int clientType) {
-        if (clientType == JAVAHL_CLIENT && JhlClientAdapter.isAvailable() )
-        	return new JhlClientAdapter();
-        if (clientType == COMMANDLINE_CLIENT && CmdLineClientAdapter.isAvailable() )
-            return new CmdLineClientAdapter();
+    public static ISVNClientAdapter createSVNClient(String clientType) {
+        if (ourFactoriesMap == null || !ourFactoriesMap.containsKey(clientType)) {
+            return null;
+        }
+        SVNClientAdapterFactory factory = (SVNClientAdapterFactory) ourFactoriesMap.get(clientType);
+        if (factory != null) {
+            return factory.createSVNClientImpl();
+        }
         return null;
     }
 
@@ -55,29 +68,43 @@ public class SVNClientAdapterFactory {
      * @param clientType
      * @return
      */
-    public static boolean isSVNClientAvailable(int clientType) {
-        if (clientType == COMMANDLINE_CLIENT)
-        {
-            return CmdLineClientAdapter.isAvailable();
-        } 
-        else
-        {
-            return JhlClientAdapter.isAvailable();
-        }
+    public static boolean isSVNClientAvailable(String clientType) {
+        return ourFactoriesMap != null && ourFactoriesMap.containsKey(clientType);
     }
 
 	/**
 	 * @return the best svn client interface
 	 * @throws SVNClientException
 	 */
-	public static int getBestSVNClientType() throws SVNClientException {
-		if (JhlClientAdapter.isAvailable())
-			return JAVAHL_CLIENT;
-		else
-		if (CmdLineClientAdapter.isAvailable())
-			return COMMANDLINE_CLIENT;
-		else
-			throw new SVNClientException("No subversion client interface found.");
+	public static String getPreferredSVNClientType() throws SVNClientException {
+        if (preferredFactory != null) {
+            return preferredFactory.getClientType();
+        }
+		throw new SVNClientException("No subversion client interface found.");
 	}
+    
+    /**
+     * Extenders should register themselves with this method. First registered factory
+     * will be considered as the preferred one
+     * 
+     * @throws SVNClientException when factory with specified type is already registered.
+     */
+    protected static void registerAdapterFactory(SVNClientAdapterFactory factory) throws SVNClientException {
+        if (factory == null) {
+            return;
+        }
+        if (ourFactoriesMap == null) {
+            ourFactoriesMap = new HashMap();
+        }
+        String type = factory.getClientType();
+        if (!ourFactoriesMap.containsKey(type)) {
+            ourFactoriesMap.put(type, factory);
+            if (preferredFactory == null) {
+                preferredFactory = factory;
+            }
+        } else {
+            throw new SVNClientException("factory for type " + type + " already registered");
+        }
+    }
 
 }
