@@ -526,7 +526,7 @@ public class SVNClientAdapter {
 	 * @param revision
 	 * @throws ClientException
 	 */
-	public void doExport(URL srcUrl, File destPath, Revision revision) throws ClientException {
+	public void doExport(URL srcUrl, File destPath, Revision revision, boolean force) throws ClientException {
         try {
             notificationHandler.setCommand(ISVNNotifyListener.COMMAND_EXPORT);
             String src = urlToSVNUrl(srcUrl);
@@ -534,7 +534,7 @@ public class SVNClientAdapter {
             notificationHandler.setCommandLine(
                 "export -r "+revision.toString()+ ' '+src+' '+dest);
             
-            svnClient.doExport(src,dest,revision);
+            svnClient.doExport(src,dest,revision,force);
         } catch (ClientException e) {
             notificationHandler.setException(e);
             throw e;
@@ -549,7 +549,7 @@ public class SVNClientAdapter {
 	 * @param destPath
 	 * @throws ClientException
 	 */
-	public void doExport(File srcPath, File destPath) throws ClientException {
+	public void doExport(File srcPath, File destPath, boolean force) throws ClientException {
         try {
             notificationHandler.setCommand(ISVNNotifyListener.COMMAND_EXPORT);
             String src = fileToSVNPath(srcPath);
@@ -557,7 +557,7 @@ public class SVNClientAdapter {
             notificationHandler.setCommandLine(
                  "export "+src+' '+dest);
             // in this case, revision is not used but must be valid
-		    svnClient.doExport(src,dest,Revision.HEAD);
+		    svnClient.doExport(src,dest,Revision.HEAD, force);
         } catch (ClientException e) {
             notificationHandler.setException(e);
             throw e;
@@ -574,7 +574,7 @@ public class SVNClientAdapter {
 	 * @param recurse
 	 * @throws ClientException
 	 */
-	public void doImport(File path, URL url, String newEntry, String message, boolean recurse) throws ClientException {
+	public void doImport(File path, URL url, String message, boolean recurse) throws ClientException {
         try {
             notificationHandler.setCommand(ISVNNotifyListener.COMMAND_IMPORT);
             String src = fileToSVNPath(path);
@@ -582,9 +582,8 @@ public class SVNClientAdapter {
             notificationHandler.setCommandLine(
                          "import -m \""+message+"\" "+
                          (recurse?"":"-N ")+
-                         src+' '+dest+
-                         (newEntry != null?newEntry:""));
-            svnClient.doImport(src, dest,newEntry, message, recurse);
+                         src+' '+dest);
+            svnClient.doImport(src, dest,message, recurse);
         } catch (ClientException e) {
             notificationHandler.setException(e);
             throw e;
