@@ -66,7 +66,7 @@ import java.util.Locale;
  * the static method getRevision has then been added to the class
  *
  */
-public class SVNRevision
+public class SVNRevision 
 {
     protected int revKind;
 
@@ -215,7 +215,10 @@ public class SVNRevision
      * @return Revision
      */
     public static SVNRevision getRevision(String revision) throws ParseException {
-        
+
+    	if ((revision == null) || (revision.equals("")))
+    		return null;
+    	
         // try special KEYWORDS
         if (revision.compareToIgnoreCase("HEAD") == 0)
             return SVNRevision.HEAD; // latest in repository

@@ -97,7 +97,12 @@ public class JhlConverter {
 				return SVNRevision.COMMITTED;
 			case Revision.Kind.number :
 				Revision.Number n = (Revision.Number) rev;
-				return new SVNRevision.Number(n.getNumber());
+				if (n.getNumber() == -1) {
+					// we return null when resource is not managed ...
+					return null;
+				} else {
+					return new SVNRevision.Number(n.getNumber());
+				}
 			case Revision.Kind.previous :
 				return SVNRevision.PREVIOUS;
 			case Revision.Kind.working :

@@ -93,6 +93,8 @@ class Helper {
 	}
 
 	static SVNRevision.Number toRevNum(String rev) {
+		if (rev == null)
+			return null;
 		try {
 			return new SVNRevision.Number(Long.parseLong(rev));
 		} catch (NumberFormatException e) {

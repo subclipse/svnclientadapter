@@ -114,10 +114,18 @@ public interface ISVNStatus {
 
 	SVNUrl getUrl();
 
+	/**
+	 * get the last changed revision or null if resource is not managed 
+	 */
 	SVNRevision.Number getLastChangedRevision();
 
 	Date getLastChangedDate();
 
+	/**
+	 * get the last commit author or null if resource is not versionned
+	 * or if last commit author is unknown
+	 * @return
+	 */
 	String getLastCommitAuthor();
 
 	Kind getTextStatus();
@@ -144,6 +152,9 @@ public interface ISVNStatus {
 
 	boolean isAdded();
 
+	/**
+	 * get the revision of the resource or null if not managed 
+	 */
 	SVNRevision.Number getRevision();
 
 	boolean isCopied();
