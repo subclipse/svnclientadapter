@@ -17,8 +17,6 @@ package org.tigris.subversion.svnclientadapter.javasvn;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.tigris.subversion.javahl.Revision;
-import org.tigris.subversion.svnclientadapter.SVNClientException;
 import org.tigris.subversion.svnclientadapter.SVNNodeKind;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
 import org.tigris.subversion.svnclientadapter.SVNStatusKind;
@@ -26,15 +24,15 @@ import org.tmatesoft.svn.core.SVNProperty;
 import org.tmatesoft.svn.core.SVNStatus;
 
 /**
- * Convert from javasvn types to subversion.svnclientadapter.* types 
- *  
- * @author philip schatz
+ * Convert from javasvn types to subversion.svnclientadapter.* types
+ * 
+ * @author Cédric Chabanois
  */
 public class JavaSvnConverter {
-    private static Log log = LogFactory.getLog(JavaSvnConverter.class); 
-    
+    private static Log log = LogFactory.getLog(JavaSvnConverter.class);
+
     static final SVNStatusKind[] STATUS_CONVERTION_TABLE = new SVNStatusKind[0x11];
-    
+
     static {
         STATUS_CONVERTION_TABLE[SVNStatus.NOT_MODIFIED] = SVNStatusKind.NORMAL;
         STATUS_CONVERTION_TABLE[SVNStatus.ADDED] = SVNStatusKind.ADDED;
@@ -45,46 +43,46 @@ public class JavaSvnConverter {
         STATUS_CONVERTION_TABLE[SVNStatus.MODIFIED] = SVNStatusKind.MODIFIED;
         STATUS_CONVERTION_TABLE[SVNStatus.REPLACED] = SVNStatusKind.REPLACED;
         STATUS_CONVERTION_TABLE[SVNStatus.UNVERSIONED] = SVNStatusKind.UNVERSIONED;
-        STATUS_CONVERTION_TABLE[SVNStatus.MISSING] = SVNStatusKind.MISSING;        
+        STATUS_CONVERTION_TABLE[SVNStatus.MISSING] = SVNStatusKind.MISSING;
         STATUS_CONVERTION_TABLE[SVNStatus.OBSTRUCTED] = SVNStatusKind.OBSTRUCTED;
-    }    
-    
-    
+    }
+
     public static SVNStatusKind convertStatusKind(int javaSvnStatus) {
-        if (javaSvnStatus >= 0 && javaSvnStatus < STATUS_CONVERTION_TABLE.length) {
+        if (javaSvnStatus >= 0
+                && javaSvnStatus < STATUS_CONVERTION_TABLE.length) {
             return STATUS_CONVERTION_TABLE[javaSvnStatus];
         } else {
-            log.error("unknown status kind :"+javaSvnStatus);
+            log.error("unknown status kind :" + javaSvnStatus);
             return SVNStatusKind.NONE;
         }
     }
-    
-    
-    public static SVNNodeKind convertNodeKind(String javasvnNodeKind) {
-        SVNNodeKind nodeKind = SVNNodeKind.UNKNOWN;
-        if (SVNProperty.KIND_DIR.equals(javasvnNodeKind)) {
-            nodeKind = SVNNodeKind.DIR;
-        } else if (SVNProperty.KIND_FILE.equals(javasvnNodeKind)) {
-            nodeKind = SVNNodeKind.FILE;
-        }        
-        return nodeKind;
-    }    
-    
-    /**
-     * this method 
-     * @param revision
-     * @return
-     * @throws SVNClientException
-     */
-    public static long convertRevision(SVNRevision revision) throws SVNClientException {
-        if (revision.getKind() == SVNRevision.Kind.head) {
-            return -2;
-        } else
-        if (revision.getKind() == SVNRevision.Kind.number) {
-            return ((SVNRevision.Number) revision).getNumber();
+
+    public static SVNNodeKind convertNodeKind(
+            org.tmatesoft.svn.core.io.SVNNodeKind tmateNodeKind) {
+        if (tmateNodeKind == org.tmatesoft.svn.core.io.SVNNodeKind.DIR) {
+            return SVNNodeKind.DIR;
+        } else if (tmateNodeKind == org.tmatesoft.svn.core.io.SVNNodeKind.FILE) {
+            return SVNNodeKind.FILE;
+        } else if (tmateNodeKind == org.tmatesoft.svn.core.io.SVNNodeKind.NONE) {
+            return SVNNodeKind.FILE;
+        } else if (tmateNodeKind == org.tmatesoft.svn.core.io.SVNNodeKind.UNKNOWN) {
+            return SVNNodeKind.UNKNOWN;
         } else {
-            throw new SVNClientException("Only HEAD and revision number are supported");
+            return SVNNodeKind.UNKNOWN;
         }
-    }    
-    
+    }
+
+    public static SVNNodeKind convertNodeKind(String javasvnNodeKind) {
+        return convertNodeKind(org.tmatesoft.svn.core.io.SVNNodeKind
+                .parseKind(javasvnNodeKind));
+    }
+
+    public static SVNRevision.Number convertRevisionNumber(long revision) {
+        if (revision == -1) {
+            return null;
+        } else {
+            return new SVNRevision.Number(revision);
+        }
+    }
+
 }

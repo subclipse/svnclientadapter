@@ -21,9 +21,12 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -59,7 +62,12 @@ import org.tmatesoft.svn.core.SVNWorkspaceManager;
 import org.tmatesoft.svn.core.internal.io.dav.DAVRepositoryFactory;
 import org.tmatesoft.svn.core.internal.io.svn.SVNRepositoryFactoryImpl;
 import org.tmatesoft.svn.core.internal.ws.fs.FSEntryFactory;
+import org.tmatesoft.svn.core.io.ISVNEditor;
+import org.tmatesoft.svn.core.io.ISVNLogEntryHandler;
+import org.tmatesoft.svn.core.io.SVNDirEntry;
 import org.tmatesoft.svn.core.io.SVNException;
+import org.tmatesoft.svn.core.io.SVNLogEntry;
+import org.tmatesoft.svn.core.io.SVNNodeKind;
 import org.tmatesoft.svn.core.io.SVNRepository;
 import org.tmatesoft.svn.core.io.SVNRepositoryFactory;
 import org.tmatesoft.svn.core.io.SVNRepositoryLocation;
@@ -127,7 +135,10 @@ public class JavaSvnClientAdapter implements ISVNClientAdapter {
         this.myPassword = password;
     }
 
-    private ISVNWorkspace getRootWorkspace(File file) throws SVNException  {
+    /**
+     * Get the root workspace for given file or directory
+     */
+    private ISVNWorkspace getRootWorkspace(File file) throws SVNException {
         ISVNWorkspace ws = SVNUtil.createWorkspace(file.getAbsolutePath());
         ws.setCredentials(myUserName, myPassword);
         ws.addWorkspaceListener(notificationHandler);
@@ -145,6 +156,13 @@ public class JavaSvnClientAdapter implements ISVNClientAdapter {
         return ws;
     }
 
+    /**
+     * Get the workspace for the given directory
+     * 
+     * @param dir
+     * @return @throws
+     *         SVNException
+     */
     private ISVNWorkspace getWorkspace(File dir) throws SVNException {
         ISVNWorkspace ws = SVNWorkspaceManager.createWorkspace("file", dir
                 .getAbsolutePath());
@@ -154,10 +172,47 @@ public class JavaSvnClientAdapter implements ISVNClientAdapter {
         return ws;
     }
 
-    private String getWorkspacePath(ISVNWorkspace ws, File path) {
-        return SVNUtil.getWorkspacePath(ws, path.getAbsolutePath());
+    /**
+     * Get the path of given file in the workspace
+     * 
+     * @param ws
+     * @param file
+     * @return
+     */
+    private String getWorkspacePath(ISVNWorkspace ws, File file) {
+        return SVNUtil.getWorkspacePath(ws, file.getAbsolutePath());
     }
-    
+
+    private String getRepositoryPath(SVNRepository repository, SVNUrl url)
+            throws SVNException {
+        SVNRepositoryLocation reposLocation = repository.getLocation();
+        SVNRepositoryLocation urlLocation = SVNRepositoryLocation.parseURL(url
+                .toString());
+
+        if ((!reposLocation.getHost().equals(urlLocation.getHost()))
+                || (reposLocation.getPort() != urlLocation.getPort())
+                || (!reposLocation.getProtocol().equals(
+                        urlLocation.getProtocol()))) {
+            return null;
+        }
+
+        String pathRepos = reposLocation.getPath();
+        String pathUrl = urlLocation.getPath();
+
+        if (pathUrl.startsWith(pathRepos)) {
+            pathUrl = pathUrl.substring(pathRepos.length());
+            return pathUrl;
+        }
+        return null;
+    }
+
+    /**
+     * Get the repository at the given location
+     * 
+     * @param reposLocation
+     * @return @throws
+     *         SVNException
+     */
     private SVNRepository getRepository(SVNRepositoryLocation reposLocation)
             throws SVNException {
         SVNRepository repository = SVNRepositoryFactory.create(reposLocation);
@@ -172,6 +227,57 @@ public class JavaSvnClientAdapter implements ISVNClientAdapter {
         return getRepository(SVNRepositoryLocation.parseURL(url.toString()));
     }
 
+    /**
+     * Get the revision number corresponding to given revision for resource at
+     * given path in given repository and workspace
+     * 
+     * @param revision
+     * @param resourceRepository
+     * @param workspace
+     * @param path
+     * @return @throws
+     *         SVNException
+     */
+    public static long getRevisionNumber(SVNRevision revision,
+            SVNRepository resourceRepository, ISVNWorkspace workspace,
+            String path) throws SVNException {
+        if (revision == null) {
+            return -2;
+        }
+        int kind = revision.getKind();
+        if (kind == SVNRevision.Kind.number) {
+            return ((SVNRevision.Number) revision).getNumber();
+        } else if (kind == SVNRevision.Kind.head && resourceRepository != null) {
+            return resourceRepository.getLatestRevision();
+        } else if (kind == SVNRevision.Kind.date && resourceRepository != null) {
+            Date date = ((SVNRevision.DateSpec) revision).getDate();
+            return resourceRepository.getDatedRevision(date);
+        } else if ((kind == SVNRevision.Kind.committed
+                || kind == SVNRevision.Kind.working
+                || kind == SVNRevision.Kind.previous || kind == SVNRevision.Kind.base)
+                && workspace != null && path != null) {
+            if (kind == SVNRevision.Kind.base
+                    || kind == SVNRevision.Kind.working) {
+                String revisionStr = workspace.getPropertyValue(path,
+                        SVNProperty.REVISION);
+                if (revisionStr != null) {
+                    return SVNProperty.longValue(revisionStr);
+                }
+            } else {
+                String revisionStr = workspace.getPropertyValue(path,
+                        SVNProperty.COMMITTED_REVISION);
+                if (revisionStr != null) {
+                    long rev = SVNProperty.longValue(revisionStr);
+                    if (kind == SVNRevision.Kind.previous) {
+                        rev--;
+                    }
+                    return rev;
+                }
+            }
+        }
+        throw new SVNException("Invalid revision");
+    }
+
     /*
      * (non-Javadoc)
      * 
@@ -183,8 +289,7 @@ public class JavaSvnClientAdapter implements ISVNClientAdapter {
 
         try {
             ISVNWorkspace ws = getRootWorkspace(file.getParentFile());
-            ws.add(getWorkspacePath(ws, file), false,
-                    false);
+            ws.add(getWorkspacePath(ws, file), false, false);
         } catch (SVNException e) {
             notificationHandler.logException(e);
             throw new SVNClientException(e);
@@ -201,8 +306,7 @@ public class JavaSvnClientAdapter implements ISVNClientAdapter {
             throws SVNClientException {
         try {
             ISVNWorkspace ws = getRootWorkspace(dir.getParentFile());
-            ws.add(getWorkspacePath(ws, dir), false,
-                    recurse);
+            ws.add(getWorkspacePath(ws, dir), false, recurse);
         } catch (SVNException e) {
             notificationHandler.logException(e);
             throw new SVNClientException(e);
@@ -224,10 +328,12 @@ public class JavaSvnClientAdapter implements ISVNClientAdapter {
         if (!destPath.exists()) {
             destPath.mkdirs();
         }
-        long rev = JavaSvnConverter.convertRevision(revision);
-
         try {
             ISVNWorkspace ws = getWorkspace(destPath);
+            SVNRepositoryLocation location = SVNRepositoryLocation
+                    .parseURL(moduleName.toString());
+            SVNRepository repository = getRepository(location);
+            long rev = getRevisionNumber(revision, repository, null, null);
             ws.checkout(SVNRepositoryLocation.parseURL(moduleName.toString()),
                     rev, false, recurse);
         } catch (SVNException e) {
@@ -275,8 +381,47 @@ public class JavaSvnClientAdapter implements ISVNClientAdapter {
      */
     public ISVNDirEntry[] getList(SVNUrl url, SVNRevision revision,
             boolean recurse) throws SVNClientException {
-        notImplementedYet();
-        return null;
+        try {
+            notificationHandler.setCommand(ISVNNotifyListener.Command.LS);
+            String commandLine = "list -r " + revision.toString()
+                    + (recurse ? "-R" : "") + " " + url.toString();
+            notificationHandler.logCommandLine(commandLine);
+
+            SVNRepository repository = getRepository(url);
+            long revNumber = getRevisionNumber(revision, repository, null, "");
+            List entries = new ArrayList();
+            getList(repository, "", "", revNumber, recurse, entries);
+            return (ISVNDirEntry[]) entries.toArray(new ISVNDirEntry[0]);
+        } catch (SVNException e) {
+            notificationHandler.logException(e);
+            throw new SVNClientException(e);
+        } catch (MalformedURLException e) {
+            notificationHandler.logException(e);
+            throw new SVNClientException(e);
+        }
+    }
+
+    private void getList(SVNRepository repository, String path,
+            String parentPath, long revision, boolean recurse, List dirEntries)
+            throws MalformedURLException, SVNException {
+
+        Collection entries = repository.getDir(path, revision, null,
+                (Collection) null);
+        for (Iterator svnEntries = entries.iterator(); svnEntries.hasNext();) {
+            SVNDirEntry svnEntry = (SVNDirEntry) svnEntries.next();
+            dirEntries.add(new JavaSvnDirEntry(parentPath, svnEntry));
+
+            if (recurse && svnEntry.getKind() == SVNNodeKind.DIR) {
+                String newParenPath = parentPath;
+                if (!"".equals(newParenPath)) {
+                    newParenPath += "/";
+                }
+                newParenPath += svnEntry.getName();
+                getList(repository, path + "/" + svnEntry.getName(),
+                        newParenPath, revision, recurse, dirEntries);
+            }
+        }
+
     }
 
     /*
@@ -287,8 +432,29 @@ public class JavaSvnClientAdapter implements ISVNClientAdapter {
      */
     public ISVNDirEntry[] getList(File path, SVNRevision revision,
             boolean recurse) throws SVNClientException {
-        notImplementedYet();
-        return null;
+        try {
+            notificationHandler.setCommand(ISVNNotifyListener.Command.LS);
+            String commandLine = "list -r " + revision.toString()
+                    + (recurse ? "-R" : "") + " " + path.toString();
+            notificationHandler.logCommandLine(commandLine);
+
+            Collection allEntries = new LinkedList();
+
+            ISVNWorkspace ws = getRootWorkspace(path);
+            String wsPath = getWorkspacePath(ws, path);
+            SVNRepository repository = getRepository(ws.getLocation());
+            long revNumber = getRevisionNumber(revision, repository, ws, wsPath);
+
+            List entries = new ArrayList();
+            getList(repository, wsPath, "", revNumber, recurse, entries);
+            return (ISVNDirEntry[]) entries.toArray(new ISVNDirEntry[0]);
+        } catch (SVNException e) {
+            notificationHandler.logException(e);
+            throw new SVNClientException(e);
+        } catch (MalformedURLException e) {
+            notificationHandler.logException(e);
+            throw new SVNClientException(e);
+        }
     }
 
     /*
@@ -547,7 +713,34 @@ public class JavaSvnClientAdapter implements ISVNClientAdapter {
      *      java.lang.String)
      */
     public void mkdir(SVNUrl url, String message) throws SVNClientException {
-        notImplementedYet();
+        try {
+            notificationHandler.setCommand(ISVNNotifyListener.Command.MKDIR);
+            notificationHandler.logCommandLine("mkdir -m \"" + message + "\" "
+                    + url.toString());
+
+            ISVNEditor editor = null;
+            try {
+                SVNRepository repository = getRepository(url.getParent());
+                editor = repository.getCommitEditor(message, null);
+                editor.openRoot(-1);
+                editor.addDir(PathUtil.decode(url.getLastSegment()), null, -1);
+                editor.closeDir();
+                editor.closeDir();
+                editor.closeEdit();
+            } catch (SVNException e) {
+                if (editor != null) {
+                    try {
+                        editor.abortEdit();
+                    } catch (SVNException inner) {
+                    }
+                }
+                throw e;
+            }
+
+        } catch (SVNException e) {
+            notificationHandler.logException(e);
+            throw new SVNClientException(e);
+        }
     }
 
     /*
@@ -558,15 +751,14 @@ public class JavaSvnClientAdapter implements ISVNClientAdapter {
     public void mkdir(File file) throws SVNClientException {
         try {
             notificationHandler.setCommand(ISVNNotifyListener.Command.MKDIR);
-            notificationHandler.logCommandLine(
-                    "mkdir "+file.toString());
+            notificationHandler.logCommandLine("mkdir " + file.toString());
 
             ISVNWorkspace ws = getRootWorkspace(file);
             ws.add(getWorkspacePath(ws, file), true, false);
         } catch (SVNException e) {
             notificationHandler.logException(e);
             throw new SVNClientException(e);
-        }               
+        }
     }
 
     /*
@@ -600,8 +792,22 @@ public class JavaSvnClientAdapter implements ISVNClientAdapter {
      */
     public long update(File path, SVNRevision revision, boolean recurse)
             throws SVNClientException {
-        notImplementedYet();
-        return 0;
+        try {
+            notificationHandler.setCommand(ISVNNotifyListener.Command.UPDATE);
+            notificationHandler.logCommandLine("update -r "
+                    + revision.toString() + ' ' + (recurse ? "" : "-N ")
+                    + path.toString());
+
+            ISVNWorkspace ws = getRootWorkspace(path);
+            String wsPath = getWorkspacePath(ws, path);
+            SVNRepository repository = getRepository(ws.getLocation());
+            long revNumber = getRevisionNumber(revision, repository, ws, wsPath);
+
+            return ws.update(wsPath, revNumber, recurse);
+        } catch (SVNException e) {
+            notificationHandler.logException(e);
+            throw new SVNClientException(e);
+        }
     }
 
     /*
@@ -611,7 +817,18 @@ public class JavaSvnClientAdapter implements ISVNClientAdapter {
      *      boolean)
      */
     public void revert(File path, boolean recurse) throws SVNClientException {
-        notImplementedYet();
+        try {
+            notificationHandler.setCommand(ISVNNotifyListener.Command.REVERT);
+            notificationHandler.logCommandLine("revert "
+                    + (recurse ? "" : "-N ") + path);
+
+            ISVNWorkspace ws = getRootWorkspace(path);
+            ws.revert(getWorkspacePath(ws, path), recurse);
+
+        } catch (SVNException e) {
+            notificationHandler.logException(e);
+            throw new SVNClientException(e);
+        }
     }
 
     /*
@@ -638,8 +855,35 @@ public class JavaSvnClientAdapter implements ISVNClientAdapter {
     public ISVNLogMessage[] getLogMessages(File path,
             SVNRevision revisionStart, SVNRevision revisionEnd)
             throws SVNClientException {
-        notImplementedYet();
-        return null;
+
+        try {
+            final LinkedList logMessages = new LinkedList();
+            final ISVNLogEntryHandler handler = new ISVNLogEntryHandler() {
+                public void handleLogEntry(SVNLogEntry logEntry) {
+                    logMessages.add(new JavaSvnLogMessage(logEntry));
+                }
+            };
+
+            notificationHandler.setCommand(ISVNNotifyListener.Command.LOG);
+            notificationHandler.logCommandLine("log -r "
+                    + revisionStart.toString() + ":" + revisionEnd.toString()
+                    + " " + path.toString());
+            ISVNWorkspace workspace = getRootWorkspace(path);
+            String wsPath = getWorkspacePath(workspace, path);
+            SVNRepository repository = getRepository(workspace.getLocation());
+
+            long revStart = getRevisionNumber(revisionStart, repository,
+                    workspace, wsPath);
+            long revEnd = getRevisionNumber(revisionEnd, repository, workspace,
+                    wsPath);
+
+            workspace.log(wsPath, revStart, revEnd, false, true, handler);
+            return (ISVNLogMessage[]) logMessages
+                    .toArray(new ISVNLogMessage[0]);
+        } catch (SVNException e) {
+            notificationHandler.logException(e);
+            throw new SVNClientException(e);
+        }
     }
 
     /*
@@ -656,8 +900,9 @@ public class JavaSvnClientAdapter implements ISVNClientAdapter {
                     + " " + url.toString());
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             SVNRepository repository = getRepository(url.getParent());
-            repository.getFile(url.getLastSegment(), JavaSvnConverter
-                    .convertRevision(revision), null, bos);
+            long rev = getRevisionNumber(revision, repository, null, url
+                    .getLastSegment());
+            repository.getFile(url.getLastSegment(), rev, null, bos);
             return new ByteArrayInputStream(bos.toByteArray());
         } catch (SVNException e) {
             notificationHandler.logException(e);
@@ -690,8 +935,9 @@ public class JavaSvnClientAdapter implements ISVNClientAdapter {
                 return new ByteArrayInputStream(bos.toByteArray());
             }
             SVNRepository repository = getRepository(ws.getLocation(null));
-            repository.getFile(workspacePath,
-                    JavaSvnConverter.convertRevision(revision), null, bos);
+            long rev = getRevisionNumber(revision, repository, ws,
+                    workspacePath);
+            repository.getFile(workspacePath, rev, null, bos);
             return new ByteArrayInputStream(bos.toByteArray());
         } catch (SVNException e) {
             notificationHandler.logException(e);
@@ -930,7 +1176,16 @@ public class JavaSvnClientAdapter implements ISVNClientAdapter {
      * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#resolved(java.io.File)
      */
     public void resolved(File path) throws SVNClientException {
-        notImplementedYet();
+        try {
+            notificationHandler.setCommand(ISVNNotifyListener.Command.RESOLVED);
+            notificationHandler.logCommandLine("resolved " + path.toString());
+
+            ISVNWorkspace ws = getRootWorkspace(path);
+            ws.markResolved(getWorkspacePath(ws, path), false);
+        } catch (SVNException e) {
+            notificationHandler.logException(e);
+            throw new SVNClientException(e);
+        }
     }
 
     /*
@@ -961,13 +1216,14 @@ public class JavaSvnClientAdapter implements ISVNClientAdapter {
     public ISVNInfo getInfo(File file) throws SVNClientException {
         try {
             notificationHandler.setCommand(ISVNNotifyListener.Command.INFO);
-            
-            notificationHandler.logCommandLine("info "+file.toString());
+
+            notificationHandler.logCommandLine("info " + file.toString());
 
             Map properties = null;
             ISVNWorkspace ws = getRootWorkspace(file);
-            properties = ws.getProperties(getWorkspacePath(ws, file), false, true);
-            
+            properties = ws.getProperties(getWorkspacePath(ws, file), false,
+                    true);
+
             if (properties != null) {
                 return new JavaSvnInfo(file, properties);
             } else {
@@ -975,8 +1231,8 @@ public class JavaSvnClientAdapter implements ISVNClientAdapter {
             }
         } catch (SVNException e) {
             notificationHandler.logException(e);
-            throw new SVNClientException(e);            
-        }   
+            throw new SVNClientException(e);
+        }
     }
 
     /*
@@ -998,7 +1254,26 @@ public class JavaSvnClientAdapter implements ISVNClientAdapter {
      */
     public void switchToUrl(File path, SVNUrl url, SVNRevision revision,
             boolean recurse) throws SVNClientException {
-        notImplementedYet();
+        try {
+            notificationHandler.setCommand(ISVNNotifyListener.Command.SWITCH);
+
+            String commandLine = "switch " + url + " " + path + " " + "-r"
+                    + revision.toString();
+            if (!recurse) {
+                commandLine += " -N";
+            }
+            notificationHandler.logCommandLine(commandLine);
+
+            ISVNWorkspace ws = getRootWorkspace(path);
+            String relativePath = getWorkspacePath(ws, path);
+            long revNumber = getRevisionNumber(revision, getRepository(ws
+                    .getLocation()), ws, relativePath);
+            ws.update(SVNRepositoryLocation.parseURL(url.toString()),
+                    relativePath, revNumber, recurse);
+        } catch (SVNException e) {
+            notificationHandler.logException(e);
+            throw new SVNClientException(e);
+        }
     }
 
     /*
