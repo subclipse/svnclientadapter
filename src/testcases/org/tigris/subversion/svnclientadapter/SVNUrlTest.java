@@ -88,6 +88,8 @@ public class SVNUrlTest extends TestCase
         assertEquals("file://d/repos/subclipse/myfile.txt",svnurl2.toString());
         SVNUrl svnurl3= new SVNUrl("file://repos/subclipse/myfile.txt");
         assertEquals("file://repos/subclipse/myfile.txt",svnurl3.toString());
+        SVNUrl svnurl4= new SVNUrl("file:///f:/svn/trunk");
+        assertEquals("file:///f:/svn/trunk",svnurl4.toString());
 		SVNUrl url1 = new SVNUrl("file:///repos/subclipse/myfile.txt");
 		assertEquals("file:///repos/subclipse",url1.getParent().toString());
 		assertEquals("file:///repos",url1.getParent().getParent().toString());		  		
