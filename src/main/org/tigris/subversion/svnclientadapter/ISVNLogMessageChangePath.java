@@ -28,13 +28,13 @@ public interface ISVNLogMessageChangePath {
 	public abstract String getPath();
 
 	/**
-	 * Retrieve the copy source revision (if any)
+	 * Retrieve the copy source revision if any or null otherwise 
 	 * @return  the copy source revision (if any)
 	 */
 	public abstract SVNRevision.Number getCopySrcRevision();
 
 	/**
-	 * Retrieve the copy source path (if any)
+	 * Retrieve the copy source path (if any) or null otherwise
 	 * @return  the copy source path (if any)
 	 */
 	public abstract String getCopySrcPath();

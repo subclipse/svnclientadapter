@@ -110,7 +110,7 @@ public class JavaSvnStatus implements ISVNStatus {
      * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getLastChangedRevision()
      */
     public Number getLastChangedRevision() {
-        return new SVNRevision.Number(lastChangedRevision);
+        return JavaSvnConverter.convertRevisionNumber(lastChangedRevision);
     }
 
     /* (non-Javadoc)
@@ -159,7 +159,7 @@ public class JavaSvnStatus implements ISVNStatus {
      * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getRevision()
      */
     public Number getRevision() {
-        return new SVNRevision.Number(revision);
+        return JavaSvnConverter.convertRevisionNumber(revision);
     }
 
     /* (non-Javadoc)
