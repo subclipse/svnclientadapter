@@ -54,7 +54,8 @@
  */ 
 package org.tigris.subversion.svnclientadapter.javahl;
 
-import java.util.Iterator;
+import java.io.File;
+import java.io.IOException;
 
 import org.tigris.subversion.javahl.NodeKind;
 import org.tigris.subversion.javahl.Notify;
@@ -69,6 +70,7 @@ import org.tigris.subversion.svnclientadapter.SVNNotificationHandler;
  * notifications from SVNClientAdapter.
  * It sends notifications to all listeners 
  * 
+ * It mimics svn output (see subversion/clients/cmdline/notify.c)
  * 
  * @author Cédric Chabanois 
  *         <a href="mailto:cchabanois@ifrance.com">cchabanois@ifrance.com</a>
@@ -99,11 +101,14 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements No
         int propState,
         long revision) {
 
-        notifyListenersOfChange(path, JhlConverter.convertNodeKind(kind));
+        // for some actions, we don't want to call notifyListenersOfChange :
+        // when the status of the target has not been modified 
+        boolean notify = true;
 
         switch (action) {
             case Notify.Action.skip :
                 logMessage("Skipped " + path);
+                notify = false;                                
                 break;
             case Notify.Action.update_delete :
                 logMessage("D  " + path);
@@ -121,6 +126,7 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements No
                 break;
             case Notify.Action.failed_revert :
                 logError("Failed to revert " + path + " -- try updating instead.");
+                notify = false;
                 break;
             case Notify.Action.resolved :
                 logMessage("Resolved conflicted state of " + path);
@@ -157,32 +163,42 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements No
                 }
                 break;
             case Notify.Action.update_completed :
+                notify = false;
                 if (revision >= 0) {
-                    if (command == ISVNNotifyListener.Command.EXPORT)
+                    if (command == ISVNNotifyListener.Command.EXPORT) {
                         logCompleted("Exported revision "+revision+".");
+                    }                       
                     else 
-                    if (command == ISVNNotifyListener.Command.CHECKOUT)
+                    if (command == ISVNNotifyListener.Command.CHECKOUT) {
                         logCompleted("Checked out revision "+revision+".");
+                    }                       
                     else
-                    if (receivedSomeChange)
+                    if (receivedSomeChange) {
                         logCompleted("Updated to revision "+revision+".");
-                    else
+                    }
+                    else {
                         logCompleted("At revision "+revision+".");
+                    }
                 } else
                 {
-                    if (command == ISVNNotifyListener.Command.EXPORT)
+                    if (command == ISVNNotifyListener.Command.EXPORT) {
                         logCompleted("Export complete.");
+                    }
                     else
-                    if (command == ISVNNotifyListener.Command.CHECKOUT)
+                    if (command == ISVNNotifyListener.Command.CHECKOUT) {
                         logCompleted("Checkout complete.");
-                    else
-                        logCompleted("Update complete."); 
+                    }
+                    else {
+                        logCompleted("Update complete.");
+                    }  
                 }
                 break;
             case Notify.Action.status_external :
               logMessage("Performing status on external item at "+path);
+              notify = false;
               break;
             case Notify.Action.status_completed :
+              notify = false;
               if (revision >= 0)
                 logMessage("Status against revision: "+ revision);
               break;                
@@ -199,11 +215,23 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements No
                 logMessage("Replacing      "+path);
                 break;
             case Notify.Action.commit_postfix_txdelta :
+                notify = false;
                 if (!sentFirstTxdelta) {
                     logMessage("Transmitting file data ...");
                     sentFirstTxdelta = true;
                 }
                 break;                              
+        }
+        if (notify) {
+            // only when the status changed
+            File file = null;
+            try {
+                file = new File(path).getCanonicalFile();
+                notifyListenersOfChange(file, JhlConverter.convertNodeKind(kind));                
+            } catch (IOException e) {
+                // this should not happen
+                logMessage("Warning : invalid path :"+path); 
+            }
         }
     }
 

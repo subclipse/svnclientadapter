@@ -54,6 +54,8 @@
  */ 
 package org.tigris.subversion.svnclientadapter;
 
+import java.io.File;
+
 
 /**
  * 
@@ -115,9 +117,9 @@ public interface ISVNNotifyListener {
     
     /**
      * called when a subversion action happen on a file (add, delete, update ...)
-     * @param path the path of the file or dir
-     * @param kind file or dir
+     * @param path the canonical path of the file or dir
+     * @param kind file or dir or unknown
      */
-    public void onNotify(String path, SVNNodeKind kind);
+    public void onNotify(File path, SVNNodeKind kind);
     
 }

@@ -382,7 +382,8 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 	 */
 	public void addDirectory(File file, boolean recurse) throws SVNClientException {
 		try {
-			_cmd.add(toString(file), recurse);
+            String changedResources = _cmd.add(toString(file), recurse);
+            refreshChangedResources(changedResources);
 		} catch (CmdLineException e) {
 			//if something is already in svn and we
 			//try to add it, we get a warning.
@@ -515,12 +516,16 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 			if (line.startsWith("Transmitting file data "))
 				continue;
 
-			String fileName = line.substring(line.indexOf(' ')).trim();
+			String path = line.substring(line.indexOf(' ')).trim();
 
 			//check to see if this is a file or a dir.
-			File f = new File(fileName);
-
-            notificationHandler.notifyListenersOfChange(fileName, f.isDirectory() ? SVNNodeKind.DIR : SVNNodeKind.FILE);
+            try {
+			    File f = new File(path).getCanonicalFile();
+                notificationHandler.notifyListenersOfChange(f, f.isDirectory() ? SVNNodeKind.DIR : SVNNodeKind.FILE);
+            } catch (IOException e) {
+                // this should not happen
+                notificationHandler.logMessage("Warning : invalid path :"+path);
+            }
 		}
 		return SVNRevision.SVN_INVALID_REVNUM;
 	}

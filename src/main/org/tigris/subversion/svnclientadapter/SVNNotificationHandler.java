@@ -54,6 +54,7 @@
  */ 
 package org.tigris.subversion.svnclientadapter;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -145,7 +146,7 @@ public abstract class SVNNotificationHandler {
         }
     }
     
-    public void notifyListenersOfChange(String path, SVNNodeKind kind) {
+    public void notifyListenersOfChange(File path, SVNNodeKind kind) {
         for(Iterator it=notifylisteners.iterator(); it.hasNext();) {
             ISVNNotifyListener listener = (ISVNNotifyListener)it.next();
             listener.onNotify(path, kind);
