@@ -26,6 +26,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import org.apache.commons.lang.SystemUtils;
 import org.tigris.subversion.javahl.ClientException;
 import org.tigris.subversion.javahl.Info;
 import org.tigris.subversion.javahl.PromptUserPassword;
@@ -88,8 +89,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
 	            // if library is already loaded, it will not be reloaded
 	
 	        	//workaround to solve Subclipse ISSUE #83
-	        	String os = System.getProperty("osgi.os");
-				if( "win32".equals(os) ) {
+				if(SystemUtils.IS_OS_WINDOWS) {
 					System.loadLibrary("libapr");
 					System.loadLibrary("libapriconv");
 					System.loadLibrary("libeay32");
