@@ -83,4 +83,25 @@ public class StringUtils {
 		return (String[])list.toArray(new String[0]);
 	}
 
+	/**
+	 * split using a string separator
+	 * @param str
+	 * @param separator
+	 * @return
+	 */
+	static public String[] split(String str, String separator) {
+		List list = new LinkedList();
+		StringBuffer sb = new StringBuffer(str);
+		int pos;
+		
+		while ((pos = sb.indexOf(separator)) != -1) {
+			list.add(sb.substring(0,pos));
+			sb.delete(0,pos+separator.length());
+		}
+		if (sb.length() > 0) {
+			list.add(sb.toString());
+		}
+		return (String[])list.toArray(new String[0]);
+	}
+
 }

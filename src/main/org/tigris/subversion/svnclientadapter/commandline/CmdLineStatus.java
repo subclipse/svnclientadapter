@@ -115,12 +115,19 @@ class CmdLineStatus  implements ISVNStatus {
         return statusPart.getTextStatus();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getPropStatus()
+	 */
+	public ISVNStatus.Kind getPropStatus() {
+		return statusPart.getPropStatus();
+	}
+
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.subclipse.client.ISVNClientStatus#isMerged()
 	 */
 	public boolean isMerged() {
-		// TODO : implement
-		return false;
+		return statusPart.isMerged();
 	}
 
 	/* (non-Javadoc)

@@ -54,9 +54,6 @@
  */ 
 package org.tigris.subversion.svnclientadapter.javahl;
 
-import java.io.File;
-import java.io.IOException;
-
 import org.tigris.subversion.javahl.NodeKind;
 import org.tigris.subversion.javahl.Notify;
 import org.tigris.subversion.svnclientadapter.ISVNNotifyListener;

@@ -106,6 +106,11 @@ public class SVNStatusUnversioned implements ISVNStatus {
 	public ISVNStatus.Kind getTextStatus() {
 		return ISVNStatus.Kind.UNVERSIONED;
 	}
+	
+	public ISVNStatus.Kind getPropStatus() {
+		return ISVNStatus.Kind.NORMAL;
+	}
+	
 	public boolean isMerged() {
 		return false;
 	}

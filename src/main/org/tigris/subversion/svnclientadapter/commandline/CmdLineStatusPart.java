@@ -67,7 +67,9 @@ class CmdLineStatusPart {
 	public static final int STATUS_FILE_WIDTH = 40;
 
 	//Fields
-	private char flag = '?';
+	private char textStatus;
+	private char propStatus;
+	
 	private char history;
     private File file;
 
@@ -85,23 +87,18 @@ class CmdLineStatusPart {
 
 	//Methods
 	private void setStatus(String statusLine) {
-		flag = statusLine.charAt(0);
+		textStatus = statusLine.charAt(0);
+		propStatus = statusLine.charAt(1);
 		history = statusLine.charAt(3);
         file = new File(statusLine.substring(STATUS_FILE_WIDTH));
 	}
 
-	/* (non-Javadoc)
-	 * @see org.tigris.subversion.subclipse.client.ISVNClientStatus#isIgnored()
-	 */
 	public boolean isIgnored() {
-		return (flag == 'I');
+		return (textStatus == 'I');
 	}
 
-	/* (non-Javadoc)
-	 * @see org.tigris.subversion.subclipse.client.ISVNClientStatus#isManaged()
-	 */
 	public boolean isManaged() {
-		return flag != '?';
+		return textStatus != '?';
 	}
 
 	/**
@@ -113,11 +110,8 @@ class CmdLineStatusPart {
 		return ((isManaged()) && (textStatus != ISVNStatus.Kind.ADDED));
 	}
 
-	/* (non-Javadoc)
-	 * @see org.tigris.subversion.subclipse.client.ISVNClientStatus#getTextStatus()
-	 */
 	public ISVNStatus.Kind getTextStatus() {
-		switch (flag) {
+		switch (textStatus) {
 			case ' ' : // none or normal
 				return ISVNStatus.Kind.NORMAL;
 			case 'A' :
@@ -147,37 +141,35 @@ class CmdLineStatusPart {
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see org.tigris.subversion.subclipse.client.ISVNClientStatus#isMerged()
-	 */
+	public ISVNStatus.Kind getPropStatus() {
+		switch (textStatus) {
+			case ' ' : // no modifications
+				return ISVNStatus.Kind.NORMAL;
+			case 'C' :
+				return ISVNStatus.Kind.CONFLICTED;
+			case 'M' :
+				return ISVNStatus.Kind.MODIFIED;
+			default :
+				return ISVNStatus.Kind.NORMAL;
+		}		
+	}
+
 	public boolean isMerged() {
-		return (flag == 'G');
+		return (textStatus == 'G');
 	}
 
-	/* (non-Javadoc)
-	 * @see org.tigris.subversion.subclipse.client.ISVNClientStatus#isDeleted()
-	 */
 	public boolean isDeleted() {
-		return (flag == 'D');
+		return (textStatus == 'D');
 	}
 
-	/* (non-Javadoc)
-	 * @see org.tigris.subversion.subclipse.client.ISVNClientStatus#isModified()
-	 */
 	public boolean isModified() {
-		return (flag == 'M');
+		return (textStatus == 'M');
 	}
 
-	/* (non-Javadoc)
-	 * @see org.tigris.subversion.subclipse.client.ISVNClientStatus#isAdded()
-	 */
 	public boolean isAdded() {
-		return (flag == 'A');
+		return (textStatus == 'A');
 	}
 
-	/* (non-Javadoc)
-	 * @see org.tigris.subversion.subclipse.client.ISVNClientStatus#isCopied()
-	 */
 	public boolean isCopied() {
 		return (history == '+');
 	}

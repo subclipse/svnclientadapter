@@ -121,11 +121,21 @@ public interface ISVNStatus {
 	String getLastCommitAuthor();
 
 	Kind getTextStatus();
+	
+	/**
+	 * will return either Kind.NORMAL, Kind.CONFLICTED or Kind.MODIFIED
+	 * 
+	 */
+	Kind getPropStatus();
 
 	boolean isMerged();
 
 	boolean isDeleted();
 
+	/**
+	 * returns true if the resource has been modified.
+	 * modifications to properties are not taken into account.
+	 */
 	boolean isModified();
 
 	boolean isAdded();
@@ -149,4 +159,5 @@ public interface ISVNStatus {
 	SVNNodeKind getNodeKind();
 
 	String getUrlCopiedFrom();
+	
 }

@@ -57,6 +57,7 @@ package org.tigris.subversion.svnclientadapter.javahl;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -69,6 +70,7 @@ import org.tigris.subversion.javahl.PromptUserPassword;
 import org.tigris.subversion.javahl.PropertyData;
 import org.tigris.subversion.javahl.Revision;
 import org.tigris.subversion.javahl.SVNClient;
+import org.tigris.subversion.javahl.SVNClientSynchronized;
 import org.tigris.subversion.javahl.Status;
 import org.tigris.subversion.svnclientadapter.ISVNClientAdapter;
 import org.tigris.subversion.svnclientadapter.ISVNDirEntry;
@@ -94,13 +96,13 @@ import org.tigris.subversion.svnclientadapter.SVNUrl;
 public class JhlClientAdapter implements ISVNClientAdapter {
     final private static int SVN_ERR_WC_NOT_DIRECTORY = 155007;
 
-    private SVNClient svnClient;
+    private SVNClientSynchronized svnClient;
     private JhlNotificationHandler notificationHandler;
     private PromptUserPassword promptUserPasswordHandler;
     
 
     public JhlClientAdapter() {
-        svnClient = new SVNClient();
+        svnClient = new SVNClientSynchronized();
         notificationHandler = new JhlNotificationHandler();
         svnClient.notification(notificationHandler);        
         svnClient.setPrompt(new DefaultPromptUserPassword());
@@ -395,7 +397,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
      * @param path File to gather status.
      * @return a Status
      */
-    public ISVNStatus[] getStatus(File path, boolean descend)
+    public ISVNStatus[] getStatus(File path, boolean descend, boolean getAll)
 		throws SVNClientException {
 		notificationHandler.setCommand(ISVNNotifyListener.Command.STATUS);
 		String filePathSVN = fileToSVNPath(path, true);
@@ -407,14 +409,14 @@ public class JhlClientAdapter implements ISVNClientAdapter {
                     filePathSVN,  
                     descend,     // If descend is true, recurse fully, else do only immediate children.
                     false,       // If update is set, contact the repository and augment the status structures with information about out-of-dateness     
-                    true));    // retrieve all entries; otherwise, retrieve only "interesting" entries (local mods and/or
+					getAll));    // retrieve all entries; otherwise, retrieve only "interesting" entries (local mods and/or
                                  // out-of-date).
 		} catch (ClientException e) {
 			notificationHandler.logException(e);
 			throw new SVNClientException(e);
 		}
 	}
-
+	
     /**
      * copy and schedule for addition (with history)
      * @param srcPath
@@ -881,6 +883,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
                                 + " "
                                 + url.toString());
 			notificationHandler.setBaseDir();                
+			
 			byte[] contents = svnClient.fileContent(url.toString(), JhlConverter.convert(revision));
 			InputStream input = new ByteArrayInputStream(contents);
 			return input;
@@ -889,6 +892,47 @@ public class JhlClientAdapter implements ISVNClientAdapter {
 			throw new SVNClientException(e);
 		}
 	}
+
+
+	/*
+	 * (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getContent(java.io.File, org.tigris.subversion.svnclientadapter.SVNRevision)
+	 */
+	public InputStream getContent(File path, SVNRevision revision)
+		throws SVNClientException {
+		try {
+			String target = fileToSVNPath(path, true);
+			notificationHandler.setCommand(
+				ISVNNotifyListener.Command.CAT);
+			notificationHandler.logCommandLine(
+							"cat -r "
+								+ revision.toString()
+								+ " "
+								+ target);
+			notificationHandler.setBaseDir();                
+			
+			if (revision.equals(SVNRevision.BASE)) {
+				// svn should not contact the repository when we want to get base
+				// file but it does.
+				// Until this is corrected, we get the file directly if we can
+				File file = new File(path.getParentFile(),".svn/text-base/"+path.getName()+".svn-base");
+				try {
+					FileInputStream in = new FileInputStream(file);
+					return in;
+				} catch (FileNotFoundException e) {
+					// we do nothing, we will use svnClient.fileContent instead				
+				}
+			}
+			
+			byte[] contents = svnClient.fileContent(target, JhlConverter.convert(revision));
+			InputStream input = new ByteArrayInputStream(contents);
+			return input;
+		} catch (ClientException e) {
+			notificationHandler.logException(e);
+			throw new SVNClientException(e);
+		}
+	}
+
 
 	/**
 	 * returns the svn properties for the given file or directory
@@ -946,6 +990,14 @@ public class JhlClientAdapter implements ISVNClientAdapter {
 					+ target);
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
 			svnClient.propertySet(target, propertyName, propertyValue, recurse);
+			
+			// there is no notification (Notify.notify is not called) when we set a property
+			// so we will do notification ourselves
+			ISVNStatus[] statuses = getStatus(path,recurse,false);
+			for (int i = 0; i < statuses.length;i++) {
+				notificationHandler.notifyListenersOfChange(statuses[i].getFile().getAbsolutePath());	
+			}
+			
 		} catch (ClientException e) {
 			notificationHandler.logException(e);
 			throw new SVNClientException(e);
@@ -980,6 +1032,15 @@ public class JhlClientAdapter implements ISVNClientAdapter {
 			is.read(propertyBytes);
 
 			svnClient.propertySet(target, propertyName, propertyBytes, recurse);
+
+			// there is no notification (Notify.notify is not called) when we set a property
+			// so we will do notification ourselves
+			ISVNStatus[] statuses = getStatus(path,recurse,false);
+			for (int i = 0; i < statuses.length;i++) {
+				notificationHandler.notifyListenersOfChange(statuses[i].getFile().getAbsolutePath());	
+			}
+			
+			
 		} catch (ClientException e) {
 			notificationHandler.logException(e);
 			throw new SVNClientException(e);
@@ -1030,11 +1091,18 @@ public class JhlClientAdapter implements ISVNClientAdapter {
             notificationHandler.logCommandLine("propdel "+propertyName+" "+target);
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
             
-            // this does not delete the property, but (String)null causes an 
-            // unexpected exception ...
-            // we should submit a patch for that
             svnClient.propertySet(target, propertyName, "", recurse);
-//            svnClient.propertySet(target, propertyName, (String)null, recurse);
+// propertyRemove is on repository, this will be present on next version of javahl			
+// svnClient.propertyRemove(target, propertyName,recurse);
+
+		   // there is no notification (Notify.notify is not called) when we set a property
+   		   // so we will do notification ourselves
+   		   ISVNStatus[] statuses = getStatus(path,recurse,false);
+		   for (int i = 0; i < statuses.length;i++) {
+			   notificationHandler.notifyListenersOfChange(statuses[i].getFile().getAbsolutePath());	
+		   }
+
+
         } catch (ClientException e) {
             notificationHandler.logException(e);
             throw new SVNClientException(e);            

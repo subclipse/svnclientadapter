@@ -60,8 +60,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.tigris.subversion.svnclientadapter.javahl.JhlConverter;
-
 /**
  * Notification handler :
  * It sends notifications to all listeners 
@@ -91,7 +89,8 @@ public abstract class SVNNotificationHandler {
     }
     
     /**
-     * disable logging. Note that errors and exceptions are not disabled
+     * disable logging. calls to logMessage, logCompleted, logCommandLine do nothing 
+     * Note that errors and exceptions are not disabled
      */
     public void disableLog() {
         logEnabled = false;
@@ -128,11 +127,11 @@ public abstract class SVNNotificationHandler {
 	 * @param files
 	 */
     public void setCommand(int command) {
-        this.command = command;        
-        for(Iterator it=notifylisteners.iterator(); it.hasNext();) {
-            ISVNNotifyListener listener = (ISVNNotifyListener)it.next();
-            listener.setCommand(command);
-        }            
+		this.command = command;        
+       	for(Iterator it=notifylisteners.iterator(); it.hasNext();) {
+           	ISVNNotifyListener listener = (ISVNNotifyListener)it.next();
+           	listener.setCommand(command);
+       	}
     }
     
     /**

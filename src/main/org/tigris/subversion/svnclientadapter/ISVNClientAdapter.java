@@ -173,7 +173,7 @@ public interface ISVNClientAdapter {
 	 * @param path File to gather status.
 	 * @return a Status
 	 */
-	public abstract ISVNStatus[] getStatus(File path, boolean descend)
+	public abstract ISVNStatus[] getStatus(File path, boolean descend, boolean getAll)
 		throws SVNClientException;
 	/**
 	 * copy and schedule for addition (with history)
@@ -353,6 +353,17 @@ public interface ISVNClientAdapter {
 	 */
 	public abstract InputStream getContent(SVNUrl url, SVNRevision revision)
 		throws SVNClientException;
+		
+	/**
+	 * get the content of a file
+	 * @param path
+	 * @param revision
+	 * @return
+	 * @throws SVNClientException
+	 */
+	public InputStream getContent(File path, SVNRevision revision) 
+		throws SVNClientException;
+		
 	/**
 	 * set a property
 	 * @param path

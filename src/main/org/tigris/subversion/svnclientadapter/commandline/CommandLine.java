@@ -622,9 +622,10 @@ class CommandLine {
 	 * Print the status of working copy files and directories.</p>
 	 *   
 	 * @param path Local path of resource to get status of.
+	 * @param allEntries if false, only interesting entries will be get (local mods and/or out-of-date).
 	 * @param checkUpdates Check for updates on server.
 	 */
-	String status(String path[], boolean descend, boolean checkUpdates) throws CmdLineException {
+	String status(String path[], boolean descend, boolean allEntries, boolean checkUpdates) throws CmdLineException {
         if (path.length == 0) {
             // otherwise we would do a "svn status" without args
             return ""; 
@@ -634,6 +635,8 @@ class CommandLine {
 		ArrayList args = new ArrayList();
 		args.add("status");
         args.add("-v");
+        if (!allEntries)
+        	args.add("-q");
 		if (!descend) 
             args.add("-N");
 		if (checkUpdates)

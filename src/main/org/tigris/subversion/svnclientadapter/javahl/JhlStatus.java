@@ -79,18 +79,34 @@ public class JhlStatus implements ISVNStatus {
 		_s = status;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNStatus#isIgnored()
+	 */
 	public boolean isIgnored() {
 		return _s.isIgnored();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNStatus#isManaged()
+	 */
 	public boolean isManaged() {
 		return _s.isManaged();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNStatus#hasRemote()
+	 */
 	public boolean hasRemote() {
 		return _s.hasRemote();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getUrl()
+	 */
 	public SVNUrl getUrl() {
 		try {
             String url = _s.getUrl();
@@ -104,59 +120,130 @@ public class JhlStatus implements ISVNStatus {
         }
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getLastChangedRevision()
+	 */
 	public SVNRevision.Number getLastChangedRevision() {
 		return (SVNRevision.Number)JhlConverter.convert(_s.getLastChangedRevision());
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getLastChangedDate()
+	 */
 	public Date getLastChangedDate() {
 		return _s.getLastChangedDate();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getLastCommitAuthor()
+	 */
 	public String getLastCommitAuthor() {
 		return _s.getLastCommitAuthor();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getTextStatus()
+	 */
 	public ISVNStatus.Kind getTextStatus() {
         return JhlConverter.convertStatusKind(_s.getTextStatus());
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getPropStatus()
+	 */
+	public ISVNStatus.Kind getPropStatus() {
+		ISVNStatus.Kind kind = JhlConverter.convertStatusKind(_s.getPropStatus());
+		if (kind.equals(ISVNStatus.Kind.NONE)) {
+			// javahl returns NONE when there are no properties
+			// we want to have the same behaviour for command line interface and 
+			// javahl, so we return NORMAL 
+			kind =  ISVNStatus.Kind.NORMAL;
+		}
+		return kind;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNStatus#isMerged()
+	 */
 	public boolean isMerged() {
 		return _s.isMerged();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNStatus#isDeleted()
+	 */
 	public boolean isDeleted() {
 		return _s.isDeleted();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNStatus#isModified()
+	 */
 	public boolean isModified() {
 		return _s.isModified();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNStatus#isAdded()
+	 */
 	public boolean isAdded() {
 		return _s.isAdded();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getRevision()
+	 */
 	public SVNRevision.Number getRevision() {
 		return (SVNRevision.Number)JhlConverter.convert(_s.getRevision());
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNStatus#isCopied()
+	 */
 	public boolean isCopied() {
 		return _s.isCopied();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getPath()
+	 */
 	public String getPath() {
 		return _s.getPath();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getFile()
+	 */
     public File getFile() {
         return new File(getPath()).getAbsoluteFile();
     }
 
+	/*
+	 * (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getNodeKind()
+	 */
 	public SVNNodeKind getNodeKind() {
         SVNNodeKind nodeKind = JhlConverter.convertNodeKind(_s.getNodeKind());
         return nodeKind;
 	}
-
+	
+	/*
+	 * (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getUrlCopiedFrom()
+	 */
 	public String getUrlCopiedFrom() {
 		return _s.getUrlCopiedFrom();
 	}

@@ -60,6 +60,7 @@ import java.util.List;
 
 import org.tigris.subversion.svnclientadapter.ISVNStatus;
 import org.tigris.subversion.svnclientadapter.SVNStatusUnversioned;
+import org.tigris.subversion.svnclientadapter.StringUtils;
 
 /**
  * Statuses
@@ -75,7 +76,7 @@ public class CmdLineStatuses {
         if (statusLines.length() == 0) {
             cmdLineStatusParts = new CmdLineStatusPart[0];
         } else {
-            String[] parts = statusLines.split(Helper.NEWLINE);
+            String[] parts = StringUtils.split(statusLines,Helper.NEWLINE);
              cmdLineStatusParts = new CmdLineStatusPart[parts.length];
              for (int i = 0; i < parts.length;i++) {
                  cmdLineStatusParts[i] = new CmdLineStatusPart(parts[i]);
@@ -85,7 +86,7 @@ public class CmdLineStatuses {
         if (infoLines.length() == 0) {
             cmdLineInfoParts = new CmdLineInfoPart[0]; 
         } else {
-            String[] parts = infoLines.split(Helper.NEWLINE+Helper.NEWLINE);
+            String[] parts = StringUtils.split(infoLines,Helper.NEWLINE+Helper.NEWLINE);
             cmdLineInfoParts = new CmdLineInfoPart[parts.length];
             for (int i = 0; i < parts.length;i++) {
                 cmdLineInfoParts[i] = new CmdLineInfoPart(parts[i]);
