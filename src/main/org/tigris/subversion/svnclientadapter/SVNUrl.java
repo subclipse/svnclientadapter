@@ -90,10 +90,11 @@ public class SVNUrl {
         if (i == -1)
             throw new MalformedURLException("Invalid svn url :"+svnUrl);
         protocol = svnUrl.substring(0,i).toLowerCase();
-        if ((!protocol.equals("http")) &&
-            (!protocol.equals("file")) &&
-            (!protocol.equals("svn")) &&
-            (!protocol.equals("svn+ssh")) ) {
+        if ((!protocol.equalsIgnoreCase("http")) &&
+            (!protocol.equalsIgnoreCase("https")) &&
+            (!protocol.equalsIgnoreCase("file")) &&
+            (!protocol.equalsIgnoreCase("svn")) &&
+            (!protocol.equalsIgnoreCase("svn+ssh")) ) {
             throw new MalformedURLException("Invalid svn url :"+svnUrl);
         }
     }
