@@ -345,7 +345,10 @@ public class JhlClientAdapter implements ISVNClientAdapter {
             notificationHandler.logCommandLine(commandLine);
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(paths));
 
-            return svnClient.commit(files, message, recurse);
+            long newRev = svnClient.commit(files, message, recurse);
+            if (newRev > 0)
+            	notificationHandler.logCompleted("Committed revision " + newRev + ".");
+            return newRev;
         } catch (ClientException e) {
             notificationHandler.logException(e);
             throw new SVNClientException(e);
