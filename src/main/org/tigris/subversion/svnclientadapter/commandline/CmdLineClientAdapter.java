@@ -1132,7 +1132,7 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
      * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getStatus(java.io.File, boolean, boolean, boolean)
      */
     public ISVNStatus[] getStatus(File path, boolean descend, boolean getAll, boolean contactServer) throws SVNClientException {
-        // TODO Auto-generated method stub
+        notImplementedYet();
         return null;
     }
 
@@ -1140,7 +1140,7 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#cancelOperation()
 	 */
 	public void cancelOperation() throws SVNClientException {
-		// TODO Auto-generated method stub
+        notImplementedYet();
 	}
 	
 	/* (non-Javadoc)
@@ -1160,9 +1160,9 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getRepositoryRoot(org.tigris.subversion.svnclientadapter.SVNUrl, org.tigris.subversion.svnclientadapter.SVNRevision)
 	 */
-	public SVNUrl getRepositoryRoot(SVNUrl url) {
-		// TODO Auto-generated method stub
-		return null;
+	public SVNUrl getRepositoryRoot(SVNUrl url) throws SVNClientException {
+        notImplementedYet();
+        return null;
 	}
 
 	/* (non-Javadoc)
@@ -1194,5 +1194,9 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
         } catch (CmdLineException e) {
             throw SVNClientException.wrapException(e);
         }
+    }
+    
+    private void notImplementedYet() throws SVNClientException {
+        throw new SVNClientException("Not implemented yet");
     }
 }
