@@ -222,7 +222,10 @@ public class JhlClientAdapter implements ISVNClientAdapter {
         throws SVNClientException {
         try {
             notificationHandler.setCommand(ISVNNotifyListener.Command.ADD);            
-            notificationHandler.setCommandLine("add -N "+dir.toString());
+            notificationHandler.setCommandLine(
+                "add"+
+                (recurse?"":"-N")+
+                " "+dir.toString());
             svnClient.add(fileToSVNPath(dir, true), recurse);
         } catch (ClientException e) {
             notificationHandler.setException(e);
