@@ -85,33 +85,61 @@ public class JhlClientAdapter implements ISVNClientAdapter {
      */
     public static boolean isAvailable() {
     	if (!availabilityCached) {
-	        try {
 	            // if library is already loaded, it will not be reloaded
 	
 	        	//workaround to solve Subclipse ISSUE #83
+    		    // we will ignore these exceptions to handle scenarios where
+    		    // javaHL was built diffently.  Ultimately, if javaHL fails to load
+    		    // because of a problem in one of these libraries the proper behavior
+    		    // will still occur -- meaning JavaHL adapter is disabled.
 				if(SystemUtils.IS_OS_WINDOWS) {
-					System.loadLibrary("libapr");
-					System.loadLibrary("libapriconv");
-					System.loadLibrary("libeay32");
-					System.loadLibrary("libdb42");
-					System.loadLibrary("ssleay32");
-					System.loadLibrary("libaprutil");
+					try {
+						System.loadLibrary("libapr");
+			        } catch (Exception e) {
+			        } catch (UnsatisfiedLinkError e) {
+			        }
+					try {
+						System.loadLibrary("libapriconv");
+			        } catch (Exception e) {
+			        } catch (UnsatisfiedLinkError e) {
+			        }
+					try {
+						System.loadLibrary("libeay32");
+			        } catch (Exception e) {
+			        } catch (UnsatisfiedLinkError e) {
+			        }
+					try {
+						System.loadLibrary("libdb42");
+			        } catch (Exception e) {
+			        } catch (UnsatisfiedLinkError e) {
+			        }
+					try {
+						System.loadLibrary("ssleay32");
+			        } catch (Exception e) {
+			        } catch (UnsatisfiedLinkError e) {
+			        }
+					try {
+						System.loadLibrary("libaprutil");
+			        } catch (Exception e) {
+			        } catch (UnsatisfiedLinkError e) {
+			        }
 				}
 	        	//workaround to solve Subclipse ISSUE #83
 	
+	        try {
 	            /*
 	             * first try to load the library by the new name.
 	             * if that fails, try to load the library by the old name.
 	             */
 	            try
 	            {
-	                System.loadLibrary("svnjavahl-1");
+	                System.loadLibrary("libsvnjavahl-1");
 	            }
 	            catch(UnsatisfiedLinkError ex)
 	            {
 	                try
 	                {
-	                    System.loadLibrary("libsvnjavahl-1");
+	                    System.loadLibrary("svnjavahl-1");
 	                }
 	                catch (UnsatisfiedLinkError e)
 	                {
