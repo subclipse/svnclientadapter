@@ -94,17 +94,16 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 	private List _listeners = new LinkedList();
 
 	//Methods
-    public static boolean isAvailable() {
-        // this will need to be fixed when path to svn will be customizable 
-        CommandLine cmd = new CommandLine("svn");
-        try {
-            cmd.version();
-            return true;
-        } catch (Exception e)
-        {
-            return false;
-        }
-    }
+	public static boolean isAvailable() {
+		// this will need to be fixed when path to svn will be customizable 
+		CommandLine cmd = new CommandLine("svn");
+		try {
+			cmd.version();
+			return true;
+		} catch (Exception e) {
+			return false;
+		}
+	}
 
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.subclipse.client.ISVNClientAdapter#addNotifyListener(org.tigris.subversion.subclipse.client.ISVNClientNotifyListener)
@@ -167,12 +166,10 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 		StringBuffer sb = new StringBuffer();
 		try {
 			for (int i = 0; i < arg0.length; i++) {
-				sb.append(arg0[i].getCanonicalPath());
+				sb.append(toString(arg0[i]));
 				sb.append(' ');
 			}
 			_cmd.delete(sb.toString(), null);
-		} catch (IOException e) {
-			throw SVNClientException.wrapException(e);
 		} catch (CmdLineException e) {
 			throw SVNClientException.wrapException(e);
 		}
@@ -183,10 +180,8 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 	 */
 	public void revert(File arg0, boolean arg1) throws SVNClientException {
 		try {
-			String changedFiles = _cmd.revert(arg0.getCanonicalPath(), arg1);
+			String changedFiles = _cmd.revert(toString(arg0), arg1);
 			refreshChangedResources(changedFiles);
-		} catch (IOException e) {
-			throw SVNClientException.wrapException(e);
 		} catch (CmdLineException e) {
 			throw SVNClientException.wrapException(e);
 		}
@@ -198,20 +193,19 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 	 */
 	public InputStream getContent(SVNUrl arg0, SVNRevision arg1) throws SVNClientException {
 
-        try {
-		  InputStream content = _cmd.cat(toString(arg0), toString(arg1));
+		try {
+			InputStream content = _cmd.cat(toString(arg0), toString(arg1));
 
-        
-		  //read byte-by-byte and put it in a vector.
-	   	  //then take the vector and fill a byteArray.
-    	  byte[] byteArray;
-		  byteArray = streamToByteArray(content, false);
-          return new ByteArrayInputStream(byteArray);          
+			//read byte-by-byte and put it in a vector.
+			//then take the vector and fill a byteArray.
+			byte[] byteArray;
+			byteArray = streamToByteArray(content, false);
+			return new ByteArrayInputStream(byteArray);
 		} catch (IOException e) {
 			throw SVNClientException.wrapException(e);
-        } catch (CmdLineException e) {
-            throw SVNClientException.wrapException(e);
-        }          
+		} catch (CmdLineException e) {
+			throw SVNClientException.wrapException(e);
+		}
 
 	}
 
@@ -219,11 +213,11 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 	 * @see org.tigris.subversion.subclipse.client.ISVNClientAdapter#mkdir(java.net.URL, java.lang.String)
 	 */
 	public void mkdir(SVNUrl arg0, String arg1) throws SVNClientException {
-        try {
-		  _cmd.mkdir(toString(arg0), arg1);
-        } catch (CmdLineException e) {
-            throw SVNClientException.wrapException(e);
-        }        
+		try {
+			_cmd.mkdir(toString(arg0), arg1);
+		} catch (CmdLineException e) {
+			throw SVNClientException.wrapException(e);
+		}
 	}
 
 	/* (non-Javadoc)
@@ -232,10 +226,10 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 	public ISVNLogMessage[] getLogMessages(SVNUrl arg0, SVNRevision arg1, SVNRevision arg2)
 		throws SVNClientException {
 		List tempLogs = new java.util.LinkedList();
-		String revRange = arg1.toString() + ":" + arg2.toString();
+		String revRange = toString(arg1) + ":" + toString(arg2);
 
 		try {
-			String messages = _cmd.log(arg0.toString(), revRange);
+			String messages = _cmd.log(toString(arg0), revRange);
 
 			StringTokenizer st = new StringTokenizer(messages, Helper.NEWLINE);
 			st.nextToken();
@@ -255,7 +249,7 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 	public void remove(SVNUrl[] arg0, String arg1) throws SVNClientException {
 		StringBuffer sb = new StringBuffer();
 		for (int i = 0; i < arg0.length; i++) {
-			sb.append(arg0[i].toString());
+			sb.append(toString(arg0[i]));
 			sb.append(' ');
 		}
 		try {
@@ -270,19 +264,19 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 	 */
 	public void copy(SVNUrl src, SVNUrl dest, String message, SVNRevision rev)
 		throws SVNClientException {
-        try {
-		  _cmd.copy(src.toString(), dest.toString(), message, rev.toString());
-        } catch (CmdLineException e) {
-            SVNClientException.wrapException(e);
-        }        
+		try {
+			_cmd.copy(toString(src), toString(dest), message, toString(rev));
+		} catch (CmdLineException e) {
+			SVNClientException.wrapException(e);
+		}
 	}
 
 	public void copy(File srcPath, File destPath) throws SVNClientException {
 		try {
-            _cmd.copy(srcPath.toString(), destPath.toString());
-        } catch (CmdLineException e) {
-            SVNClientException.wrapException(e);
-        }        
+			_cmd.copy(toString(srcPath), toString(destPath));
+		} catch (CmdLineException e) {
+			SVNClientException.wrapException(e);
+		}
 		//sometimes the dir has not yet been created.
 		//wait up to 5 sec for the dir to be created.
 		for (int i = 0; i < 50 && !destPath.exists(); i++) {
@@ -301,7 +295,7 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 		throws SVNClientException {
 		try {
 			String changedResources =
-				_cmd.move(url.toString(), destUrl.toString(), message, revision.toString());
+				_cmd.move(toString(url), toString(destUrl), message, toString(revision));
 			refreshChangedResources(changedResources);
 		} catch (CmdLineException e) {
 			SVNClientException.wrapException(e);
@@ -314,10 +308,8 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 	public void move(File file, File file2, boolean b) throws SVNClientException {
 		try {
 			String changedResources =
-				_cmd.move(file.getCanonicalPath(), file2.getCanonicalPath(), null, null);
+				_cmd.move(toString(file), toString(file2), null, null);
 			refreshChangedResources(changedResources);
-		} catch (IOException e) {
-			throw SVNClientException.wrapException(e);
 		} catch (CmdLineException e) {
 			throw SVNClientException.wrapException(e);
 		}
@@ -347,9 +339,7 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 	 */
 	public void addDirectory(File file, boolean b) throws SVNClientException {
 		try {
-			_cmd.add(file.getCanonicalPath(), true);
-		} catch (IOException e) {
-			throw SVNClientException.wrapException(e);
+			_cmd.add(toString(file), true);
 		} catch (CmdLineException e) {
 			//if something is already in svn and we
 			//try to add it, we get a warning.
@@ -365,10 +355,8 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 	 */
 	public void addFile(File file) throws SVNClientException {
 		try {
-			String changedResources = _cmd.add(file.getCanonicalPath(), false);
+			String changedResources = _cmd.add(toString(file), false);
 			refreshChangedResources(changedResources);
-		} catch (IOException e) {
-			throw SVNClientException.wrapException(e);
 		} catch (CmdLineException e) {
 			//if something is already in svn and we
 			//try to add it, we get a warning.
@@ -385,7 +373,7 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 	public long commit(File[] parents, String comment, boolean b) throws SVNClientException {
 		StringBuffer sb = new StringBuffer();
 		for (int i = 0; i < parents.length; i++) {
-			sb.append(parents[i].toString());
+			sb.append(toString(parents[i]));
 			sb.append(' ');
 		}
 		try {
@@ -420,10 +408,8 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 	 */
 	public void update(File file, SVNRevision revision, boolean b) throws SVNClientException {
 		try {
-			String changedResources = _cmd.update(file.getCanonicalPath(), revision.toString());
+			String changedResources = _cmd.update(toString(file), toString(revision));
 			refreshChangedResources(changedResources);
-		} catch (IOException e) {
-			throw SVNClientException.wrapException(e);
 		} catch (CmdLineException e) {
 			throw SVNClientException.wrapException(e);
 		}
@@ -435,13 +421,10 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 	public void checkout(SVNUrl url, File destPath, SVNRevision revision, boolean b)
 		throws SVNClientException {
 		try {
-			String dest = destPath.getCanonicalPath();
-			String changedResources = _cmd.checkout(url.toString(), dest, revision.toString(), b);
+			String changedResources = _cmd.checkout(toString(url), toString(destPath), toString(revision), b);
 			refreshChangedResources(changedResources);
 
 		} catch (CmdLineException e) {
-			throw SVNClientException.wrapException(e);
-		} catch (IOException e) {
 			throw SVNClientException.wrapException(e);
 		}
 	}
@@ -453,8 +436,7 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 		String path = null;
 		List statuses = new LinkedList();
 		try {
-			path = file.getCanonicalPath();
-			String statusLines = _cmd.recursiveStatus(path);
+			String statusLines = _cmd.recursiveStatus(toString(file));
 			StringTokenizer st = new StringTokenizer(statusLines, Helper.NEWLINE);
 			while (st.hasMoreTokens()) {
 				String statusLine = st.nextToken();
@@ -464,8 +446,6 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 			}
 
 			return (ISVNStatus[]) statuses.toArray(new ISVNStatus[statuses.size()]);
-		} catch (IOException e) {
-			throw SVNClientException.wrapException(e);
 		} catch (CmdLineException e) {
 			if (e.getMessage().startsWith("svn: Path is not a working copy directory")) {
 				return new ISVNStatus[0];
@@ -524,21 +504,21 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 		if (newPathRevision == null)
 			newPathRevision = SVNRevision.WORKING;
 
-        try {
-            InputStream is =
-                _cmd.diff(
-				    oldPath,
-                    toString(oldPathRevision),
-				    newPath,
-				    toString(newPathRevision),
-				    recurse);
+		try {
+			InputStream is =
+				_cmd.diff(
+					oldPath,
+					toString(oldPathRevision),
+					newPath,
+					toString(newPathRevision),
+					recurse);
 
-            streamToFile(is, outFile);
+			streamToFile(is, outFile);
 		} catch (IOException e) {
 			//this should never happen
-        } catch (CmdLineException e) {
-            SVNClientException.wrapException(e);
-        }        
+		} catch (CmdLineException e) {
+			SVNClientException.wrapException(e);
+		}
 	}
 
 	public void diff(
@@ -606,6 +586,15 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 		}
 	}
 
+	public void propertySet(File path, String propertyName, File propertyFile, boolean recurse)
+		throws SVNClientException, IOException {
+		try {
+			_cmd.propsetFile(propertyName, toString(propertyFile), toString(path), recurse);
+		} catch (CmdLineException e) {
+			throw SVNClientException.wrapException(e);
+		}
+	}
+
 	public void propertyDel(File path, String propertyName, boolean recurse)
 		throws SVNClientException {
 		// TODO : implement        
@@ -649,20 +638,21 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 	public void setIgnoredPatterns(File path, List patterns) throws SVNClientException {
 		if (!path.isDirectory())
 			return;
-		String value = "";
+		StringBuffer values = new StringBuffer();
 		for (Iterator it = patterns.iterator(); it.hasNext();) {
 			String pattern = (String) it.next();
-			value = value + '\n' + pattern;
+			values.append('\n');
+			values.append(pattern);
 		}
-		propertySet(path, "svn:ignore", value, false);
+		propertySet(path, "svn:ignore", values.toString(), false);
 	}
 
 	public void mkdir(File file) throws SVNClientException {
-        try {
-            _cmd.mkdir(toString(file));
-        } catch (CmdLineException e) {
-            SVNClientException.wrapException(e);
-        }          
+		try {
+			_cmd.mkdir(toString(file));
+		} catch (CmdLineException e) {
+			SVNClientException.wrapException(e);
+		}
 		//sometimes the dir has not yet been created.
 		//wait up to 5 sec for the dir to be created.
 		for (int i = 0; i < 50 && !file.exists(); i++) {
@@ -697,17 +687,13 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 		}
 	}
 
-	public void propertySet(File path, String propertyName, File propertyFile, boolean recurse)
-		throws SVNClientException, IOException {
+	public void copy(File srcPath, SVNUrl destUrl, String message) throws SVNClientException {
+		// TODO : test
 		try {
-			_cmd.propsetFile(propertyName, toString(propertyFile), toString(path), recurse);
+			_cmd.copy(toString(srcPath), toString(destUrl), message, null);
 		} catch (CmdLineException e) {
 			throw SVNClientException.wrapException(e);
 		}
-	}
-
-	public void copy(File srcPath, SVNUrl destUrl, String message) throws SVNClientException {
-		// TODO : implement
 	}
 
 	public ISVNLogMessage[] getLogMessages(
@@ -716,10 +702,10 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 		SVNRevision revisionEnd)
 		throws SVNClientException {
 		List tempLogs = new java.util.LinkedList();
-		String revRange = revisionStart.toString() + ":" + revisionEnd.toString();
+		String revRange = toString(revisionStart) + ":" + toString(revisionEnd);
 
 		try {
-			String messages = _cmd.log(path.toString(), revRange);
+			String messages = _cmd.log(toString(path), revRange);
 
 			StringTokenizer st = new StringTokenizer(messages, Helper.NEWLINE);
 			st.nextToken();
@@ -739,14 +725,10 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 	public void copy(SVNUrl srcUrl, File destPath, SVNRevision revision)
 		throws SVNClientException {
 		try {
-            _cmd.copy(
-                srcUrl.toString(),
-                destPath.toString(),
-                null,
-                revision.toString());
-        } catch (CmdLineException e) {
-            SVNClientException.wrapException(e);
-        }              
+			_cmd.copy(toString(srcUrl), toString(destPath), null, toString(revision));
+		} catch (CmdLineException e) {
+			SVNClientException.wrapException(e);
+		}
 	}
 
 	/* (non-Javadoc)
@@ -807,60 +789,59 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 		}
 		return byteArray;
 	}
-    
-    public SVNKeywords getKeywords(File path) throws SVNClientException {
-        // copied directly from JhlClientAdapter
-        ISVNProperty prop = propertyGet(path, ISVNProperty.KEYWORDS);
-        if (prop == null)
-            return new SVNKeywords(); 
 
-        // value is a space-delimited list of the keywords names
-        String value = prop.getValue();
-        
-        return new SVNKeywords(value);
-    }
-        
-    
-    public void setKeywords(File path, SVNKeywords keywords, boolean recurse) throws SVNClientException {
-        // copied directly from JhlClientAdapter
-        propertySet(path, ISVNProperty.KEYWORDS, keywords.toString(), recurse);
-    }
-    
-    public SVNKeywords addKeywords(File path, SVNKeywords keywords) throws SVNClientException {
-        // copied directly from JhlClientAdapter
-        SVNKeywords currentKeywords = getKeywords(path);
-        if (keywords.isHeadUrl())
-            currentKeywords.setHeadUrl(true);
-        if (keywords.isId())
-            currentKeywords.setId(true);
-        if (keywords.isLastChangedBy())
-            currentKeywords.setLastChangedBy(true);
-        if (keywords.isLastChangedDate())
-            currentKeywords.setLastChangedBy(true);
-        if (keywords.isLastChangedRevision())
-            currentKeywords.setLastChangedRevision(true);
-        setKeywords(path,currentKeywords,false);
-        
-        return currentKeywords;   
-    }
-    
-    public SVNKeywords removeKeywords(File path, SVNKeywords keywords) throws SVNClientException {
-        // copied directly from JhlClientAdapter
-        SVNKeywords currentKeywords = getKeywords(path);
-        if (keywords.isHeadUrl())
-            currentKeywords.setHeadUrl(false);
-        if (keywords.isId())
-            currentKeywords.setId(false);
-        if (keywords.isLastChangedBy())
-            currentKeywords.setLastChangedBy(false);
-        if (keywords.isLastChangedDate())
-            currentKeywords.setLastChangedBy(false);
-        if (keywords.isLastChangedRevision())
-            currentKeywords.setLastChangedRevision(false);
-        setKeywords(path,currentKeywords,false);
-        
-        return currentKeywords; 
-    }
-    
-    
+	public SVNKeywords getKeywords(File path) throws SVNClientException {
+		// copied directly from JhlClientAdapter
+		ISVNProperty prop = propertyGet(path, ISVNProperty.KEYWORDS);
+		if (prop == null)
+			return new SVNKeywords();
+
+		// value is a space-delimited list of the keywords names
+		String value = prop.getValue();
+
+		return new SVNKeywords(value);
+	}
+
+	public void setKeywords(File path, SVNKeywords keywords, boolean recurse)
+		throws SVNClientException {
+		// copied directly from JhlClientAdapter
+		propertySet(path, ISVNProperty.KEYWORDS, keywords.toString(), recurse);
+	}
+
+	public SVNKeywords addKeywords(File path, SVNKeywords keywords) throws SVNClientException {
+		// copied directly from JhlClientAdapter
+		SVNKeywords currentKeywords = getKeywords(path);
+		if (keywords.isHeadUrl())
+			currentKeywords.setHeadUrl(true);
+		if (keywords.isId())
+			currentKeywords.setId(true);
+		if (keywords.isLastChangedBy())
+			currentKeywords.setLastChangedBy(true);
+		if (keywords.isLastChangedDate())
+			currentKeywords.setLastChangedBy(true);
+		if (keywords.isLastChangedRevision())
+			currentKeywords.setLastChangedRevision(true);
+		setKeywords(path, currentKeywords, false);
+
+		return currentKeywords;
+	}
+
+	public SVNKeywords removeKeywords(File path, SVNKeywords keywords) throws SVNClientException {
+		// copied directly from JhlClientAdapter
+		SVNKeywords currentKeywords = getKeywords(path);
+		if (keywords.isHeadUrl())
+			currentKeywords.setHeadUrl(false);
+		if (keywords.isId())
+			currentKeywords.setId(false);
+		if (keywords.isLastChangedBy())
+			currentKeywords.setLastChangedBy(false);
+		if (keywords.isLastChangedDate())
+			currentKeywords.setLastChangedBy(false);
+		if (keywords.isLastChangedRevision())
+			currentKeywords.setLastChangedRevision(false);
+		setKeywords(path, currentKeywords, false);
+
+		return currentKeywords;
+	}
+
 }
