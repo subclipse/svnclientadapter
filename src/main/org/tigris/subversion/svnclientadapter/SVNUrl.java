@@ -86,6 +86,11 @@ public class SVNUrl {
         // for now, we don't verify the url, we let subversion do it
         // we just make sure the protocol is one we support
         // (scheme)://(optional_stuff)
+
+        if(svnUrl == null){
+            return;
+        }
+
         int i = svnUrl.indexOf("://");
         if (i == -1)
             throw new MalformedURLException("Invalid svn url :"+svnUrl);
