@@ -133,6 +133,8 @@ public class SVNStatusKind {
             return UNVERSIONED;
         case locked:
             return LOCKED;
+        case obstructed:
+            return OBSTRUCTED;
         default:
             return null;
         }
@@ -167,6 +169,8 @@ public class SVNStatusKind {
             return "external";
         case locked:
             return "locked";
+        case obstructed:
+            return "obstructed";
         case unversioned:
         default:
             return "unversioned";
