@@ -111,7 +111,7 @@ public class Sample {
 			
 			System.out.println("Status of "+path.toString()+" has changed");
 		}
-	};
+	}
 
 	public void run() {
 		// first create the SVNClient from factory
