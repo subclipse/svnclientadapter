@@ -57,26 +57,29 @@ package org.tigris.subversion.svnclientadapter.commandline;
 import java.lang.reflect.InvocationTargetException;
 
 /**
- * @author phil
- *
+ * <p>
+ * An exception that wraps the "svn" error message.</p>
+ * 
+ * @author Philip Schatz (schatz at tigris)
  */
-public class CmdLineException extends Exception {
+class CmdLineException extends Exception {
 
-	public CmdLineException() {
+	//Constructors
+	CmdLineException() {
 	}
 
-	public CmdLineException(String message) {
+	CmdLineException(String message) {
 		super(message);
 	}
 
-	public CmdLineException(Throwable cause) {
+	CmdLineException(Throwable cause) {
 		super(cause);
 	}
 
 	/*
-	 * Static helper methods for creating exceptions
+	 * Static helper method for creating exceptions
 	 */
-	public static CmdLineException wrapException(Exception e) {
+	static CmdLineException wrapException(Exception e) {
 		Throwable t = e;
 		if (e instanceof InvocationTargetException) {
 			Throwable target =
@@ -88,5 +91,4 @@ public class CmdLineException extends Exception {
 		}
 		return new CmdLineException(e);
 	}
-
 }

@@ -57,51 +57,46 @@ package org.tigris.subversion.svnclientadapter.commandline;
 import org.tigris.subversion.svnclientadapter.ISVNProperty;
 
 /**
- * @author Philip Schatz <a href="mailto:schatz@tigris.org">schatz@tigris.org</a>
- * @since Oct 13, 2003
- * 
+ * @author Philip Schatz (schatz at tigris)
  */
-public class CmdLineProperty implements ISVNProperty {
-	private String _Name;
-	private String _Value;
-	private String _Path;
-	private byte[] _Data;
+class CmdLineProperty implements ISVNProperty {
+	private String propName;
+	private String propValue;
+	private String path;
+	private byte[] data;
 
-	/**
-	 * 
-	 */
-	public CmdLineProperty(String name, String value, String path, byte[] data) {
-		_Name = name;
-		_Value = value;
-		_Path = path;
-		_Data = data;
+	CmdLineProperty(String name, String value, String path, byte[] data) {
+		this.propName = name;
+		this.propValue = value;
+		this.path = path;
+		this.data = data;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNProperty#getName()
 	 */
 	public String getName() {
-		return _Name;
+		return propName;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNProperty#getValue()
 	 */
 	public String getValue() {
-		return _Value;
+		return propValue;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNProperty#getPath()
 	 */
 	public String getPath() {
-		return _Path;
+		return path;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNProperty#getData()
 	 */
 	public byte[] getData() {
-		return _Data;
+		return data;
 	}
 }

@@ -60,6 +60,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -79,15 +80,20 @@ import org.tigris.subversion.svnclientadapter.SVNRevision;
 import org.tigris.subversion.svnclientadapter.SVNUrl;
 
 /**
- * @author philip schatz
+ * <p>
+ * Implements a <tt>ISVNClientAdapter</tt> using the
+ * Command line client. This expects the <tt>svn</tt>
+ * executible to be in the path.</p>
+ * 
+ * @author Philip Schatz (schatz at tigris)
  */
 public class CmdLineClientAdapter implements ISVNClientAdapter {
 
-	//PHIL this expects svn to be in the path. should be able to set it in Window, Preferences
+	//Fields
 	private CommandLine _cmd = new CommandLine("svn");
 	private List _listeners = new LinkedList();
 
-
+	//Methods
     public static boolean isAvailable() {
         // this will need to be fixed when path to svn will be customizable 
         CommandLine cmd = new CommandLine("svn");
@@ -118,18 +124,13 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 	 * @see org.tigris.subversion.subclipse.client.ISVNClientAdapter#getSingleStatus(java.io.File)
 	 */
 	public ISVNStatus getSingleStatus(File file) throws SVNClientException {
-		String path = null;
 		try {
-			path = file.getCanonicalPath();
+			String path = toString(file);
 			String infoLine = _cmd.info(path);
-			String statusLine = _cmd.status(path, false);			
+			String statusLine = _cmd.status(path, false);
 			return new CmdLineStatus(statusLine, infoLine);
-		} catch (IOException e) {
-			throw SVNClientException.wrapException(e);
 		} catch (CmdLineException e) {
-			if (e
-				.getMessage()
-				.startsWith("svn: Path is not a working copy directory")) {
+			if (e.getMessage().startsWith("svn: Path is not a working copy directory")) {
 				return new CmdLineStatusUnversioned();
 			}
 			throw SVNClientException.wrapException(e);
@@ -150,12 +151,10 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 			StringTokenizer st = new StringTokenizer(listLine, Helper.NEWLINE);
 			while (st.hasMoreTokens()) {
 				String dirLine = st.nextToken();
-				CmdLineRemoteDirEntry entry =
-					new CmdLineRemoteDirEntry(toString(svnUrl), dirLine);
+				CmdLineRemoteDirEntry entry = new CmdLineRemoteDirEntry(toString(svnUrl), dirLine);
 				entries.add(entry);
 			}
-			return (ISVNDirEntry[]) entries.toArray(
-				new ISVNDirEntry[entries.size()]);
+			return (ISVNDirEntry[]) entries.toArray(new ISVNDirEntry[entries.size()]);
 		} catch (CmdLineException e) {
 			throw SVNClientException.wrapException(e);
 		}
@@ -185,21 +184,19 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 	public void revert(File arg0, boolean arg1) throws SVNClientException {
 		try {
 			String changedFiles = _cmd.revert(arg0.getCanonicalPath(), arg1);
-			refreshChangedResources(changedFiles);			
+			refreshChangedResources(changedFiles);
 		} catch (IOException e) {
 			throw SVNClientException.wrapException(e);
-		}
-		catch (CmdLineException e) {
+		} catch (CmdLineException e) {
 			throw SVNClientException.wrapException(e);
 		}
-				
+
 	}
 
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.subclipse.client.ISVNClientAdapter#getContent(java.net.SVNUrl, org.tigris.subversion.subclipse.client.ISVNRevision)
 	 */
-	public InputStream getContent(SVNUrl arg0, SVNRevision arg1)
-		throws SVNClientException {
+	public InputStream getContent(SVNUrl arg0, SVNRevision arg1) throws SVNClientException {
 
         try {
 		  InputStream content = _cmd.cat(toString(arg0), toString(arg1));
@@ -232,10 +229,7 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.subclipse.client.ISVNClientAdapter#getLogMessages(java.net.URL, org.tigris.subversion.subclipse.client.ISVNRevision, org.tigris.subversion.subclipse.client.ISVNRevision)
 	 */
-	public ISVNLogMessage[] getLogMessages(
-		SVNUrl arg0,
-		SVNRevision arg1,
-		SVNRevision arg2)
+	public ISVNLogMessage[] getLogMessages(SVNUrl arg0, SVNRevision arg1, SVNRevision arg2)
 		throws SVNClientException {
 		List tempLogs = new java.util.LinkedList();
 		String revRange = arg1.toString() + ":" + arg2.toString();
@@ -249,8 +243,7 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 				tempLogs.add(new CmdLineLogMessage(st));
 			}
 
-			return (ISVNLogMessage[]) tempLogs.toArray(
-				new ISVNLogMessage[tempLogs.size()]);
+			return (ISVNLogMessage[]) tempLogs.toArray(new ISVNLogMessage[tempLogs.size()]);
 		} catch (CmdLineException e) {
 			throw SVNClientException.wrapException(e);
 		}
@@ -304,19 +297,11 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.subclipse.client.ISVNClientAdapter#move(java.net.URL, java.net.URL, java.lang.String, org.tigris.subversion.subclipse.client.ISVNRevision)
 	 */
-	public void move(
-		SVNUrl url,
-		SVNUrl destUrl,
-		String message,
-		SVNRevision revision)
+	public void move(SVNUrl url, SVNUrl destUrl, String message, SVNRevision revision)
 		throws SVNClientException {
 		try {
 			String changedResources =
-				_cmd.move(
-					url.toString(),
-					destUrl.toString(),
-					message,
-					revision.toString());
+				_cmd.move(url.toString(), destUrl.toString(), message, revision.toString());
 			refreshChangedResources(changedResources);
 		} catch (CmdLineException e) {
 			SVNClientException.wrapException(e);
@@ -326,15 +311,10 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.subclipse.client.ISVNClientAdapter#move(java.io.File, java.io.File, boolean)
 	 */
-	public void move(File file, File file2, boolean b)
-		throws SVNClientException {
+	public void move(File file, File file2, boolean b) throws SVNClientException {
 		try {
 			String changedResources =
-				_cmd.move(
-					file.getCanonicalPath(),
-					file2.getCanonicalPath(),
-					null,
-					null);
+				_cmd.move(file.getCanonicalPath(), file2.getCanonicalPath(), null, null);
 			refreshChangedResources(changedResources);
 		} catch (IOException e) {
 			throw SVNClientException.wrapException(e);
@@ -386,7 +366,7 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 	public void addFile(File file) throws SVNClientException {
 		try {
 			String changedResources = _cmd.add(file.getCanonicalPath(), false);
-			refreshChangedResources(changedResources);			
+			refreshChangedResources(changedResources);
 		} catch (IOException e) {
 			throw SVNClientException.wrapException(e);
 		} catch (CmdLineException e) {
@@ -402,8 +382,7 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.subclipse.client.ISVNClientAdapter#commit(java.io.File[], java.lang.String, boolean)
 	 */
-	public long commit(File[] parents, String comment, boolean b)
-		throws SVNClientException {
+	public long commit(File[] parents, String comment, boolean b) throws SVNClientException {
 		StringBuffer sb = new StringBuffer();
 		for (int i = 0; i < parents.length; i++) {
 			sb.append(parents[i].toString());
@@ -415,16 +394,13 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 		} catch (CmdLineException e) {
 			if ("".equals(e.getMessage()))
 				return SVNRevision.SVN_INVALID_REVNUM;
-			if (e
-				.getMessage()
-				.startsWith("svn: Attempted to lock an already-locked dir")) {
+			if (e.getMessage().startsWith("svn: Attempted to lock an already-locked dir")) {
 				//PHIL is this the best way to handle pending locks? (ie caused by "svn cp")
 				//loop through up to 5 sec, waiting for locks
 				//to be removed.
 				for (int i = 0; i < 50; i++) {
 					try {
-						String changedResources =
-							_cmd.checkin(sb.toString(), comment);
+						String changedResources = _cmd.checkin(sb.toString(), comment);
 						return refreshChangedResources(changedResources);
 					} catch (CmdLineException e1) {
 						try {
@@ -442,11 +418,9 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.subclipse.client.ISVNClientAdapter#update(java.io.File, org.tigris.subversion.subclipse.client.ISVNRevision, boolean)
 	 */
-	public void update(File file, SVNRevision revision, boolean b)
-		throws SVNClientException {
+	public void update(File file, SVNRevision revision, boolean b) throws SVNClientException {
 		try {
-			String changedResources =
-				_cmd.update(file.getCanonicalPath(), revision.toString());
+			String changedResources = _cmd.update(file.getCanonicalPath(), revision.toString());
 			refreshChangedResources(changedResources);
 		} catch (IOException e) {
 			throw SVNClientException.wrapException(e);
@@ -458,16 +432,11 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.subclipse.client.ISVNClientAdapter#checkout(java.net.URL, java.io.File, org.tigris.subversion.subclipse.client.ISVNRevision, boolean)
 	 */
-	public void checkout(
-		SVNUrl url,
-		File destPath,
-		SVNRevision revision,
-		boolean b)
+	public void checkout(SVNUrl url, File destPath, SVNRevision revision, boolean b)
 		throws SVNClientException {
 		try {
 			String dest = destPath.getCanonicalPath();
-			String changedResources =
-				_cmd.checkout(url.toString(), dest, revision.toString(), b);
+			String changedResources = _cmd.checkout(url.toString(), dest, revision.toString(), b);
 			refreshChangedResources(changedResources);
 
 		} catch (CmdLineException e) {
@@ -480,50 +449,29 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.subclipse.client.ISVNClientAdapter#getStatusRecursively(java.io.File,boolean)
 	 */
-	public ISVNStatus[] getStatusRecursively(File file, boolean getAll)
-		throws SVNClientException {
+	public ISVNStatus[] getStatusRecursively(File file, boolean getAll) throws SVNClientException {
 		String path = null;
 		List statuses = new LinkedList();
 		try {
 			path = file.getCanonicalPath();
 			String statusLines = _cmd.recursiveStatus(path);
-			StringTokenizer st =
-				new StringTokenizer(statusLines, Helper.NEWLINE);
+			StringTokenizer st = new StringTokenizer(statusLines, Helper.NEWLINE);
 			while (st.hasMoreTokens()) {
 				String statusLine = st.nextToken();
 				String infoLine = _cmd.info(statusLine.substring(7));
-				CmdLineStatus status =
-					new CmdLineStatus(statusLine, infoLine);
+				CmdLineStatus status = new CmdLineStatus(statusLine, infoLine);
 				statuses.add(status);
 			}
 
-			return (ISVNStatus[]) statuses.toArray(
-				new ISVNStatus[statuses.size()]);
+			return (ISVNStatus[]) statuses.toArray(new ISVNStatus[statuses.size()]);
 		} catch (IOException e) {
 			throw SVNClientException.wrapException(e);
 		} catch (CmdLineException e) {
-			if (e
-				.getMessage()
-				.startsWith("svn: Path is not a working copy directory")) {
+			if (e.getMessage().startsWith("svn: Path is not a working copy directory")) {
 				return new ISVNStatus[0];
 			}
 			throw SVNClientException.wrapException(e);
 		}
-	}
-
-	/* (non-Javadoc)
-	 * @see org.tigris.subversion.subclipse.client.ISVNClientAdapter#getRevision(java.lang.String)
-	 */
-	public SVNRevision getRevision(String revName) {
-		// TODO : implement
-		return null;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.tigris.subversion.subclipse.client.ISVNClientAdapter#getRevision(long)
-	 */
-	public SVNRevision.Number getRevision(long revNum) {
-		return new SVNRevision.Number(revNum);
 	}
 
 	private void notifyListenersOfChange(String path, SVNNodeKind type) {
@@ -534,8 +482,7 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 	}
 
 	private long refreshChangedResources(String changedResourcesList) {
-		StringTokenizer st =
-			new StringTokenizer(changedResourcesList, Helper.NEWLINE);
+		StringTokenizer st = new StringTokenizer(changedResourcesList, Helper.NEWLINE);
 		while (st.hasMoreTokens()) {
 			String line = st.nextToken();
 
@@ -558,9 +505,7 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 			//check to see if this is a file or a dir.
 			File f = new File(fileName);
 
-			notifyListenersOfChange(
-				fileName,
-				f.isDirectory() ? SVNNodeKind.DIR : SVNNodeKind.FILE);
+			notifyListenersOfChange(fileName, f.isDirectory() ? SVNNodeKind.DIR : SVNNodeKind.FILE);
 		}
 		return SVNRevision.SVN_INVALID_REVNUM;
 	}
@@ -615,8 +560,7 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 			recurse);
 	}
 
-	public void diff(File path, File outFile, boolean recurse)
-		throws SVNClientException {
+	public void diff(File path, File outFile, boolean recurse) throws SVNClientException {
 		diff(path, null, null, null, outFile, recurse);
 	}
 	/**
@@ -630,13 +574,7 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 		File outFile,
 		boolean recurse)
 		throws SVNClientException {
-		diff(
-			toString(oldUrl),
-			oldUrlRevision,
-			toString(newUrl),
-			newUrlRevision,
-			outFile,
-			recurse);
+		diff(toString(oldUrl), oldUrlRevision, toString(newUrl), newUrlRevision, outFile, recurse);
 	}
 
 	public void diff(
@@ -647,15 +585,13 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 		boolean recurse)
 		throws SVNClientException {
 		// TODO : test
-		diff(url, oldUrlRevision, url, newUrlRevision, outFile, recurse);        
+		diff(url, oldUrlRevision, url, newUrlRevision, outFile, recurse);
 	}
 
-	public ISVNProperty propertyGet(File path, String propertyName)
-		throws SVNClientException {
+	public ISVNProperty propertyGet(File path, String propertyName) throws SVNClientException {
 		try {
 			String pathString = toString(path);
-			InputStream valueAndData =
-				_cmd.propget(toString(path), propertyName);
+			InputStream valueAndData = _cmd.propget(toString(path), propertyName);
 
 			byte[] bytes = streamToByteArray(valueAndData, true);
 
@@ -676,21 +612,49 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 	}
 
 	public List getIgnoredPatterns(File path) throws SVNClientException {
-		// TODO : implement
-		return null;
+		if (!path.isDirectory())
+			return null;
+		List list = new ArrayList();
+		ISVNProperty pd = propertyGet(path, "svn:ignore");
+		if (pd == null)
+			return list;
+		String patterns = pd.getValue();
+		StringTokenizer st = new StringTokenizer(patterns, "\n");
+		while (st.hasMoreTokens()) {
+			String entry = st.nextToken();
+			if (!entry.equals(""))
+				list.add(entry);
+		}
+		return list;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.subclipse.client.ISVNClientAdapter#addToIgnoredPatterns(java.io.File, java.lang.String)
 	 */
-	public void addToIgnoredPatterns(File file, String pattern)
-		throws SVNClientException {
-		// TODO : implement
+	public void addToIgnoredPatterns(File file, String pattern) throws SVNClientException {
+		List patterns = getIgnoredPatterns(file);
+		if (patterns == null) // not a directory
+			return;
+
+		// verify that the pattern has not already been added
+		for (Iterator it = patterns.iterator(); it.hasNext();) {
+			if (((String) it.next()).equals(pattern))
+				return; // already added
+		}
+
+		patterns.add(pattern);
+		setIgnoredPatterns(file, patterns);
 	}
 
-	public void setIgnoredPatterns(File path, List patterns)
-		throws SVNClientException {
-		// TODO : implement
+	public void setIgnoredPatterns(File path, List patterns) throws SVNClientException {
+		if (!path.isDirectory())
+			return;
+		String value = "";
+		for (Iterator it = patterns.iterator(); it.hasNext();) {
+			String pattern = (String) it.next();
+			value = value + '\n' + pattern;
+		}
+		propertySet(path, "svn:ignore", value, false);
 	}
 
 	public void mkdir(File file) throws SVNClientException {
@@ -710,34 +674,21 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 		}
 	}
 
-	public void doImport(
-		File path,
-		SVNUrl url,
-		String message,
-		boolean recurse)
+	public void doImport(File path, SVNUrl url, String message, boolean recurse)
 		throws SVNClientException {
 		// TODO : implement        
 	}
 
-	public void doExport(
-		SVNUrl srcUrl,
-		File destPath,
-		SVNRevision revision,
-		boolean force)
+	public void doExport(SVNUrl srcUrl, File destPath, SVNRevision revision, boolean force)
 		throws SVNClientException {
 		try {
-			_cmd.export(
-				toString(srcUrl),
-				toString(destPath),
-				toString(revision),
-				force);
+			_cmd.export(toString(srcUrl), toString(destPath), toString(revision), force);
 		} catch (CmdLineException e) {
 			throw SVNClientException.wrapException(e);
 		}
 	}
 
-	public void doExport(File srcPath, File destPath, boolean force)
-		throws SVNClientException {
+	public void doExport(File srcPath, File destPath, boolean force) throws SVNClientException {
 		// TODO : test
 		try {
 			_cmd.export(toString(srcPath), toString(destPath), null, force);
@@ -746,25 +697,16 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 		}
 	}
 
-	public void propertySet(
-		File path,
-		String propertyName,
-		File propertyFile,
-		boolean recurse)
+	public void propertySet(File path, String propertyName, File propertyFile, boolean recurse)
 		throws SVNClientException, IOException {
 		try {
-			_cmd.propsetFile(
-				propertyName,
-				toString(propertyFile),
-				toString(path),
-				recurse);
+			_cmd.propsetFile(propertyName, toString(propertyFile), toString(path), recurse);
 		} catch (CmdLineException e) {
 			throw SVNClientException.wrapException(e);
 		}
 	}
 
-	public void copy(File srcPath, SVNUrl destUrl, String message)
-		throws SVNClientException {
+	public void copy(File srcPath, SVNUrl destUrl, String message) throws SVNClientException {
 		// TODO : implement
 	}
 
@@ -774,8 +716,7 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 		SVNRevision revisionEnd)
 		throws SVNClientException {
 		List tempLogs = new java.util.LinkedList();
-		String revRange =
-			revisionStart.toString() + ":" + revisionEnd.toString();
+		String revRange = revisionStart.toString() + ":" + revisionEnd.toString();
 
 		try {
 			String messages = _cmd.log(path.toString(), revRange);
@@ -786,8 +727,7 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 				tempLogs.add(new CmdLineLogMessage(st));
 			}
 
-			return (ISVNLogMessage[]) tempLogs.toArray(
-				new ISVNLogMessage[tempLogs.size()]);
+			return (ISVNLogMessage[]) tempLogs.toArray(new ISVNLogMessage[tempLogs.size()]);
 		} catch (CmdLineException e) {
 			throw SVNClientException.wrapException(e);
 		}
@@ -807,17 +747,12 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
         } catch (CmdLineException e) {
             SVNClientException.wrapException(e);
         }              
-		// TODO : test
 	}
 
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#propertySet(java.io.File, java.lang.String, java.lang.String, boolean)
 	 */
-	public void propertySet(
-		File path,
-		String propertyName,
-		String propertyValue,
-		boolean recurse)
+	public void propertySet(File path, String propertyName, String propertyValue, boolean recurse)
 		throws SVNClientException {
 		try {
 			_cmd.propset(propertyName, propertyValue, toString(path), recurse);
@@ -838,8 +773,7 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 		return (revision == null) ? null : revision.toString();
 	}
 
-	private static void streamToFile(InputStream stream, File outFile)
-		throws IOException {
+	private static void streamToFile(InputStream stream, File outFile) throws IOException {
 		int tempByte;
 		try {
 			FileOutputStream os = new FileOutputStream(outFile);
@@ -853,9 +787,7 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 		}
 	}
 
-	private static byte[] streamToByteArray(
-		InputStream stream,
-		boolean removeTrailing)
+	private static byte[] streamToByteArray(InputStream stream, boolean removeTrailing)
 		throws IOException {
 		//read byte-by-byte and put it in a vector.
 		//then take the vector and fill a byteArray.

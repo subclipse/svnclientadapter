@@ -61,23 +61,17 @@ import org.tigris.subversion.svnclientadapter.ISVNLogMessage;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
 
 /**
+ * <p>Implements a Log message using "svn log".</p>
  * 
- * @author philip schatz
+ * @author Philip Schatz (schatz at tigris)
  */
-public class CmdLineLogMessage implements ISVNLogMessage {
+class CmdLineLogMessage implements ISVNLogMessage {
 
 	private SVNRevision.Number rev;
 	private String author;
 	private Date date;
 	private String msg;
 
-	/**
-	 * ------------------------------------------------------------------------
-	 * rev 49:  phil | 2003-06-30 00:14:58 -0500 (Mon, 30 Jun 2003) | 1 line
-	 *
-	 * Initial version of jabclipse added to svn. Still has hardcoded JID
-	 * ------------------------------------------------------------------------
-	 */
 	CmdLineLogMessage(StringTokenizer st) {
 		//NOTE: the leading dashes are ommitted by ClientAdapter.
 		
@@ -152,5 +146,4 @@ public class CmdLineLogMessage implements ISVNLogMessage {
 	public String getMessage() {
 		return msg;
 	}
-
 }

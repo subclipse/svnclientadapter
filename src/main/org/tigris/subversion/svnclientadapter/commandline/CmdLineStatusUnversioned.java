@@ -51,7 +51,7 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  *
- */ 
+ */
 package org.tigris.subversion.svnclientadapter.commandline;
 
 import java.util.Date;
@@ -65,137 +65,58 @@ import org.tigris.subversion.svnclientadapter.SVNUrl;
  * <p>
  * A special status class that is used if a File/Folder is not versioned.</p>
  * 
- * @author Philip Schatz <a href="mailto:schatzp@purdue.edu">schatzp@purdue.edu</a>
- * @since Sep 13, 2003
+ * @author Philip Schatz (schatz at tigris)
  */
-public class CmdLineStatusUnversioned implements ISVNStatus {
-
-	/**
-	 * 
-	 */
-	public CmdLineStatusUnversioned() {
-		super();
-	}
-
-	/* (non-Javadoc)
-	 * @see org.tigris.subversion.subclipse.client.ISVNClientStatus#isIgnored()
-	 */
+class CmdLineStatusUnversioned implements ISVNStatus {
 	public boolean isIgnored() {
 		return true;
 	}
-
-	/* (non-Javadoc)
-	 * @see org.tigris.subversion.subclipse.client.ISVNClientStatus#isManaged()
-	 */
 	public boolean isManaged() {
 		return false;
 	}
-
-	/* (non-Javadoc)
-	 * @see org.tigris.subversion.subclipse.client.ISVNClientStatus#hasRemote()
-	 */
 	public boolean hasRemote() {
 		return false;
 	}
-
-	/* (non-Javadoc)
-	 * @see org.tigris.subversion.subclipse.client.ISVNClientStatus#getUrl()
-	 */
 	public SVNUrl getUrl() {
 		return null;
 	}
-
-	/* (non-Javadoc)
-	 * @see org.tigris.subversion.subclipse.client.ISVNClientStatus#getLastChangedRevision()
-	 */
 	public SVNRevision.Number getLastChangedRevision() {
 		return null;
 	}
-
-	/* (non-Javadoc)
-	 * @see org.tigris.subversion.subclipse.client.ISVNClientStatus#getLastChangedDate()
-	 */
 	public Date getLastChangedDate() {
 		return null;
 	}
-
-	/* (non-Javadoc)
-	 * @see org.tigris.subversion.subclipse.client.ISVNClientStatus#getLastCommitAuthor()
-	 */
 	public String getLastCommitAuthor() {
 		return null;
 	}
-
-	/* (non-Javadoc)
-	 * @see org.tigris.subversion.subclipse.client.ISVNClientStatus#getTextStatus()
-	 */
 	public ISVNStatus.Kind getTextStatus() {
-		return null;
+		return ISVNStatus.Kind.UNVERSIONED;
 	}
-
-	/* (non-Javadoc)
-	 * @see org.tigris.subversion.subclipse.client.ISVNClientStatus#isMerged()
-	 */
 	public boolean isMerged() {
 		return false;
 	}
-
-	/* (non-Javadoc)
-	 * @see org.tigris.subversion.subclipse.client.ISVNClientStatus#isDeleted()
-	 */
 	public boolean isDeleted() {
 		return false;
 	}
-
-	/* (non-Javadoc)
-	 * @see org.tigris.subversion.subclipse.client.ISVNClientStatus#isModified()
-	 */
 	public boolean isModified() {
 		return false;
 	}
-
-	/* (non-Javadoc)
-	 * @see org.tigris.subversion.subclipse.client.ISVNClientStatus#isAdded()
-	 */
 	public boolean isAdded() {
 		return false;
 	}
-
-	/* (non-Javadoc)
-	 * @see org.tigris.subversion.subclipse.client.ISVNClientStatus#getRevision()
-	 */
 	public SVNRevision.Number getRevision() {
 		return SVNRevision.INVALID_REVISION;
 	}
-
-	/* (non-Javadoc)
-	 * @see org.tigris.subversion.subclipse.client.ISVNClientStatus#isCopied()
-	 */
 	public boolean isCopied() {
 		return false;
 	}
-
-	/* (non-Javadoc)
-	 * @see org.tigris.subversion.subclipse.client.ISVNClientStatus#getPath()
-	 */
 	public String getPath() {
 		return null;
 	}
-
-	/* (non-Javadoc)
-	 * @see org.tigris.subversion.subclipse.client.ISVNClientStatus#getNodeKind()
-	 */
 	public SVNNodeKind getNodeKind() {
-		// TODO Auto-generated method stub
-		return null;
+		return SVNNodeKind.UNKNOWN;
 	}
-
-	/* (non-Javadoc)
-	 * @see org.tigris.subversion.subclipse.client.ISVNClientStatus#getUrlCopiedFrom()
-	 */
 	public String getUrlCopiedFrom() {
-		// TODO Auto-generated method stub
 		return null;
 	}
-
 }

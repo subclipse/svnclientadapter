@@ -69,17 +69,16 @@ import org.tigris.subversion.svnclientadapter.SVNUrl;
 
 /**
  * 
- * @author philip schatz
+ * @author Philip Schatz (schatz at tigris)
  */
-public class Helper {
+class Helper {
 
-
-	public static final String NEWLINE = "\n\r";
+	static final String NEWLINE = "\n\r";
 	private static DateFormat df =
 		new SimpleDateFormat("yyyy-MM-dd hh:mm:ss Z");
 
 	/**
-	 * 
+	 * A non-instantiable class
 	 */
 	private Helper() {
 		//non-instantiable

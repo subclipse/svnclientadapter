@@ -64,10 +64,13 @@ import org.tigris.subversion.svnclientadapter.SVNRevision;
 import org.tigris.subversion.svnclientadapter.SVNUrl;
 
 /**
- * Not the most "efficient" implementation, but it works.
- * @author philip schatz
+ * <p>
+ * <strong>NOTE:</strong> Not the most "efficient"
+ * implementation, but it works.</p>
+ * 
+ * @author Philip Schatz (schatz at tigris)
  */
-public class CmdLineInfo {
+class CmdLineInfo {
 
 	//"Constants"
 	private static final String KEY_PATH = "Path";
@@ -77,46 +80,28 @@ public class CmdLineInfo {
 	private static final String KEY_LASTCHANGEDAUTHOR = "Last Changed Author";
 	private static final String KEY_LASTCHANGEDREV = "Last Changed Rev";
 	private static final String KEY_LASTCHANGEDDATE = "Last Changed Date";
-	//private static final String KEY_NAME = "Name";
-	//private static final String KEY_SCHEDULE = "Schedule";
-	//private static final String KEY_TEXTLASTUPDATED = "Text Last Updated";
-	//private static final String KEY_PROPERTIESLASTUPDATED = "Properties Last Updated";
-	//private static final String KEY_CHECKSUM = "Checksum";
 
 	//Fields
 	private Map infoMap = new HashMap();
 
-	/**
-	 * 
-	 */
+	//Constructors
 	CmdLineInfo(String infoString) {
 		load(infoString);
 	}
 
-	/**
-	 * @return
-	 */
+	//Methods
 	public Date getLastChangedDate() {
 		return Helper.toDate(get(KEY_LASTCHANGEDDATE));
 	}
 
-	/**
-	 * @return
-	 */
 	public SVNRevision.Number getLastChangedRevision() {
 		return Helper.toRevNum(get(KEY_LASTCHANGEDREV));
 	}
 
-	/**
-	 * @return
-	 */
 	public String getLastCommitAuthor() {
 		return get(KEY_LASTCHANGEDAUTHOR);
 	}
 
-	/**
-	 * @return
-	 */
 	public SVNNodeKind getNodeKind() {
 		if ("directory".equals(get(KEY_NODEKIND)))
 			return SVNNodeKind.DIR;
@@ -125,9 +110,6 @@ public class CmdLineInfo {
 		return SVNNodeKind.UNKNOWN;
 	}
 
-	/**
-	 * @return
-	 */
 	public String getPath() {
 		return get(KEY_PATH);
 	}
@@ -147,8 +129,10 @@ public class CmdLineInfo {
 
 	private void load(String infoString) {
 		StringTokenizer st = new StringTokenizer(infoString, Helper.NEWLINE);
-		//First, go through and take each line and throw it into a map with the key being the text to the left of the colon, and value being to the right.
-
+		//First, go through and take each line and throw
+		// it into a map with the key being the text to
+		// the left of the colon, and value being to the
+		// right.
 		while (st.hasMoreTokens()) {
 			String line = st.nextToken();
 			int middle = line.indexOf(':');
@@ -156,7 +140,5 @@ public class CmdLineInfo {
 			String value = line.substring(middle + 2);
 			infoMap.put(key, value);
 		}
-
 	}
-
 }

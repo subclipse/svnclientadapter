@@ -57,32 +57,27 @@ package org.tigris.subversion.svnclientadapter.commandline;
 import org.tigris.subversion.svnclientadapter.ISVNDirEntry;
 
 /**
+ * <p>
+ * Implements a DirEntry located locally using the
+ * "svn list" command.</p>
  * 
- * @author philip schatz
+ * @author Philip Schatz (schatz at tigris)
  */
-public class CmdLineDirEntry extends CmdLineInfo implements ISVNDirEntry {
+class CmdLineDirEntry extends CmdLineInfo implements ISVNDirEntry {
 
-	/**
-	 * @param line
-	 */
-	public CmdLineDirEntry(String line) {
+	//Constructors
+	CmdLineDirEntry(String line) {
 		super(line);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.tigris.subversion.subclipse.client.ISVNDirEntry#getHasProps()
-	 */
+	//Methods
 	public boolean getHasProps() {
 		//TODO unhardcode this
 		return false;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.tigris.subversion.svnclientadapter.ISVNDirEntry#getSize()
-	 */
 	public long getSize() {
 		// TODO Auto-generated method stub
 		return 0;
 	}
-
 }

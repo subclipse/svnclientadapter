@@ -61,85 +61,65 @@ import org.tigris.subversion.svnclientadapter.ISVNStatus;
 import org.tigris.subversion.svnclientadapter.SVNNodeKind;
 
 /**
- * @author Phil
+ * <p>
+ * Implements a ISVNStatus using "svn status" and "svn info".</p>
+ * 
+ * @author Philip Schatz (schatz at tigris)
  */
-public class CmdLineStatus extends CmdLineInfo implements ISVNStatus {
+class CmdLineStatus extends CmdLineInfo implements ISVNStatus {
 
-	private char flag = '?';
+	//"Constants"
 	public static final int STATUS_FILE_WIDTH = 40;
-	
-	/*
-	 * The first five columns in the output are each one character wide:
-    First column: Says if item was added, deleted, or otherwise changed
-      ' ' no modifications
-      'A' Added
-      'D' Deleted
-      'M' Modified
-      'C' Conflicted
-      'I' Ignored
-      'X' item is unversioned, but is used by an externals definition
-      '?' item is not under revision control
-      '!' item is missing (removed by non-svn command) or incomplete
-      '~' versioned item obstructed by some item of a different kind
-    Second column: Modifications of a file's or directory's properties
-      ' ' no modifications
-      'M' Modified
-      'C' Conflicted
-    Third column: Whether the working copy directory is locked
-      ' ' not locked
-      'L' locked
-    Fourth column: Scheduled commit will contain addition-with-history
-      ' ' no history scheduled with commit
-      '+' history scheduled with commit
-    Fifth column: Whether the item is switched relative to its parent
-      ' ' normal
-      'S' switched
-    The out-of-date information appears in the eighth column
-      '*' a newer revision exists on the server
-      ' ' the working copy is up to date
 
-	 *
+	//Fields
+	private char flag = '?';
+	private char history;
+
+	/**
+	 * <p>
+	 * Creates a new status. Takes in 2 lines, one of the
+	 * "svn status" information, and one is the "svn info"
+	 * line.</p>
+	 * 
+	 * @param statusLine Generated from "svn status"
+	 * @param infoLine Generated from "svn info"
 	 */
-
-	public CmdLineStatus(String statusLine, String infoLine) {
+	CmdLineStatus(String statusLine, String infoLine) {
 		super(infoLine);
 		setStatus(statusLine);
 	}
 
+	//Methods
 	private void setStatus(String statusLine) {
 
 		// if the status is for a DIR then find the single line
-		if(getNodeKind() == SVNNodeKind.DIR){
+		if (getNodeKind() == SVNNodeKind.DIR) {
 			StringTokenizer st = new StringTokenizer(statusLine, Helper.NEWLINE);
 
 			while (st.hasMoreTokens()) {
 				String line = st.nextToken();
-				
+
 				String fileName = line.substring(STATUS_FILE_WIDTH, line.length());
 				File file1 = new File(fileName);
-				File file2 = new File(getPath());								
-				
-				if(file1.equals(file2)){
+				File file2 = new File(getPath());
+
+				if (file1.equals(file2)) {
 					statusLine = line;
 					break;
 				}
-			}					
+			}
 		}
 
 		char[] l = statusLine.toCharArray();
 		flag = l[0];
+		history = l[3];
 	}
 
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.subclipse.client.ISVNClientStatus#isIgnored()
 	 */
 	public boolean isIgnored() {
-		String path = super.getPath();
-		if (path == null)
-			return true;
-
-		//TODO hardcoded .svn
-		return path.endsWith(".svn") || (path.indexOf("bin") != -1);
+		return (flag == 'I');
 	}
 
 	/* (non-Javadoc)
@@ -153,30 +133,42 @@ public class CmdLineStatus extends CmdLineInfo implements ISVNStatus {
 	 * tells if the resource has a remote counter-part
 	 * @return
 	 */
-	public boolean hasRemote()
-	{
+	public boolean hasRemote() {
 		ISVNStatus.Kind textStatus = getTextStatus();
 		return ((isManaged()) && (textStatus != ISVNStatus.Kind.ADDED));
 	}
-	
 
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.subclipse.client.ISVNClientStatus#getTextStatus()
 	 */
 	public ISVNStatus.Kind getTextStatus() {
-		if (isModified())
-			return ISVNStatus.Kind.MODIFIED;
-		if (isAdded())
-			return ISVNStatus.Kind.ADDED;
-		//TODO add other status types
-		return ISVNStatus.Kind.NONE;
+		switch (flag) {
+			case ' ' :
+				return ISVNStatus.Kind.NORMAL;
+			case 'A' :
+				return ISVNStatus.Kind.ADDED;
+			case 'D' :
+				return ISVNStatus.Kind.DELETED;
+			case 'M' :
+				return ISVNStatus.Kind.MODIFIED;
+			case 'C' :
+				return ISVNStatus.Kind.CONFLICTED;
+			case 'I' :
+				return ISVNStatus.Kind.IGNORED;
+			case '?' :
+				return ISVNStatus.Kind.UNVERSIONED;
+			case '!' :
+				return ISVNStatus.Kind.ABSENT;
+			default :
+				return ISVNStatus.Kind.NONE;
+		}
 	}
 
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.subclipse.client.ISVNClientStatus#isMerged()
 	 */
 	public boolean isMerged() {
-		// TODO Auto-generated method stub
+		// TODO : implement
 		return false;
 	}
 
@@ -184,29 +176,28 @@ public class CmdLineStatus extends CmdLineInfo implements ISVNStatus {
 	 * @see org.tigris.subversion.subclipse.client.ISVNClientStatus#isDeleted()
 	 */
 	public boolean isDeleted() {
-		return flag == 'D';
+		return (flag == 'D');
 	}
 
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.subclipse.client.ISVNClientStatus#isModified()
 	 */
 	public boolean isModified() {
-		return flag == 'M';
+		return (flag == 'M');
 	}
 
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.subclipse.client.ISVNClientStatus#isAdded()
 	 */
 	public boolean isAdded() {
-		return flag == 'A';
+		return (flag == 'A');
 	}
 
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.subclipse.client.ISVNClientStatus#isCopied()
 	 */
 	public boolean isCopied() {
-		// TODO Auto-generated method stub
-		return false;
+		return (history == '+');
 	}
 
 	/* (non-Javadoc)

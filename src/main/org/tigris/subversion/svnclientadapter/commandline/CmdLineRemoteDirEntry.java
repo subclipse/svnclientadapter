@@ -67,11 +67,15 @@ import org.tigris.subversion.svnclientadapter.SVNNodeKind;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
 
 /**
+ * <p>
+ * Implements a DirEntry on a remote location using the
+ * "svn list" command.</p>
  * 
- * @author philip schatz
+ * @author Philip Schatz (schatz at tigris)
  */
-public class CmdLineRemoteDirEntry implements ISVNDirEntry {
+class CmdLineRemoteDirEntry implements ISVNDirEntry {
 
+	//Fields
 	private static DateFormat df1 = new SimpleDateFormat("MMM dd hh:mm", Locale.US);
     private static DateFormat df2 = new SimpleDateFormat("MMM dd  yyyy", Locale.US);
 
@@ -82,10 +86,8 @@ public class CmdLineRemoteDirEntry implements ISVNDirEntry {
 	private String lastCommitAuthor;
 	private Date lastChangedDate;
 
-	/**
-	 * @param line
-	 */
-	public CmdLineRemoteDirEntry(String baseUrl, String line) {
+	//Constructors
+	CmdLineRemoteDirEntry(String baseUrl, String line) {
 
         // see ls-cmd.c for the format used
         
@@ -121,6 +123,7 @@ public class CmdLineRemoteDirEntry implements ISVNDirEntry {
 		}
 	}
 
+	//Methods
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.subclipse.client.ISVNDirEntry#getHasProps()
 	 */
