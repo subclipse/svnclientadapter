@@ -953,8 +953,12 @@ public class JhlClientAdapter implements ISVNClientAdapter {
             
             String target = fileToSVNPath(path, true);
             notificationHandler.logCommandLine("propdel "+propertyName+" "+target);
-                    
-            svnClient.propertySet(target, propertyName, (String)null, recurse);
+            
+            // this does not delete the property, but (String)null causes an 
+            // unexpected exception ...
+            // we should submit a patch for that
+            svnClient.propertySet(target, propertyName, "", recurse);
+//            svnClient.propertySet(target, propertyName, (String)null, recurse);
         } catch (ClientException e) {
             notificationHandler.logException(e);
             throw new SVNClientException(e);            
