@@ -75,7 +75,7 @@ class Helper {
 
 	// 2003-10-13T12:54:42.957948Z
 	private static DateFormat xmlFormat =
-		new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss");
+		new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 
 	/**
 	 * A non-instantiable class
