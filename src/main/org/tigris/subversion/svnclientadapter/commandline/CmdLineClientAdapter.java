@@ -91,7 +91,6 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 
 	//Fields
 	private CommandLine _cmd = new CommandLine("svn");
-	private List _listeners = new LinkedList();
 
 	//Methods
 	public static boolean isAvailable() {
@@ -109,14 +108,14 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 	 * @see org.tigris.subversion.subclipse.client.ISVNClientAdapter#addNotifyListener(org.tigris.subversion.subclipse.client.ISVNClientNotifyListener)
 	 */
 	public void addNotifyListener(ISVNNotifyListener listener) {
-		_listeners.add(listener);
+		_cmd.listeners.add(listener);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.subclipse.client.ISVNClientAdapter#removeNotifyListener(org.tigris.subversion.subclipse.client.ISVNClientNotifyListener)
 	 */
 	public void removeNotifyListener(ISVNNotifyListener listener) {
-		_listeners.remove(listener);
+		_cmd.listeners.remove(listener);
 	}
 
 	/* (non-Javadoc)
@@ -455,7 +454,7 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 	}
 
 	private void notifyListenersOfChange(String path, SVNNodeKind type) {
-		for (Iterator i = _listeners.iterator(); i.hasNext();) {
+		for (Iterator i = _cmd.listeners.iterator(); i.hasNext();) {
 			ISVNNotifyListener listener = (ISVNNotifyListener) i.next();
 			listener.onNotify(path, type);
 		}

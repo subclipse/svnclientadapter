@@ -57,6 +57,12 @@ package org.tigris.subversion.svnclientadapter.commandline;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.MessageFormat;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.StringTokenizer;
+
+import org.tigris.subversion.svnclientadapter.ISVNNotifyListener;
 
 /**
  * <p>
@@ -79,7 +85,6 @@ class CommandLine {
 	private static String CMD_COPY_LOCAL = "cp {0} {1}";
 	private static String CMD_CHECKOUT = "co -r {0} {1} {2}";
 	private static String CMD_DELETE = "rm {0} {1} --force";
-	private static String CMD_DIFF = "diff {0} {1}@{2} {3}@{4}";
 	private static String CMD_EXPORT = "export -r {0} {1} {2} {3}";
 	private static String CMD_IMPORT = "import {0} {1} {2} -m \"{3}\"";
 	private static String CMD_INFO = "info {0}";
@@ -87,21 +92,21 @@ class CommandLine {
 	private static String CMD_LOG = "log -r {0} {1}";
 	private static String CMD_MKDIR = "mkdir -m \"{0}\" {1}";
 	private static String CMD_MKDIR_LOCAL = "mkdir {0}";
-	private static String CMD_MOVE = "mv -r {0} {1} {2} {3} --force --non-interactive";
+	private static String CMD_MOVE = "mv -r {0} {1} {2} {3} --force";
 	private static String CMD_PROPGET = "propget {0} {1}";
 	private static String CMD_PROPSET = "propset {0} \"{1}\" {2}";
 	private static String CMD_PROPSET_FILE = "propset {0} -F \"{1}\" {2}";
 	private static String CMD_REVERT = "revert {0} {1}";
-	private static String CMD_STATUS = "status -v -N {0} {1} --non-interactive";
-	private static String CMD_RECURSIVE_STATUS = "status -v {0} --non-interactive";
+	private static String CMD_STATUS = "status -v -N {0} {1}";
+	private static String CMD_RECURSIVE_STATUS = "status -v {0}";
 
-	private static String CMD_UPDATE = "up -r {0} {1} --non-interactive";
-	private static String AUTH_INFO = " --username \"{0}\" --password \"{1}\"";
+	private static String CMD_UPDATE = "up -r {0} {1}";
+	private static String AUTH_INFO = " --username \"{0}\" --password \"{1}\" --non-interactive";
 
 	private String CMD;
-
 	private static String user;
 	private static String pass;
+	List listeners = new LinkedList();
 
 	//Constructors
 	CommandLine(String svnPath) {
@@ -219,8 +224,7 @@ class CommandLine {
 	 * @param message Commit message.
 	 * @param revision Optional revision to copy from. 
 	 */
-	void copy(String src, String dest, String message, String revision)
-		throws CmdLineException {
+	void copy(String src, String dest, String message, String revision) throws CmdLineException {
 		execVoid(
 			MessageFormat.format(CMD_COPY, new String[] { validRev(revision), message, src, dest })
 				+ getAuthInfo());
@@ -249,7 +253,7 @@ class CommandLine {
 	String delete(String target, String message) throws CmdLineException {
 		String msg = (message == null) ? "" : "-m \"" + message + "\"";
 		return execString(
-			CMD + MessageFormat.format(CMD_DELETE, new String[] { msg, target }) + getAuthInfo());
+			MessageFormat.format(CMD_DELETE, new String[] { msg, target }) + getAuthInfo());
 	}
 
 	/**
@@ -257,12 +261,7 @@ class CommandLine {
 	 * Display the differences between two paths.</p>
 	 * 
 	 */
-	InputStream diff(
-		String oldPath,
-		String oldRev,
-		String newPath,
-		String newRev,
-		boolean recurse)
+	InputStream diff(String oldPath, String oldRev, String newPath, String newRev, boolean recurse)
 		throws CmdLineException {
 		String commandLine = " diff ";
 		if (!"BASE".equals(oldRev) || !"WORKING".equals(newPath)) {
@@ -283,8 +282,7 @@ class CommandLine {
 	 * export files and directories from remote URL.</p>
 	 * 
 	 */
-	void export(String url, String path, String revision, boolean force)
-		throws CmdLineException {
+	void export(String url, String path, String revision, boolean force) throws CmdLineException {
 		execVoid(
 			MessageFormat.format(
 				CMD_EXPORT,
@@ -505,6 +503,9 @@ class CommandLine {
 	private Process execProcess(String svnCommand) throws CmdLineException {
 		Runtime rt = Runtime.getRuntime();
 
+		if (!listeners.isEmpty())
+			logCommand(svnCommand);
+
 		/* run the process */
 		Process proc = null;
 		try {
@@ -528,11 +529,66 @@ class CommandLine {
 
 		Process proc = execProcess(svnCommand);
 
-		return Helper.getStringOrFail(proc);
+		try {
+			String result = Helper.getStringOrFail(proc);
+			if (!listeners.isEmpty())
+				logMessageAndCompleted(result);
+			return result;
+		} catch (CmdLineException e) {
+			if (!listeners.isEmpty())
+				logException(e);
+			throw e;
+		}
+
 	}
 
 	private void execVoid(String svnCommand) throws CmdLineException {
 		execString(svnCommand);
+	}
+
+	private void logMessageAndCompleted(String messages) {
+		StringTokenizer st = new StringTokenizer(messages, Helper.NEWLINE);
+		int size = st.countTokens();
+		//do everything but the last line
+		for (int i = 1; i < size; i++) {
+			logMessage(st.nextToken());
+		}
+
+		//log the last line as the completed message.
+		if (size > 0)
+			logCompleted(st.nextToken());
+	}
+
+	private void logCompleted(String message) {
+		for (Iterator it = listeners.iterator(); it.hasNext();) {
+			ISVNNotifyListener listener = (ISVNNotifyListener) it.next();
+			listener.logCompleted(message);
+		}
+	}
+
+	private void logMessage(String message) {
+		for (Iterator it = listeners.iterator(); it.hasNext();) {
+			ISVNNotifyListener listener = (ISVNNotifyListener) it.next();
+			listener.logMessage(message);
+		}
+	}
+
+	private void logCommand(String line) {
+		for (Iterator it = listeners.iterator(); it.hasNext();) {
+			ISVNNotifyListener listener = (ISVNNotifyListener) it.next();
+			listener.logCommandLine(line);
+		}
+	}
+
+	private void logException(CmdLineException e) {
+		StringTokenizer st = new StringTokenizer(e.getMessage(), Helper.NEWLINE);
+		while (st.hasMoreTokens()) {
+			String line = st.nextToken();
+			for (Iterator it = listeners.iterator(); it.hasNext();) {
+				ISVNNotifyListener listener = (ISVNNotifyListener) it.next();
+				listener.logError(line);
+			}
+		}
 	}
 
 	private String getAuthInfo() {
