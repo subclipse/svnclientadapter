@@ -264,7 +264,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
             notificationHandler.setCommand(ISVNNotifyListener.Command.ADD);
             notificationHandler.logCommandLine("add -N "+file.toString());
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(file));
-            svnClient.add(fileToSVNPath(file, true), false);
+            svnClient.add(fileToSVNPath(file, false), false);
         } catch (ClientException e) {
             notificationHandler.logException(e);
             throw new SVNClientException(e);
@@ -284,7 +284,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
                 (recurse?"":"-N")+
                 " "+dir.toString());
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(dir));
-            svnClient.add(fileToSVNPath(dir, true), recurse);
+            svnClient.add(fileToSVNPath(dir, false), recurse);
         } catch (ClientException e) {
             notificationHandler.logException(e);
             throw new SVNClientException(e);
@@ -316,7 +316,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
 			notificationHandler.setBaseDir(new File("."));
             svnClient.checkout(
 			    moduleName.toString(),
-                fileToSVNPath(destPath, true),
+                fileToSVNPath(destPath, false),
                 JhlConverter.convert(revision),
                 recurse);
         } catch (ClientException e) {
@@ -345,7 +345,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
                 commandLine+=" -N";
 
             for (int i = 0; i < paths.length; i++) {
-                files[i] = fileToSVNPath((File) paths[i], true);
+                files[i] = fileToSVNPath((File) paths[i], false);
                 commandLine+=" "+files[i].toString();
             }
             notificationHandler.logCommandLine(commandLine);
@@ -393,7 +393,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
             throws SVNClientException {
         try {
             notificationHandler.setCommand(ISVNNotifyListener.Command.LS);
-            String target = fileToSVNPath(path, true);
+            String target = fileToSVNPath(path, false);
             String commandLine = "list -r "+revision.toString()+(recurse?"-R":"")+" "+path;
             notificationHandler.logCommandLine(commandLine);
 			notificationHandler.setBaseDir(new File("."));		
@@ -463,7 +463,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
         String filePathSVN[] = new String[path.length];
         String commandLine = "status -N --no-ignore"; 
         for (int i = 0; i < filePathSVN.length;i++) {
-            filePathSVN[i] = fileToSVNPath(path[i], true);
+            filePathSVN[i] = fileToSVNPath(path[i], false);
             commandLine+=" "+filePathSVN[i]; 
         }
         notificationHandler.logCommandLine(commandLine);
@@ -516,7 +516,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
      */
     public ISVNStatus[] getStatus(File path, boolean descend, boolean getAll, boolean contactServer) throws SVNClientException {
 		notificationHandler.setCommand(ISVNNotifyListener.Command.STATUS);
-		String filePathSVN = fileToSVNPath(path, true);
+		String filePathSVN = fileToSVNPath(path, false);
 		notificationHandler.logCommandLine("status " + (contactServer?"-u ":"")+ filePathSVN);
 		notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
 		try {
@@ -547,8 +547,8 @@ public class JhlClientAdapter implements ISVNClientAdapter {
 		try {
 			notificationHandler.setCommand(ISVNNotifyListener.Command.COPY);
 
-			String src = fileToSVNPath(srcPath, true);
-			String dest = fileToSVNPath(destPath, true);
+			String src = fileToSVNPath(srcPath, false);
+			String dest = fileToSVNPath(destPath, false);
 			notificationHandler.logCommandLine("copy " + src + " " + dest);
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(new File[] {srcPath,destPath }));
 			svnClient.copy(src, dest, "", Revision.HEAD);
@@ -569,7 +569,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
 		throws SVNClientException {
 		try {
 			notificationHandler.setCommand(ISVNNotifyListener.Command.COPY);
-			String src = fileToSVNPath(srcPath, true);
+			String src = fileToSVNPath(srcPath, false);
 			String dest = destUrl.toString();
 			notificationHandler.logCommandLine("copy " + src + " " + dest);
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(srcPath));
@@ -592,7 +592,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
 		try {
 			notificationHandler.setCommand(ISVNNotifyListener.Command.COPY);
 			String src = srcUrl.toString();
-			String dest = fileToSVNPath(destPath, true);
+			String dest = fileToSVNPath(destPath, false);
 			notificationHandler.logCommandLine("copy " + src + " " + dest);
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(destPath));
 			svnClient.copy(src, dest, "", JhlConverter.convert(revision));
@@ -672,7 +672,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
             String targets[] = new String[file.length];
             
             for (int i = 0; i < file.length;i++) {
-                targets[i] = fileToSVNPath(file[i], true);
+                targets[i] = fileToSVNPath(file[i], false);
                 commandLine += " "+targets[i];
             }
             
@@ -703,7 +703,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
 		try {
 			notificationHandler.setCommand(ISVNNotifyListener.Command.EXPORT);
 			String src = srcUrl.toString();
-			String dest = fileToSVNPath(destPath, true);
+			String dest = fileToSVNPath(destPath, false);
 			notificationHandler.logCommandLine(
 				"export -r " + revision.toString() + ' ' + src + ' ' + dest);
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(destPath));
@@ -726,8 +726,8 @@ public class JhlClientAdapter implements ISVNClientAdapter {
 		throws SVNClientException {
 		try {
 			notificationHandler.setCommand(ISVNNotifyListener.Command.EXPORT);
-			String src = fileToSVNPath(srcPath, true);
-			String dest = fileToSVNPath(destPath, true);
+			String src = fileToSVNPath(srcPath, false);
+			String dest = fileToSVNPath(destPath, false);
 			notificationHandler.logCommandLine("export " + src + ' ' + dest);
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(new File[]{srcPath,destPath }));
 			// in this case, revision is not used but must be valid
@@ -756,7 +756,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
 		throws SVNClientException {
 		try {
 			notificationHandler.setCommand(ISVNNotifyListener.Command.IMPORT);
-			String src = fileToSVNPath(path, true);
+			String src = fileToSVNPath(path, false);
 			String dest = url.toString();
 			notificationHandler.logCommandLine(
 				"import -m \""
@@ -802,7 +802,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
 	public void mkdir(File file) throws SVNClientException {
         try {
             notificationHandler.setCommand(ISVNNotifyListener.Command.MKDIR);
-            String target = fileToSVNPath(file, true);
+            String target = fileToSVNPath(file, false);
             notificationHandler.logCommandLine(
                 "mkdir "+target);
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(file));
@@ -823,8 +823,8 @@ public class JhlClientAdapter implements ISVNClientAdapter {
         // use force when you want to move file even if there are local modifications
         try {
             notificationHandler.setCommand(ISVNNotifyListener.Command.MOVE);
-		    String src = fileToSVNPath(srcPath, true);
-            String dest = fileToSVNPath(destPath, true);
+		    String src = fileToSVNPath(srcPath, false);
+            String dest = fileToSVNPath(destPath, false);
             notificationHandler.logCommandLine(
                     "move "+src+' '+dest);
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(new File[] {srcPath, destPath}));        
@@ -879,7 +879,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
 		throws SVNClientException {
 		try {
 			notificationHandler.setCommand(ISVNNotifyListener.Command.UPDATE);
-			String target = fileToSVNPath(path, true);
+			String target = fileToSVNPath(path, false);
 			notificationHandler.logCommandLine(
 				"update -r "
 					+ revision.toString()
@@ -903,7 +903,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
     public void revert(File path, boolean recurse) throws SVNClientException {
         try {
             notificationHandler.setCommand(ISVNNotifyListener.Command.REVERT);
-            String target = fileToSVNPath(path, true);
+            String target = fileToSVNPath(path, false);
             notificationHandler.logCommandLine(
                 "revert "+
                 (recurse?"":"-N ")+
@@ -967,7 +967,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
 		try {
 			notificationHandler.setCommand(
 				ISVNNotifyListener.Command.LOG);
-			String target = fileToSVNPath(path, true);
+			String target = fileToSVNPath(path, false);
 			notificationHandler.logCommandLine(
 				"log -r "
 					+ revisionStart.toString()
@@ -996,7 +996,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
 	 * @param filePath
 	 */	
 	public static void enableLogging(int logLevel,File filePath) {
-		SVNClient.enableLogging(logLevel,fileToSVNPath(filePath, true));	
+		SVNClient.enableLogging(logLevel,fileToSVNPath(filePath, false));	
 	}
 
     /**
@@ -1033,7 +1033,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
 	public InputStream getContent(File path, SVNRevision revision)
 		throws SVNClientException {
 		try {
-			String target = fileToSVNPath(path, true);
+			String target = fileToSVNPath(path, false);
 			notificationHandler.setCommand(
 				ISVNNotifyListener.Command.CAT);
 			notificationHandler.logCommandLine(
@@ -1084,7 +1084,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
 	public ISVNProperty[] getProperties(File path) throws SVNClientException {
 		try {
 			notificationHandler.setCommand(ISVNNotifyListener.Command.PROPLIST);
-			String target = fileToSVNPath(path, true);
+			String target = fileToSVNPath(path, false);
 			notificationHandler.logCommandLine(
 					"proplist "+ target);
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
@@ -1121,7 +1121,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
 		try {
 			notificationHandler.setCommand(ISVNNotifyListener.Command.PROPSET);
 
-			String target = fileToSVNPath(path, true);
+			String target = fileToSVNPath(path, false);
 			notificationHandler.logCommandLine(
 				"propset "
 					+ propertyName
@@ -1157,7 +1157,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
 		try {
 			notificationHandler.setCommand(ISVNNotifyListener.Command.PROPSET);
 
-			String target = fileToSVNPath(path, true);
+			String target = fileToSVNPath(path, false);
 			notificationHandler.logCommandLine(
 				"propset "
 					+ propertyName
@@ -1201,7 +1201,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
 		try {
 			notificationHandler.setCommand(ISVNNotifyListener.Command.PROPGET);
 
-			String target = fileToSVNPath(path, true);
+			String target = fileToSVNPath(path, false);
 			notificationHandler.logCommandLine(
 				"propget " + propertyName + " " + target);
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
@@ -1228,7 +1228,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
         try {
             notificationHandler.setCommand(ISVNNotifyListener.Command.PROPDEL);
             
-            String target = fileToSVNPath(path, true);
+            String target = fileToSVNPath(path, false);
             notificationHandler.logCommandLine("propdel "+propertyName+" "+target);
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
             
@@ -1409,7 +1409,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
             // path
             String oldTarget = fileToSVNPath(oldPath, false);
             String newTarget = fileToSVNPath(newPath, false);
-            String svnOutFile = fileToSVNPath(outFile, true);
+            String svnOutFile = fileToSVNPath(outFile, false);
             
             String commandLine = "diff ";
             if ( (oldPathRevision.getKind() != Revision.Kind.base) ||
@@ -1457,7 +1457,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
             if (newUrlRevision == null)
                 newUrlRevision = SVNRevision.HEAD;
             
-            String svnOutFile = fileToSVNPath(outFile, true);
+            String svnOutFile = fileToSVNPath(outFile, false);
             
             String commandLine = "diff ";
             if ( (oldUrlRevision.getKind() != Revision.Kind.head) ||
@@ -1529,7 +1529,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
     public ISVNAnnotations annotate(File file, SVNRevision revisionStart, SVNRevision revisionEnd)
         throws SVNClientException
     {
-    	return annotate(fileToSVNPath(file, true), revisionStart, revisionEnd);
+    	return annotate(fileToSVNPath(file, false), revisionStart, revisionEnd);
     }    
     
     
@@ -1566,7 +1566,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
 			}
 		    notificationHandler.setCommand(ISVNNotifyListener.Command.CREATE_REPOSITORY);
 		     
-		    String target = fileToSVNPath(path,true);
+		    String target = fileToSVNPath(path,false);
 		    notificationHandler.logCommandLine(
 		    		MessageFormat.format(
 		    				"create --fstype {0} {1}", 
@@ -1599,7 +1599,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
 		try {
 			notificationHandler.setCommand(ISVNNotifyListener.Command.INFO);
             
-			String target = fileToSVNPath(path, true);
+			String target = fileToSVNPath(path, false);
 			notificationHandler.logCommandLine("info "+target);
 			File baseDir = SVNBaseDir.getBaseDir(path);
 			notificationHandler.setBaseDir(baseDir);
@@ -1658,7 +1658,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
         try {
             notificationHandler.setCommand(ISVNNotifyListener.Command.SWITCH);
             
-            String target = fileToSVNPath(path, true);
+            String target = fileToSVNPath(path, false);
             String commandLine = "switch "+url+" "+target+" "+"-r"+revision.toString();
             if (!recurse) {
             	commandLine += " -N";

@@ -194,8 +194,16 @@ public abstract class SVNNotificationHandler {
 		}
     }
     
+    private File getAbsoluteFile(String path) {
+		File f = new File(path);
+		if (!f.isAbsolute()) {
+			f = new File(baseDir,path);
+		}
+		return f;
+    }
+    
     public void notifyListenersOfChange(String path) {
-		File f = getCanonicalFile(path);
+		File f = getAbsoluteFile(path);
 		if (f == null) {
 			// this should not happen
 			logMessage("Warning : invalid path :"+path);
@@ -220,7 +228,7 @@ public abstract class SVNNotificationHandler {
     }
     
     public void notifyListenersOfChange(String path, SVNNodeKind kind) {
-		File f = getCanonicalFile(path);
+		File f = getAbsoluteFile(path);
 		if (f == null) {
 			// this should not happen
 			logMessage("Warning : invalid path :"+path);
