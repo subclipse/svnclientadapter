@@ -45,11 +45,27 @@
     <mkdir dir="${build.lib.dir}" />
     <jar jarfile="${build.lib.dir}/svnClientAdapter.jar"
          basedir="${build.classes.dir}"
-	 includes="**/*.class"
-	 excludes="**/*Test*.class">
+         includes="**/*.class"
+         excludes="**/*Test*.class">
     </jar>
   </target>
 
+  <!-- ================================================================= -->
+  <!-- make distribution                                                 -->
+  <!-- ================================================================= -->
+  <target name="makeDistrib" depends="clean,svnClientAdapter.jar" description="make binary distribution">
+    <mkdir dir="${build.distrib.dir}"/>
+	<mkdir dir="${build.distrib.dir}/lib"/>
+	<copy file="readme.txt" todir="${build.distrib.dir}"/>
+	<copy file="changelog.txt" todir="${build.distrib.dir}"/>
+	<copy file="svnjavahl.dll" todir="${build.distrib.dir}"/>
+	<copy file="libeay32.dll" todir="${build.distrib.dir}"/>
+	<copy file="ssleay32.dll" todir="${build.distrib.dir}"/>
+	<copy file="libdb42.dll" todir="${build.distrib.dir}"/>
+	<copy file="lib/svnjavahl.jar" todir="${build.distrib.dir}/lib"/>
+	<copy file="${build.lib.dir}/svnClientAdapter.jar" todir="${build.distrib.dir}/lib"/>
+	<zip destfile="${build.dir}/svnClientAdapter ${svnClientAdapter.version}.zip" basedir="${build.distrib.dir}"/>
+  </target>
 
   <!-- create all jar files -->
   <target name="all" depends="svnClientAdapter.jar">

@@ -9,6 +9,9 @@ svnClientAdapter is easier to use than SVNClient class and has more features.
 
 How to use it :
 =============
+You will need to add svnClientAdapter.jar in your classpath. If you wish to use jni client (recommanded), you will need svnjavahl.jar in your
+classpath too.
+
 
 // first create the SVNClient from factory
 // SVNClientAdapterFactory.JAVAHL_CLIENT to use JNI client (recommanded)
