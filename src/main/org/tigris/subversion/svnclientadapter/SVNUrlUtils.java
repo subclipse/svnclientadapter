@@ -22,7 +22,13 @@ import java.net.MalformedURLException;
  */
 public class SVNUrlUtils {
 
-    private static SVNUrl getCommonRootUrl(SVNUrl url1, SVNUrl url2) {
+    /**
+     * get the common root url for given urls
+     * @param url1
+     * @param url2
+     * @return
+     */
+    public static SVNUrl getCommonRootUrl(SVNUrl url1, SVNUrl url2) {
         if ( (!url1.getProtocol().equals(url2.getProtocol())) ||
              (!url1.getHost().equals(url2.getHost())) ||
              (url1.getPort() != url2.getPort()) ) {
@@ -51,7 +57,6 @@ public class SVNUrlUtils {
      * @return
      */
     public static SVNUrl getCommonRootUrl(SVNUrl urls[]) {
-        int max = 0;
         SVNUrl commonRoot = urls[0];
         for (int i = 0; i < urls.length; i++) {
             commonRoot = getCommonRootUrl(commonRoot, urls[i]);
