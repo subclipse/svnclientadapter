@@ -99,7 +99,11 @@ public class SVNStatusUnversioned implements ISVNStatus {
 		return null;
 	}
 	public SVNStatusKind getTextStatus() {
-		return SVNStatusKind.UNVERSIONED;
+        if (isIgnored) {
+        	return SVNStatusKind.IGNORED;
+        } else {
+        	return SVNStatusKind.UNVERSIONED;
+        }
 	}
 	
 	public SVNStatusKind getPropStatus() {
