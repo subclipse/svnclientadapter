@@ -1,2 +1,3 @@
+* 0.8.6 - modifications to command line interface. Should work better now on Linux
 * 0.8.5 - 
 * 0.1.0 - Initial Release
