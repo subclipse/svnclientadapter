@@ -62,7 +62,12 @@ public class JavaSvnStatus implements ISVNStatus {
 
         this.lastChangedRevision = SVNProperty.longValue((String) properties.get(SVNProperty.COMMITTED_REVISION));
 
-        this.lastChangedDate = TimeUtil.parseDate((String) properties.get(SVNProperty.COMMITTED_DATE));
+        String lastChangedDateString = (String) properties.get(SVNProperty.COMMITTED_DATE);
+        if (lastChangedDateString != null) {
+            this.lastChangedDate = TimeUtil.parseDate(lastChangedDateString);
+        } else {
+            this.lastChangedDate = null;
+        }
         
         this.lastCommitAuthor = (String) properties.get(SVNProperty.LAST_AUTHOR);        
         
