@@ -72,19 +72,20 @@ import org.tigris.subversion.javahl.SVNClient;
 import org.tigris.subversion.javahl.SVNClientInterface;
 import org.tigris.subversion.javahl.SVNClientSynchronized;
 import org.tigris.subversion.javahl.Status;
+import org.tigris.subversion.svnclientadapter.ISVNAnnotations;
 import org.tigris.subversion.svnclientadapter.ISVNClientAdapter;
 import org.tigris.subversion.svnclientadapter.ISVNDirEntry;
 import org.tigris.subversion.svnclientadapter.ISVNLogMessage;
 import org.tigris.subversion.svnclientadapter.ISVNNotifyListener;
 import org.tigris.subversion.svnclientadapter.ISVNProperty;
 import org.tigris.subversion.svnclientadapter.ISVNStatus;
-import org.tigris.subversion.svnclientadapter.SVNAnnotations;
 import org.tigris.subversion.svnclientadapter.SVNBaseDir;
 import org.tigris.subversion.svnclientadapter.SVNClientException;
 import org.tigris.subversion.svnclientadapter.SVNKeywords;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
 import org.tigris.subversion.svnclientadapter.SVNStatusUnversioned;
 import org.tigris.subversion.svnclientadapter.SVNUrl;
+import org.tigris.subversion.svnclientadapter.commandline.CmdLineAnnotations;
 
 /**
  * An adapter for SVNClient. Easier and safer to use than SVNClient
@@ -1430,35 +1431,55 @@ public class JhlClientAdapter implements ISVNClientAdapter {
         diff(url,oldUrlRevision,url,newUrlRevision,outFile,recurse);                     
     }
 
-    /**
-     * Output the content of specified files or URLs with revision and 
-     * author information in-line. 
-     */
-    public SVNAnnotations blame(SVNUrl url, SVNRevision revisionStart, SVNRevision revisionEnd)
-        throws SVNClientException
-    {
+    private ISVNAnnotations annotate(String target, SVNRevision revisionStart, SVNRevision revisionEnd)
+    	throws SVNClientException
+	{
         try {
-            byte annotations[];
-            notificationHandler.setCommand(18);
+            notificationHandler.setCommand(ISVNNotifyListener.Command.ANNOTATE);
             if(revisionStart == null)
                 revisionStart = new SVNRevision.Number(1);
             if(revisionEnd == null)
                 revisionEnd = SVNRevision.HEAD;
-            String target = url.toString();
             String commandLine = "blame ";
             if(revisionEnd != SVNRevision.HEAD || !revisionStart.equals(new SVNRevision.Number(1)))
                 commandLine = commandLine + "-r " + revisionStart.toString() + ":" + revisionEnd.toString() + " ";
             commandLine = commandLine + target.toString();
             notificationHandler.logCommandLine(commandLine);
 			notificationHandler.setBaseDir();
-            annotations = svnClient.blame(target, JhlConverter.convert(revisionStart), JhlConverter.convert(revisionEnd));
-            return new SVNAnnotations(annotations);
+			
+			// this blame method does not seem to work ... 
+//			JhlAnnotations annotations = new JhlAnnotations();
+//            svnClient.blame(target, JhlConverter.convert(revisionStart), JhlConverter.convert(revisionEnd), annotations);
+			
+			byte[] annotationBytes = svnClient.blame(target, JhlConverter.convert(revisionStart), JhlConverter.convert(revisionEnd));
+            return new CmdLineAnnotations(annotationBytes,"\n");
         } catch (ClientException e) { 
             notificationHandler.logException(e);
             throw new SVNClientException(e);
         }
+
+	}
+    
+    /**
+     * Output the content of specified url with revision and 
+     * author information in-line. 
+     */
+    public ISVNAnnotations annotate(SVNUrl url, SVNRevision revisionStart, SVNRevision revisionEnd)
+        throws SVNClientException
+    {
+    	return annotate(url.toString(), revisionStart, revisionEnd);
     }
-        
+
+    /**
+     * Output the content of specified file with revision and 
+     * author information in-line. 
+     */
+    public ISVNAnnotations annotate(File file, SVNRevision revisionStart, SVNRevision revisionEnd)
+        throws SVNClientException
+    {
+    	return annotate(fileToSVNPath(file, true), revisionStart, revisionEnd);
+    }    
+    
     
     /**
      * Remove 'conflicted' state on working copy files or directories

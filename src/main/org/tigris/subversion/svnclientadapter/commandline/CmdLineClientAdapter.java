@@ -68,13 +68,13 @@ import java.util.List;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
+import org.tigris.subversion.svnclientadapter.ISVNAnnotations;
 import org.tigris.subversion.svnclientadapter.ISVNClientAdapter;
 import org.tigris.subversion.svnclientadapter.ISVNDirEntry;
 import org.tigris.subversion.svnclientadapter.ISVNLogMessage;
 import org.tigris.subversion.svnclientadapter.ISVNNotifyListener;
 import org.tigris.subversion.svnclientadapter.ISVNProperty;
 import org.tigris.subversion.svnclientadapter.ISVNStatus;
-import org.tigris.subversion.svnclientadapter.SVNAnnotations;
 import org.tigris.subversion.svnclientadapter.SVNBaseDir;
 import org.tigris.subversion.svnclientadapter.SVNClientException;
 import org.tigris.subversion.svnclientadapter.SVNKeywords;
@@ -1083,17 +1083,42 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 		return currentKeywords;
 	}
 
+	private ISVNAnnotations annotate(String target, SVNRevision revisionStart, SVNRevision revisionEnd) throws SVNClientException {
+        try {
+            notificationHandler.setCommand(ISVNNotifyListener.Command.ANNOTATE);
+            if(revisionStart == null)
+                revisionStart = new SVNRevision.Number(1);
+            if(revisionEnd == null)
+                revisionEnd = SVNRevision.HEAD;
+
+            String annotations = _cmd.annotate(target,toString(revisionStart),toString(revisionEnd));
+            
+            return new CmdLineAnnotations(annotations,Helper.NEWLINE);
+		} catch (CmdLineException e) {
+			throw SVNClientException.wrapException(e);
+		}
+	}
+	
     /*
      * (non-Javadoc)
      * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#blame(org.tigris.subversion.svnclientadapter.SVNUrl, org.tigris.subversion.svnclientadapter.SVNRevision, org.tigris.subversion.svnclientadapter.SVNRevision)
      */
-    public SVNAnnotations blame(SVNUrl url, SVNRevision revisionStart, SVNRevision revisionEnd)
+    public ISVNAnnotations annotate(SVNUrl url, SVNRevision revisionStart, SVNRevision revisionEnd)
         throws SVNClientException
     {
-        // TODO : implement
-        return null;
+    	return annotate(toString(url), revisionStart, revisionEnd);
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#annotate(java.io.File, org.tigris.subversion.svnclientadapter.SVNRevision, org.tigris.subversion.svnclientadapter.SVNRevision)
+     */
+    public ISVNAnnotations annotate(File file, SVNRevision revisionStart, SVNRevision revisionEnd)
+        throws SVNClientException
+    {
+        return annotate(toString(file), revisionStart, revisionEnd);
+    }
+    
 	/*
 	 * (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getProperties(java.io.File)

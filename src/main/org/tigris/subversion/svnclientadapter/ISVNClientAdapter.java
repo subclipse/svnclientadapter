@@ -534,17 +534,19 @@ public interface ISVNClientAdapter {
     public SVNKeywords removeKeywords(File path, SVNKeywords keywords) throws SVNClientException;
 
     /**
-     * Output the content of specified files or URLs with revision and author 
-     * information in-line. 
-     * @param svnurl
-     * @param svnrevision
-     * @param svnrevision1
-     * @return
-     * @throws SVNClientException
+     * Output the content of specified url with revision and 
+     * author information in-line. 
      */
-    public abstract SVNAnnotations blame(SVNUrl svnurl, SVNRevision revisionStart, SVNRevision revisionEnd)
+    public ISVNAnnotations annotate(SVNUrl url, SVNRevision revisionStart, SVNRevision revisionEnd)
         throws SVNClientException;
-        
+
+    /**
+     * Output the content of specified file with revision and 
+     * author information in-line. 
+     */
+    public ISVNAnnotations annotate(File file, SVNRevision revisionStart, SVNRevision revisionEnd)
+        throws SVNClientException;
+    
     /**
      * Get all the properties for the given file or dir
      * @param path

@@ -142,13 +142,23 @@ public class SvnCommandLine extends CommandLine {
 	}
 
 	private ArrayList addAuthInfo(ArrayList arguments) {
-		if (user != null && pass != null && user.length() > 0) {
+		boolean addNonInteractive = false;
+		
+		if (user != null && user.length() > 0) {
 			arguments.add("--username");
 			arguments.add(user);
+			addNonInteractive = true;
+		}
+		if (pass != null && pass.length() > 0) {
 			arguments.add("--password");
 			arguments.add(pass);
-			arguments.add("--non-interactive");			
+			addNonInteractive = true;
 		}
+
+		if (addNonInteractive) {
+			arguments.add("--non-interactive");
+		}
+
 		return arguments;
 	}
 
@@ -723,6 +733,26 @@ public class SvnCommandLine extends CommandLine {
 		return execString(args,false);
 	}
 
+	/**
+	 * Output the content of specified files or URLs with revision and 
+	 * author information in-line.
+	 * @param path
+	 * @param revisionStart
+	 * @param revisionEnd
+	 * @return
+	 * @throws CmdLineException
+	 */
+	String annotate(String path,String revisionStart, String revisionEnd) throws CmdLineException {
+		setCommand(ISVNNotifyListener.Command.ANNOTATE, false);
+		ArrayList args = new ArrayList();
+		args.add("annotate");
+		args.add(path);
+		args.add("-r");
+		args.add(validRev(revisionStart)+":"+validRev(revisionEnd));
+		addAuthInfo(args);
+		return execString(args,false);
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.commandline.CommandLine#notifyFromSvnOutput(java.lang.String)
