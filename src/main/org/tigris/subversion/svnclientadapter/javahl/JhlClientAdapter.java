@@ -329,11 +329,15 @@ public class JhlClientAdapter implements ISVNClientAdapter {
      */
     public ISVNStatus getSingleStatus(File path) 
             throws SVNClientException {
+        if (!path.exists()) {
+            return null; // resource does not exist : we return null
+        }
         notificationHandler.setCommand(ISVNNotifyListener.Command.STATUS);
         String filePathSVN = fileToSVNPath(path, true);
         notificationHandler.logCommandLine("status -N "+filePathSVN);
         try {
-            return new JhlStatus(svnClient.singleStatus(filePathSVN, false));
+            Status status = svnClient.singleStatus(filePathSVN, false);
+            return new JhlStatus(status);                
         } catch (ClientException e) {
             if (e.getAprError() == SVN_ERR_WC_NOT_DIRECTORY) {
                 // when there is no .svn dir, an exception is thrown ...

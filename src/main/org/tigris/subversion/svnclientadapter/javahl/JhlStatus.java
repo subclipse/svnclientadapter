@@ -73,7 +73,8 @@ public class JhlStatus implements ISVNStatus {
 	private Status _s;
 
 	public JhlStatus(Status status) {
-		super();
+		// note that status.textStatus must be different than 0 (the resource must exist)
+        super();
 		_s = status;
 	}
 

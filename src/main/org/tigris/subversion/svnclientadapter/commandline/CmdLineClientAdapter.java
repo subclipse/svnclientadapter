@@ -171,14 +171,19 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 	 * @see org.tigris.subversion.subclipse.client.ISVNClientAdapter#getSingleStatus(java.io.File)
 	 */
 	public ISVNStatus getSingleStatus(File file) throws SVNClientException {
-		try {
+        if (!file.exists()) {
+            return null;
+        }
+        
+        try {
 			String path = toString(file);
 			String infoLine = _cmd.info(path);
 			String statusLine = _cmd.status(path, false);
-			return new CmdLineStatus(statusLine, infoLine);
+            
+            return new CmdLineStatus(statusLine, infoLine); 
 		} catch (CmdLineException e) {
             if (e.getMessage().indexOf("is not a working copy") >= 0) {
-				return new CmdLineStatusUnversioned();
+			    return new CmdLineStatusUnversioned();
 			}
 			throw SVNClientException.wrapException(e);
 		}
