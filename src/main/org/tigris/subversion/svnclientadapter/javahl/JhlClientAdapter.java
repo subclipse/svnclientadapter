@@ -611,7 +611,7 @@ public class JhlClientAdapter extends AbstractClientAdapter {
 			notificationHandler.setCommand(ISVNNotifyListener.Command.COPY);
 			String src = srcUrl.toString();
 			String dest = destUrl.toString();
-			notificationHandler.logCommandLine("copy " + src + " " + dest);
+			notificationHandler.logCommandLine("copy -r" + revision.toString() + " " + src + " " + dest);
 			notificationHandler.setBaseDir();
 			svnClient.copy(src, dest, message, JhlConverter.convert(revision));
 		} catch (ClientException e) {
