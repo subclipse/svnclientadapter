@@ -432,11 +432,15 @@ public class SvnCommandLine extends CommandLine {
 	 * @param url Remote URL.
 	 * @param revision Revision to use. can be <tt>null</tt>
 	 *   Defaults to <tt>HEAD</tt>.
+	 * @param recursive Should this operation recurse into sub-directories
 	 */
-	String list(String url, String revision) throws CmdLineException {
+	String list(String url, String revision, boolean recursive) throws CmdLineException {
         setCommand(ISVNNotifyListener.Command.LS, false);
 		ArrayList args = new ArrayList();
 		args.add("list");
+		if (recursive) {
+			args.add("-R");
+		}
 		args.add("-v");
 		args.add("-r");
 		args.add(revision);

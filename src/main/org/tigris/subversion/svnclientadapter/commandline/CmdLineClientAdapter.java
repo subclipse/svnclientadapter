@@ -177,13 +177,13 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
         return getStatus(new File[] {path})[0];
     }
 
-    private ISVNDirEntry[] getList(String target, SVNRevision rev, boolean flag)
+    private ISVNDirEntry[] getList(String target, SVNRevision rev, boolean recursive)
 		throws SVNClientException {
 		List entries = new java.util.LinkedList();
 	
 		String listLine;
 		try {
-			listLine = _cmd.list(target, toString(rev));
+			listLine = _cmd.list(target, toString(rev), recursive);
 	
 			StringTokenizer st = new StringTokenizer(listLine, Helper.NEWLINE);
 			while (st.hasMoreTokens()) {
