@@ -76,9 +76,17 @@ public class SVNUrl {
     private String[] segments;
 
     public SVNUrl(String svnUrl) throws MalformedURLException {
-        this.svnUrl = svnUrl;
         if(svnUrl == null)
             throw new MalformedURLException("Svn url cannot be null. Is this  a versioned resource?");
+        this.svnUrl = svnUrl;
+        
+        // we make sure the url does not end with "/" because
+        // in svn 1.0.2 (at least) if a non-canonical path is passed to 
+        // svn_path_join(base, component, pool), the assertion "assert (is_canonical (base, blen));" will fail
+        if (svnUrl.endsWith("/")) { // remove ending "/" if any
+        	svnUrl = svnUrl.substring(0,svnUrl.length()-1);
+		}
+        
         parseUrl();
     }
 
@@ -149,7 +157,8 @@ public class SVNUrl {
     		if (url.endsWith("/")) { // remove ending "/" if any
     			url = url.substring(0,url.length()-1);
     		}
-    		return new SVNUrl(url.substring(0,url.lastIndexOf('/')+1));
+    		
+    		return new SVNUrl(url.substring(0,url.lastIndexOf('/')));
     	} catch (MalformedURLException e) {
     		return null;
     	}

@@ -38,9 +38,9 @@ public class SVNUrlTest extends TestCase
     
     public void testGetParent() throws Exception {
 		SVNUrl url1 = new SVNUrl("http://svn.collab.net/repos/subclipse/myfile.txt");
-		assertEquals("http://svn.collab.net/repos/subclipse/",url1.getParent().toString());
-		assertEquals("http://svn.collab.net/repos/",url1.getParent().getParent().toString());		  		
-		assertEquals("http://svn.collab.net/",url1.getParent().getParent().getParent().toString());
+		assertEquals("http://svn.collab.net/repos/subclipse",url1.getParent().toString());
+		assertEquals("http://svn.collab.net/repos",url1.getParent().getParent().toString());		  		
+		assertEquals("http://svn.collab.net",url1.getParent().getParent().getParent().toString());
 		assertEquals(null,url1.getParent().getParent().getParent().getParent());
     }
     
@@ -54,4 +54,5 @@ public class SVNUrlTest extends TestCase
 		
 		assertEquals(3, url1.getParent().getSegments().length);
     }
+    
 }
