@@ -78,9 +78,13 @@ public class AnnotateInputStream extends InputStream {
         currentLineNumber = 0;
         currentPos = 0;
         
-        int available = 0;
-        for (int i = 0; i < annotations.size();i++) {
-        	available += annotations.getLine(i).length()+1; // +1 for \n
+        available = 0;
+        int annotationsSize = annotations.size();
+        for (int i = 0; i < annotationsSize;i++) {
+        	available += annotations.getLine(i).length(); 
+        	if (i != annotationsSize-1) {
+        		available++; // +1 for \n
+        	}
         }
     }
     
