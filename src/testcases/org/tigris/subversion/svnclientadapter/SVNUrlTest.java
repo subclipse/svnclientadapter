@@ -5,6 +5,11 @@ import java.net.MalformedURLException;
 import junit.framework.TestCase;
 
 import org.tigris.subversion.svnclientadapter.SVNUrl;
+
+/**
+ * This class tests SVNUrl
+ * Note that tests for SVNClientAdapter itself are in svnant 
+ */
 public class SVNUrlTest extends TestCase
 {
 
@@ -30,5 +35,11 @@ public class SVNUrlTest extends TestCase
        SVNUrl https = new SVNUrl("HTTPS://svn.collab.net/repos/subclipse/");
        SVNUrl http = new SVNUrl("HTTP://svn.collab.net/repos/subclipse/");
     }
-
+    
+    public void testGetFile() throws Exception {
+       SVNUrl url1 = new SVNUrl("http://svn.collab.net/repos/subclipse/myfile.txt");
+       assertEquals("myfile.txt",url1.getFile());
+       SVNUrl url2 = new SVNUrl("http://svn.collab.net/repos/subclipse/");
+       assertEquals("",url2.getFile());
+    }
 }

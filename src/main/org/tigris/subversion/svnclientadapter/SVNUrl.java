@@ -113,4 +113,12 @@ public class SVNUrl {
     public String toString() {
         return get();
     }
+    
+    /**
+     * @return the name of the file in the url
+     */
+    public String getFile() {
+        int i = svnUrl.lastIndexOf('/');
+        return svnUrl.substring(i+1);
+    }
 }
