@@ -142,22 +142,17 @@ public class SvnCommandLine extends CommandLine {
 	}
 
 	private ArrayList addAuthInfo(ArrayList arguments) {
-		boolean addNonInteractive = false;
-		
 		if (user != null && user.length() > 0) {
 			arguments.add("--username");
 			arguments.add(user);
-			addNonInteractive = true;
-		}
-		if (pass != null && pass.length() > 0) {
+        }
+
+        if (pass != null && pass.length() > 0) {
 			arguments.add("--password");
 			arguments.add(pass);
-			addNonInteractive = true;
 		}
 
-		if (addNonInteractive) {
-			arguments.add("--non-interactive");
-		}
+		arguments.add("--non-interactive");
 
 		return arguments;
 	}
