@@ -31,6 +31,7 @@ import java.io.IOException;
  * programmation/sources/test/essai8
  * 
  * @author Cedric Chabanois (cchab at tigris.org)
+ * @author John M Flinchbaugh (john at hjsoft.com)
  */
 public class SVNBaseDir {
 
@@ -78,17 +79,19 @@ public class SVNBaseDir {
             if (!part1.equals(part2)) {
                 break;
             }
-            if (commonsPart.length() == 0) {
-                commonsPart.append(part1);
-            } else {
+			
+            if (i > 0) {
                 commonsPart.append(File.separatorChar);
-                commonsPart.append(part1);
             }
+            
+            commonsPart.append(part1);
         }
+        
         if (commonsPart.length() == 0) {
             return null; // the two files have nothing in common (one on disk c:
                          // and the other on d: for ex)
         }
+        
         return new File(commonsPart.toString());
     }
 
