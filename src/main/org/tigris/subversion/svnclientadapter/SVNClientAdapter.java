@@ -467,15 +467,20 @@ public class SVNClientAdapter {
 	 * @param message
 	 * @throws ClientException
 	 */
-	public void remove(URL url, String message) throws ClientException {
+	public void remove(URL url[], String message) throws ClientException {
         try {
             notificationHandler.setCommand(ISVNNotifyListener.COMMAND_REMOVE);
 
-            String src = urlToSVNUrl(url);
-            notificationHandler.setCommandLine(
-                    "delete -m \""+message+"\" "+src);
-
-		    svnClient.remove(new String[] { src },message,false);
+            String commandLine = "delete -m \""+message+"\"";
+            
+            String targets[] = new String[url.length];
+            for (int i = 0; i < url.length;i++) {
+                targets[i] = urlToSVNUrl(url[i]); 
+                commandLine += " "+targets[i];
+            }
+            notificationHandler.setCommandLine(commandLine);
+		    svnClient.remove(targets,message,false);
+            
         } catch (ClientException e) {
             notificationHandler.setException(e);
             throw e;
@@ -492,15 +497,21 @@ public class SVNClientAdapter {
 	 * @param force
 	 * @throws ClientException
 	 */
-	public void remove(File file, boolean force) throws ClientException {
+	public void remove(File file[], boolean force) throws ClientException {
         try {
             notificationHandler.setCommand(ISVNNotifyListener.COMMAND_REMOVE);
-            String src = fileToSVNPath(file);
-            notificationHandler.setCommandLine(
-                            "delete "+
-                            (force?" --force ":"")+
-                            src);        
-            svnClient.remove(new String[] { src },"",force);
+            
+            String commandLine = "delete"+(force?" --force":"");
+            String targets[] = new String[file.length];
+            
+            for (int i = 0; i < file.length;i++) {
+                targets[i] = fileToSVNPath(file[i]);
+                commandLine += " "+targets[i];
+            }
+            
+            notificationHandler.setCommandLine(commandLine);
+   
+            svnClient.remove(targets,"",force);
         } catch (ClientException e) {
             notificationHandler.setException(e);
             throw e;
