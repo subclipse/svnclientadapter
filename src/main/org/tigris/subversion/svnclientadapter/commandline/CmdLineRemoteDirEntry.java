@@ -60,6 +60,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 import org.tigris.subversion.svnclientadapter.ISVNDirEntry;
 import org.tigris.subversion.svnclientadapter.SVNNodeKind;
@@ -71,7 +72,8 @@ import org.tigris.subversion.svnclientadapter.SVNRevision;
  */
 public class CmdLineRemoteDirEntry implements ISVNDirEntry {
 
-	private static DateFormat df = new SimpleDateFormat("MMM dd hh:mm");
+	private static DateFormat df1 = new SimpleDateFormat("MMM dd hh:mm", Locale.US);
+    private static DateFormat df2 = new SimpleDateFormat("MMM dd  yyyy", Locale.US);
 
 	private String path;
 	private URL url;
@@ -84,6 +86,9 @@ public class CmdLineRemoteDirEntry implements ISVNDirEntry {
 	 * @param line
 	 */
 	public CmdLineRemoteDirEntry(String baseUrl, String line) {
+
+        // see ls-cmd.c for the format used
+        
 		int last = line.length() - 1;
 		boolean folder = ('/' == line.charAt(last));
 
@@ -99,8 +104,18 @@ public class CmdLineRemoteDirEntry implements ISVNDirEntry {
 		nodeKind = (folder) ? SVNNodeKind.DIR : SVNNodeKind.FILE;
 		lastCommitAuthor = line.substring(9, 18).trim();
 
-		try {
-			lastChangedDate = df.parse(line.substring(28, 39));
+        String dateString = line.substring(28, 40);
+        
+        try {
+            // two formats are possible (see ls-cmd.c) depending on the numbers of days between current date
+            // and lastChangedDate
+            if (dateString.indexOf(':') != -1) {
+                lastChangedDate = df1.parse(dateString); // something like "Sep 24 18:01"
+            }
+            else
+            {
+                lastChangedDate = df2.parse(dateString); // something like "Mar 01  2003"
+            }
 		} catch (ParseException e1) {
 			e1.printStackTrace();
 		}
