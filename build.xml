@@ -81,6 +81,9 @@
 	<copy file="${build.lib.dir}/svnClientAdapter.jar" todir="${build.distrib.dir}/lib"/>
     <copy todir="${build.distrib.dir}/javadoc">
       <fileset dir="${build.javadoc.dir}"/>
+    </copy>
+    <copy todir="${build.distrib.dir}/samples">
+      <fileset dir="${src.samples.dir}"/>
     </copy>	
 	<zip destfile="${build.dir}/svnClientAdapter ${svnClientAdapter.version}.zip" basedir="${build.distrib.dir}"/>
   </target>

@@ -13,53 +13,7 @@ How to use it :
 You will need to add svnClientAdapter.jar in your classpath. If you wish to use jni client (recommanded), you will need svnjavahl.jar in your
 classpath too.
 
-
-// first create the SVNClient from factory
-// SVNClientAdapterFactory.JAVAHL_CLIENT to use JNI client (recommanded)
-// SVNClientAdapterFactory.COMMANDLINE_CLIENT to use command line client
-ISVNClientAdapter svnClient = SVNClientAdapterFactory.createSVNClient(SVNClientAdapterFactory.JAVAHL_CLIENT);
-
-// set username and password if necessary
-svnClient.setUsername(username);
-svnClient.setPassword(password);
-
-// add a listener if you wish
-svnClient.addNotifyListener(new ISVNNotifyListener {
-    public void setCommand(int cmd) {
-        // the command that is being executed. See ISVNNotifyListener.Command
-		// ISVNNotifyListener.Command.ADD for example 
-    }
-    public void logMessage(String message) {
-		
-		System.out.println(message);
-	}
-
-    public void logCommandLine(String message) {
-		// the command line used
-        System.out.println(message);
-    }
-
-    public void logError(String message) {
-		// when an error occurs
-        System.out.println("error :" +message);
-    }
-    
-    public void logCompleted(String message) {
-		// when command completed
-        System.out.println(message);
-    }
-
-    public void onNotify(String path, SVNNodeKind nodeKind) {
-        // each time the status of a file or directory changes (file added, reverted ...)
-		// nodeKind is SVNNodeKind.FILE or SVNNodeKind.DIR
-    }
-});
-
-// use the svn commands 
-svnClient.addFile(new File("myFile.txt");
+See the sample to see how to use it
 
 
-When you use javahl client, you can use the listener JhlNotificationHandler to have the same output than svn.
-
-
-cchabanois@ifrance.com
+cchabanois at no-log.org 
