@@ -71,8 +71,8 @@ import org.tigris.subversion.svnclientadapter.commandline.parser.SvnOutputParser
  * @author Cédric Chabanois (cchabanois at no-log.org)
  */
 public class SvnCommandLine extends CommandLine {
-	private static String user;
-	private static String pass;	
+	private String user;
+	private String pass;	
     private SvnOutputParser svnOutputParser = new SvnOutputParser();
     private long revision = Revision.SVN_INVALID_REVNUM;
     private boolean parseSvnOutput = false;
