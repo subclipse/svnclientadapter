@@ -126,7 +126,7 @@ public class SVNUrl {
     public String get() {
         String result = getProtocol()+"://"+getHost(); 
         if (getPort() != getDefaultPort(getProtocol())) {
-            result += ':'+getPort();
+            result += ":"+getPort();
         }
         String[] segments = getPathSegments();
         for (int i = 0; i < segments.length;i++) {
