@@ -29,7 +29,7 @@ import org.tigris.subversion.svnclientadapter.SVNUrl;
  */
 public class TestsConfig {
 
-    public int clientType;    
+    public String clientType;    
     
     /**
      * common root URL for all tests. Can be set by system property "test.rooturl". 
@@ -68,14 +68,8 @@ public class TestsConfig {
     
     
     private TestsConfig() throws SVNClientException {
-        String clientTypeStr = System.getProperty("test.clientType");
-        if ("command".equalsIgnoreCase(clientTypeStr)) {
-            clientType = SVNClientAdapterFactory.COMMANDLINE_CLIENT;
-            System.out.println("Using command line interface ...");
-        } else {
-            clientType = SVNClientAdapterFactory.JAVAHL_CLIENT;
-            System.out.println("Using javahl interface ...");
-        }
+        clientType = System.getProperty("test.clientType");
+        System.out.println("Using "+clientType+" factory ...");
         
         rootDirectoryName = System.getProperty("test.rootdir");
         if (rootDirectoryName == null)

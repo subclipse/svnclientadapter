@@ -9,7 +9,7 @@ public class SVNCmdLineTests extends TestSuite {
     }
 
     public static TestSuite suite() {
-        System.setProperty("test.clientType","command");
+        System.setProperty("test.clientType","commandline");
         
         TestSuite testSuite = new SVNCmdLineTests("Test group");
 

@@ -25,6 +25,8 @@ import junit.framework.TestCase;
 import org.tigris.subversion.svnclientadapter.ISVNClientAdapter;
 import org.tigris.subversion.svnclientadapter.SVNClientAdapterFactory;
 import org.tigris.subversion.svnclientadapter.SVNClientException;
+import org.tigris.subversion.svnclientadapter.commandline.CmdLineClientAdapterFactory;
+import org.tigris.subversion.svnclientadapter.javahl.JhlClientAdapterFactory;
 import org.tigris.subversion.svnclientadapter.utils.SvnServer;
 
 /**
@@ -57,6 +59,18 @@ public abstract class SVNTest extends TestCase
     
     private SvnServer svnServer;
     
+    static {
+        try {
+            JhlClientAdapterFactory.setup();
+        } catch (SVNClientException e) {
+            // can't register this factory
+        }
+        try {
+            CmdLineClientAdapterFactory.setup();
+        } catch (SVNClientException e1) {
+            // can't register this factory
+        }
+    }
 
     /**
      * Standard initialization of one test
