@@ -741,7 +741,6 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
             }
             
 			String value = new String(bytes);
-			value = new StringTokenizer(value, Helper.NEWLINE).nextToken();
 
 			return new CmdLineProperty(propertyName, value, path, bytes);
 		} catch (CmdLineException e) {
