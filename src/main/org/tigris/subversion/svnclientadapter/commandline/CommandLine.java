@@ -96,6 +96,7 @@ class CommandLine {
 	private static String CMD_PROPGET = "propget {0} {1}";
 	private static String CMD_PROPSET = "propset {0} \"{1}\" {2}";
 	private static String CMD_PROPSET_FILE = "propset {0} -F \"{1}\" {2}";
+    private static String CMD_PROPDEL = "propdel {0} {1}";
 	private static String CMD_REVERT = "revert {0} {1}";
 	private static String CMD_STATUS = "status -v -N {0} {1}";
 	private static String CMD_RECURSIVE_STATUS = "status -v {0}";
@@ -415,6 +416,19 @@ class CommandLine {
 		throws CmdLineException {
 		execVoid(MessageFormat.format(CMD_PROPSET, new String[] { propName, propValue, target }));
 	}
+    
+    /**
+     * Remove <tt>propName</tt> from files, dirs. 
+     * 
+     * @param propName
+     * @param target
+     * @param recurse
+     * @throws CmdLineException
+     */
+    void propdel(String propName, String target, boolean recurse) throws CmdLineException {
+        execVoid(MessageFormat.format(CMD_PROPDEL, new String[] { propName, target }));
+    }
+    
 	/**
 	 * <p>
 	 * Sets a binary file as the value of a property.</p>

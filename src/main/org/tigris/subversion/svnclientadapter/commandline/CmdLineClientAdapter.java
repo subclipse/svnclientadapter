@@ -264,6 +264,10 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 		}
 	}
 
+    /*
+     * (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#copy(java.io.File, java.io.File)
+     */
 	public void copy(File srcPath, File destPath) throws SVNClientException {
 		try {
 			_cmd.copy(toString(srcPath), toString(destPath));
@@ -514,6 +518,10 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 		}
 	}
 
+    /*
+     * (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#diff(java.io.File, org.tigris.subversion.svnclientadapter.SVNRevision, java.io.File, org.tigris.subversion.svnclientadapter.SVNRevision, java.io.File, boolean)
+     */
 	public void diff(
 		File oldPath,
 		SVNRevision oldPathRevision,
@@ -533,12 +541,18 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 			recurse);
 	}
 
+    /*
+     * (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#diff(java.io.File, java.io.File, boolean)
+     */
 	public void diff(File path, File outFile, boolean recurse) throws SVNClientException {
 		diff(path, null, null, null, outFile, recurse);
 	}
-	/**
-	 * display the differences between two urls. 
-	 */
+
+    /*
+     * (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#diff(org.tigris.subversion.svnclientadapter.SVNUrl, org.tigris.subversion.svnclientadapter.SVNRevision, org.tigris.subversion.svnclientadapter.SVNUrl, org.tigris.subversion.svnclientadapter.SVNRevision, java.io.File, boolean)
+     */
 	public void diff(
 		SVNUrl oldUrl,
 		SVNRevision oldUrlRevision,
@@ -550,6 +564,10 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 		diff(toString(oldUrl), oldUrlRevision, toString(newUrl), newUrlRevision, outFile, recurse);
 	}
 
+    /*
+     * (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#diff(org.tigris.subversion.svnclientadapter.SVNUrl, org.tigris.subversion.svnclientadapter.SVNRevision, org.tigris.subversion.svnclientadapter.SVNRevision, java.io.File, boolean)
+     */
 	public void diff(
 		SVNUrl url,
 		SVNRevision oldUrlRevision,
@@ -561,13 +579,20 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 		diff(url, oldUrlRevision, url, newUrlRevision, outFile, recurse);
 	}
 
+    /*
+     * (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#propertyGet(java.io.File, java.lang.String)
+     */
 	public ISVNProperty propertyGet(File path, String propertyName) throws SVNClientException {
 		try {
 			String pathString = toString(path);
 			InputStream valueAndData = _cmd.propget(toString(path), propertyName);
-
+            
 			byte[] bytes = streamToByteArray(valueAndData, true);
-
+            if (bytes.length == 0) {
+                return null; // the property does not exist
+            }
+            
 			String value = new String(bytes);
 			value = new StringTokenizer(value, Helper.NEWLINE).nextToken();
 
@@ -579,6 +604,10 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 		}
 	}
 
+    /*
+     * (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#propertySet(java.io.File, java.lang.String, java.io.File, boolean)
+     */
 	public void propertySet(File path, String propertyName, File propertyFile, boolean recurse)
 		throws SVNClientException, IOException {
 		try {
@@ -588,11 +617,23 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 		}
 	}
 
+    /*
+     * (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#propertyDel(java.io.File, java.lang.String, boolean)
+     */
 	public void propertyDel(File path, String propertyName, boolean recurse)
 		throws SVNClientException {
-		// TODO : implement        
+            try {
+                _cmd.propdel(propertyName, toString(path), recurse);
+            } catch (CmdLineException e) {
+                throw SVNClientException.wrapException(e);
+            }        
 	}
 
+    /*
+     * (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getIgnoredPatterns(java.io.File)
+     */
 	public List getIgnoredPatterns(File path) throws SVNClientException {
 		if (!path.isDirectory())
 			return null;
@@ -628,6 +669,10 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 		setIgnoredPatterns(file, patterns);
 	}
 
+    /*
+     * (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#setIgnoredPatterns(java.io.File, java.util.List)
+     */
 	public void setIgnoredPatterns(File path, List patterns) throws SVNClientException {
 		if (!path.isDirectory())
 			return;
@@ -640,6 +685,10 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 		propertySet(path, "svn:ignore", values.toString(), false);
 	}
 
+    /*
+     * (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#mkdir(java.io.File)
+     */
 	public void mkdir(File file) throws SVNClientException {
 		try {
 			_cmd.mkdir(toString(file));
@@ -657,11 +706,19 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 		}
 	}
 
+    /*
+     * (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#doImport(java.io.File, org.tigris.subversion.svnclientadapter.SVNUrl, java.lang.String, boolean)
+     */
 	public void doImport(File path, SVNUrl url, String message, boolean recurse)
 		throws SVNClientException {
 		// TODO : implement        
 	}
 
+    /*
+     * (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#doExport(org.tigris.subversion.svnclientadapter.SVNUrl, java.io.File, org.tigris.subversion.svnclientadapter.SVNRevision, boolean)
+     */
 	public void doExport(SVNUrl srcUrl, File destPath, SVNRevision revision, boolean force)
 		throws SVNClientException {
 		try {
@@ -671,6 +728,10 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 		}
 	}
 
+    /*
+     * (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#doExport(java.io.File, java.io.File, boolean)
+     */
 	public void doExport(File srcPath, File destPath, boolean force) throws SVNClientException {
 		// TODO : test
 		try {
@@ -680,6 +741,10 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 		}
 	}
 
+    /*
+     * (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#copy(java.io.File, org.tigris.subversion.svnclientadapter.SVNUrl, java.lang.String)
+     */
 	public void copy(File srcPath, SVNUrl destUrl, String message) throws SVNClientException {
 		// TODO : test
 		try {
@@ -689,6 +754,10 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 		}
 	}
 
+    /*
+     * (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getLogMessages(java.io.File, org.tigris.subversion.svnclientadapter.SVNRevision, org.tigris.subversion.svnclientadapter.SVNRevision)
+     */
 	public ISVNLogMessage[] getLogMessages(
 		File path,
 		SVNRevision revisionStart,
@@ -776,6 +845,10 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 		return byteArray;
 	}
 
+    /*
+     * (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getKeywords(java.io.File)
+     */
 	public SVNKeywords getKeywords(File path) throws SVNClientException {
 		// copied directly from JhlClientAdapter
 		ISVNProperty prop = propertyGet(path, ISVNProperty.KEYWORDS);
@@ -788,12 +861,20 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 		return new SVNKeywords(value);
 	}
 
+    /*
+     * (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#setKeywords(java.io.File, org.tigris.subversion.svnclientadapter.SVNKeywords, boolean)
+     */
 	public void setKeywords(File path, SVNKeywords keywords, boolean recurse)
 		throws SVNClientException {
 		// copied directly from JhlClientAdapter
 		propertySet(path, ISVNProperty.KEYWORDS, keywords.toString(), recurse);
 	}
 
+    /*
+     * (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#addKeywords(java.io.File, org.tigris.subversion.svnclientadapter.SVNKeywords)
+     */
 	public SVNKeywords addKeywords(File path, SVNKeywords keywords) throws SVNClientException {
 		// copied directly from JhlClientAdapter
 		SVNKeywords currentKeywords = getKeywords(path);
@@ -812,6 +893,10 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 		return currentKeywords;
 	}
 
+    /*
+     * (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#removeKeywords(java.io.File, org.tigris.subversion.svnclientadapter.SVNKeywords)
+     */
 	public SVNKeywords removeKeywords(File path, SVNKeywords keywords) throws SVNClientException {
 		// copied directly from JhlClientAdapter
 		SVNKeywords currentKeywords = getKeywords(path);
@@ -830,6 +915,10 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 		return currentKeywords;
 	}
 
+    /*
+     * (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#blame(org.tigris.subversion.svnclientadapter.SVNUrl, org.tigris.subversion.svnclientadapter.SVNRevision, org.tigris.subversion.svnclientadapter.SVNRevision)
+     */
     public SVNAnnotations blame(SVNUrl url, SVNRevision revisionStart, SVNRevision revisionEnd)
         throws SVNClientException
     {
