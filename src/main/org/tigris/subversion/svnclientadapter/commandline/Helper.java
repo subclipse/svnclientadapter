@@ -37,6 +37,10 @@ class Helper {
 	// 2003-10-13T12:54:42.957948Z
 	private static DateFormat xmlFormat =
 		new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+	// Initialize timezone to GMT for xmlFormat
+	static {
+	    xmlFormat.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
+	}
 
 	/**
 	 * A non-instantiable class
