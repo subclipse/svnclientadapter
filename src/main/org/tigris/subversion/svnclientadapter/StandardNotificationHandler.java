@@ -54,9 +54,9 @@
  */ 
 package org.tigris.subversion.svnclientadapter;
 
-import com.qintsoft.jsvn.jni.ClientException;
-import com.qintsoft.jsvn.jni.NodeKind;
-import com.qintsoft.jsvn.jni.Notify;
+import org.tigris.subversion.javahl.ClientException;
+import org.tigris.subversion.javahl.NodeKind;
+import org.tigris.subversion.javahl.Notify;
 
 /**
  * This is the standard notification handler

@@ -54,8 +54,8 @@
  */ 
 package org.tigris.subversion.svnclientadapter;
 
-import com.qintsoft.jsvn.jni.ClientException;
-import com.qintsoft.jsvn.jni.Notify;
+import org.tigris.subversion.javahl.ClientException;
+import org.tigris.subversion.javahl.Notify;
 
 /**
  * 

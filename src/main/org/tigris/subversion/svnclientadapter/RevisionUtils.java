@@ -58,7 +58,7 @@ import java.text.ParseException;
 import java.util.Date;
 import java.util.Locale;
 
-import com.qintsoft.jsvn.jni.Revision;
+import org.tigris.subversion.javahl.Revision;
 
 /**
  * @author Cédric Chabanois 

@@ -65,15 +65,15 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import com.qintsoft.jsvn.jni.ClientException;
-import com.qintsoft.jsvn.jni.DirEntry;
-import com.qintsoft.jsvn.jni.LogMessage;
-import com.qintsoft.jsvn.jni.NodeKind;
-import com.qintsoft.jsvn.jni.PromptUserPassword;
-import com.qintsoft.jsvn.jni.PropertyData;
-import com.qintsoft.jsvn.jni.Revision;
-import com.qintsoft.jsvn.jni.SVNClient;
-import com.qintsoft.jsvn.jni.Status;
+import org.tigris.subversion.javahl.ClientException;
+import org.tigris.subversion.javahl.DirEntry;
+import org.tigris.subversion.javahl.LogMessage;
+import org.tigris.subversion.javahl.NodeKind;
+import org.tigris.subversion.javahl.PromptUserPassword;
+import org.tigris.subversion.javahl.PropertyData;
+import org.tigris.subversion.javahl.Revision;
+import org.tigris.subversion.javahl.SVNClient;
+import org.tigris.subversion.javahl.Status;
 
 /**
  * An adapter for SVNClient. Easier and safer to use than SVNClient
