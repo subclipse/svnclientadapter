@@ -54,6 +54,9 @@
  */ 
 package org.tigris.subversion.svnclientadapter;
 
+import org.tigris.subversion.svnclientadapter.commandline.CmdLineClientAdapter;
+import org.tigris.subversion.svnclientadapter.javahl.JhlClientAdapter;
+
 /**
  * Factory for SVNClientAdapter 
  *
@@ -67,9 +70,9 @@ public class SVNClientAdapterFactory {
 
     public static ISVNClientAdapter createSVNClient(int clientType) {
         if (clientType == JAVAHL_CLIENT)
-            return new org.tigris.subversion.svnclientadapter.javahl.JhlClientAdapter();
+            return new JhlClientAdapter();
         else
-            return null;
+            return new CmdLineClientAdapter();
     }
 
 }
