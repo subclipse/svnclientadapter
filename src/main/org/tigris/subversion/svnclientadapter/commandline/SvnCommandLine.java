@@ -781,7 +781,7 @@ public class SvnCommandLine extends CommandLine {
     /**
      * Update the working copy to mirror a new URL within the repository.
      */
-    String merge(String path1, String revision1, String path2, String revision2, String localPath, boolean force, boolean recurse) throws CmdLineException {
+    String merge(String path1, String revision1, String path2, String revision2, String localPath, boolean force, boolean recurse, boolean dryRun) throws CmdLineException {
         setCommand(ISVNNotifyListener.Command.MERGE, true);
         ArrayList args = new ArrayList();
         args.add("merge");
@@ -789,6 +789,8 @@ public class SvnCommandLine extends CommandLine {
         	args.add("-N");
         if (force)
         	args.add("--force");
+        if (dryRun)
+        	args.add("--dry-run");
         if (path1.equals(path2)) {
         	args.add("-r");
         	args.add(validRev(revision1) + ":" + validRev(revision2));

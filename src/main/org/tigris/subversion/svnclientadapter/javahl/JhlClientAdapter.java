@@ -1739,4 +1739,17 @@ public class JhlClientAdapter implements ISVNClientAdapter {
         }        
 
 	}
+
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#merge(org.tigris.subversion.svnclientadapter.SVNUrl, org.tigris.subversion.svnclientadapter.SVNRevision, org.tigris.subversion.svnclientadapter.SVNUrl, org.tigris.subversion.svnclientadapter.SVNRevision, java.io.File, boolean, boolean, boolean)
+     */
+    public void merge(SVNUrl path1, SVNRevision revision1, SVNUrl path2,
+            SVNRevision revision2, File localPath, boolean force,
+            boolean recurse, boolean dryRun) throws SVNClientException {
+        if (dryRun)
+            throw new SVNClientException("The --dry-run option is not currently supported in the JavaHL adapter.");
+        else
+            merge(path1, revision1, path2, revision2, localPath, force, recurse);
+    }
+    
 }

@@ -1485,4 +1485,12 @@ public class JavaSvnClientAdapter implements ISVNClientAdapter {
         throw new SVNClientException("Not implemented yet");
     }
 
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#merge(org.tigris.subversion.svnclientadapter.SVNUrl, org.tigris.subversion.svnclientadapter.SVNRevision, org.tigris.subversion.svnclientadapter.SVNUrl, org.tigris.subversion.svnclientadapter.SVNRevision, java.io.File, boolean, boolean, boolean)
+     */
+    public void merge(SVNUrl path1, SVNRevision revision1, SVNUrl path2,
+            SVNRevision revision2, File localPath, boolean force,
+            boolean recurse, boolean dryRun) throws SVNClientException {
+        notImplementedYet();
+    }
 }

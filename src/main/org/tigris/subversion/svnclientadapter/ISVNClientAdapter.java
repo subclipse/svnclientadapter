@@ -596,5 +596,21 @@ public interface ISVNClientAdapter {
     public abstract void merge(SVNUrl path1, SVNRevision revision1, SVNUrl path2,
                SVNRevision revision2, File localPath, boolean force,
                boolean recurse) throws SVNClientException;
-   
+
+
+    /**
+     * Merge changes from two paths into a new local path.
+     * @param path1         first path or url
+     * @param revision1     first revision
+     * @param path2         second path or url
+     * @param revision2     second revision
+     * @param localPath     target local path
+     * @param force         overwrite local changes
+     * @param recurse       traverse into subdirectories
+     * @param dryrun        do not update working copy
+     * @exception ClientException
+     */
+    public abstract void merge(SVNUrl path1, SVNRevision revision1, SVNUrl path2,
+               SVNRevision revision2, File localPath, boolean force,
+               boolean recurse, boolean dryRun) throws SVNClientException;    
 }
