@@ -44,6 +44,7 @@ import org.tigris.subversion.svnclientadapter.SVNInfoUnversioned;
 import org.tigris.subversion.svnclientadapter.SVNKeywords;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
 import org.tigris.subversion.svnclientadapter.SVNUrl;
+import org.tigris.subversion.svnclientadapter.SVNUrlUtils;
 import org.tmatesoft.svn.core.ISVNStatusHandler;
 import org.tmatesoft.svn.core.ISVNWorkspace;
 import org.tmatesoft.svn.core.SVNProperty;
@@ -202,17 +203,18 @@ public class JavaSvnClientAdapter implements ISVNClientAdapter {
         return null;
     }
 
-    private String getRepositoryRootPath(SVNRepository repository, SVNUrl url) throws SVNException {
+    private String getRepositoryRootPath(SVNRepository repository, SVNUrl url)
+            throws SVNException {
 
-        SVNRepositoryLocation location = SVNRepositoryLocation
-                .parseURL(url.toString());
+        SVNRepositoryLocation location = SVNRepositoryLocation.parseURL(url
+                .toString());
         String path = location.getPath();
         path = PathUtil.decode(path);
         if (repository.getRepositoryRoot() == null) {
             repository.testConnection();
         }
         String repositoryRoot = repository.getRepositoryRoot();
-        
+
         if (path.startsWith(repositoryRoot)) {
             path = path.substring(repository.getRepositoryRoot().length());
             return path;
@@ -479,8 +481,16 @@ public class JavaSvnClientAdapter implements ISVNClientAdapter {
      */
     public ISVNDirEntry getDirEntry(SVNUrl url, SVNRevision revision)
             throws SVNClientException {
-        notImplementedYet();
-        return null;
+        // list give the DirEntrys of the elements of a directory or the
+        // DirEntry of a file
+        ISVNDirEntry[] entries = getList(url.getParent(), revision, false);
+        String expectedPath = url.getLastPathSegment();
+        for (int i = 0; i < entries.length; i++) {
+            if (entries[i].getPath().equals(expectedPath)) {
+                return entries[i];
+            }
+        }
+        return null; // not found
     }
 
     /*
@@ -491,8 +501,16 @@ public class JavaSvnClientAdapter implements ISVNClientAdapter {
      */
     public ISVNDirEntry getDirEntry(File path, SVNRevision revision)
             throws SVNClientException {
-        notImplementedYet();
-        return null;
+        // list give the DirEntrys of the elements of a directory or the DirEntry
+        // of a file
+        ISVNDirEntry[] entries = getList(path.getParentFile(), revision,false);
+        String expectedPath = path.getName();
+        for (int i = 0; i < entries.length;i++) {
+            if (entries[i].getPath().equals(expectedPath)) {
+                return entries[i];
+            }
+        }
+        return null; // not found
     }
 
     /*
@@ -651,7 +669,7 @@ public class JavaSvnClientAdapter implements ISVNClientAdapter {
 
             editor = repository.getCommitEditor(message, null);
             editor.openRoot(-1);
-            editor.addDir(destUrl.getLastSegment(), srcPath, revNumber);
+            editor.addDir(destUrl.getLastPathSegment(), srcPath, revNumber);
             editor.closeDir();
             editor.closeDir();
             editor.closeEdit();
@@ -675,7 +693,35 @@ public class JavaSvnClientAdapter implements ISVNClientAdapter {
      *      java.lang.String)
      */
     public void remove(SVNUrl[] url, String message) throws SVNClientException {
-        notImplementedYet();
+        try {
+            notificationHandler.setCommand(ISVNNotifyListener.Command.REMOVE);
+
+            String commandLine = "delete -m \"" + message + "\"";
+
+            String targets[] = new String[url.length];
+            for (int i = 0; i < url.length; i++) {
+                commandLine += " " + url[i];
+            }
+            notificationHandler.logCommandLine(commandLine);
+
+            SVNUrl rootUrl = SVNUrlUtils.getCommonRootUrl(url);
+            if (rootUrl == null) {
+                throw new SVNException(
+                        "all locations should be within the same repository");
+            }
+            SVNRepository repository = getRepository(rootUrl);
+            ISVNEditor editor = repository.getCommitEditor(message, null);
+            editor.openRoot(-1);
+            for (int i = 0; i < url.length; i++) {
+                String relPath = SVNUrlUtils.getRelativePath(rootUrl, url[i]);
+                editor.deleteEntry(PathUtil.decode(relPath), -1);
+            }
+            editor.closeEdit();
+
+        } catch (SVNException e) {
+            notificationHandler.logException(e);
+            throw new SVNClientException(e);
+        }
     }
 
     /*
@@ -774,7 +820,8 @@ public class JavaSvnClientAdapter implements ISVNClientAdapter {
                 SVNRepository repository = getRepository(url.getParent());
                 editor = repository.getCommitEditor(message, null);
                 editor.openRoot(-1);
-                editor.addDir(PathUtil.decode(url.getLastSegment()), null, -1);
+                editor.addDir(PathUtil.decode(url.getLastPathSegment()), null,
+                        -1);
                 editor.closeDir();
                 editor.closeDir();
                 editor.closeEdit();
@@ -952,8 +999,8 @@ public class JavaSvnClientAdapter implements ISVNClientAdapter {
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             SVNRepository repository = getRepository(url.getParent());
             long rev = getRevisionNumber(revision, repository, null, url
-                    .getLastSegment());
-            repository.getFile(url.getLastSegment(), rev, null, bos);
+                    .getLastPathSegment());
+            repository.getFile(url.getLastPathSegment(), rev, null, bos);
             return new ByteArrayInputStream(bos.toByteArray());
         } catch (SVNException e) {
             notificationHandler.logException(e);
