@@ -180,17 +180,26 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
         ISVNStatus[] statuses = new ISVNStatus[files.length]; 
         
         // all files that are in nonmanaged dirs are unversioned
+        // all directories that do not have a .svn dir are not versioned
         ArrayList pathsList = new ArrayList();
         for (int i = 0; i < files.length;i++) {
-            if (isManagedDir(files[i].getParentFile())) {
-                pathsList.add(toString(files[i]));
+            File file = files[i];
+            File dir;
+            if (file.isDirectory()) {
+                dir = file;
+            } else
+            {
+                dir = file.getParentFile();
+            }
+            if (isManagedDir(dir)) {
+                pathsList.add(toString(file));
             } else {
-                statuses[i] = new CmdLineStatusUnversioned(files[i],false);
+                statuses[i] = new CmdLineStatusUnversioned(file,false);
             }
         }
         String[] paths = (String[])pathsList.toArray(new String[pathsList.size()]);
         
-        // we must do a svn status and svn info only on resources that are in versioned dirs
+        // we must do a svn status and svn info only on resources that are in versioned dirs 
         // because otherwise svn will stop after the first "svn: 'resource' is not a working copy" 
         CmdLineStatuses cmdLineStatuses;
         try {
