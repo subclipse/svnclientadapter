@@ -17,7 +17,6 @@ package org.tigris.subversion.svnclientadapter.commandline;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.StringTokenizer;
 
 /**
@@ -53,8 +52,16 @@ abstract class CommandLine {
 
 		String svnCommand = "";
 		boolean nextIsPassword = false;
-		for (Iterator it = svnArguments.iterator();it.hasNext();) {
-			String arg = (String)it.next();
+		for (int i = 0; i < svnArguments.size(); i++) {
+			if (i != 0)
+				svnCommand += " ";
+			
+			String arg = (String)svnArguments.get(i);
+			
+			if (arg == "") {
+				arg = "\"\"";
+				svnArguments.set(i, arg);
+			}
 			
 			if (nextIsPassword) {
 				svnCommand += "*******";
@@ -62,8 +69,7 @@ abstract class CommandLine {
 			} else {
 				svnCommand += arg;
 			}
-			if (it.hasNext())
-				svnCommand += " ";
+			
 			if (arg.equals("--password")) {
 				// we don't want to show the password in the console ...
 				nextIsPassword = true;
