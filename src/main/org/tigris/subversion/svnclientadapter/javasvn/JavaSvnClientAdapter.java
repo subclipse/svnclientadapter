@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +31,7 @@ import java.util.Map;
 import org.tigris.subversion.javahl.ClientException;
 import org.tigris.subversion.javahl.CommitItem;
 import org.tigris.subversion.javahl.CommitItemStateFlags;
+import org.tigris.subversion.javahl.Info;
 import org.tigris.subversion.javahl.NodeKind;
 import org.tigris.subversion.javahl.Revision;
 import org.tigris.subversion.svnclientadapter.ISVNAnnotations;
@@ -42,10 +44,12 @@ import org.tigris.subversion.svnclientadapter.ISVNProperty;
 import org.tigris.subversion.svnclientadapter.ISVNStatus;
 import org.tigris.subversion.svnclientadapter.SVNBaseDir;
 import org.tigris.subversion.svnclientadapter.SVNClientException;
+import org.tigris.subversion.svnclientadapter.SVNInfoUnversioned;
 import org.tigris.subversion.svnclientadapter.SVNKeywords;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
 import org.tigris.subversion.svnclientadapter.SVNUrl;
 import org.tigris.subversion.svnclientadapter.javahl.JhlConverter;
+import org.tigris.subversion.svnclientadapter.javahl.JhlInfo;
 import org.tmatesoft.svn.core.ISVNCommitHandler;
 import org.tmatesoft.svn.core.ISVNStatusHandler;
 import org.tmatesoft.svn.core.ISVNWorkspace;
@@ -63,6 +67,7 @@ import org.tmatesoft.svn.core.io.SVNSimpleCredentialsProvider;
 import org.tmatesoft.svn.util.DebugLog;
 import org.tmatesoft.svn.util.PathUtil;
 import org.tmatesoft.svn.util.SVNUtil;
+import org.tmatesoft.svn.util.TimeUtil;
 
 /**
  * 
@@ -954,8 +959,24 @@ public class JavaSvnClientAdapter implements ISVNClientAdapter {
      * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getInfo(java.io.File)
      */
     public ISVNInfo getInfo(File file) throws SVNClientException {
-        notImplementedYet();
-        return null;
+        try {
+            notificationHandler.setCommand(ISVNNotifyListener.Command.INFO);
+            
+            notificationHandler.logCommandLine("info "+file.toString());
+
+            Map properties = null;
+            ISVNWorkspace ws = getRootWorkspace(file);
+            properties = ws.getProperties(getWorkspacePath(ws, file), false, true);
+            
+            if (properties != null) {
+                return new JavaSvnInfo(file, properties);
+            } else {
+                return new SVNInfoUnversioned(file);
+            }
+        } catch (SVNException e) {
+            notificationHandler.logException(e);
+            throw new SVNClientException(e);            
+        }   
     }
 
     /*
