@@ -594,5 +594,18 @@ public interface ISVNClientAdapter {
 	
     
     public SVNUrl getRepositoryRoot(SVNUrl url);
-	
+
+    
+    /**
+     * Update the working copy to mirror a new URL within the repository.
+     * This behaviour is similar to 'svn update', and is the way to
+     * move a working copy to a branch or tag within the same repository.
+     * @param url
+     * @param path
+     * @param revision
+     * @param recurse
+     * @throws SVNClientException
+     */
+    public void switchToUrl(File path, SVNUrl url, SVNRevision revision, boolean recurse) throws SVNClientException;
+    
 }

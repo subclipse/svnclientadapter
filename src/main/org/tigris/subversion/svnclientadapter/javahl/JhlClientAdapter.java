@@ -1654,5 +1654,31 @@ public class JhlClientAdapter implements ISVNClientAdapter {
             }
         }*/        
     }
+
+    /*
+     * (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#switchUrl(org.tigris.subversion.svnclientadapter.SVNUrl, java.io.File, org.tigris.subversion.svnclientadapter.SVNRevision, boolean)
+     */
+    public void switchToUrl(File path, SVNUrl url, SVNRevision revision, boolean recurse) throws SVNClientException {
+        try {
+            notificationHandler.setCommand(ISVNNotifyListener.Command.SWITCH);
+            
+            String target = fileToSVNPath(path, true);
+            String commandLine = "switch "+url+" "+target+" "+"-r"+revision.toString();
+            if (!recurse) {
+            	commandLine += " -N";
+            }
+            notificationHandler.logCommandLine(commandLine);
+            File baseDir = SVNBaseDir.getBaseDir(path);
+            notificationHandler.setBaseDir(baseDir);
+
+            svnClient.doSwitch(target, url.toString(),JhlConverter.convert(revision),recurse);
+            
+        } catch (ClientException e) {
+            notificationHandler.logException(e);
+            throw new SVNClientException(e);            
+        }        
+    	
+    }
     
 }

@@ -752,7 +752,23 @@ public class SvnCommandLine extends CommandLine {
 		addAuthInfo(args);
 		return execString(args,false);
 	}
-	
+
+    /**
+     * Update the working copy to mirror a new URL within the repository.
+     */
+    String switchUrl(String path, String url, String revision) throws CmdLineException {
+        setCommand(ISVNNotifyListener.Command.SWITCH, true);
+        ArrayList args = new ArrayList();
+        args.add("sw");
+        args.add(url);
+        args.add(path);
+        args.add("-r");
+        args.add(validRev(revision));
+        addAuthInfo(args);
+        return execString(args,false);
+    }
+    
+    
 	/*
 	 * (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.commandline.CommandLine#notifyFromSvnOutput(java.lang.String)
@@ -819,4 +835,5 @@ public class SvnCommandLine extends CommandLine {
 	public long getRevision() {
 		return revision;
 	}
+    
 }	

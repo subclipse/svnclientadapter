@@ -1198,5 +1198,17 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 		return null;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#switchUrl(org.tigris.subversion.svnclientadapter.SVNUrl, java.io.File, org.tigris.subversion.svnclientadapter.SVNRevision, boolean)
+	 */
+	public void switchToUrl(File path, SVNUrl url, SVNRevision revision, boolean recurse) throws SVNClientException {
+		try {
+			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
+            String changedResources = _cmd.switchUrl(toString(path), toString(url), toString(revision));
+        } catch (CmdLineException e) {
+        	throw SVNClientException.wrapException(e);
+        }
+	}
+
 
 }

@@ -92,6 +92,7 @@ public interface ISVNNotifyListener {
 		public static final int CREATE_REPOSITORY = 23;
 		public static final int CLEANUP = 24;
 		public static final int ANNOTATE = 25;
+        public static final int SWITCH = 26;
     }    
 
     public void setCommand(int command);
