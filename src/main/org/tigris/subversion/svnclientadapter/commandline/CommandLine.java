@@ -56,7 +56,8 @@ package org.tigris.subversion.svnclientadapter.commandline;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.StringTokenizer;
 
 import org.tigris.subversion.svnclientadapter.ISVNNotifyListener;
@@ -69,37 +70,6 @@ import org.tigris.subversion.svnclientadapter.ISVNNotifyListener;
  * @author Philip Schatz (schatz at tigris)
  */
 class CommandLine {
-	/*
-	 * These are the commands used to execute the methods listed
-	 * below.
-	 */
-	private static String CMD_VERSION = "--version";
-	private static String CMD_ADD = "add {0} {1}";
-	private static String CMD_CAT = "cat -r {0} {1}";
-	private static String CMD_CLEANUP = "cleanup {0}";
-	private static String CMD_COMMIT = "ci {0} -m \"{1}\"";
-	private static String CMD_COPY = "cp -r {0} -m \"{1}\" {2} {3}";
-	private static String CMD_COPY_LOCAL = "cp {0} {1}";
-	private static String CMD_CHECKOUT = "co -r {0} {1} {2}";
-	private static String CMD_DELETE = "rm {0} {1} --force";
-	private static String CMD_EXPORT = "export -r {0} {1} {2} {3}";
-	private static String CMD_IMPORT = "import {0} {1} {2} -m \"{3}\"";
-	private static String CMD_INFO = "info {0}";
-	private static String CMD_LIST = "list -v -r {0} {1}";
-	private static String CMD_LOG = "log -r {0} {1} --xml";
-	private static String CMD_MKDIR = "mkdir -m \"{0}\" {1}";
-	private static String CMD_MKDIR_LOCAL = "mkdir {0}";
-	private static String CMD_MOVE = "mv -r {0} {1} {2} {3} --force";
-	private static String CMD_PROPGET = "propget {0} {1}";
-	private static String CMD_PROPSET = "propset {0} {1} \"{2}\" {3}";
-	private static String CMD_PROPSET_FILE = "propset {0} {1} -F \"{2}\" {3}";
-    private static String CMD_PROPDEL = "propdel {0} {1} {2}";
-	private static String CMD_REVERT = "revert {0} {1}";
-	private static String CMD_STATUS = "status -v -N {0} {1}";
-	private static String CMD_RECURSIVE_STATUS = "status -v {0}";
-
-	private static String CMD_UPDATE = "up -r {0} {1}";
-	private static String AUTH_INFO = " --username \"{0}\" --password \"{1}\" --non-interactive";
 
 	private String CMD;
     private CmdLineNotificationHandler notificationHandler;
@@ -109,13 +79,15 @@ class CommandLine {
 
 	//Constructors
 	CommandLine(String svnPath,CmdLineNotificationHandler notificationHandler) {
-		CMD = svnPath + ' ';
+		CMD = svnPath;
         this.notificationHandler = notificationHandler;
 	}
 
 	//Methods
 	String version() throws CmdLineException {
-		return execString(CMD_VERSION);
+		ArrayList args = new ArrayList();
+		args.add("--version");
+		return execString(args);
 	}
 
 	/**
@@ -129,8 +101,23 @@ class CommandLine {
 	 */
 	String add(String path, boolean recursive) throws CmdLineException {
 		notificationHandler.setCommand(ISVNNotifyListener.Command.ADD);
-        String flags = (recursive) ? "" : "-N";
-		return execString(MessageFormat.format(CMD_ADD, new String[] { flags, path }));
+		ArrayList args = new ArrayList();
+		args.add("add");
+		if (!recursive)
+			args.add("-N");
+		args.add(path);
+		return execString(args);
+	}
+
+	private ArrayList addAuthInfo(ArrayList arguments) {
+		if (user != null && pass != null && user.length() > 0) {
+			arguments.add("--username");
+			arguments.add(user);
+			arguments.add("--password");
+			arguments.add(pass);
+			arguments.add("--non-interactive");			
+		}
+		return arguments;
 	}
 
 	/**
@@ -143,10 +130,15 @@ class CommandLine {
 	 */
 	InputStream cat(String url, String revision) throws CmdLineException {
         notificationHandler.setCommand(ISVNNotifyListener.Command.CAT);
+		ArrayList args = new ArrayList();
+		args.add("cat");
+		args.add("-r");
+		args.add(validRev(revision));
+		args.add(url);
+		addAuthInfo(args);
+		
 		Process proc =
-			execProcess(
-				MessageFormat.format(CMD_CAT, new String[] { validRev(revision), url })
-					+ getAuthInfo());
+			execProcess(args);
 
 		InputStream content = proc.getInputStream();
 		return content;
@@ -163,10 +155,19 @@ class CommandLine {
 	 *   committed resources.
 	 * @throws CmdLineException
 	 */
-	String checkin(String path, String message) throws CmdLineException {
+	String checkin(String[] path, String message) throws CmdLineException {
         notificationHandler.setCommand(ISVNNotifyListener.Command.COMMIT);
-		return execString(
-			MessageFormat.format(CMD_COMMIT, new String[] { path, message }) + getAuthInfo());
+		ArrayList args = new ArrayList();
+		args.add("ci");
+		args.add("-m");
+		args.add(message);
+		addAuthInfo(args);
+		        
+        for (int i = 0; i < path.length;i++) {
+        	args.add(path[i]);
+        }
+        
+		return execString(args);
 	}
 
 	/**
@@ -178,7 +179,10 @@ class CommandLine {
 	 */
 	void cleanup(String path) throws CmdLineException {
 //        notificationHandler.setCommand(ISVNNotifyListener.Command.CLEANUP);
-		execVoid(MessageFormat.format(CMD_CLEANUP, new String[] { path }));
+		ArrayList args = new ArrayList();
+		args.add("cleanup");
+		args.add(path);
+		execVoid(args);
 	}
 
 	/**
@@ -195,12 +199,18 @@ class CommandLine {
 	String checkout(String url, String destination, String revision, boolean recursive)
 		throws CmdLineException {
         notificationHandler.setCommand(ISVNNotifyListener.Command.CHECKOUT);
-		String flags = (recursive) ? "" : "-N";
-		return execString(
-			MessageFormat.format(
-				CMD_CHECKOUT,
-				new String[] { validRev(revision), url, destination, flags })
-				+ getAuthInfo());
+		ArrayList args = new ArrayList();
+		args.add("co");
+		args.add("-r");
+		args.add(validRev(revision));
+		args.add(url);
+		args.add(destination);
+		
+		if (!recursive)
+			args.add("-N");
+		addAuthInfo(args);
+
+		return execString(args);
 	}
 
 	/**
@@ -231,9 +241,17 @@ class CommandLine {
 	 */
 	void copy(String src, String dest, String message, String revision) throws CmdLineException {
         notificationHandler.setCommand(ISVNNotifyListener.Command.COPY);        
-		execVoid(
-			MessageFormat.format(CMD_COPY, new String[] { validRev(revision), message, src, dest })
-				+ getAuthInfo());
+		ArrayList args = new ArrayList();
+		args.add("cp");
+		args.add("-r");
+		args.add(validRev(revision));
+		args.add("-m");
+		args.add(message);
+		args.add(src);
+		args.add(dest);
+		addAuthInfo(args);
+		
+		execVoid(args);
 	}
 
 	/**
@@ -246,7 +264,12 @@ class CommandLine {
 	 */
 	void copy(String src, String dest) throws CmdLineException {
         notificationHandler.setCommand(ISVNNotifyListener.Command.COPY);
-		execVoid(MessageFormat.format(CMD_COPY_LOCAL, new String[] { src, dest }) + getAuthInfo());
+		ArrayList args = new ArrayList();
+		args.add("cp");
+		args.add(src);
+		args.add(dest);
+		addAuthInfo(args);
+		execVoid(args);
 	}
 
 	/**
@@ -257,11 +280,20 @@ class CommandLine {
 	 * @param message Associated message when deleting from
 	 *   URL.
 	 */
-	String delete(String target, String message) throws CmdLineException {
+	String delete(String[] target, String message) throws CmdLineException {
         notificationHandler.setCommand(ISVNNotifyListener.Command.REMOVE);
-		String msg = (message == null) ? "" : "-m \"" + message + "\"";
-		return execString(
-			MessageFormat.format(CMD_DELETE, new String[] { msg, target }) + getAuthInfo());
+		ArrayList args = new ArrayList();
+		args.add("rm");
+		if (message != null) {
+			args.add("-m");
+			args.add(message);
+		}
+		for (int i = 0;i < target.length;i++) {
+			args.add(target[i]);
+		}
+        addAuthInfo(args);
+        
+		return execString(args);
 	}
 
 	/**
@@ -272,17 +304,22 @@ class CommandLine {
 	InputStream diff(String oldPath, String oldRev, String newPath, String newRev, boolean recurse)
 		throws CmdLineException {
         notificationHandler.setCommand(ISVNNotifyListener.Command.DIFF);
-		String commandLine = " diff ";
-		if (!"BASE".equals(oldRev) || !"WORKING".equals(newPath)) {
-			commandLine += "-r " + oldRev;
-			if (!"WORKING".equals(newRev))
-				commandLine += ":" + newRev + " ";
+		ArrayList args = new ArrayList();
+		args.add("diff");
+		args.add("-r");
+		if (newRev.equals("WORKING")) { // "WORKING" is not a valid revision argument at least in 0,35,1
+			args.add(oldRev);
+		} else {
+			args.add(oldRev+":"+newRev);			
 		}
-		commandLine += " --old " + oldPath;
-		commandLine += " --new " + newPath;
-
-		Process proc = execProcess(commandLine);
-		InputStream content = proc.getInputStream();
+		args.add("--old");
+		args.add(oldPath);
+		args.add("--new");
+		args.add(newPath);
+		        
+		Process proc = execProcess(args);
+  
+  		InputStream content = proc.getInputStream();
 		return content;
 	}
 
@@ -293,10 +330,16 @@ class CommandLine {
 	 */
 	void export(String url, String path, String revision, boolean force) throws CmdLineException {
         notificationHandler.setCommand(ISVNNotifyListener.Command.EXPORT);        
-		execVoid(
-			MessageFormat.format(
-				CMD_EXPORT,
-				new String[] { validRev(revision), url, path, (force) ? "--force" : "" }));
+		ArrayList args = new ArrayList();
+		args.add("export");
+		args.add("-r");
+		args.add(validRev(revision));
+		args.add(url);
+		args.add(path);
+		if (force)
+			args.add("--force");
+			
+		execVoid(args);
 	}
 
 	/**
@@ -310,10 +353,16 @@ class CommandLine {
 	 */
 	String importFiles(String url, String path, String module, String message)
 		throws CmdLineException {
-        notificationHandler.setCommand(ISVNNotifyListener.Command.IMPORT);            
-		return execString(
-			MessageFormat.format(CMD_IMPORT, new String[] { url, path, module, message })
-				+ getAuthInfo());
+        notificationHandler.setCommand(ISVNNotifyListener.Command.IMPORT);
+		ArrayList args = new ArrayList();
+		args.add("import");
+		args.add(url);
+		args.add(path);
+		args.add(module);
+		args.add("-m");
+		args.add(message);
+		addAuthInfo(args);
+		return execString(args);
 	}
 
 	/**
@@ -331,7 +380,10 @@ class CommandLine {
 	 */
 	String info(String path) throws CmdLineException {
         notificationHandler.setCommand(ISVNNotifyListener.Command.INFO);
-		return execString(MessageFormat.format(CMD_INFO, new String[] { path }));
+		ArrayList args = new ArrayList();
+		args.add("info");
+		args.add(path);
+		return execString(args);
 	}
 
 	/**
@@ -344,8 +396,15 @@ class CommandLine {
 	 */
 	String list(String url, String revision) throws CmdLineException {
         notificationHandler.setCommand(ISVNNotifyListener.Command.LS);
-		return execString(
-			MessageFormat.format(CMD_LIST, new String[] { revision, url }) + getAuthInfo());
+		ArrayList args = new ArrayList();
+		args.add("list");
+		args.add("-v");
+		args.add("-r");
+		args.add(revision);
+		args.add(url);
+		addAuthInfo(args);
+		
+		return execString(args);
 	}
 
 	/**
@@ -358,9 +417,15 @@ class CommandLine {
 	 */
 	String log(String target, String revision) throws CmdLineException {
         notificationHandler.setCommand(ISVNNotifyListener.Command.LOG);		
-        return execXMLString(
-			MessageFormat.format(CMD_LOG, new String[] { validRev(revision), target })
-				+ getAuthInfo());
+		ArrayList args = new ArrayList();
+		args.add("log");
+		args.add("-r");
+		args.add(validRev(revision));
+		args.add(target);
+		args.add("--xml");
+		addAuthInfo(args);
+
+        return execXMLString(args);
 	}
 
 	/**
@@ -373,12 +438,21 @@ class CommandLine {
 	 */
 	void mkdir(String url, String message) throws CmdLineException {
         notificationHandler.setCommand(ISVNNotifyListener.Command.MKDIR);
-		execVoid(MessageFormat.format(CMD_MKDIR, new String[] { message, url }) + getAuthInfo());
+		ArrayList args = new ArrayList();
+		args.add("mkdir");
+		args.add("-m");
+		args.add(message);
+		args.add(url);
+		addAuthInfo(args);
+		execVoid(args);
 	}
     
 	void mkdir(String localPath) throws CmdLineException {
-        notificationHandler.setCommand(ISVNNotifyListener.Command.MKDIR);        
-		execVoid(MessageFormat.format(CMD_MKDIR_LOCAL, new String[] { localPath }));
+        notificationHandler.setCommand(ISVNNotifyListener.Command.MKDIR);
+		ArrayList args = new ArrayList();
+		args.add("mkdir");
+		args.add(localPath);
+		execVoid(args);
 	}
 
 	/**
@@ -400,12 +474,19 @@ class CommandLine {
 	String move(String source, String dest, String message, String revision)
 		throws CmdLineException {
         notificationHandler.setCommand(ISVNNotifyListener.Command.MOVE);            
-		String messageStr = (message == null) ? "" : "-m \"" + message + "\"";
-		return execString(
-			MessageFormat.format(
-				CMD_MOVE,
-				new String[] { validRev(revision), source, dest, messageStr })
-				+ getAuthInfo());
+		ArrayList args = new ArrayList();
+		args.add("mv");
+		args.add("-r");
+		args.add(validRev(revision));
+		args.add(source);
+		args.add(dest);
+		if (message != null) {
+			args.add("-m");
+			args.add(message);
+		}
+		addAuthInfo(args);				
+	
+		return execString(args);
 	}
 
 	/**
@@ -417,8 +498,12 @@ class CommandLine {
 	 */
 	InputStream propget(String path, String propName) throws CmdLineException {
         notificationHandler.setCommand(ISVNNotifyListener.Command.PROPGET);
+		ArrayList args = new ArrayList();
+		args.add("propget");
+		args.add(propName);
+		args.add(path);
         Process proc =
-			execProcess(MessageFormat.format(CMD_PROPGET, new String[] { propName, path }));
+			execProcess(args);
 		return proc.getInputStream();
 	}
 
@@ -433,8 +518,14 @@ class CommandLine {
 	void propset(String propName, String propValue, String target, boolean recurse)
 		throws CmdLineException {
         notificationHandler.setCommand(ISVNNotifyListener.Command.PROPSET);
-        String flags = (recurse) ? "-R" : "";
-		execVoid(MessageFormat.format(CMD_PROPSET, new String[] { flags, propName, propValue, target }));
+		ArrayList args = new ArrayList();
+		args.add("propset");
+		if (recurse)
+			args.add("-R");
+		args.add(propName);
+		args.add(propValue);
+		args.add(target);        
+		execVoid(args);
 	}
     
     /**
@@ -447,8 +538,13 @@ class CommandLine {
      */
     void propdel(String propName, String target, boolean recurse) throws CmdLineException {
         notificationHandler.setCommand(ISVNNotifyListener.Command.PROPDEL);
-        String flags = (recurse) ? "-R" : "";
-        execVoid(MessageFormat.format(CMD_PROPDEL, new String[] { flags, propName, target }));
+		ArrayList args = new ArrayList();
+		args.add("propdel");
+		if (recurse)
+			args.add("-R");
+		args.add(propName);
+		args.add(target);	
+        execVoid(args);
     }
     
 	/**
@@ -462,9 +558,15 @@ class CommandLine {
 	void propsetFile(String propName, String propFile, String target, boolean recurse)
 		throws CmdLineException {
         notificationHandler.setCommand(ISVNNotifyListener.Command.PROPSET);
-        String flags = (recurse) ? "-R" : "";
-		execVoid(
-			MessageFormat.format(CMD_PROPSET_FILE, new String[] { flags, propName, propFile, target }));
+		ArrayList args = new ArrayList();
+		args.add("propset");
+		if (recurse)
+			args.add("-R");
+		args.add(propName);
+		args.add("-F");
+		args.add(propFile);
+		args.add(target);	
+		execVoid(args);
 	}
 
 	/**
@@ -474,10 +576,17 @@ class CommandLine {
 	 * @param paths Local paths to revert.
 	 * @param recursive <tt>true</tt> if reverting subdirectories. 
 	 */
-	String revert(String paths, boolean recursive) throws CmdLineException {
+	String revert(String[] paths, boolean recursive) throws CmdLineException {
         notificationHandler.setCommand(ISVNNotifyListener.Command.REVERT);
-		String recursiveFlag = (recursive) ? "-R" : "";
-		return execString(MessageFormat.format(CMD_REVERT, new String[] { recursiveFlag, paths }));
+		ArrayList args = new ArrayList();
+		args.add("revert");
+		if (recursive)
+			args.add("-R");
+		for (int i = 0; i < paths.length;i++) {
+			args.add(paths[i]);
+		}
+		
+		return execString(args);
 	}
 
 	/**
@@ -489,9 +598,15 @@ class CommandLine {
 	 */
 	String status(String path, boolean checkUpdates) throws CmdLineException {
         notificationHandler.setCommand(ISVNNotifyListener.Command.STATUS);
-		String flags = (checkUpdates ? "-u" : "");
-		return execString(
-			MessageFormat.format(CMD_STATUS, new String[] { flags, path }) + getAuthInfo());
+		ArrayList args = new ArrayList();
+		args.add("status");
+		args.add("-v");
+		args.add("-N");
+		if (checkUpdates)
+			args.add("-u");
+		args.add(path);
+		addAuthInfo(args);      
+		return execString(args);
 	}
 
 	/**
@@ -504,8 +619,12 @@ class CommandLine {
 	 */
 	String recursiveStatus(String path) throws CmdLineException {
         notificationHandler.setCommand(ISVNNotifyListener.Command.STATUS);
-		return execString(
-			MessageFormat.format(CMD_RECURSIVE_STATUS, new String[] { path }) + getAuthInfo());
+		ArrayList args = new ArrayList();
+		args.add("status");
+		args.add("-v");
+		args.add(path);
+		addAuthInfo(args);        
+		return execString(args);
 	}
 
 	/**
@@ -517,9 +636,13 @@ class CommandLine {
 	 */
 	String update(String path, String revision) throws CmdLineException {
         notificationHandler.setCommand(ISVNNotifyListener.Command.UPDATE);
-		return execString(
-			MessageFormat.format(CMD_UPDATE, new String[] { validRev(revision), path })
-				+ getAuthInfo());
+		ArrayList args = new ArrayList();
+		args.add("up");
+		args.add("-r");
+		args.add(validRev(revision));
+		args.add(path);
+		addAuthInfo(args);
+		return execString(args);
 	}
 
 	/**
@@ -545,15 +668,27 @@ class CommandLine {
     /**
      * execute the given svn command and returns the corresponding process  
      */
-	private Process execProcess(String svnCommand) throws CmdLineException {
+	private Process execProcess(ArrayList svnArguments) throws CmdLineException {
 		Runtime rt = Runtime.getRuntime();
 
+		String svnCommand = "";
+		for (Iterator it = svnArguments.iterator();it.hasNext();) {
+			svnCommand += (String)it.next();
+			if (it.hasNext())
+				svnCommand += " ";
+		}
         notificationHandler.logCommandLine(svnCommand);
+
+		// we add "svn" to  the arguments and convert it to an array of strings
+		ArrayList argsArrayList = new ArrayList(svnArguments);
+		argsArrayList.add(0,CMD);
+		String[] argsArray = new String[argsArrayList.size()];
+		argsArrayList.toArray(argsArray);
 
 		/* run the process */
 		Process proc = null;
 		try {
-			proc = rt.exec(CMD + svnCommand);
+			proc = rt.exec(argsArray);
 		} catch (IOException e) {
 			throw new CmdLineException(e);
 		}
@@ -566,12 +701,8 @@ class CommandLine {
 	 * @param cmd
 	 * @return String
 	 */
-	private String execXMLString(String svnCommand) throws CmdLineException {
-		String line;
-		StringBuffer sb = new StringBuffer();
-		StringBuffer sbErr = new StringBuffer();
-
-		Process proc = execProcess(svnCommand);
+	private String execXMLString(ArrayList svnArguments) throws CmdLineException {
+		Process proc = execProcess(svnArguments);
 
 		try {
 			String result = getXMLOrFail(proc);
@@ -632,12 +763,8 @@ class CommandLine {
 	 * @param cmd
 	 * @return String
 	 */
-	private String execString(String svnCommand) throws CmdLineException {
-		String line;
-		StringBuffer sb = new StringBuffer();
-		StringBuffer sbErr = new StringBuffer();
-
-		Process proc = execProcess(svnCommand);
+	private String execString(ArrayList svnArguments) throws CmdLineException {
+		Process proc = execProcess(svnArguments);
 
 		try {
 			String result = getStringOrFail(proc);
@@ -655,8 +782,8 @@ class CommandLine {
      * @param svnCommand
      * @throws CmdLineException
      */
-	private void execVoid(String svnCommand) throws CmdLineException {
-		execString(svnCommand);
+	private void execVoid(ArrayList svnArguments) throws CmdLineException {
+		execString(svnArguments);
 	}
 
 	private void logMessageAndCompleted(String messages) {
@@ -672,14 +799,6 @@ class CommandLine {
             notificationHandler.logCompleted(st.nextToken());
 	}
 
-    /**
-     * @return what to add to the command line when there are auth informations
-     */
-	private String getAuthInfo() {
-		if (user == null || pass == null || user.length() == 0)
-			return "";
-		return MessageFormat.format(AUTH_INFO, new String[] { user, pass });
-	}
 
     /**
      * 

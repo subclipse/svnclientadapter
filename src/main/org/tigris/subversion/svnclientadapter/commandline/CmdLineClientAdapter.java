@@ -210,14 +210,13 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.subclipse.client.ISVNClientAdapter#remove(java.io.File[], boolean)
 	 */
-	public void remove(File[] arg0, boolean arg1) throws SVNClientException {
-		StringBuffer sb = new StringBuffer();
+	public void remove(File[] files, boolean arg1) throws SVNClientException {
+		String[] paths = new String[files.length];
 		try {
-			for (int i = 0; i < arg0.length; i++) {
-				sb.append(toString(arg0[i]));
-				sb.append(' ');
+			for (int i = 0; i < files.length; i++) {
+				paths[i] = files[i].toString();
 			}
-			_cmd.delete(sb.toString(), null);
+			_cmd.delete(paths, null);
 		} catch (CmdLineException e) {
 			throw SVNClientException.wrapException(e);
 		}
@@ -228,7 +227,7 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 	 */
 	public void revert(File arg0, boolean arg1) throws SVNClientException {
 		try {
-			String changedFiles = _cmd.revert(toString(arg0), arg1);
+			String changedFiles = _cmd.revert(new String[] { toString(arg0) }, arg1);
 			refreshChangedResources(changedFiles);
 		} catch (CmdLineException e) {
 			throw SVNClientException.wrapException(e);
@@ -287,14 +286,13 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.subclipse.client.ISVNClientAdapter#remove(java.net.URL[], java.lang.String)
 	 */
-	public void remove(SVNUrl[] arg0, String arg1) throws SVNClientException {
-		StringBuffer sb = new StringBuffer();
-		for (int i = 0; i < arg0.length; i++) {
-			sb.append(toString(arg0[i]));
-			sb.append(' ');
+	public void remove(SVNUrl[] urls, String message) throws SVNClientException {
+		String[] urlsStrings = new String[urls.length];
+		for (int i = 0; i < urls.length; i++) {
+			urlsStrings[i] = urls[i].toString();
 		}
 		try {
-			_cmd.delete(sb.toString(), arg1);
+			_cmd.delete(urlsStrings, message);
 		} catch (CmdLineException e) {
 			throw SVNClientException.wrapException(e);
 		}
@@ -416,13 +414,12 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 	 * @see org.tigris.subversion.subclipse.client.ISVNClientAdapter#commit(java.io.File[], java.lang.String, boolean)
 	 */
 	public long commit(File[] parents, String comment, boolean b) throws SVNClientException {
-		StringBuffer sb = new StringBuffer();
+		String[] paths = new String[parents.length];
 		for (int i = 0; i < parents.length; i++) {
-			sb.append(toString(parents[i]));
-			sb.append(' ');
+			paths[i] = toString(parents[i]);
 		}
 		try {
-			String changedResources = _cmd.checkin(sb.toString(), comment);
+			String changedResources = _cmd.checkin(paths, comment);
 			return refreshChangedResources(changedResources);
 		} catch (CmdLineException e) {
 			if ("".equals(e.getMessage()))
@@ -433,7 +430,7 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 				//to be removed.
 				for (int i = 0; i < 50; i++) {
 					try {
-						String changedResources = _cmd.checkin(sb.toString(), comment);
+						String changedResources = _cmd.checkin(paths, comment);
 						return refreshChangedResources(changedResources);
 					} catch (CmdLineException e1) {
 						try {
