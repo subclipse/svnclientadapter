@@ -79,4 +79,8 @@ public class SVNLogMessageChangePath implements ISVNLogMessageChangePath
     {
         return action;
     }
+    
+    public String toString() {
+    	return getPath();
+    }
 }

@@ -61,6 +61,7 @@ import java.util.StringTokenizer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.regexp.RE;
 import org.tigris.subversion.javahl.NodeKind;
 import org.tigris.subversion.javahl.Notify;
 
@@ -74,7 +75,8 @@ public class SvnOutputParser {
 	
 	private static final String NEWLINE = "\n\r";
 	
-	// See see subversion/clients/cmdline/notify.c for possible outputs	
+	// See see subversion/clients/cmdline/notify.c for possible outputs
+    // we depend on javahl because it would be a waste to duplicate the notification actions 
 	private SvnActionRE[] svnActionsRE = new SvnActionRE[] { 
 		new SvnActionRE("Skipped missing target: '(.+)'",Notify.Action.skip, Notify.Status.missing,new String[] { SvnActionRE.PATH } ),
 		new SvnActionRE("Skipped '(.+)'",Notify.Action.skip,SvnActionRE.PATH),
@@ -110,7 +112,10 @@ public class SvnOutputParser {
 		new SvnActionRE("Adding         (.+)",Notify.Action.commit_added,SvnActionRE.PATH),
 		new SvnActionRE("Deleting       (.+)",Notify.Action.commit_deleted,SvnActionRE.PATH),
 		new SvnActionRE("Replacing      (.+)",Notify.Action.commit_replaced,SvnActionRE.PATH),
-		new SvnActionRE("Transmitting file data \\.*",Notify.Action.commit_postfix_txdelta)
+		new SvnActionRE("Transmitting file data \\.*",Notify.Action.commit_postfix_txdelta),
+        
+        // this one is not a notification 
+        new SvnActionRE("Committed revision (\\d+)\\.",-1,SvnActionRE.REVISION)
 	};
 	private List listeners = new LinkedList();
 	

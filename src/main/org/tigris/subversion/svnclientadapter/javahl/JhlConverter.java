@@ -226,9 +226,15 @@ public class JhlConverter {
         SVNLogMessageChangePath[] jhlChangePaths = new SVNLogMessageChangePath[changePaths.length];
         for(int i=0; i < changePaths.length; i++) {
             ChangePath changePath = changePaths[i];
+            
+            SVNRevision.Number copySrcRevision = null;
+            if (changePath.getCopySrcRevision() != -1) {
+                copySrcRevision = new SVNRevision.Number(changePath.getCopySrcRevision());	
+            }
+            
         	jhlChangePaths[i] = new SVNLogMessageChangePath(
                     changePath.getPath(),
-                    new SVNRevision.Number(changePath.getCopySrcRevision()),
+                    copySrcRevision,
                     changePath.getCopySrcPath(),
                     changePath.getAction());
         }

@@ -142,7 +142,7 @@ class CmdLineStatusPart {
 	}
 
 	public SVNStatusKind getPropStatus() {
-		switch (textStatus) {
+		switch (propStatus) {
 			case ' ' : // no modifications
 				return SVNStatusKind.NORMAL;
 			case 'C' :

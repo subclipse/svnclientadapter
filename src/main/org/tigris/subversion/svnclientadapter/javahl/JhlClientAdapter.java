@@ -500,7 +500,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
      */
     public ISVNStatus[] getStatus(File path, boolean descend, boolean getAll)
 		throws SVNClientException {
-		return getStatus(path, descend,getAll,false);
+		return getStatus(path, descend,getAll,false); 
 	}
 	
 
@@ -875,7 +875,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
 	 * @param recurse
 	 * @throws ClientException
 	 */
-	public void update(File path, SVNRevision revision, boolean recurse)
+	public long update(File path, SVNRevision revision, boolean recurse)
 		throws SVNClientException {
 		try {
 			notificationHandler.setCommand(ISVNNotifyListener.Command.UPDATE);
@@ -887,7 +887,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
 					+ (recurse ? "" : "-N ")
 					+ target);
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
-			svnClient.update(target, JhlConverter.convert(revision), recurse);
+			return svnClient.update(target, JhlConverter.convert(revision), recurse);
 		} catch (ClientException e) {
 			notificationHandler.logException(e);
 			throw new SVNClientException(e);

@@ -317,7 +317,7 @@ public class SvnCommandLine extends CommandLine {
 	 * @param message Associated message when deleting from
 	 *   URL.
 	 */
-	String delete(String[] target, String message) throws CmdLineException {
+	String delete(String[] target, String message, boolean force) throws CmdLineException {
         setCommand(ISVNNotifyListener.Command.REMOVE, true);
 		ArrayList args = new ArrayList();
 		args.add("rm");
@@ -325,6 +325,9 @@ public class SvnCommandLine extends CommandLine {
 			args.add("-m");
 			args.add(message);
 		}
+        if (force) {
+        	args.add("--force");
+        }
 		for (int i = 0;i < target.length;i++) {
 			args.add(target[i]);
 		}
@@ -382,20 +385,21 @@ public class SvnCommandLine extends CommandLine {
 	/**
 	 * <p>
 	 * Commit an unversioned file or directory into the repository.</p>
-	 * 
+     *
+     * @param path Local path to import from.
 	 * @param url Remote URL to import to.
-	 * @param path Local path to import from.
-	 * @param module Remote module name.
-	 * @param message optional. can be null
+	 * @param message commit message
 	 */
-	String importFiles(String url, String path, String module, String message)
+	String importFiles(String path, String url, String message, boolean recursive)
 		throws CmdLineException {
         setCommand(ISVNNotifyListener.Command.IMPORT, true);
 		ArrayList args = new ArrayList();
 		args.add("import");
-		args.add(url);
 		args.add(path);
-		args.add(module);
+        args.add(url);
+        if (!recursive) {
+        	args.add("-N");
+        }
 		args.add("-m");
 		args.add(message);
 		addAuthInfo(args);
@@ -769,7 +773,6 @@ public class SvnCommandLine extends CommandLine {
         addAuthInfo(args);
         return execString(args,false);
     }
-    
     
 	/*
 	 * (non-Javadoc)

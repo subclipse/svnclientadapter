@@ -103,7 +103,7 @@ class CmdLineRemoteDirEntry implements ISVNDirEntry {
 			//do nothing
 		}
 
-        // "%7"SVN_REVNUM_T_FMT" %-8.8s %10s %12s %s%s
+        // "%7ld %-8.8s %10s %12s %s%s
 		revision = new SVNRevision.Number(Long.parseLong(line.substring(0, 7).trim()));
 		nodeKind = (folder) ? SVNNodeKind.DIR : SVNNodeKind.FILE;
 		lastCommitAuthor = line.substring(8, 16).trim();
@@ -123,10 +123,12 @@ class CmdLineRemoteDirEntry implements ISVNDirEntry {
             // two formats are possible (see ls-cmd.c) depending on the numbers of days between current date
             // and lastChangedDate
             if (dateString.indexOf(':') != -1) {
+                // %b %d %H:%M
                 lastChangedDate = df1.parse(dateString); // something like "Sep 24 18:01"
             }
             else
             {
+                // %b %d  %Y
                 lastChangedDate = df2.parse(dateString); // something like "Mar 01  2003"
             }
 		} catch (ParseException e1) {

@@ -83,6 +83,7 @@ public class SVNRevision
     public String toString()
     {
         switch(revKind) {
+            case Kind.unspecified : return "START";
             case Kind.base : return "BASE";
             case Kind.committed : return "COMMITTED";
             case Kind.head : return "HEAD";

@@ -356,9 +356,11 @@ public interface ISVNClientAdapter {
 	 * @param path
 	 * @param revision
 	 * @param recurse
+     * @return Returns a long representing the revision. It returns a
+     *         -1 if the revision number is invalid.
 	 * @throws ClientException
 	 */
-	public abstract void update(File path, SVNRevision revision, boolean recurse)
+	public abstract long update(File path, SVNRevision revision, boolean recurse)
 		throws SVNClientException;
 	/**
 	 * Restore pristine working copy file (undo all local edits)
