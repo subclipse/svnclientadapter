@@ -77,4 +77,20 @@ public class SVNNodeKind
          this.kind = kind;
     }
 
+    public String toString() {
+        return toString( kind );
+    }
+
+    public static String toString(int kind) {
+        if( kind == 0 )
+            return "NONE";
+        else if( kind == 1 )
+            return "FILE";
+        else if( kind == 2 )
+            return "DIR";
+        else if( kind == 3 )
+            return "UNKNOWN";
+        else
+            return "Unknown kind "+kind;
+    }
 }
