@@ -80,4 +80,17 @@ public class SVNUrlTest extends TestCase
         SVNUrl svnurl= new SVNUrl("http://svn.collab.net:8080/repos/subclipse/myfile.txt");
         assertEquals("http://svn.collab.net:8080/repos/subclipse/myfile.txt",svnurl.toString());
     }
+    
+    public void testFileURL() throws Exception {
+        SVNUrl svnurl= new SVNUrl("file:///repos/subclipse/myfile.txt");
+        assertEquals("file:///repos/subclipse/myfile.txt",svnurl.toString());
+        SVNUrl svnurl2= new SVNUrl("file://d/repos/subclipse/myfile.txt");
+        assertEquals("file://d/repos/subclipse/myfile.txt",svnurl2.toString());
+        SVNUrl svnurl3= new SVNUrl("file://repos/subclipse/myfile.txt");
+        assertEquals("file://repos/subclipse/myfile.txt",svnurl3.toString());
+		SVNUrl url1 = new SVNUrl("file:///repos/subclipse/myfile.txt");
+		assertEquals("file:///repos/subclipse",url1.getParent().toString());
+		assertEquals("file:///repos",url1.getParent().getParent().toString());		  		
+		assertEquals(null,url1.getParent().getParent().getParent());
+   }
 }

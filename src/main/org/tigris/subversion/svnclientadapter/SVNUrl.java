@@ -77,20 +77,29 @@ public class SVNUrl {
         if (i == -1) {
             i = parsed.length();
         }
-        String hostPort = parsed.substring(0,i).toLowerCase();
-        String[] hostportArray = StringUtils.split(hostPort,':');
-        if (hostportArray.length == 2) {
-            this.host = hostportArray[0];
-            try {
-                this.port = Integer.parseInt(hostportArray[1]);
-            } catch (NumberFormatException e) {
-                throw new MalformedURLException("Invalid svn url :"+svnUrl);
-            }
+        if (!protocol.equalsIgnoreCase("file")) {
+	        String hostPort = parsed.substring(0,i).toLowerCase();
+	        String[] hostportArray = StringUtils.split(hostPort,':');
+	        if (hostportArray.length == 2) {
+	            this.host = hostportArray[0];
+	            try {
+	                this.port = Integer.parseInt(hostportArray[1]);
+	            } catch (NumberFormatException e) {
+	                throw new MalformedURLException("Invalid svn url :"+svnUrl);
+	            }
+	        } else {
+	            this.host = hostportArray[0];
+	            this.port = getDefaultPort(protocol);
+	        }
         } else {
-            this.host = hostportArray[0];
-            this.port = getDefaultPort(protocol);
+            this.port = -1;
+            // parse path
+            if (i == 0) {
+                this.host = "";
+            } else {
+                this.host = parsed.substring(0,i);
+            }
         }
-        
         // parse path
         if (i < parsed.length()) {
             parsed = parsed.substring(i+1);
