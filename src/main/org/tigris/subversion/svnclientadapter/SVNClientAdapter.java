@@ -947,17 +947,5 @@ public class SVNClientAdapter {
         propertySet(path, "svn:ignore", value, false);       
     }
     
-    public static URL svnUrlToJavaUrl(String url) {
-      if (url == null)
-          return null;
-      else
-      {
-          try {
-              return new URL(url);
-          } catch (MalformedURLException e)
-          {
-              return null;
-          }
-      }        
-    }
+
 }
