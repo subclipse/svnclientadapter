@@ -1504,12 +1504,9 @@ public class JhlClientAdapter implements ISVNClientAdapter {
             notificationHandler.logCommandLine(commandLine);
 			notificationHandler.setBaseDir();
 			
-			// this blame method does not seem to work ... 
-//			JhlAnnotations annotations = new JhlAnnotations();
-//            svnClient.blame(target, JhlConverter.convert(revisionStart), JhlConverter.convert(revisionEnd), annotations);
-			
-			byte[] annotationBytes = svnClient.blame(target, JhlConverter.convert(revisionStart), JhlConverter.convert(revisionEnd));
-            return new CmdLineAnnotations(annotationBytes,"\n");
+			JhlAnnotations annotations = new JhlAnnotations();
+            svnClient.blame(target, JhlConverter.convert(revisionStart), JhlConverter.convert(revisionEnd), annotations);
+			return annotations;
         } catch (ClientException e) { 
             notificationHandler.logException(e);
             throw new SVNClientException(e);
