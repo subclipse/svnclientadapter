@@ -877,19 +877,57 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 	}
     
     public SVNKeywords getKeywords(File path) throws SVNClientException {
-        return null;
+        // copied directly from JhlClientAdapter
+        ISVNProperty prop = propertyGet(path, ISVNProperty.KEYWORDS);
+        if (prop == null)
+            return new SVNKeywords(); 
+
+        // value is a space-delimited list of the keywords names
+        String value = prop.getValue();
+        
+        return new SVNKeywords(value);
     }
         
     
     public void setKeywords(File path, SVNKeywords keywords, boolean recurse) throws SVNClientException {
+        // copied directly from JhlClientAdapter
+        propertySet(path, ISVNProperty.KEYWORDS, keywords.toString(), recurse);
     }
     
     public SVNKeywords addKeywords(File path, SVNKeywords keywords) throws SVNClientException {
-        return null;
+        // copied directly from JhlClientAdapter
+        SVNKeywords currentKeywords = getKeywords(path);
+        if (keywords.isHeadUrl())
+            currentKeywords.setHeadUrl(true);
+        if (keywords.isId())
+            currentKeywords.setId(true);
+        if (keywords.isLastChangedBy())
+            currentKeywords.setLastChangedBy(true);
+        if (keywords.isLastChangedDate())
+            currentKeywords.setLastChangedBy(true);
+        if (keywords.isLastChangedRevision())
+            currentKeywords.setLastChangedRevision(true);
+        setKeywords(path,currentKeywords,false);
+        
+        return currentKeywords;   
     }
     
     public SVNKeywords removeKeywords(File path, SVNKeywords keywords) throws SVNClientException {
-        return null;
+        // copied directly from JhlClientAdapter
+        SVNKeywords currentKeywords = getKeywords(path);
+        if (keywords.isHeadUrl())
+            currentKeywords.setHeadUrl(false);
+        if (keywords.isId())
+            currentKeywords.setId(false);
+        if (keywords.isLastChangedBy())
+            currentKeywords.setLastChangedBy(false);
+        if (keywords.isLastChangedDate())
+            currentKeywords.setLastChangedBy(false);
+        if (keywords.isLastChangedRevision())
+            currentKeywords.setLastChangedRevision(false);
+        setKeywords(path,currentKeywords,false);
+        
+        return currentKeywords; 
     }
     
     
