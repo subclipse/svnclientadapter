@@ -945,6 +945,99 @@ public class SVNClientAdapter {
         }
         propertySet(path, "svn:ignore", value, false);       
     }
-    
 
+    /**
+     * display the differences between two paths. 
+     */
+    public void diff(File oldPath, Revision oldPathRevision,
+                     File newPath, Revision newPathRevision,
+                     File outFile, boolean recurse) throws ClientException {
+        try {
+            notificationHandler.setCommand(ISVNNotifyListener.COMMAND_DIFF);
+                
+            if (oldPath == null)
+                oldPath = new File(".");
+            if (newPath == null)
+                newPath = oldPath;
+            if (oldPathRevision == null)
+                oldPathRevision = Revision.BASE;
+            if (newPathRevision == null)
+                newPathRevision = Revision.WORKING;
+            
+            String oldTarget = fileToSVNPath(oldPath);
+            String newTarget = fileToSVNPath(newPath);
+            String svnOutFile = fileToSVNPath(outFile);
+            
+            String commandLine = "diff ";
+            if ( (oldPathRevision.getKind() != Revision.Kind.base) ||
+                 (newPathRevision.getKind() != Revision.Kind.working) )
+            {
+                commandLine += "-r "+oldPathRevision.toString();
+                if (newPathRevision.getKind() != Revision.Kind.working)
+                    commandLine+= ":"+newPathRevision.toString();
+                commandLine += " ";         
+            }
+            if (!oldPath.equals(new File(".")))
+                commandLine += "--old "+oldTarget+" ";
+            if (!newPath.equals(oldPath))
+                commandLine += "--new "+newTarget+" ";
+            
+            notificationHandler.setCommandLine(commandLine);
+            
+            svnClient.diff(oldTarget,oldPathRevision,newTarget,newPathRevision, svnOutFile, recurse);
+        } catch (ClientException e) {
+            notificationHandler.setException(e);
+            throw e;            
+        }
+    }
+
+
+     public void diff(File path, File outFile, boolean recurse) throws ClientException {
+        diff(path, null,null,null,outFile,recurse);
+    }
+
+    /**
+     * display the differences between two urls. 
+     */
+    public void diff(SVNUrl oldUrl, Revision oldUrlRevision,
+                     SVNUrl newUrl, Revision newUrlRevision,
+                     File outFile, boolean recurse) throws ClientException {
+        try {
+            notificationHandler.setCommand(ISVNNotifyListener.COMMAND_DIFF);
+                
+            if (newUrl == null)
+                newUrl = oldUrl;
+            if (oldUrlRevision == null)
+                oldUrlRevision = Revision.HEAD;
+            if (newUrlRevision == null)
+                newUrlRevision = Revision.HEAD;
+            
+            String svnOutFile = fileToSVNPath(outFile);
+            
+            String commandLine = "diff ";
+            if ( (oldUrlRevision.getKind() != Revision.Kind.head) ||
+                 (newUrlRevision.getKind() != Revision.Kind.head) )
+            {
+                commandLine += "-r "+oldUrlRevision.toString();
+                if (newUrlRevision.getKind() != Revision.Kind.head)
+                    commandLine+= ":"+newUrlRevision.toString();
+                commandLine += " ";         
+            }
+            commandLine += oldUrl+" ";
+            if (!newUrl.equals(oldUrl))
+                commandLine += newUrl+" ";
+            
+            notificationHandler.setCommandLine(commandLine);
+            
+            svnClient.diff(oldUrl.toString(),oldUrlRevision,newUrl.toString(),newUrlRevision, svnOutFile, recurse);
+        } catch (ClientException e) {
+            notificationHandler.setException(e);
+            throw e;            
+        }
+    }
+
+    public void diff(SVNUrl url, Revision oldUrlRevision, Revision newUrlRevision,
+                     File outFile, boolean recurse) throws ClientException {
+        diff(url,oldUrlRevision,url,newUrlRevision,outFile,recurse);                     
+    }
 }
