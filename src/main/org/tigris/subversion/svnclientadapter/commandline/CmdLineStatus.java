@@ -143,22 +143,30 @@ class CmdLineStatus extends CmdLineInfo implements ISVNStatus {
 	 */
 	public ISVNStatus.Kind getTextStatus() {
 		switch (flag) {
-			case ' ' :
+			case ' ' : // none or normal
 				return ISVNStatus.Kind.NORMAL;
 			case 'A' :
 				return ISVNStatus.Kind.ADDED;
+            case '!' : // missing or incomplete
+                return ISVNStatus.Kind.MISSING;
 			case 'D' :
 				return ISVNStatus.Kind.DELETED;
+            case 'R' :
+                return ISVNStatus.Kind.REPLACED;
 			case 'M' :
 				return ISVNStatus.Kind.MODIFIED;
+            case 'G' :
+                return ISVNStatus.Kind.MERGED;
 			case 'C' :
 				return ISVNStatus.Kind.CONFLICTED;
+            case '~' :
+                return ISVNStatus.Kind.OBSTRUCTED;
 			case 'I' :
 				return ISVNStatus.Kind.IGNORED;
+            case 'X' :
+                return ISVNStatus.Kind.EXTERNAL;
 			case '?' :
 				return ISVNStatus.Kind.UNVERSIONED;
-			case '!' :
-				return ISVNStatus.Kind.ABSENT;
 			default :
 				return ISVNStatus.Kind.NONE;
 		}

@@ -77,6 +77,7 @@ import org.tigris.subversion.svnclientadapter.ISVNLogMessage;
 import org.tigris.subversion.svnclientadapter.ISVNNotifyListener;
 import org.tigris.subversion.svnclientadapter.ISVNProperty;
 import org.tigris.subversion.svnclientadapter.ISVNStatus;
+import org.tigris.subversion.svnclientadapter.SVNAnnotations;
 import org.tigris.subversion.svnclientadapter.SVNClientException;
 import org.tigris.subversion.svnclientadapter.SVNKeywords;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
@@ -120,7 +121,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
             return false;
         }
     }
-
+ 
     /**
      * the default prompter : never prompts the user
      */
@@ -1184,4 +1185,33 @@ public class JhlClientAdapter implements ISVNClientAdapter {
                      File outFile, boolean recurse) throws SVNClientException {
         diff(url,oldUrlRevision,url,newUrlRevision,outFile,recurse);                     
     }
+
+    /**
+     * Output the content of specified files or URLs with revision and 
+     * author information in-line. 
+     */
+    public SVNAnnotations blame(SVNUrl url, SVNRevision revisionStart, SVNRevision revisionEnd)
+        throws SVNClientException
+    {
+        try {
+            byte annotations[];
+            notificationHandler.setCommand(18);
+            if(revisionStart == null)
+                revisionStart = new SVNRevision.Number(1);
+            if(revisionEnd == null)
+                revisionEnd = SVNRevision.HEAD;
+            String target = url.toString();
+            String commandLine = "blame ";
+            if(revisionEnd != SVNRevision.HEAD || !revisionStart.equals(new SVNRevision.Number(1)))
+                commandLine = commandLine + "-r " + revisionStart.toString() + ":" + revisionEnd.toString() + " ";
+            commandLine = commandLine + target.toString();
+            notificationHandler.setCommandLine(commandLine);
+            annotations = svnClient.blame(target, JhlConverter.convert(revisionStart), JhlConverter.convert(revisionEnd),false);
+            return new SVNAnnotations(annotations);
+        } catch (ClientException e) { 
+            notificationHandler.setException(e);
+            throw new SVNClientException(e);
+        }
+    }
+        
 }

@@ -129,8 +129,10 @@ public class JhlConverter {
                 return ISVNStatus.Kind.NORMAL;                
             case Status.Kind.added :
                 return ISVNStatus.Kind.ADDED;
-            case Status.Kind.absent :
-                return ISVNStatus.Kind.ABSENT;
+            case Status.Kind.missing :
+                return ISVNStatus.Kind.MISSING;
+            case Status.Kind.incomplete :
+                return ISVNStatus.Kind.INCOMPLETE;
             case Status.Kind.deleted :
                 return ISVNStatus.Kind.DELETED;
             case Status.Kind.replaced :
@@ -140,13 +142,15 @@ public class JhlConverter {
             case Status.Kind.merged :
                 return ISVNStatus.Kind.MERGED;                
             case Status.Kind.conflicted :
-                return ISVNStatus.Kind.CONFLICTED;                
+                return ISVNStatus.Kind.CONFLICTED;
+            case Status.Kind.obstructed :
+                return ISVNStatus.Kind.OBSTRUCTED;
             case Status.Kind.ignored :
                 return ISVNStatus.Kind.IGNORED;                
-            case Status.Kind.incomplete :
-                return ISVNStatus.Kind.INCOMPLETE;                
+            case Status.Kind.external:
+                return ISVNStatus.Kind.EXTERNAL;
             case Status.Kind.unversioned :
-                return ISVNStatus.Kind.UNVERSIONED;                
+                return ISVNStatus.Kind.UNVERSIONED;
             default :
                 return ISVNStatus.Kind.NONE;
         }
