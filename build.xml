@@ -14,6 +14,7 @@
     <pathelement location="${svnjavahl.jar}"/>
 	<pathelement location="${commons-logging.jar}"/>
 	<pathelement location="${jakarta-regexp.jar}"/>
+	<pathelement location="${commons-lang.jar}"/>
   </path>
 
   <!-- ================================================================= -->
@@ -87,7 +88,8 @@
 	<copy file="${svnjavahl.jar}" todir="${build.distrib.dir}/lib"/>
 	<copy file="${commons-logging.jar}" todir="${build.distrib.dir}/lib"/>
 	<copy file="${jakarta-regexp.jar}" todir="${build.distrib.dir}/lib"/>
-	<copy file="${build.lib.dir}/svnClientAdapter.jar" todir="${build.distrib.dir}/lib"/>
+	<copy file="${commons-lang.jar}" todir="${build.distrib.dir}/lib"/>
+    <copy file="${build.lib.dir}/svnClientAdapter.jar" todir="${build.distrib.dir}/lib"/>
     <copy todir="${build.distrib.dir}/javadoc">
       <fileset dir="${build.javadoc.dir}"/>
     </copy>
