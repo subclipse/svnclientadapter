@@ -67,7 +67,7 @@ public class SVNClientAdapterFactory {
 
     public static ISVNClientAdapter createSVNClient(int clientType) {
         if (clientType == JAVAHL_CLIENT)
-            return new org.tigris.subversion.svnclientadapter.javahl.SVNClientAdapter();
+            return new org.tigris.subversion.svnclientadapter.javahl.JhlClientAdapter();
         else
             return null;
     }
