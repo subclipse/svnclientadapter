@@ -973,6 +973,14 @@ public class JhlClientAdapter implements ISVNClientAdapter {
 								+ target);
 			notificationHandler.setBaseDir();                
 			
+            /*
+               there's  abit of a gotcha here: the text-base is stored without
+               eol-style conversion or keywords! this will result in spurious due
+               to line endings and keyword expansion,making external diffing
+               of the wc and the text-base useless in the case of client/server
+               line terminator mismatch. --mcclain 7/14/2004
+
+
 			if (revision.equals(SVNRevision.BASE)) {
 				// svn should not contact the repository when we want to get base
 				// file but it does.
@@ -985,6 +993,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
 					// we do nothing, we will use svnClient.fileContent instead				
 				}
 			}
+            */
 			
 			byte[] contents = svnClient.fileContent(target, JhlConverter.convert(revision));
 			InputStream input = new ByteArrayInputStream(contents);
