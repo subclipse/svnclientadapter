@@ -1124,6 +1124,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
 			String target = fileToSVNPath(path, false);
 			notificationHandler.logCommandLine(
 				"propset "
+					+ (recurse?"-R ":"")
 					+ propertyName
 					+ " \""
 					+ propertyValue
@@ -1160,6 +1161,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
 			String target = fileToSVNPath(path, false);
 			notificationHandler.logCommandLine(
 				"propset "
+					+ (recurse?"-R ":"")
 					+ propertyName
 					+ "-F \""
 					+ propertyFile.toString()
