@@ -47,6 +47,7 @@ import org.tigris.subversion.svnclientadapter.SVNInfoUnversioned;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
 import org.tigris.subversion.svnclientadapter.SVNUrl;
 import org.tigris.subversion.svnclientadapter.SVNUrlUtils;
+import org.tigris.subversion.svnclientadapter.javahl.JhlConverter;
 import org.tigris.subversion.svnclientadapter.javahl.JhlPropertyData;
 import org.tigris.subversion.svnclientadapter.javasvn.JavaSvnDirEntry;
 import org.tigris.subversion.svnclientadapter.javasvn.JavaSvnInfo;
@@ -1019,8 +1020,34 @@ public class JavaSvnClientAdapter extends AbstractClientAdapter {
     public ISVNLogMessage[] getLogMessages(SVNUrl url,
             SVNRevision revisionStart, SVNRevision revisionEnd)
             throws SVNClientException {
-        notImplementedYet("getLogMessages");
-        return null;
+        try {
+            notificationHandler.setCommand(ISVNNotifyListener.Command.LOG);
+            notificationHandler.logCommandLine("log -r "
+                    + revisionStart.toString() + ":" + revisionEnd.toString()
+                    + " " + url.toString());
+
+            // this seems to work even if url represents a file 
+            SVNRepository repository = getRepository(url);
+            long revStart = getRevisionNumber(revisionStart, repository, null,
+                    null);
+            long revEnd = getRevisionNumber(revisionEnd, repository, null, null);
+
+            final LinkedList logMessages = new LinkedList();
+            final ISVNLogEntryHandler handler = new ISVNLogEntryHandler() {
+                public void handleLogEntry(SVNLogEntry logEntry) {
+                    logMessages.add(new JavaSvnLogMessage(logEntry));
+                }
+            };
+
+            repository.log(new String[] { "" }, revStart,
+                    revEnd, true, false, handler);
+            return (ISVNLogMessage[]) logMessages
+                    .toArray(new ISVNLogMessage[logMessages.size()]);
+
+        } catch (SVNException e) {
+            notificationHandler.logException(e);
+            throw new SVNClientException(e);
+        }
     }
 
     /*
@@ -1174,11 +1201,13 @@ public class JavaSvnClientAdapter extends AbstractClientAdapter {
 
             String value = null;
             ISVNWorkspace ws = getRootWorkspace(path);
-            value = ws.getPropertyValue(getWorkspacePath(ws, path), propertyName);
+            value = ws.getPropertyValue(getWorkspacePath(ws, path),
+                    propertyName);
             if (value == null) {
                 return null;
             }
-            return new JavaSvnPropertyData(path, propertyName, value, value.getBytes());
+            return new JavaSvnPropertyData(path, propertyName, value, value
+                    .getBytes());
 
         } catch (SVNException e) {
             notificationHandler.logException(e);
@@ -1196,14 +1225,16 @@ public class JavaSvnClientAdapter extends AbstractClientAdapter {
             throws SVNClientException {
         try {
             notificationHandler.setCommand(ISVNNotifyListener.Command.PROPDEL);
-            notificationHandler.logCommandLine("propdel "+propertyName+" "+path);
+            notificationHandler.logCommandLine("propdel " + propertyName + " "
+                    + path);
 
             ISVNWorkspace ws = getRootWorkspace(path);
-            ws.setPropertyValue(getWorkspacePath(ws, path), propertyName, null, recurse);
+            ws.setPropertyValue(getWorkspacePath(ws, path), propertyName, null,
+                    recurse);
         } catch (SVNException e) {
             notificationHandler.logException(e);
-            throw new SVNClientException(e);            
-        }  
+            throw new SVNClientException(e);
+        }
     }
 
     /*
