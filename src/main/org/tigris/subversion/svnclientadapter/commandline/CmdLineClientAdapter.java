@@ -101,16 +101,24 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 	private SvnAdminCommandLine svnAdminCmd = new SvnAdminCommandLine("svnAdmin",notificationHandler);
     private String version = null;
 
+    private static boolean availabilityCached = false;
+    private static boolean available;
+    
 	//Methods
 	public static boolean isAvailable() {
-		// this will need to be fixed when path to svn will be customizable 
-		SvnCommandLine cmd = new SvnCommandLine("svn", new CmdLineNotificationHandler());
-		try {
-			String version = cmd.version();
-    		return true;
-		} catch (Exception e) {
-			return false;
+		// availabilityCached flag must be reset if location of client changes
+		if (!availabilityCached) {
+			// this will need to be fixed when path to svn will be customizable
+			SvnCommandLine cmd = new SvnCommandLine("svn", new CmdLineNotificationHandler());
+			try {
+				String version = cmd.version();
+	    		available = true;
+			} catch (Exception e) {
+				available = false;
+			}
+			availabilityCached = true;
 		}
+		return available;
 	}
     
     /**

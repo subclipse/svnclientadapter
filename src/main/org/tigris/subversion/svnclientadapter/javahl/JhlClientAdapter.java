@@ -107,6 +107,8 @@ public class JhlClientAdapter implements ISVNClientAdapter {
     private JhlNotificationHandler notificationHandler;
     private PromptUserPassword promptUserPasswordHandler;
     
+    private static boolean availabilityCached = false;
+    private static boolean available;
 
     public JhlClientAdapter() {
         svnClient = new SVNClientSynchronized();
@@ -121,44 +123,48 @@ public class JhlClientAdapter implements ISVNClientAdapter {
      * @return
      */
     public static boolean isAvailable() {
-        try {
-            // if library is already loaded, it will not be reloaded
-
-        	//workaround to solve Subclipse ISSUE #83
-        	String os = System.getProperty("osgi.os");
-			if( "win32".equals(os) ) {
-				System.loadLibrary("libeay32");
-				System.loadLibrary("libdb42");
-				System.loadLibrary("ssleay32");
-			}
-        	//workaround to solve Subclipse ISSUE #83
-
-            /*
-             * first try to load the library by the new name.
-             * if that fails, try to load the library by the old name.
-             */
-            try
-            {
-                System.loadLibrary("svnjavahl-1");
-            }
-            catch(UnsatisfiedLinkError ex)
-            {
-                try
-                {
-                    System.loadLibrary("libsvnjavahl-1");
-                }
-                catch (UnsatisfiedLinkError e)
-                {
-                    System.loadLibrary("svnjavahl");
-                }
-            }        	
-        	
-            return true;
-        } catch (Exception e) {
-            return false;
-        } catch (UnsatisfiedLinkError e) {
-            return false;
-        }
+    	if (!availabilityCached) {
+	        try {
+	            // if library is already loaded, it will not be reloaded
+	
+	        	//workaround to solve Subclipse ISSUE #83
+	        	String os = System.getProperty("osgi.os");
+				if( "win32".equals(os) ) {
+					System.loadLibrary("libeay32");
+					System.loadLibrary("libdb42");
+					System.loadLibrary("ssleay32");
+				}
+	        	//workaround to solve Subclipse ISSUE #83
+	
+	            /*
+	             * first try to load the library by the new name.
+	             * if that fails, try to load the library by the old name.
+	             */
+	            try
+	            {
+	                System.loadLibrary("svnjavahl-1");
+	            }
+	            catch(UnsatisfiedLinkError ex)
+	            {
+	                try
+	                {
+	                    System.loadLibrary("libsvnjavahl-1");
+	                }
+	                catch (UnsatisfiedLinkError e)
+	                {
+	                    System.loadLibrary("svnjavahl");
+	                }
+	            }        	
+	        	
+	            available = true;
+	        } catch (Exception e) {
+	        	available = false;
+	        } catch (UnsatisfiedLinkError e) {
+	        	available = false;
+	        }
+	        availabilityCached = true;
+    	}
+    	return available;
     }
 
 	/**
