@@ -447,7 +447,7 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 		try {
 			notificationHandler.setBaseDir(new File("."));
 			String changedResources =
-				_cmd.move(toString(url), toString(destUrl), message, toString(revision));
+				_cmd.move(toString(url), toString(destUrl), message, toString(revision), false);
 		} catch (CmdLineException e) {
 			SVNClientException.wrapException(e);
 		}
@@ -456,11 +456,11 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.subclipse.client.ISVNClientAdapter#move(java.io.File, java.io.File, boolean)
 	 */
-	public void move(File file, File file2, boolean b) throws SVNClientException {
+	public void move(File file, File file2, boolean force) throws SVNClientException {
 		try {
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(new File[] {file,file2}));
 			String changedResources =
-				_cmd.move(toString(file), toString(file2), null, null);
+				_cmd.move(toString(file), toString(file2), null, null, force);
 		} catch (CmdLineException e) {
 			throw SVNClientException.wrapException(e);
 		}

@@ -517,8 +517,9 @@ public class SvnCommandLine extends CommandLine {
 	 * @param source Local path or URL to move from.
 	 * @param dest Local path or URL to move to.
 	 * @param message Optional message to send with URL.
+	 * @param force Perform move even if there are modifications to working copy
 	 */
-	String move(String source, String dest, String message, String revision)
+	String move(String source, String dest, String message, String revision, boolean force)
 		throws CmdLineException {
         setCommand(ISVNNotifyListener.Command.MOVE, true);            
 		ArrayList args = new ArrayList();
@@ -530,6 +531,9 @@ public class SvnCommandLine extends CommandLine {
 		if (message != null) {
 			args.add("-m");
 			args.add(message);
+		}
+		if (force) {
+			args.add("--force");
 		}
 		addAuthInfo(args);				
 	
