@@ -54,8 +54,10 @@
  */ 
 package org.tigris.subversion.svnclientadapter.commandline;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -127,12 +129,13 @@ public class Helper {
 
 	private static String toString(InputStream stream)
 		throws CmdLineException {
-		int buffer;
 		StringBuffer sb = new StringBuffer();
 
+		BufferedReader br = new BufferedReader(new InputStreamReader(stream));
+		String st;
 		try {
-			while ((buffer = stream.read()) != -1) {
-				sb.append((char) buffer);
+			while((st=br.readLine())!=null){
+				sb.append(st+NEWLINE);
 			}
 		} catch (IOException e) {
 			throw CmdLineException.wrapException(e);
