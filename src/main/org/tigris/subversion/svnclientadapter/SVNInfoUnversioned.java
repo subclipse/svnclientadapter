@@ -51,162 +51,131 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  *
- */ 
-package org.tigris.subversion.svnclientadapter.javahl;
+ */
+package org.tigris.subversion.svnclientadapter;
 
 import java.io.File;
-import java.io.IOException;
-import java.net.MalformedURLException;
 import java.util.Date;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.tigris.subversion.javahl.Info;
-import org.tigris.subversion.svnclientadapter.ISVNInfo;
-import org.tigris.subversion.svnclientadapter.SVNNodeKind;
-import org.tigris.subversion.svnclientadapter.SVNScheduleKind;
-import org.tigris.subversion.svnclientadapter.SVNUrl;
 import org.tigris.subversion.svnclientadapter.SVNRevision.Number;
 
 /**
- * adapter : convert from Info to ISVNInfo
- *  
- * @author Cédric Chabanois
+ * <p>
+ * A special info class that is used if a File/Folder is not versioned.</p>
+ * 
+ * @author Cédric Chabanois (cchabanois at no-log.org)
  */
-public class JhlInfo implements ISVNInfo {
-	private static Log log = LogFactory.getLog(JhlInfo.class);
-	
-	private Info info;
+public class SVNInfoUnversioned implements ISVNInfo {
 	private File file;
-
-	public JhlInfo(File file, Info info) {
-        super();
-        this.file = file;
-        this.info = info;
-	}	
-	
+    
+    public SVNInfoUnversioned(File file) {
+    	this.file = file;
+    }
+    
+    
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNInfo#getFile()
 	 */
 	public File getFile() {
-		try {
-			return file.getCanonicalFile();
-		} catch (IOException e) {
-			return null;
-		}
+		return file;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNInfo#getUrl()
 	 */
 	public SVNUrl getUrl() {
-		try {
-			return new SVNUrl(info.getUrl());
-		} catch (MalformedURLException e) {
-			log.error(e);
-			return null;
-		}
+		return null;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNInfo#getUuid()
 	 */
 	public String getUuid() {
-		return info.getUuid();
+		return null;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNInfo#getRepository()
 	 */
 	public SVNUrl getRepository() {
-		try {
-			return new SVNUrl(info.getRepository());
-		} catch (MalformedURLException e) {
-			log.error(e);
-			return null;
-		}
+		return null;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNInfo#getSchedule()
 	 */
 	public SVNScheduleKind getSchedule() {
-		return JhlConverter.convertScheduleKind(info.getSchedule());
+		return null;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNInfo#getNodeKind()
 	 */
 	public SVNNodeKind getNodeKind() {
-		return JhlConverter.convertNodeKind(info.getNodeKind());
+		return null;
 	}
 
 	/* (non-Javadoc)
-	 * @see org.tigris.subversion.svnclientadapter.ISVNInfo#getAuthor()
+	 * @see org.tigris.subversion.svnclientadapter.ISVNInfo#getLastCommitAuthor()
 	 */
 	public String getLastCommitAuthor() {
-		return info.getAuthor();
+		return null;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNInfo#getRevision()
 	 */
 	public Number getRevision() {
-		return JhlConverter.convertRevisionNumber(info.getRevision());
+		return null;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNInfo#getLastChangedRevision()
 	 */
 	public Number getLastChangedRevision() {
-		return JhlConverter.convertRevisionNumber(info.getLastChangedRevision());
+		return null;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNInfo#getLastChangedDate()
 	 */
 	public Date getLastChangedDate() {
-		return info.getLastChangedDate();
+		return null;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNInfo#getLastDateTextUpdate()
 	 */
 	public Date getLastDateTextUpdate() {
-		return info.getLastDateTextUpdate();
+		return null;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNInfo#getLastDatePropsUpdate()
 	 */
 	public Date getLastDatePropsUpdate() {
-		return info.getLastDatePropsUpdate();
+		return null;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNInfo#isCopied()
 	 */
 	public boolean isCopied() {
-		return info.isCopied();
+		return false;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNInfo#getCopyRev()
 	 */
 	public Number getCopyRev() {
-		return JhlConverter.convertRevisionNumber(info.getCopyRev());
+		return null;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNInfo#getCopyUrl()
 	 */
 	public SVNUrl getCopyUrl() {
-		try {
-			return new SVNUrl(info.getCopyUrl());
-		} catch (MalformedURLException e) {
-			log.error(e);
-			return null;
-		}
+		return null;
 	}
 
 }

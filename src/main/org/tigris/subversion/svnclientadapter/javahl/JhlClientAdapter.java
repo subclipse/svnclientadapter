@@ -66,6 +66,7 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 import org.tigris.subversion.javahl.ClientException;
+import org.tigris.subversion.javahl.Info;
 import org.tigris.subversion.javahl.PromptUserPassword;
 import org.tigris.subversion.javahl.PropertyData;
 import org.tigris.subversion.javahl.Revision;
@@ -84,6 +85,7 @@ import org.tigris.subversion.svnclientadapter.ISVNProperty;
 import org.tigris.subversion.svnclientadapter.ISVNStatus;
 import org.tigris.subversion.svnclientadapter.SVNBaseDir;
 import org.tigris.subversion.svnclientadapter.SVNClientException;
+import org.tigris.subversion.svnclientadapter.SVNInfoUnversioned;
 import org.tigris.subversion.svnclientadapter.SVNKeywords;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
 import org.tigris.subversion.svnclientadapter.SVNStatusUnversioned;
@@ -462,7 +464,11 @@ public class JhlClientAdapter implements ISVNClientAdapter {
         for (int i = 0; i < filePathSVN.length;i++) {
             try {
                 Status status = svnClient.singleStatus(filePathSVN[i], false);
-                statuses[i] = new JhlStatus(status);                
+                if (status == null) {
+                	statuses[i] = new SVNStatusUnversioned(path[i]);
+                } else {
+                	statuses[i] = new JhlStatus(status);
+                }
             } catch (ClientException e) {
                 if (e.getAprError() == SVN_ERR_WC_NOT_DIRECTORY) {
                     // when there is no .svn dir, an exception is thrown ...
@@ -1575,7 +1581,14 @@ public class JhlClientAdapter implements ISVNClientAdapter {
 			notificationHandler.logCommandLine("info "+target);
 			File baseDir = SVNBaseDir.getBaseDir(path);
 			notificationHandler.setBaseDir(baseDir);
-			return new JhlInfo(baseDir,svnClient.info(target));
+			
+            Info info = svnClient.info(target);
+            if (info == null) {
+            	return new SVNInfoUnversioned(path);
+            } else {
+                return new JhlInfo(path,info);    
+            }
+            
 		} catch (ClientException e) {
 			notificationHandler.logException(e);
 			throw new SVNClientException(e);            

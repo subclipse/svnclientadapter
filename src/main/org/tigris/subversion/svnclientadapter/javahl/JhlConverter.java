@@ -120,6 +120,14 @@ public class JhlConverter {
 				return SVNRevision.HEAD;
 		}
 	}
+    
+    static SVNRevision.Number convertRevisionNumber(long revisionNumber) {
+    	if (revisionNumber == -1) {
+    		return null;
+        } else {
+        	return new SVNRevision.Number(revisionNumber); 
+        }
+    }
 
     public static SVNNodeKind convertNodeKind(int javahlNodeKind) {
         switch(javahlNodeKind) {

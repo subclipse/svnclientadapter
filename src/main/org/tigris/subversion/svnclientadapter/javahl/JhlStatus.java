@@ -125,7 +125,10 @@ public class JhlStatus implements ISVNStatus {
 	 * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getLastChangedRevision()
 	 */
 	public SVNRevision.Number getLastChangedRevision() {
-		return (SVNRevision.Number)JhlConverter.convert(_s.getLastChangedRevision());
+        // we don't use 
+        // return (SVNRevision.Number)JhlConverter.convert(_s.getLastChangedRevision());
+        // as _s.getLastChangedRevision() is currently broken if revision is -1 
+        return (SVNRevision.Number)JhlConverter.convertRevisionNumber(_s.getLastChangedRevisionNumber());
 	}
 
 	/*
@@ -204,7 +207,7 @@ public class JhlStatus implements ISVNStatus {
 	 * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getRevision()
 	 */
 	public SVNRevision.Number getRevision() {
-		return (SVNRevision.Number)JhlConverter.convert(_s.getRevision());
+		return (SVNRevision.Number)JhlConverter.convertRevisionNumber(_s.getRevisionNumber());
 	}
 
 	/*
