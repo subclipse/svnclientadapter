@@ -96,7 +96,8 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
     private String version = null;
     private final static String[] checkedVersions = 
     {
-        "svn, version 0.35.1 (r8050)" 
+        "svn, version 0.35.1 (r8050)",
+        "svn, version 0.37.0 (r8509)"
     };
 
 	//Methods
