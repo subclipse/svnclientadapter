@@ -96,7 +96,7 @@ class CommandLine {
 	private static String CMD_RECURSIVE_STATUS = "status -v {0} --non-interactive";
 
 	private static String CMD_UPDATE = "up -r {0} {1} --non-interactive";
-	private static String AUTH_INFO = "--username \"{0}\" --password \"{1}\"";
+	private static String AUTH_INFO = " --username \"{0}\" --password \"{1}\"";
 
 	private String CMD;
 

@@ -85,6 +85,7 @@ class CmdLineRemoteDirEntry implements ISVNDirEntry {
 	private SVNNodeKind nodeKind;
 	private String lastCommitAuthor;
 	private Date lastChangedDate;
+	private long size;
 
 	//Constructors
 	CmdLineRemoteDirEntry(String baseUrl, String line) {
@@ -105,6 +106,8 @@ class CmdLineRemoteDirEntry implements ISVNDirEntry {
 		revision = new SVNRevision.Number(Long.parseLong(line.substring(1, 9).trim()));
 		nodeKind = (folder) ? SVNNodeKind.DIR : SVNNodeKind.FILE;
 		lastCommitAuthor = line.substring(9, 18).trim();
+
+		size = Long.parseLong(line.substring(18, 27).trim());
 
         String dateString = line.substring(28, 40);
         
@@ -168,8 +171,7 @@ class CmdLineRemoteDirEntry implements ISVNDirEntry {
 	}
 
     public long getSize() {
-        // TODO : implement getSize
-        return 0;
+        return size;
     }
 
 }

@@ -51,7 +51,7 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  *
- */ 
+ */
 package org.tigris.subversion.svnclientadapter.commandline;
 
 import java.util.Date;
@@ -83,6 +83,7 @@ class CmdLineInfo {
 
 	//Fields
 	private Map infoMap = new HashMap();
+	private boolean unversioned = false;
 
 	//Constructors
 	CmdLineInfo(String infoString) {
@@ -91,15 +92,15 @@ class CmdLineInfo {
 
 	//Methods
 	public Date getLastChangedDate() {
-		return Helper.toDate(get(KEY_LASTCHANGEDDATE));
+		return (unversioned) ? null : Helper.toDate(get(KEY_LASTCHANGEDDATE));
 	}
 
 	public SVNRevision.Number getLastChangedRevision() {
-		return Helper.toRevNum(get(KEY_LASTCHANGEDREV));
+		return (unversioned) ? null : Helper.toRevNum(get(KEY_LASTCHANGEDREV));
 	}
 
 	public String getLastCommitAuthor() {
-		return get(KEY_LASTCHANGEDAUTHOR);
+		return (unversioned) ? null : get(KEY_LASTCHANGEDAUTHOR);
 	}
 
 	public SVNNodeKind getNodeKind() {
@@ -115,11 +116,11 @@ class CmdLineInfo {
 	}
 
 	public SVNRevision.Number getRevision() {
-		return Helper.toRevNum(get(KEY_REVISION));
+		return (unversioned) ? SVNRevision.INVALID_REVISION : Helper.toRevNum(get(KEY_REVISION));
 	}
 
 	public SVNUrl getUrl() {
-		return Helper.toSVNUrl(get(KEY_URL));
+		return (unversioned) ? null : Helper.toSVNUrl(get(KEY_URL));
 	}
 
 	private String get(String key) {
@@ -129,16 +130,25 @@ class CmdLineInfo {
 
 	private void load(String infoString) {
 		StringTokenizer st = new StringTokenizer(infoString, Helper.NEWLINE);
-		//First, go through and take each line and throw
-		// it into a map with the key being the text to
-		// the left of the colon, and value being to the
-		// right.
-		while (st.hasMoreTokens()) {
-			String line = st.nextToken();
-			int middle = line.indexOf(':');
-			String key = line.substring(0, middle);
-			String value = line.substring(middle + 2);
-			infoMap.put(key, value);
+
+		//this does not have to be a versioned resource.
+		//if it is not, the first line will end with
+		// ":  (Not a versioned resource)"
+		if (st.countTokens() == 1) {
+			unversioned = true;
+		} else {
+
+			//First, go through and take each line and throw
+			// it into a map with the key being the text to
+			// the left of the colon, and value being to the
+			// right.
+			while (st.hasMoreTokens()) {
+				String line = st.nextToken();
+				int middle = line.indexOf(':');
+				String key = line.substring(0, middle);
+				String value = line.substring(middle + 2);
+				infoMap.put(key, value);
+			}
 		}
 	}
 }
