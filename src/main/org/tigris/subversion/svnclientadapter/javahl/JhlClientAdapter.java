@@ -132,10 +132,10 @@ public class JhlClientAdapter implements ISVNClientAdapter {
 				if( "win32".equals(os) ) {
 					System.loadLibrary("libapr");
 					System.loadLibrary("libapriconv");
-					System.loadLibrary("libaprutil");
 					System.loadLibrary("libeay32");
 					System.loadLibrary("libdb42");
 					System.loadLibrary("ssleay32");
+					System.loadLibrary("libaprutil");
 				}
 	        	//workaround to solve Subclipse ISSUE #83
 	
@@ -164,8 +164,9 @@ public class JhlClientAdapter implements ISVNClientAdapter {
 	        	available = false;
 	        } catch (UnsatisfiedLinkError e) {
 	        	available = false;
+	        } finally {
+	        	availabilityCached = true;
 	        }
-	        availabilityCached = true;
     	}
     	return available;
     }
