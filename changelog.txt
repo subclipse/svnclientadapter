@@ -1,3 +1,12 @@
+* 0.9.13
+- API Additions:
+  ISVNClientAdapter.getStatus(File path, boolean descend, boolean getAll, boolean contactServer)
+  ISVNStatus.getRepositoryTextStatus()
+  ISVNStatus.getRepositoryPropStatus()
+  ISVNNotifyListener.logRevision(long revision)
+  ISVNClientAdapter.createRepository (Currently implemented for command line interface)
+  ISVNClientAdapter.getList(File,SVNRevision,boolean)
+  ISVNClientAdapter.getDirEntry(File, SVNRevision) 
 * 0.9.4
 - svnjavahl.dll, svnjavahl.jar updated to "Javahl bindings for Subversion 1.0.5 on Win32."
 - bug in date parser for command line corrected
