@@ -55,9 +55,12 @@
 package org.tigris.subversion.svnclientadapter;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
+import org.tigris.subversion.svnclientadapter.javahl.JhlConverter;
 
 /**
  * Notification handler :
@@ -67,6 +70,7 @@ public abstract class SVNNotificationHandler {
     protected List notifylisteners = new ArrayList();
     protected int command;
     protected boolean logEnabled = true;
+    protected File baseDir = new File(".");
         
     /**
      * Add a notification listener
@@ -118,6 +122,11 @@ public abstract class SVNNotificationHandler {
         }                        
     }    
 
+	/**
+	 * set the command
+	 * @param command
+	 * @param files
+	 */
     public void setCommand(int command) {
         this.command = command;        
         for(Iterator it=notifylisteners.iterator(); it.hasNext();) {
@@ -126,6 +135,10 @@ public abstract class SVNNotificationHandler {
         }            
     }
     
+    /**
+     * log the command line
+     * @param commandLine
+     */
     public void logCommandLine(String commandLine) {
         if (logEnabled) {
             for(Iterator it=notifylisteners.iterator(); it.hasNext();) {
@@ -146,10 +159,69 @@ public abstract class SVNNotificationHandler {
         }
     }
     
-    public void notifyListenersOfChange(File path, SVNNodeKind kind) {
+    /**
+     * set the baseDir : directory to use as base directory when path is relative
+     * @param baseDir
+     */
+    public void setBaseDir(File baseDir) {
+		this.baseDir = baseDir;    	
+    }
+
+	public void setBaseDir() {
+		this.baseDir = new File(".");
+	}
+    
+    private File getCanonicalFile(String path) {
+		File f;
+		try {
+			f = new File(path);
+			if (f.isAbsolute()) {
+				f = f.getCanonicalFile();
+			} else {
+				f = new File(baseDir,path).getCanonicalFile();
+			}
+			return f;
+		} catch (IOException e) {
+			return null;
+		}
+    }
+    
+    public void notifyListenersOfChange(String path) {
+		File f = getCanonicalFile(path);
+		if (f == null) {
+			// this should not happen
+			logMessage("Warning : invalid path :"+path);
+			return;
+		}
+		
+		SVNNodeKind kind;
+		if (f.isFile()) {
+			kind = SVNNodeKind.FILE;
+		} else
+		if (f.isDirectory()) {
+			kind = SVNNodeKind.DIR;
+		} else {
+			kind = SVNNodeKind.UNKNOWN;
+		}
+
+		for(Iterator it=notifylisteners.iterator(); it.hasNext();) {
+			ISVNNotifyListener listener = (ISVNNotifyListener)it.next();
+			listener.onNotify(f, kind);
+		}  
+
+    }
+    
+    public void notifyListenersOfChange(String path, SVNNodeKind kind) {
+		File f = getCanonicalFile(path);
+		if (f == null) {
+			// this should not happen
+			logMessage("Warning : invalid path :"+path);
+			return;
+		}
+
         for(Iterator it=notifylisteners.iterator(); it.hasNext();) {
             ISVNNotifyListener listener = (ISVNNotifyListener)it.next();
-            listener.onNotify(path, kind);
+            listener.onNotify(f, kind);
         }  
     }
     

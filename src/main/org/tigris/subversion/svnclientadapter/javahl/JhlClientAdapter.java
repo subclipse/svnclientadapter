@@ -77,6 +77,7 @@ import org.tigris.subversion.svnclientadapter.ISVNNotifyListener;
 import org.tigris.subversion.svnclientadapter.ISVNProperty;
 import org.tigris.subversion.svnclientadapter.ISVNStatus;
 import org.tigris.subversion.svnclientadapter.SVNAnnotations;
+import org.tigris.subversion.svnclientadapter.SVNBaseDir;
 import org.tigris.subversion.svnclientadapter.SVNClientException;
 import org.tigris.subversion.svnclientadapter.SVNKeywords;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
@@ -206,6 +207,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
         try{
             notificationHandler.setCommand(ISVNNotifyListener.Command.ADD);
             notificationHandler.logCommandLine("add -N "+file.toString());
+			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(file));
             svnClient.add(fileToSVNPath(file, true), false);
         } catch (ClientException e) {
             notificationHandler.logException(e);
@@ -225,6 +227,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
                 "add"+
                 (recurse?"":"-N")+
                 " "+dir.toString());
+			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(dir));
             svnClient.add(fileToSVNPath(dir, true), recurse);
         } catch (ClientException e) {
             notificationHandler.logException(e);
@@ -254,6 +257,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
                 (recurse?"":" -N") + 
                 " -r "+revision.toString()+
                 " "+moduleName.toString());        
+			notificationHandler.setBaseDir(new File("."));
             svnClient.checkout(
 			    moduleName.toString(),
                 fileToSVNPath(destPath, true),
@@ -289,6 +293,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
                 commandLine+=" "+files[i].toString();
             }
             notificationHandler.logCommandLine(commandLine);
+			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(paths));
 
             return svnClient.commit(files, message, recurse);
         } catch (ClientException e) {
@@ -311,7 +316,8 @@ public class JhlClientAdapter implements ISVNClientAdapter {
         try {
             notificationHandler.setCommand(ISVNNotifyListener.Command.LS);
             String commandLine = "list -r "+revision.toString()+(recurse?"-R":"")+" "+url.toString();
-            notificationHandler.logCommandLine(commandLine);		
+            notificationHandler.logCommandLine(commandLine);
+			notificationHandler.setBaseDir(new File("."));		
             return JhlConverter.convert(svnClient.list(url.toString(), JhlConverter.convert(revision), recurse));
         } catch (ClientException e) {
             notificationHandler.logException(e);
@@ -362,6 +368,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
             commandLine+=" "+filePathSVN[i]; 
         }
         notificationHandler.logCommandLine(commandLine);
+		notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
 
         ISVNStatus[] statuses = new ISVNStatus[path.length]; 
         for (int i = 0; i < filePathSVN.length;i++) {
@@ -393,6 +400,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
 		notificationHandler.setCommand(ISVNNotifyListener.Command.STATUS);
 		String filePathSVN = fileToSVNPath(path, true);
 		notificationHandler.logCommandLine("status " + filePathSVN);
+		notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
 		try {
 			return JhlConverter.convert(
                 svnClient.status(
@@ -420,6 +428,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
 			String src = fileToSVNPath(srcPath, true);
 			String dest = fileToSVNPath(destPath, true);
 			notificationHandler.logCommandLine("copy " + src + " " + dest);
+			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(new File[] {srcPath,destPath }));
 			svnClient.copy(src, dest, "", Revision.HEAD);
 			// last two parameters are not used
 		} catch (ClientException e) {
@@ -441,6 +450,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
 			String src = fileToSVNPath(srcPath, true);
 			String dest = destUrl.toString();
 			notificationHandler.logCommandLine("copy " + src + " " + dest);
+			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(srcPath));
 			svnClient.copy(src, dest, message, Revision.HEAD);
 			// last parameter is not used
 		} catch (ClientException e) {
@@ -462,6 +472,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
 			String src = srcUrl.toString();
 			String dest = fileToSVNPath(destPath, true);
 			notificationHandler.logCommandLine("copy " + src + " " + dest);
+			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(destPath));
 			svnClient.copy(src, dest, "", JhlConverter.convert(revision));
 		} catch (ClientException e) {
 			notificationHandler.logException(e);
@@ -486,7 +497,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
 			String src = srcUrl.toString();
 			String dest = destUrl.toString();
 			notificationHandler.logCommandLine("copy " + src + " " + dest);
-
+			notificationHandler.setBaseDir();
 			svnClient.copy(src, dest, message, JhlConverter.convert(revision));
 		} catch (ClientException e) {
 			notificationHandler.logException(e);
@@ -512,6 +523,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
                 commandLine += " "+targets[i];
             }
             notificationHandler.logCommandLine(commandLine);
+			notificationHandler.setBaseDir();
 		    svnClient.remove(targets,message,false);
             
         } catch (ClientException e) {
@@ -543,6 +555,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
             }
             
             notificationHandler.logCommandLine(commandLine);
+			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(file));
    
             svnClient.remove(targets,"",force);
         } catch (ClientException e) {
@@ -571,7 +584,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
 			String dest = fileToSVNPath(destPath, true);
 			notificationHandler.logCommandLine(
 				"export -r " + revision.toString() + ' ' + src + ' ' + dest);
-
+			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(destPath));
 			svnClient.doExport(src, dest, JhlConverter.convert(revision), force);
 		} catch (ClientException e) {
 			notificationHandler.logException(e);
@@ -594,6 +607,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
 			String src = fileToSVNPath(srcPath, true);
 			String dest = fileToSVNPath(destPath, true);
 			notificationHandler.logCommandLine("export " + src + ' ' + dest);
+			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(new File[]{srcPath,destPath }));
 			// in this case, revision is not used but must be valid
 			svnClient.doExport(src, dest, Revision.HEAD, force);
 		} catch (ClientException e) {
@@ -630,6 +644,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
 					+ src
 					+ ' '
 					+ dest);
+			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
 			svnClient.doImport(src, dest, message, recurse);
 		} catch (ClientException e) {
 			notificationHandler.logException(e);
@@ -649,6 +664,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
 		    String target = url.toString();
             notificationHandler.logCommandLine(
                 "mkdir -m \""+message+"\" "+target);
+			notificationHandler.setBaseDir();
             svnClient.mkdir(new String[] { target },message);
         } catch (ClientException e) {
             notificationHandler.logException(e);
@@ -667,6 +683,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
             String target = fileToSVNPath(file, true);
             notificationHandler.logCommandLine(
                 "mkdir "+target);
+			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(file));
             svnClient.mkdir(new String[] { target },"");
         } catch (ClientException e) {
             notificationHandler.logException(e);
@@ -687,7 +704,8 @@ public class JhlClientAdapter implements ISVNClientAdapter {
 		    String src = fileToSVNPath(srcPath, true);
             String dest = fileToSVNPath(destPath, true);
             notificationHandler.logCommandLine(
-                    "move "+src+' '+dest);        
+                    "move "+src+' '+dest);
+			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(new File[] {srcPath, destPath}));        
             svnClient.move(src,dest,"",Revision.HEAD,force);
         } catch (ClientException e) {
             notificationHandler.logException(e);
@@ -720,6 +738,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
 					+ src
 					+ ' '
 					+ dest);
+			notificationHandler.setBaseDir();
 			svnClient.move(src, dest, message, JhlConverter.convert(revision), false);
 		} catch (ClientException e) {
 			notificationHandler.logException(e);
@@ -745,6 +764,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
 					+ ' '
 					+ (recurse ? "" : "-N ")
 					+ target);
+			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
 			svnClient.update(target, JhlConverter.convert(revision), recurse);
 		} catch (ClientException e) {
 			notificationHandler.logException(e);
@@ -765,7 +785,8 @@ public class JhlClientAdapter implements ISVNClientAdapter {
             notificationHandler.logCommandLine(
                 "revert "+
                 (recurse?"":"-N ")+
-                target); 
+                target);
+			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path)); 
             svnClient.revert(target,recurse);
         } catch (ClientException e) {
             notificationHandler.logException(e);
@@ -795,7 +816,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
 					+ revisionEnd.toString()
 					+ " "
 					+ target);
-
+			notificationHandler.setBaseDir();
 			return JhlConverter.convert(svnClient.logMessages(target, JhlConverter.convert(revisionStart), JhlConverter.convert(revisionEnd)));
 		} catch (ClientException e) {
 			notificationHandler.logException(e);
@@ -826,6 +847,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
 					+ revisionEnd.toString()
 					+ " "
 					+ target);
+			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
 			return JhlConverter.convert(svnClient.logMessages(target, JhlConverter.convert(revisionStart), JhlConverter.convert(revisionEnd)));
 		} catch (ClientException e) {
 			notificationHandler.logException(e);
@@ -857,7 +879,8 @@ public class JhlClientAdapter implements ISVNClientAdapter {
                             "cat -r "
                                 + revision.toString()
                                 + " "
-                                + url.toString());                
+                                + url.toString());
+			notificationHandler.setBaseDir();                
 			byte[] contents = svnClient.fileContent(url.toString(), JhlConverter.convert(revision));
 			InputStream input = new ByteArrayInputStream(contents);
 			return input;
@@ -892,7 +915,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
 					+ propertyValue
 					+ "\" "
 					+ target);
-
+			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
 			svnClient.propertySet(target, propertyName, propertyValue, recurse);
 		} catch (ClientException e) {
 			notificationHandler.logException(e);
@@ -920,7 +943,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
 					+ propertyFile.toString()
 					+ "\" "
 					+ target);
-
+			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
 			byte[] propertyBytes;
 
 			FileInputStream is = new FileInputStream(propertyFile);
@@ -950,7 +973,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
 			String target = fileToSVNPath(path, true);
 			notificationHandler.logCommandLine(
 				"propget " + propertyName + " " + target);
-
+			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
 			PropertyData propData = svnClient.propertyGet(target, propertyName);
             if (propData == null)
                 return null;
@@ -976,7 +999,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
             
             String target = fileToSVNPath(path, true);
             notificationHandler.logCommandLine("propdel "+propertyName+" "+target);
-            
+			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
             // this does not delete the property, but (String)null causes an 
             // unexpected exception ...
             // we should submit a patch for that
@@ -1161,7 +1184,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
                 commandLine += "--new "+newTarget+" ";
             
             notificationHandler.logCommandLine(commandLine);
-            
+			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(new File[]{oldPath,newPath}));
             svnClient.diff(oldTarget,JhlConverter.convert(oldPathRevision),newTarget,JhlConverter.convert(newPathRevision), svnOutFile, recurse);
         } catch (ClientException e) {
             notificationHandler.logException(e);
@@ -1208,7 +1231,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
                 commandLine += newUrl+" ";
             
             notificationHandler.logCommandLine(commandLine);
-            
+			notificationHandler.setBaseDir();
             svnClient.diff(oldUrl.toString(),JhlConverter.convert(oldUrlRevision),newUrl.toString(),JhlConverter.convert(newUrlRevision), svnOutFile, recurse);
         } catch (ClientException e) {
             notificationHandler.logException(e);
@@ -1241,6 +1264,7 @@ public class JhlClientAdapter implements ISVNClientAdapter {
                 commandLine = commandLine + "-r " + revisionStart.toString() + ":" + revisionEnd.toString() + " ";
             commandLine = commandLine + target.toString();
             notificationHandler.logCommandLine(commandLine);
+			notificationHandler.setBaseDir();
             annotations = svnClient.blame(target, JhlConverter.convert(revisionStart), JhlConverter.convert(revisionEnd));
             return new SVNAnnotations(annotations);
         } catch (ClientException e) { 

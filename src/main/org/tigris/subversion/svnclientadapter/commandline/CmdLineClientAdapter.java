@@ -73,6 +73,7 @@ import org.tigris.subversion.svnclientadapter.ISVNNotifyListener;
 import org.tigris.subversion.svnclientadapter.ISVNProperty;
 import org.tigris.subversion.svnclientadapter.ISVNStatus;
 import org.tigris.subversion.svnclientadapter.SVNAnnotations;
+import org.tigris.subversion.svnclientadapter.SVNBaseDir;
 import org.tigris.subversion.svnclientadapter.SVNClientException;
 import org.tigris.subversion.svnclientadapter.SVNKeywords;
 import org.tigris.subversion.svnclientadapter.SVNNodeKind;
@@ -295,9 +296,10 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.subclipse.client.ISVNClientAdapter#revert(java.io.File, boolean)
 	 */
-	public void revert(File arg0, boolean arg1) throws SVNClientException {
+	public void revert(File file, boolean recursive) throws SVNClientException {
 		try {
-			String changedFiles = _cmd.revert(new String[] { toString(arg0) }, arg1);
+			String changedFiles = _cmd.revert(new String[] { toString(file) }, recursive);
+			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(file));
 			refreshChangedResources(changedFiles);
 		} catch (CmdLineException e) {
 			throw SVNClientException.wrapException(e);
@@ -409,6 +411,7 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 		try {
 			String changedResources =
 				_cmd.move(toString(url), toString(destUrl), message, toString(revision));
+			notificationHandler.setBaseDir(new File("."));
 			refreshChangedResources(changedResources);
 		} catch (CmdLineException e) {
 			SVNClientException.wrapException(e);
@@ -422,6 +425,7 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 		try {
 			String changedResources =
 				_cmd.move(toString(file), toString(file2), null, null);
+			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(new File[] {file,file2}));
 			refreshChangedResources(changedResources);
 		} catch (CmdLineException e) {
 			throw SVNClientException.wrapException(e);
@@ -453,6 +457,7 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 	public void addDirectory(File file, boolean recurse) throws SVNClientException {
 		try {
             String changedResources = _cmd.add(toString(file), recurse);
+			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(file));
             refreshChangedResources(changedResources);
 		} catch (CmdLineException e) {
 			//if something is already in svn and we
@@ -470,6 +475,7 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 	public void addFile(File file) throws SVNClientException {
 		try {
 			String changedResources = _cmd.add(toString(file), false);
+			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(file));
 			refreshChangedResources(changedResources);
 		} catch (CmdLineException e) {
 			//if something is already in svn and we
@@ -491,6 +497,7 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 		}
 		try {
 			String changedResources = _cmd.checkin(paths, comment);
+			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(parents));
 			return refreshChangedResources(changedResources);
 		} catch (CmdLineException e) {
 			if ("".equals(e.getMessage()))
@@ -502,6 +509,7 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 				for (int i = 0; i < 50; i++) {
 					try {
 						String changedResources = _cmd.checkin(paths, comment);
+						notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(parents));
 						return refreshChangedResources(changedResources);
 					} catch (CmdLineException e1) {
 						try {
@@ -522,6 +530,7 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 	public void update(File file, SVNRevision revision, boolean b) throws SVNClientException {
 		try {
 			String changedResources = _cmd.update(toString(file), toString(revision));
+			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(file));
 			refreshChangedResources(changedResources);
 		} catch (CmdLineException e) {
 			throw SVNClientException.wrapException(e);
@@ -535,6 +544,7 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 		throws SVNClientException {
 		try {
 			String changedResources = _cmd.checkout(toString(url), toString(destPath), toString(revision), b);
+			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(destPath));
 			refreshChangedResources(changedResources);
 
 		} catch (CmdLineException e) {
@@ -580,6 +590,12 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 		}
 	}
 
+	/**
+	 * notify the listeners about all the files that changed
+	 * @param changedResourcesList : the output of the svn command
+	 * @param baseDir : the base dir for changed resources when the path is not absolute 
+	 * @return the revision
+	 */
 	private long refreshChangedResources(String changedResourcesList) {
 		StringTokenizer st = new StringTokenizer(changedResourcesList, Helper.NEWLINE);
 		while (st.hasMoreTokens()) {
@@ -601,14 +617,7 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 
 			String path = line.substring(line.indexOf(' ')).trim();
 
-			//check to see if this is a file or a dir.
-            try {
-			    File f = new File(path).getCanonicalFile();
-                notificationHandler.notifyListenersOfChange(f, f.isDirectory() ? SVNNodeKind.DIR : SVNNodeKind.FILE);
-            } catch (IOException e) {
-                // this should not happen
-                notificationHandler.logMessage("Warning : invalid path :"+path);
-            }
+            notificationHandler.notifyListenersOfChange(path);
 		}
 		return SVNRevision.SVN_INVALID_REVNUM;
 	}

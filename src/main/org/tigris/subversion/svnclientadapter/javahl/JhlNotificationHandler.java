@@ -224,18 +224,10 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements No
         }
         if (notify) {
             // only when the status changed
-            File file = null;
-            try {
-                file = new File(path).getCanonicalFile();
-                notifyListenersOfChange(file, JhlConverter.convertNodeKind(kind));                
-            } catch (IOException e) {
-                // this should not happen
-                logMessage("Warning : invalid path :"+path); 
-            }
+            notifyListenersOfChange(path, JhlConverter.convertNodeKind(kind));                
         }
     }
 
-        
     public void setCommand(int command) {
         receivedSomeChange = false;
         sentFirstTxdelta = false;

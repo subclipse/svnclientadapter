@@ -674,10 +674,22 @@ class CommandLine {
 		Runtime rt = Runtime.getRuntime();
 
 		String svnCommand = "";
+		boolean nextIsPassword = false;
 		for (Iterator it = svnArguments.iterator();it.hasNext();) {
-			svnCommand += (String)it.next();
+			String arg = (String)it.next();
+			
+			if (nextIsPassword) {
+				svnCommand += "*******";
+				nextIsPassword = false;	
+			} else {
+				svnCommand += arg;
+			}
 			if (it.hasNext())
 				svnCommand += " ";
+			if (arg.equals("--password")) {
+				// we don't want to show the password in the console ...
+				nextIsPassword = true;
+			}				
 		}
         notificationHandler.logCommandLine(svnCommand);
 

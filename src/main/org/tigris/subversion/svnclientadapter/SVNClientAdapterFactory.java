@@ -99,5 +99,18 @@ public class SVNClientAdapterFactory {
         }
     }
 
+	/**
+	 * @return the best svn client interface
+	 * @throws SVNClientException
+	 */
+	public static int getBestSVNClientType() throws SVNClientException {
+		if (JhlClientAdapter.isAvailable())
+			return JAVAHL_CLIENT;
+		else
+		if (CmdLineClientAdapter.isAvailable())
+			return COMMANDLINE_CLIENT;
+		else
+			throw new SVNClientException("No subversion client interface found.");
+	}
 
 }
