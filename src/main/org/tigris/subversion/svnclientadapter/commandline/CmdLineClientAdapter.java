@@ -90,6 +90,7 @@ import org.tigris.subversion.svnclientadapter.StringUtils;
  * executible to be in the path.</p>
  * 
  * @author Philip Schatz (schatz at tigris)
+ * @author Cédric Chabanois (cchabanois at no-log.org)
  */
 public class CmdLineClientAdapter implements ISVNClientAdapter {
 
@@ -97,13 +98,6 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
     private CmdLineNotificationHandler notificationHandler = new CmdLineNotificationHandler();
 	private CommandLine _cmd = new CommandLine("svn",notificationHandler);
     private String version = null;
-    private final static String[] checkedVersions = 
-    {
-        "svn, version 0.35.1 (r8050)",
-        "svn, version 0.37.0 (r8509)",
-		"svn, version 1.0.0",
-		"svn, version 1.0.1 (dev build)"
-    };
 
 	//Methods
 	public static boolean isAvailable() {
@@ -136,34 +130,12 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
             notificationHandler.enableLog();
         }
     }
-    
-    /**
-     * tells if this version of svn has been tested with this version of
-     * command line interface
-     * @return
-     */
-    public boolean checkedVersion() {
-        String version;
-        try {
-            version = getVersion();
-        } catch (SVNClientException e) {
-            return false;
-        }
-        for (int i = 0; i < checkedVersions.length;i++) {
-            if (version.equals(checkedVersions[i]))
-                return true;
-        }
-        return false;
-    }
-    
+ 
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.subclipse.client.ISVNClientAdapter#addNotifyListener(org.tigris.subversion.subclipse.client.ISVNClientNotifyListener)
 	 */
 	public void addNotifyListener(ISVNNotifyListener listener) {
         notificationHandler.add(listener);
-       if (!checkedVersion()) {
-            listener.logError("Warning : this version of svn has not been tested with command line client interface. Some commands will perhaps not work"); 
-       }
 	}
 
 	/* (non-Javadoc)
