@@ -51,7 +51,7 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  *
- */ 
+ */
 package org.tigris.subversion.svnclientadapter.commandline;
 
 import java.io.File;
@@ -98,7 +98,7 @@ public class CmdLineStatus extends CmdLineInfo implements ISVNStatus {
       '*' a newer revision exists on the server
       ' ' the working copy is up to date
 
-	 * 
+	 *
 	 */
 
 	public CmdLineStatus(String statusLine, String infoLine) {
