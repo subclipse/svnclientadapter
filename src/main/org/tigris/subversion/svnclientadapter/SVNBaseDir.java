@@ -95,12 +95,8 @@ public class SVNBaseDir {
 			return new File(file1CanonPath);
 		}
 
-		String separator = File.separator;
-		if (File.separator.equals("\\")) {
-			separator = "\\\\";
-		}
-		String[] file1Parts = file1CanonPath.split(separator);
-		String[] file2Parts = file2CanonPath.split(separator);
+		String[] file1Parts = StringUtils.split(file1CanonPath,File.separatorChar);
+		String[] file2Parts = StringUtils.split(file2CanonPath,File.separatorChar);
 		
 		int parts1Length = file1Parts.length;
 		int parts2Length = file2Parts.length; 

@@ -106,7 +106,7 @@ public class SVNUrl {
 		if (toSplit.length() == 0) {
 			throw new MalformedURLException("Invalid svn url :"+svnUrl);
 		}        
-        segments = toSplit.split("/");
+        segments = StringUtils.split(toSplit,'/');
     }
 
     public String get() {
