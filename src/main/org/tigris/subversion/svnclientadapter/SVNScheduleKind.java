@@ -59,26 +59,63 @@ package org.tigris.subversion.svnclientadapter;
  * @see ISVNInfo#getSchedule()
  */
 public class SVNScheduleKind {
-    private String kind;
+    private int kind;
+    
+    private static final int normal = 0;
+    private static final int add = 1;
+    private static final int delete = 2;
+    private static final int replace = 3;
     
     /** exists, but uninteresting */
-    public static final SVNScheduleKind NORMAL = new SVNScheduleKind("normal");
+    public static final SVNScheduleKind NORMAL = new SVNScheduleKind(normal);
 
     /** Slated for addition */
-    public static final SVNScheduleKind ADD = new SVNScheduleKind("add");
+    public static final SVNScheduleKind ADD = new SVNScheduleKind(add);
 
     /** Slated for deletion */
-    public static final SVNScheduleKind DELETE = new SVNScheduleKind("delete");
+    public static final SVNScheduleKind DELETE = new SVNScheduleKind(delete);
 
     /** Slated for replacement (delete + add) */
-    public static final SVNScheduleKind REPLACE = new SVNScheduleKind("replace");
+    public static final SVNScheduleKind REPLACE = new SVNScheduleKind(replace);
  
-    private SVNScheduleKind(String kind) {
+    private SVNScheduleKind(int kind) {
          this.kind = kind;
     }
 
+    public int toInt() {
+    	return kind;
+    }
+    
+    public SVNScheduleKind fromInt(int kind) {
+        switch(kind) 
+        {
+            case normal: 
+                return NORMAL;
+            case add: 
+                return ADD;
+            case delete: 
+                return DELETE;
+            case replace: 
+                return REPLACE;
+            default:
+                return null;
+        }
+    }
+    
     public String toString() {
-        return kind;
+        switch(kind) 
+        {
+            case normal: 
+                return "normal";
+            case add: 
+                return "add";
+            case delete: 
+                return "delete";
+            case replace: 
+                return "replace";
+            default:
+                return "";
+        }
     }
     
     /**
@@ -102,4 +139,21 @@ public class SVNScheduleKind {
         	return null;
     }
 
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    public boolean equals(Object obj) {
+        if (!(obj instanceof SVNScheduleKind)) {
+            return false;
+        }
+        return ((SVNScheduleKind)obj).kind == kind;
+    }    
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    public int hashCode() {
+        return new Integer(kind).hashCode();
+    }     
+    
 }

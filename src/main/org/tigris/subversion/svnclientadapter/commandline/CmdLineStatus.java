@@ -58,6 +58,7 @@ import java.io.File;
 import java.util.Date;
 
 import org.tigris.subversion.svnclientadapter.ISVNStatus;
+import org.tigris.subversion.svnclientadapter.SVNStatusKind;
 import org.tigris.subversion.svnclientadapter.SVNNodeKind;
 import org.tigris.subversion.svnclientadapter.SVNUrl;
 import org.tigris.subversion.svnclientadapter.SVNRevision.Number;
@@ -111,7 +112,7 @@ class CmdLineStatus  implements ISVNStatus {
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.subclipse.client.ISVNClientStatus#getTextStatus()
 	 */
-	public ISVNStatus.Kind getTextStatus() {
+	public SVNStatusKind getTextStatus() {
         return statusPart.getTextStatus();
 	}
 
@@ -119,7 +120,7 @@ class CmdLineStatus  implements ISVNStatus {
 	 * (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getPropStatus()
 	 */
-	public ISVNStatus.Kind getPropStatus() {
+	public SVNStatusKind getPropStatus() {
 		return statusPart.getPropStatus();
 	}
 
@@ -223,7 +224,7 @@ class CmdLineStatus  implements ISVNStatus {
 	 * (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getRepositoryTextStatus()
 	 */
-    public Kind getRepositoryTextStatus() {
+    public SVNStatusKind getRepositoryTextStatus() {
         // TODO Auto-generated method stub
         return null;
     }
@@ -232,7 +233,7 @@ class CmdLineStatus  implements ISVNStatus {
      * (non-Javadoc)
      * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getRepositoryPropStatus()
      */
-    public Kind getRepositoryPropStatus() {
+    public SVNStatusKind getRepositoryPropStatus() {
         // TODO Auto-generated method stub
         return null;
     }

@@ -60,6 +60,7 @@ import java.util.Date;
 
 import org.tigris.subversion.javahl.Status;
 import org.tigris.subversion.svnclientadapter.ISVNStatus;
+import org.tigris.subversion.svnclientadapter.SVNStatusKind;
 import org.tigris.subversion.svnclientadapter.SVNNodeKind;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
 import org.tigris.subversion.svnclientadapter.SVNUrl;
@@ -151,7 +152,7 @@ public class JhlStatus implements ISVNStatus {
 	 * (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getTextStatus()
 	 */
-	public ISVNStatus.Kind getTextStatus() {
+	public SVNStatusKind getTextStatus() {
         return JhlConverter.convertStatusKind(_s.getTextStatus());
 	}
 
@@ -159,13 +160,13 @@ public class JhlStatus implements ISVNStatus {
 	 * (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getPropStatus()
 	 */
-	public ISVNStatus.Kind getPropStatus() {
-		ISVNStatus.Kind kind = JhlConverter.convertStatusKind(_s.getPropStatus());
-		if (kind.equals(ISVNStatus.Kind.NONE)) {
+	public SVNStatusKind getPropStatus() {
+		SVNStatusKind kind = JhlConverter.convertStatusKind(_s.getPropStatus());
+		if (kind.equals(SVNStatusKind.NONE)) {
 			// javahl returns NONE when there are no properties
 			// we want to have the same behaviour for command line interface and 
 			// javahl, so we return NORMAL 
-			kind =  ISVNStatus.Kind.NORMAL;
+			kind =  SVNStatusKind.NORMAL;
 		}
 		return kind;
 	}
@@ -263,14 +264,14 @@ public class JhlStatus implements ISVNStatus {
     /* (non-Javadoc)
      * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getRepositoryTextStatus()
      */
-    public Kind getRepositoryTextStatus() {
+    public SVNStatusKind getRepositoryTextStatus() {
         return JhlConverter.convertStatusKind(_s.getRepositoryTextStatus());
     }
 
     /* (non-Javadoc)
      * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getRepositoryPropStatus()
      */
-    public Kind getRepositoryPropStatus() {
+    public SVNStatusKind getRepositoryPropStatus() {
         return JhlConverter.convertStatusKind(_s.getRepositoryPropStatus());
     }
 

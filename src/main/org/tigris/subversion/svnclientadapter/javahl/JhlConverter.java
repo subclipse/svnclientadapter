@@ -64,6 +64,7 @@ import org.tigris.subversion.javahl.ScheduleKind;
 import org.tigris.subversion.javahl.Status;
 import org.tigris.subversion.svnclientadapter.ISVNLogMessage;
 import org.tigris.subversion.svnclientadapter.ISVNStatus;
+import org.tigris.subversion.svnclientadapter.SVNStatusKind;
 import org.tigris.subversion.svnclientadapter.SVNNodeKind;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
 import org.tigris.subversion.svnclientadapter.SVNScheduleKind;
@@ -146,40 +147,40 @@ public class JhlConverter {
 		return new JhlStatus(status);
 	}
 
-    public static ISVNStatus.Kind convertStatusKind(int kind) {
+    public static SVNStatusKind convertStatusKind(int kind) {
         switch (kind) {
             case Status.Kind.none :
-                return ISVNStatus.Kind.NONE;
+                return SVNStatusKind.NONE;
             case Status.Kind.normal :
-                return ISVNStatus.Kind.NORMAL;                
+                return SVNStatusKind.NORMAL;                
             case Status.Kind.added :
-                return ISVNStatus.Kind.ADDED;
+                return SVNStatusKind.ADDED;
             case Status.Kind.missing :
-                return ISVNStatus.Kind.MISSING;
+                return SVNStatusKind.MISSING;
             case Status.Kind.incomplete :
-                return ISVNStatus.Kind.INCOMPLETE;
+                return SVNStatusKind.INCOMPLETE;
             case Status.Kind.deleted :
-                return ISVNStatus.Kind.DELETED;
+                return SVNStatusKind.DELETED;
             case Status.Kind.replaced :
-                return ISVNStatus.Kind.REPLACED;                                                
+                return SVNStatusKind.REPLACED;                                                
             case Status.Kind.modified :
-                return ISVNStatus.Kind.MODIFIED;
+                return SVNStatusKind.MODIFIED;
             case Status.Kind.merged :
-                return ISVNStatus.Kind.MERGED;                
+                return SVNStatusKind.MERGED;                
             case Status.Kind.conflicted :
-                return ISVNStatus.Kind.CONFLICTED;
+                return SVNStatusKind.CONFLICTED;
             case Status.Kind.obstructed :
-                return ISVNStatus.Kind.OBSTRUCTED;
+                return SVNStatusKind.OBSTRUCTED;
             case Status.Kind.ignored :
-                return ISVNStatus.Kind.IGNORED;  
+                return SVNStatusKind.IGNORED;  
             // Status.Kind.external should be added to javahl ...              
 //            case Status.Kind.external:
 //                return ISVNStatus.Kind.EXTERNAL;
             case Status.Kind.unversioned :
-                return ISVNStatus.Kind.UNVERSIONED;
+                return SVNStatusKind.UNVERSIONED;
             default : {
             	log.error("unknown status kind :"+kind);
-                return ISVNStatus.Kind.NONE;
+                return SVNStatusKind.NONE;
             }
         }
     }

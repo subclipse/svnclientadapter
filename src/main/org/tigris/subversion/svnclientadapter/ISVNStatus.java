@@ -57,56 +57,15 @@ package org.tigris.subversion.svnclientadapter;
 import java.io.File;
 import java.util.Date;
 
+import org.tigris.subversion.javahl.StatusKind;
+
 /**
  * 
  * @author philip schatz
  */
 public interface ISVNStatus {
 
-    /**
-     * <p>
-     * Base class for enumerating the possible types for a <code>Status</code>.
-     * </p>
-     */
-    public static class Kind {
-        private final String _Name;
-
-        public static Kind NONE = new Kind("non-svn");
-        public static Kind NORMAL = new Kind("normal");
-        public static Kind ADDED = new Kind("added");
-        public static Kind MISSING = new Kind("missing");
-        public static Kind INCOMPLETE = new Kind("incomplete");
-        public static Kind DELETED = new Kind("deleted");
-        public static Kind REPLACED = new Kind("replaced");
-        public static Kind MODIFIED = new Kind("modified");
-        public static Kind MERGED = new Kind("merged");
-        public static Kind CONFLICTED = new Kind("conflicted");
-        public static Kind OBSTRUCTED = new Kind("obstructed");
-        public static Kind IGNORED = new Kind("ignored");
-        public static Kind EXTERNAL = new Kind("external");
-        public static Kind UNVERSIONED = new Kind("unversioned");
-        
-        
-        //Constructors
-        /**
-         * <p>
-         * Constructs a <code>Type</code> for the given a type name.</p>
-         *
-         *
-         * @param type Name of the type.
-         * @throws IllegalArgumentException If the parameter is invalid.
-         */
-        private Kind(String name) throws IllegalArgumentException {
-            _Name = name;
-        }
-        
-        public String toString() {
-            return _Name;
-        }
-
-    }
-
-	boolean isIgnored();
+    boolean isIgnored();
 
 	boolean isManaged();
 
@@ -128,17 +87,17 @@ public interface ISVNStatus {
 	 */
 	String getLastCommitAuthor();
 
-	Kind getTextStatus();
+	SVNStatusKind getTextStatus();
 
-	Kind getRepositoryTextStatus();
+	SVNStatusKind getRepositoryTextStatus();
 	
 	/**
 	 * will return either Kind.NORMAL, Kind.CONFLICTED or Kind.MODIFIED
 	 * 
 	 */
-	Kind getPropStatus();
+	SVNStatusKind getPropStatus();
 
-	Kind getRepositoryPropStatus();
+	SVNStatusKind getRepositoryPropStatus();
 
 	boolean isMerged();
 

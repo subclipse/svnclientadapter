@@ -59,26 +59,63 @@ package org.tigris.subversion.svnclientadapter;
  */
 public class SVNNodeKind
 {
-    private String kind;
+    private int kind;
+    
+    private static final int none = 0;
+    private static final int file = 1;
+    private static final int dir = 2;
+    private static final int unknown = 3;
     
     /* absent */
-    public static final SVNNodeKind NONE = new SVNNodeKind("none");
+    public static final SVNNodeKind NONE = new SVNNodeKind(none);
 
     /* regular file */
-    public static final SVNNodeKind FILE = new SVNNodeKind("file");
+    public static final SVNNodeKind FILE = new SVNNodeKind(file);
 
     /* directory */
-    public static final SVNNodeKind DIR = new SVNNodeKind("directory");
+    public static final SVNNodeKind DIR = new SVNNodeKind(dir);
 
     /* something's here, but we don't know what */
-    public static final SVNNodeKind UNKNOWN = new SVNNodeKind("unknown");
+    public static final SVNNodeKind UNKNOWN = new SVNNodeKind(unknown);
  
-    private SVNNodeKind(String kind) {
+    private SVNNodeKind(int kind) {
          this.kind = kind;
     }
 
+    public int toInt() {
+    	return kind;
+    }
+    
+    public static SVNNodeKind fromInt(int kind) {
+        switch(kind) 
+        {
+            case none: 
+                return NONE;
+            case file: 
+                return FILE;
+            case dir: 
+                return DIR;
+            case unknown: 
+                return UNKNOWN;
+            default:
+                return null;
+        }    	
+    }
+    
     public String toString() {
-        return kind;
+        switch(kind) 
+        {
+            case none: 
+                return "none";
+            case file: 
+                return "file";
+            case dir: 
+                return "directory";
+            case unknown: 
+                return "unknown";
+            default:
+                return "";
+        }
     }
 
     /**
@@ -100,6 +137,23 @@ public class SVNNodeKind
         	return UNKNOWN;  
         } else
         	return null;
+    }    
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    public boolean equals(Object obj) {
+        if (!(obj instanceof SVNNodeKind)) {
+            return false;
+        }
+        return ((SVNNodeKind)obj).kind == kind;
+    }    
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    public int hashCode() {
+        return new Integer(kind).hashCode();
     }    
     
 }

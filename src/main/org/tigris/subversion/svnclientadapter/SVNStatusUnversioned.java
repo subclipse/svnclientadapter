@@ -98,20 +98,20 @@ public class SVNStatusUnversioned implements ISVNStatus {
 	public String getLastCommitAuthor() {
 		return null;
 	}
-	public ISVNStatus.Kind getTextStatus() {
-		return ISVNStatus.Kind.UNVERSIONED;
+	public SVNStatusKind getTextStatus() {
+		return SVNStatusKind.UNVERSIONED;
 	}
 	
-	public ISVNStatus.Kind getPropStatus() {
-		return ISVNStatus.Kind.NORMAL;
+	public SVNStatusKind getPropStatus() {
+		return SVNStatusKind.NORMAL;
 	}
 	
-    public Kind getRepositoryTextStatus() {
-        return ISVNStatus.Kind.UNVERSIONED;
+    public SVNStatusKind getRepositoryTextStatus() {
+        return SVNStatusKind.UNVERSIONED;
     }
 
-    public Kind getRepositoryPropStatus() {
-        return ISVNStatus.Kind.UNVERSIONED;
+    public SVNStatusKind getRepositoryPropStatus() {
+        return SVNStatusKind.UNVERSIONED;
     }
 
     public boolean isMerged() {

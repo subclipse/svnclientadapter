@@ -57,6 +57,7 @@ package org.tigris.subversion.svnclientadapter.commandline;
 import java.io.File;
 
 import org.tigris.subversion.svnclientadapter.ISVNStatus;
+import org.tigris.subversion.svnclientadapter.SVNStatusKind;
 
 /**
  * Represents one line in the result of a "svn status -v --no-ignore"command
@@ -106,51 +107,51 @@ class CmdLineStatusPart {
 	 * @return
 	 */
 	public boolean hasRemote() {
-		ISVNStatus.Kind textStatus = getTextStatus();
-		return ((isManaged()) && (textStatus != ISVNStatus.Kind.ADDED));
+		SVNStatusKind textStatus = getTextStatus();
+		return ((isManaged()) && (textStatus != SVNStatusKind.ADDED));
 	}
 
-	public ISVNStatus.Kind getTextStatus() {
+	public SVNStatusKind getTextStatus() {
 		switch (textStatus) {
 			case ' ' : // none or normal
-				return ISVNStatus.Kind.NORMAL;
+				return SVNStatusKind.NORMAL;
 			case 'A' :
-				return ISVNStatus.Kind.ADDED;
+				return SVNStatusKind.ADDED;
             case '!' : // missing or incomplete
-                return ISVNStatus.Kind.MISSING;
+                return SVNStatusKind.MISSING;
 			case 'D' :
-				return ISVNStatus.Kind.DELETED;
+				return SVNStatusKind.DELETED;
             case 'R' :
-                return ISVNStatus.Kind.REPLACED;
+                return SVNStatusKind.REPLACED;
 			case 'M' :
-				return ISVNStatus.Kind.MODIFIED;
+				return SVNStatusKind.MODIFIED;
             case 'G' :
-                return ISVNStatus.Kind.MERGED;
+                return SVNStatusKind.MERGED;
 			case 'C' :
-				return ISVNStatus.Kind.CONFLICTED;
+				return SVNStatusKind.CONFLICTED;
             case '~' :
-                return ISVNStatus.Kind.OBSTRUCTED;
+                return SVNStatusKind.OBSTRUCTED;
 			case 'I' :
-				return ISVNStatus.Kind.IGNORED;
+				return SVNStatusKind.IGNORED;
             case 'X' :
-                return ISVNStatus.Kind.EXTERNAL;
+                return SVNStatusKind.EXTERNAL;
 			case '?' :
-				return ISVNStatus.Kind.UNVERSIONED;
+				return SVNStatusKind.UNVERSIONED;
 			default :
-				return ISVNStatus.Kind.NONE;
+				return SVNStatusKind.NONE;
 		}
 	}
 
-	public ISVNStatus.Kind getPropStatus() {
+	public SVNStatusKind getPropStatus() {
 		switch (textStatus) {
 			case ' ' : // no modifications
-				return ISVNStatus.Kind.NORMAL;
+				return SVNStatusKind.NORMAL;
 			case 'C' :
-				return ISVNStatus.Kind.CONFLICTED;
+				return SVNStatusKind.CONFLICTED;
 			case 'M' :
-				return ISVNStatus.Kind.MODIFIED;
+				return SVNStatusKind.MODIFIED;
 			default :
-				return ISVNStatus.Kind.NORMAL;
+				return SVNStatusKind.NORMAL;
 		}		
 	}
 
