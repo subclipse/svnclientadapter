@@ -223,4 +223,11 @@ class CmdLineStatus  implements ISVNStatus {
         return null;
     }
 
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNStatus#isLocked()
+     */
+    public boolean isLocked() {
+        return statusPart.isLocked();
+    }
+
 }

@@ -90,6 +90,9 @@ public class SVNStatusUnversioned implements ISVNStatus {
 	public boolean isAdded() {
 		return false;
 	}
+    public boolean isLocked() {
+        return false;
+    }
 	public SVNRevision.Number getRevision() {
 		return SVNRevision.INVALID_REVISION;
 	}

@@ -97,6 +97,8 @@ class CmdLineStatusPart {
                 return SVNStatusKind.EXTERNAL;
 			case '?' :
 				return SVNStatusKind.UNVERSIONED;
+            case 'L' :
+                return SVNStatusKind.LOCKED;
 			default :
 				return SVNStatusKind.NONE;
 		}
@@ -135,6 +137,10 @@ class CmdLineStatusPart {
 		return (history == '+');
 	}
 
+    public boolean isLocked() {
+        return (textStatus == 'L');
+    }
+    
     public File getFile() {
         return file.getAbsoluteFile();
     }

@@ -575,4 +575,11 @@ public interface ISVNClientAdapter {
      */
     public void setConfigDirectory(File dir) throws SVNClientException;
     
+    /**
+     * Perform a clanup on the working copy.  This will remove any stale transactions
+     * @param dir
+     * @throws SVNClientException
+     */
+    public abstract void cleanup(File dir) throws SVNClientException;
+    
 }

@@ -1648,7 +1648,23 @@ public class JhlClientAdapter implements ISVNClientAdapter {
         } catch (ClientException e) {
             notificationHandler.logException(e);
             throw new SVNClientException(e);            
-        }        
+        }
 	}
+
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#cleanup(java.io.File)
+     */
+    public void cleanup(File path) throws SVNClientException {
+        try {
+            notificationHandler.setCommand(ISVNNotifyListener.Command.CLEANUP);
+            String target = fileToSVNPath(path, false);
+            String commandLine = "cleanup " + target;
+            notificationHandler.logCommandLine(commandLine);
+            svnClient.cleanup(target);
+        } catch (ClientException e) {
+            notificationHandler.logException(e);
+            throw new SVNClientException(e);
+        }
+    }
     
 }

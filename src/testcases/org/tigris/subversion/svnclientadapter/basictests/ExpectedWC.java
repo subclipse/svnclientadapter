@@ -365,8 +365,8 @@ public class ExpectedWC
             if (item.workingCopyRev != SVNRevision.INVALID_REVISION)
                 Assert.assertEquals("wrong revision number in working copy",
                         item.workingCopyRev, tested[i].getRevision());
-//            Assert.assertEquals("lock status wrong",
-//                    item.isLocked, tested[i].isLocked());
+            Assert.assertEquals("lock status wrong",
+                    item.isLocked, tested[i].isLocked());
 //            Assert.assertEquals("switch status wrong",
 //                    item.isSwitched, tested[i].isSwitched());
             Assert.assertEquals("wrong prop status in working copy for "+tested[i].getPath(),

@@ -37,7 +37,8 @@ public class SVNStatusKind {
     private static final int obstructed = 10;
     private static final int ignored = 11;
     private static final int incomplete = 12;
-    private static final int external = 13;        
+    private static final int external = 13;
+    private static final int locked = 14;
     
     public static SVNStatusKind NONE = new SVNStatusKind(none);
     public static SVNStatusKind NORMAL = new SVNStatusKind(normal);
@@ -52,7 +53,8 @@ public class SVNStatusKind {
     public static SVNStatusKind OBSTRUCTED = new SVNStatusKind(obstructed);
     public static SVNStatusKind IGNORED = new SVNStatusKind(ignored);
     public static SVNStatusKind EXTERNAL = new SVNStatusKind(external);
-    public static SVNStatusKind UNVERSIONED = new SVNStatusKind(unversioned);        
+    public static SVNStatusKind UNVERSIONED = new SVNStatusKind(unversioned);
+    public static SVNStatusKind LOCKED = new SVNStatusKind(locked);
     
     //Constructors
     /**
@@ -100,6 +102,8 @@ public class SVNStatusKind {
             return EXTERNAL;
         case unversioned:
             return UNVERSIONED;
+        case locked:
+            return LOCKED;
         default:
             return null;
         }
@@ -132,6 +136,8 @@ public class SVNStatusKind {
             return "incomplete";
         case external:
             return "external";
+        case locked:
+            return "locked";
         case unversioned:
         default:
             return "unversioned";

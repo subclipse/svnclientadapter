@@ -144,4 +144,9 @@ public interface ISVNStatus {
      */
     public File getConflictWorking();
     
+    /**
+     * Returns true if the resource is in a locked state
+     * @return Flag indicating if the resource if currently locked
+     */
+    public boolean isLocked();
 }

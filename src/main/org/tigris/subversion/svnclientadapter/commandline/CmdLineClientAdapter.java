@@ -1184,5 +1184,15 @@ public class CmdLineClientAdapter implements ISVNClientAdapter {
 		_cmd.setConfigDirectory(toString(dir));
 	}
 
-
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#cleanup(java.io.File)
+     */
+    public void cleanup(File path) throws SVNClientException {
+        try {
+            notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
+            _cmd.cleanup(toString(path));
+        } catch (CmdLineException e) {
+            throw SVNClientException.wrapException(e);
+        }
+    }
 }
