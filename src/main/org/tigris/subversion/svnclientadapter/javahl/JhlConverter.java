@@ -183,6 +183,8 @@ public class JhlConverter {
     }
     
     static ISVNLogMessageChangePath[] convert(ChangePath[] changePaths) {
+        if (changePaths == null)
+            return new SVNLogMessageChangePath[0];
         SVNLogMessageChangePath[] jhlChangePaths = new SVNLogMessageChangePath[changePaths.length];
         for(int i=0; i < changePaths.length; i++) {
             ChangePath changePath = changePaths[i];
