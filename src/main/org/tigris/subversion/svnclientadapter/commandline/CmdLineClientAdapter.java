@@ -56,7 +56,7 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 	//Fields
     private CmdLineNotificationHandler notificationHandler = new CmdLineNotificationHandler();
 	private SvnCommandLine _cmd = new SvnCommandLine("svn",notificationHandler);
-	private SvnAdminCommandLine svnAdminCmd = new SvnAdminCommandLine("svnAdmin",notificationHandler);
+	private SvnAdminCommandLine svnAdminCmd = new SvnAdminCommandLine("svnadmin",notificationHandler);
     private String version = null;
 
     private static boolean availabilityCached = false;
