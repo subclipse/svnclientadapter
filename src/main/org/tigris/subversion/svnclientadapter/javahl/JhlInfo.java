@@ -22,7 +22,7 @@ import java.util.Date;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.tigris.subversion.javahl.Info;
+import org.tigris.subversion.javahl.Info2;
 import org.tigris.subversion.svnclientadapter.ISVNInfo;
 import org.tigris.subversion.svnclientadapter.SVNNodeKind;
 import org.tigris.subversion.svnclientadapter.SVNScheduleKind;
@@ -37,10 +37,10 @@ import org.tigris.subversion.svnclientadapter.SVNRevision.Number;
 public class JhlInfo implements ISVNInfo {
 	private static Log log = LogFactory.getLog(JhlInfo.class);
 	
-	private Info info;
+	private Info2 info;
 	private File file;
 
-	public JhlInfo(File file, Info info) {
+	public JhlInfo(File file, Info2 info) {
         super();
         this.file = file;
         this.info = info;
@@ -73,7 +73,7 @@ public class JhlInfo implements ISVNInfo {
 	 * @see org.tigris.subversion.svnclientadapter.ISVNInfo#getUuid()
 	 */
 	public String getUuid() {
-		return info.getUuid();
+		return info.getReposUUID();
 	}
 
 	/* (non-Javadoc)
@@ -81,7 +81,7 @@ public class JhlInfo implements ISVNInfo {
 	 */
 	public SVNUrl getRepository() {
 		try {
-			return new SVNUrl(info.getRepository());
+			return new SVNUrl(info.getReposRootUrl());
 		} catch (MalformedURLException e) {
 			log.error(e);
 			return null;
@@ -99,28 +99,28 @@ public class JhlInfo implements ISVNInfo {
 	 * @see org.tigris.subversion.svnclientadapter.ISVNInfo#getNodeKind()
 	 */
 	public SVNNodeKind getNodeKind() {
-		return JhlConverter.convertNodeKind(info.getNodeKind());
+		return JhlConverter.convertNodeKind(info.getKind());
 	}
 
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNInfo#getAuthor()
 	 */
 	public String getLastCommitAuthor() {
-		return info.getAuthor();
+		return info.getLastChangedAuthor();
 	}
 
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNInfo#getRevision()
 	 */
 	public Number getRevision() {
-		return JhlConverter.convertRevisionNumber(info.getRevision());
+		return JhlConverter.convertRevisionNumber(info.getRev());
 	}
 
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNInfo#getLastChangedRevision()
 	 */
 	public Number getLastChangedRevision() {
-		return JhlConverter.convertRevisionNumber(info.getLastChangedRevision());
+		return JhlConverter.convertRevisionNumber(info.getLastChangedRev());
 	}
 
 	/* (non-Javadoc)
@@ -134,28 +134,28 @@ public class JhlInfo implements ISVNInfo {
 	 * @see org.tigris.subversion.svnclientadapter.ISVNInfo#getLastDateTextUpdate()
 	 */
 	public Date getLastDateTextUpdate() {
-		return info.getLastDateTextUpdate();
+		return info.getTextTime();
 	}
 
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNInfo#getLastDatePropsUpdate()
 	 */
 	public Date getLastDatePropsUpdate() {
-		return info.getLastDatePropsUpdate();
+		return info.getPropTime();
 	}
 
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNInfo#isCopied()
 	 */
 	public boolean isCopied() {
-		return info.isCopied();
+		return (info.getCopyFromRev() > 0);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNInfo#getCopyRev()
 	 */
 	public Number getCopyRev() {
-		return JhlConverter.convertRevisionNumber(info.getCopyRev());
+		return JhlConverter.convertRevisionNumber(info.getCopyFromRev());
 	}
 
 	/* (non-Javadoc)
@@ -163,11 +163,24 @@ public class JhlInfo implements ISVNInfo {
 	 */
 	public SVNUrl getCopyUrl() {
 		try {
-			return new SVNUrl(info.getCopyUrl());
+			return new SVNUrl(info.getCopyFromUrl());
 		} catch (MalformedURLException e) {
 			log.error(e);
 			return null;
 		}
 	}
 
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNInfo#getLockCreationDate()
+     */
+    public Date getLockCreationDate() {
+        return info.getLock().getCreationDate();
+    }
+
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNInfo#getLockOwner()
+     */
+    public String getLockOwner() {
+        return info.getLock().getOwner();
+    }
 }

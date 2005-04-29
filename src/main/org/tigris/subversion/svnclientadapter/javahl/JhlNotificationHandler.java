@@ -15,8 +15,12 @@
  */
 package org.tigris.subversion.svnclientadapter.javahl;
 
+import org.tigris.subversion.javahl.Lock;
 import org.tigris.subversion.javahl.NodeKind;
-import org.tigris.subversion.javahl.Notify;
+import org.tigris.subversion.javahl.Notify2;
+import org.tigris.subversion.javahl.NotifyAction;
+import org.tigris.subversion.javahl.NotifyInformation;
+import org.tigris.subversion.javahl.NotifyStatus;
 import org.tigris.subversion.svnclientadapter.ISVNNotifyListener;
 import org.tigris.subversion.svnclientadapter.SVNNotificationHandler;
 
@@ -34,9 +38,23 @@ import org.tigris.subversion.svnclientadapter.SVNNotificationHandler;
  *         <a href="mailto:cchabanois@ifrance.com">cchabanois@ifrance.com</a>
  *
  */
-public class JhlNotificationHandler extends SVNNotificationHandler implements Notify {
+public class JhlNotificationHandler extends SVNNotificationHandler implements Notify2 {
     private boolean receivedSomeChange;
     private boolean sentFirstTxdelta;
+
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.javahl.Notify2#onNotify(org.tigris.subversion.javahl.NotifyInformation)
+     */
+    public void onNotify(NotifyInformation info) {
+        this.onNotify(info.getPath(),
+                      info.getAction(),
+                      info.getKind(),
+                      info.getMimeType(),
+                      info.getContentState(),
+                      info.getPropState(),
+                      info.getRevision(),
+                      info.getLock());
+    }
     
     /**
      * Handler for Subversion notifications.
@@ -50,84 +68,102 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements No
      * @param propState state of properties after action occurred
      * @param revision revision number  after action occurred
      */
-    public void onNotify(
+    private void onNotify(
         String path,
         int action,
         int kind,
         String mimeType,
         int contentState,
         int propState,
-        long revision) {
+        long revision,
+        Lock lock) {
 
         // for some actions, we don't want to call notifyListenersOfChange :
         // when the status of the target has not been modified 
         boolean notify = true;
 
         switch (action) {
-            case Notify.Action.skip :
+            case NotifyAction.skip :
                 logMessage("Skipped " + path);
                 notify = false;                                
                 break;
-            case Notify.Action.update_delete :
+            case NotifyAction.failed_lock: 
+                logError("Failed to lock " + path);
+                notify = false;
+                break;
+            case NotifyAction.failed_unlock:
+                logError("Failed to unlock " + path);
+            	notify = false;
+            	break;
+            case NotifyAction.locked:
+                if (lock != null && lock.getOwner() != null)
+                	logMessage(lock.getPath() + " locked by user " + lock.getOwner());
+                else
+                    logMessage(path + "locked");
+            	break;
+            case NotifyAction.unlocked:
+                logMessage(path + " unlocked");
+            	break;
+            case NotifyAction.update_delete :
                 logMessage("D  " + path);
                 receivedSomeChange = true;
                 break;
-            case Notify.Action.update_add :
+            case NotifyAction.update_add :
                 logMessage("A  " + path);
                 receivedSomeChange = true;
                 break;
-            case Notify.Action.restore :
+            case NotifyAction.restore :
                 logMessage("Restored " + path);
                 break;
-            case Notify.Action.revert :
+            case NotifyAction.revert :
                 logMessage("Reverted " + path);
                 break;
-            case Notify.Action.failed_revert :
+            case NotifyAction.failed_revert :
                 logError("Failed to revert " + path + " -- try updating instead.");
                 notify = false;
                 break;
-            case Notify.Action.resolved :
+            case NotifyAction.resolved :
                 logMessage("Resolved conflicted state of " + path);
                 break;
-            case Notify.Action.add :
+            case NotifyAction.add :
                 logMessage("A         " + path);
                 break;
-            case Notify.Action.delete :
+            case NotifyAction.delete :
                 logMessage("D         " + path);
                 receivedSomeChange = true;
                 break;
-            case Notify.Action.update_update :
+            case NotifyAction.update_update :
                 boolean error = false;
                 if (!((kind == NodeKind.dir)
-                    && ((propState == Notify.Status.inapplicable)
-                        || (propState == Notify.Status.unknown)
-                        || (propState == Notify.Status.unchanged)))) {
+                    && ((propState == NotifyStatus.inapplicable)
+                        || (propState == NotifyStatus.unknown)
+                        || (propState == NotifyStatus.unchanged)))) {
                     receivedSomeChange = true;
                     char[] statecharBuf = new char[] { ' ', ' ' };
                     if (kind == NodeKind.file) {
-                        if (contentState == Notify.Status.conflicted) {
+                        if (contentState == NotifyStatus.conflicted) {
                             statecharBuf[0] = 'C';
                             error = true;
                         }
-                        else if (contentState == Notify.Status.merged) {
+                        else if (contentState == NotifyStatus.merged) {
                             statecharBuf[0] = 'G';
                             error = true;
                         }
-                        else if (contentState == Notify.Status.changed)
+                        else if (contentState == NotifyStatus.changed)
                             statecharBuf[0] = 'U';
-                        else if (contentState == Notify.Status.unchanged && command == ISVNNotifyListener.Command.MERGE
-                                && propState < Notify.Status.obstructed)
+                        else if (contentState == NotifyStatus.unchanged && command == ISVNNotifyListener.Command.MERGE
+                                && propState < NotifyStatus.obstructed)
                             break;
                     }
-                    if (propState == Notify.Status.conflicted) {
+                    if (propState == NotifyStatus.conflicted) {
                         statecharBuf[1] = 'C';
                         error = true;
                     }
-                    else if (propState == Notify.Status.merged) {
+                    else if (propState == NotifyStatus.merged) {
                         statecharBuf[1] = 'G';
                         error = true;
                     }
-                    else if (propState == Notify.Status.changed)
+                    else if (propState == NotifyStatus.changed)
                         statecharBuf[1] = 'U';
                     if (error)
                         logError("" + statecharBuf[0] + statecharBuf[1] + " " + path);                      
@@ -135,10 +171,10 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements No
                         logMessage("" + statecharBuf[0] + statecharBuf[1] + " " + path);                      
                 }
                 break;
-            case Notify.Action.update_external :
+            case NotifyAction.update_external :
                 logMessage("Updating external location at: " + path);
                 break;
-            case Notify.Action.update_completed :
+            case NotifyAction.update_completed :
                 notify = false;
                 if (revision >= 0) {
                     logRevision( revision );
@@ -171,30 +207,30 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements No
                     }  
                 }
                 break;
-            case Notify.Action.status_external :
+            case NotifyAction.status_external :
               logMessage("Performing status on external item at "+path);
               notify = false;
               break;
-            case Notify.Action.status_completed :
+            case NotifyAction.status_completed :
               notify = false;
               if (revision >= 0) {
                 logRevision(revision);
                 logMessage("Status against revision: "+ revision);
               }
               break;                
-            case Notify.Action.commit_modified :
+            case NotifyAction.commit_modified :
                 logMessage("Sending        "+path);
                 break;
-            case Notify.Action.commit_added :
+            case NotifyAction.commit_added :
                 logMessage("Adding         "+path);
                 break;
-            case Notify.Action.commit_deleted :
+            case NotifyAction.commit_deleted :
                 logMessage("Deleting       "+path);
                 break;
-            case Notify.Action.commit_replaced :
+            case NotifyAction.commit_replaced :
                 logMessage("Replacing      "+path);
                 break;
-            case Notify.Action.commit_postfix_txdelta :
+            case NotifyAction.commit_postfix_txdelta :
                 notify = false;
                 if (!sentFirstTxdelta) {
                     logMessage("Transmitting file data ...");

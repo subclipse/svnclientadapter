@@ -223,4 +223,18 @@ public class JhlStatus implements ISVNStatus {
         }
     }
     
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getLockCreationDate()
+     */
+    public Date getLockCreationDate() {
+        return _s.getLockCreationDate();
+    }
+ 
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getLockOwner()
+     */
+    public String getLockOwner() {
+        return _s.getLockOwner();
+    }
+ 
 }

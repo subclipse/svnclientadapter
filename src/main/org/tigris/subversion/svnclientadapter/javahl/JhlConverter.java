@@ -19,6 +19,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.tigris.subversion.javahl.ChangePath;
 import org.tigris.subversion.javahl.DirEntry;
+import org.tigris.subversion.javahl.Lock;
 import org.tigris.subversion.javahl.LogMessage;
 import org.tigris.subversion.javahl.NodeKind;
 import org.tigris.subversion.javahl.Revision;
@@ -54,11 +55,11 @@ public class JhlConverter {
             case SVNRevision.Kind.head : return Revision.HEAD;
             case SVNRevision.Kind.number : return new Revision.Number(((SVNRevision.Number)svnRevision).getNumber());
             case SVNRevision.Kind.previous : return Revision.PREVIOUS;
-            case SVNRevision.Kind.unspecified : return new Revision(Revision.Kind.unspecified);
+            case SVNRevision.Kind.unspecified : return Revision.START;
             case SVNRevision.Kind.working : return Revision.WORKING;
             default: {
         		log.error("unknown revision kind :"+svnRevision.getKind());
-            	return new Revision(Revision.Kind.unspecified); // should never go here
+            	return Revision.START; // should never go here
             }
         }
     }
@@ -218,6 +219,10 @@ public class JhlConverter {
         		return SVNScheduleKind.NORMAL;
         	}
         }
+    }
+    
+    public static JhlLock convertLock(Lock lock) {
+        return new JhlLock(lock);
     }
     
 }

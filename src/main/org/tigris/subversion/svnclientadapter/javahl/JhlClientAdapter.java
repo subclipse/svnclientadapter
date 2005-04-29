@@ -24,7 +24,7 @@ import java.text.MessageFormat;
 
 import org.apache.commons.lang.SystemUtils;
 import org.tigris.subversion.javahl.ClientException;
-import org.tigris.subversion.javahl.Info;
+import org.tigris.subversion.javahl.Info2;
 import org.tigris.subversion.javahl.PromptUserPassword;
 import org.tigris.subversion.javahl.PropertyData;
 import org.tigris.subversion.javahl.Revision;
@@ -71,7 +71,7 @@ public class JhlClientAdapter extends AbstractClientAdapter {
         svnClient = new SVNClientSynchronized();
         svnAdmin = new SVNAdmin();
         notificationHandler = new JhlNotificationHandler();
-        svnClient.notification(notificationHandler);        
+        svnClient.notification2(notificationHandler);        
         svnClient.setPrompt(new DefaultPromptUserPassword());
     }
 
@@ -105,7 +105,7 @@ public class JhlClientAdapter extends AbstractClientAdapter {
 			        } catch (UnsatisfiedLinkError e) {
 			        }
 					try {
-						System.loadLibrary("libdb42");
+						System.loadLibrary("libdb43");
 			        } catch (Exception e) {
 			        } catch (UnsatisfiedLinkError e) {
 			        }
@@ -120,7 +120,7 @@ public class JhlClientAdapter extends AbstractClientAdapter {
 			        } catch (UnsatisfiedLinkError e) {
 			        }
 					try {
-						System.loadLibrary("intl");
+						System.loadLibrary("intl3_svn");
 			        } catch (Exception e) {
 			        } catch (UnsatisfiedLinkError e) {
 			        }
@@ -1011,7 +1011,7 @@ public class JhlClientAdapter extends AbstractClientAdapter {
                                 + url.toString());
 			notificationHandler.setBaseDir();                
 			
-			byte[] contents = svnClient.fileContent(url.toString(), JhlConverter.convert(revision));
+			byte[] contents = svnClient.fileContent(url.toString(), JhlConverter.convert(revision), Revision.HEAD);
 			InputStream input = new ByteArrayInputStream(contents);
 			return input;
 		} catch (ClientException e) {
@@ -1468,11 +1468,11 @@ public class JhlClientAdapter extends AbstractClientAdapter {
 			File baseDir = SVNBaseDir.getBaseDir(path);
 			notificationHandler.setBaseDir(baseDir);
 			
-            Info info = svnClient.info(target);
-            if (info == null) {
+            Info2[] info = svnClient.info2(target, Revision.HEAD, Revision.HEAD, false);
+            if (info == null || info.length == 0) {
             	return new SVNInfoUnversioned(path);
             } else {
-                return new JhlInfo(path,info);    
+                return new JhlInfo(path,info[0]);    
             }
             
 		} catch (ClientException e) {
@@ -1569,19 +1569,30 @@ public class JhlClientAdapter extends AbstractClientAdapter {
     }
     
 	/* (non-Javadoc)
-	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#merge(java.lang.String, org.tigris.subversion.svnclientadapter.SVNRevision, java.lang.String, org.tigris.subversion.svnclientadapter.SVNRevision, java.lang.String, boolean, boolean)
-	 */
-	public void merge(SVNUrl path1, SVNRevision revision1, SVNUrl path2,
-			SVNRevision revision2, File localPath, boolean force,
-			boolean recurse) throws SVNClientException {
- 
-		try {
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#merge(java.lang.String, org.tigris.subversion.svnclientadapter.SVNRevision, java.lang.String, org.tigris.subversion.svnclientadapter.SVNRevision, java.lang.String, boolean, boolean)
+     */
+    public void merge(SVNUrl path1, SVNRevision revision1, SVNUrl path2,
+    		SVNRevision revision2, File localPath, boolean force,
+    		boolean recurse) throws SVNClientException {
+        merge(path1, revision1, path2, revision2, localPath, force, recurse, false);
+    }
+
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#merge(org.tigris.subversion.svnclientadapter.SVNUrl, org.tigris.subversion.svnclientadapter.SVNRevision, org.tigris.subversion.svnclientadapter.SVNUrl, org.tigris.subversion.svnclientadapter.SVNRevision, java.io.File, boolean, boolean, boolean)
+     */
+    public void merge(SVNUrl path1, SVNRevision revision1, SVNUrl path2,
+            SVNRevision revision2, File localPath, boolean force,
+            boolean recurse, boolean dryRun) throws SVNClientException {
+    	try {
             notificationHandler.setCommand(ISVNNotifyListener.Command.MERGE);
             
             String target = fileToSVNPath(localPath, false);
             String commandLine = "merge";
             if (!recurse) {
             	commandLine += " -N";
+            }
+            if (dryRun) {
+            	commandLine += " --dry-run";
             }
             if (force) {
             	commandLine += " --force";
@@ -1595,26 +1606,13 @@ public class JhlClientAdapter extends AbstractClientAdapter {
             notificationHandler.logCommandLine(commandLine);
             File baseDir = SVNBaseDir.getBaseDir(localPath);
             notificationHandler.setBaseDir(baseDir);
-
-            svnClient.merge(path1.toString(), JhlConverter.convert(revision1), path2.toString(), JhlConverter.convert(revision2), target, force, recurse );
+    
+            svnClient.merge(path1.toString(), JhlConverter.convert(revision1), path2.toString(), JhlConverter.convert(revision2), target, force, recurse, false, dryRun );
             
         } catch (ClientException e) {
             notificationHandler.logException(e);
             throw new SVNClientException(e);            
         }        
-
-	}
-
-    /* (non-Javadoc)
-     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#merge(org.tigris.subversion.svnclientadapter.SVNUrl, org.tigris.subversion.svnclientadapter.SVNRevision, org.tigris.subversion.svnclientadapter.SVNUrl, org.tigris.subversion.svnclientadapter.SVNRevision, java.io.File, boolean, boolean, boolean)
-     */
-    public void merge(SVNUrl path1, SVNRevision revision1, SVNUrl path2,
-            SVNRevision revision2, File localPath, boolean force,
-            boolean recurse, boolean dryRun) throws SVNClientException {
-        if (dryRun)
-            throw new SVNClientException("The --dry-run option is not currently supported in the JavaHL adapter.");
-        else
-            merge(path1, revision1, path2, revision2, localPath, force, recurse);
     }
     
     /* (non-Javadoc)
@@ -1625,5 +1623,58 @@ public class JhlClientAdapter extends AbstractClientAdapter {
 	        JhlPromptUserPassword prompt = new JhlPromptUserPassword(callback);
 	        this.setPromptUserPassword(prompt);
         }
+    }
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#lock(java.lang.String[], java.lang.String, boolean)
+     */
+    public void lock(File[] paths, String comment, boolean force)
+            throws SVNClientException {
+        try {
+            notificationHandler.setCommand(ISVNNotifyListener.Command.LOCK);
+            String[] files = new String[paths.length];
+            String commandLine = "lock -m \""+comment+"\"";
+            if (force)
+                commandLine+=" --force";
+
+            for (int i = 0; i < paths.length; i++) {
+                files[i] = fileToSVNPath((File) paths[i], false);
+                commandLine+=" "+files[i].toString();
+            }
+            notificationHandler.logCommandLine(commandLine);
+			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(paths));
+
+            svnClient.lock(files, comment, force);
+           	notificationHandler.logCompleted("One or more files were successfully locked.");
+        } catch (ClientException e) {
+            notificationHandler.logException(e);
+            throw new SVNClientException(e);
+        }
+
+    }
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#unlock(java.lang.String[], boolean)
+     */
+    public void unlock(File[] paths, boolean force) throws SVNClientException {
+        try {
+            notificationHandler.setCommand(ISVNNotifyListener.Command.LOCK);
+            String[] files = new String[paths.length];
+            String commandLine = "unlock ";
+            if (force)
+                commandLine+=" --force";
+
+            for (int i = 0; i < paths.length; i++) {
+                files[i] = fileToSVNPath((File) paths[i], false);
+                commandLine+=" "+files[i].toString();
+            }
+            notificationHandler.logCommandLine(commandLine);
+			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(paths));
+
+            svnClient.unlock(files, force);
+           	notificationHandler.logCompleted("One or more files were successfully unlocked.");
+        } catch (ClientException e) {
+            notificationHandler.logException(e);
+            throw new SVNClientException(e);
+        }
+
     }
 }
