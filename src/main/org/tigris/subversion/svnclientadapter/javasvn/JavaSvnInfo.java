@@ -258,4 +258,19 @@ public class JavaSvnInfo implements ISVNInfo {
         return urlCopiedFrom;
     }
 
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNInfo#getLockCreationDate()
+     */
+    public Date getLockCreationDate() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+    
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNInfo#getLockOwner()
+     */
+    public String getLockOwner() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

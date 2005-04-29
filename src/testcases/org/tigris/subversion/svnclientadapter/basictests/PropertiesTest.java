@@ -1,6 +1,5 @@
 package org.tigris.subversion.svnclientadapter.basictests;
 
-import java.beans.PropertyChangeEvent;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;

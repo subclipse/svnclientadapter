@@ -22,7 +22,6 @@ import java.util.Map;
 
 import org.tigris.subversion.svnclientadapter.ISVNStatus;
 import org.tigris.subversion.svnclientadapter.SVNNodeKind;
-import org.tigris.subversion.svnclientadapter.SVNRevision;
 import org.tigris.subversion.svnclientadapter.SVNStatusKind;
 import org.tigris.subversion.svnclientadapter.SVNUrl;
 import org.tigris.subversion.svnclientadapter.SVNRevision.Number;
@@ -230,4 +229,20 @@ public class JavaSvnStatus implements ISVNStatus {
         }
     }
 
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getLockCreationDate()
+     */
+    public Date getLockCreationDate() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+    
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getLockOwner()
+     */
+    public String getLockOwner() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+    
 }

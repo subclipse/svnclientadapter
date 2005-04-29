@@ -114,4 +114,17 @@ public interface ISVNInfo
      * @return copy source url
      */
     public SVNUrl getCopyUrl();
+    
+    /**
+     * Retrieves the lock owner (may be null)
+     * @return lock owner
+     */
+    public String getLockOwner();
+
+    /**
+     * Retrieves the lock creation date (may be null)
+     * @return lock creation date
+     */
+    public Date getLockCreationDate();
+
 }

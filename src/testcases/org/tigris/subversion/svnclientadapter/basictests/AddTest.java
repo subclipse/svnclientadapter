@@ -20,7 +20,6 @@ package org.tigris.subversion.svnclientadapter.basictests;
 import java.io.File;
 import java.io.FileOutputStream;
 
-import org.tigris.subversion.svnclientadapter.SVNNodeKind;
 import org.tigris.subversion.svnclientadapter.SVNStatusKind;
 
 

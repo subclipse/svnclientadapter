@@ -106,5 +106,17 @@ public interface ISVNStatus {
      * @return the filename of the former working copy version
      */
     public File getConflictWorking();
-    
+
+    /**
+     * Returns the lock  owner
+     * @return the lock owner
+     */
+    public String getLockOwner();
+
+    /**
+     * Returns the lock creation date
+     * @return the lock creation date
+     */
+    public Date getLockCreationDate();
+
 }

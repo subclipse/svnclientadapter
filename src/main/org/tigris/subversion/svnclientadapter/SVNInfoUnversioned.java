@@ -139,4 +139,16 @@ public class SVNInfoUnversioned implements ISVNInfo {
 		return null;
 	}
 
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNInfo#getLockCreationDate()
+     */
+    public Date getLockCreationDate() {
+        return null;
+    }
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNInfo#getLockOwner()
+     */
+    public String getLockOwner() {
+        return null;
+    }
 }

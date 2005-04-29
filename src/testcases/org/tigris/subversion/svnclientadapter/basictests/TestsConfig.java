@@ -20,7 +20,6 @@ package org.tigris.subversion.svnclientadapter.basictests;
 import java.io.File;
 import java.net.MalformedURLException;
 
-import org.tigris.subversion.svnclientadapter.SVNClientAdapterFactory;
 import org.tigris.subversion.svnclientadapter.SVNClientException;
 import org.tigris.subversion.svnclientadapter.SVNUrl;
 

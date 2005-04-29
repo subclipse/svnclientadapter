@@ -845,4 +845,18 @@ public class JavaSvnClientAdapter extends AbstractClientAdapter {
         // Default is to do nothing. If JavaSVN has a way to do callbacks
         // for authentication, it could be added here.
     }
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#lock(java.io.File[], java.lang.String, boolean)
+     */
+    public void lock(File[] paths, String comment, boolean force)
+            throws SVNClientException {
+        notImplementedYet("lock");
+
+    }
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#unlock(java.io.File[], boolean)
+     */
+    public void unlock(File[] paths, boolean force) throws SVNClientException {
+        notImplementedYet("unlock");
+    }
 }

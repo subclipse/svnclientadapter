@@ -611,7 +611,7 @@ public interface ISVNClientAdapter {
      * @param localPath     target local path
      * @param force         overwrite local changes
      * @param recurse       traverse into subdirectories
-     * @exception ClientException
+     * @exception SVNClientException
      */
     public abstract void merge(SVNUrl path1, SVNRevision revision1, SVNUrl path2,
                SVNRevision revision2, File localPath, boolean force,
@@ -628,9 +628,29 @@ public interface ISVNClientAdapter {
      * @param force         overwrite local changes
      * @param recurse       traverse into subdirectories
      * @param dryrun        do not update working copy
-     * @exception ClientException
+     * @exception SVNClientException
      */
     public abstract void merge(SVNUrl path1, SVNRevision revision1, SVNUrl path2,
                SVNRevision revision2, File localPath, boolean force,
                boolean recurse, boolean dryRun) throws SVNClientException;    
+
+    /**
+     * Lock a working copy item
+     * @param paths  path of the items to lock
+     * @param comment
+     * @param force break an existing lock
+     * @throws SVNClientException
+     */
+    public abstract void lock(File[] paths, String comment, boolean force)
+            throws SVNClientException;
+
+    /**
+     * Unlock a working copy item
+     * @param paths  path of the items to unlock
+     * @param force break an existing lock
+     * @throws SVNClientException
+     */
+    public abstract void unlock(File[] paths, boolean force)
+            throws SVNClientException;
+
 }

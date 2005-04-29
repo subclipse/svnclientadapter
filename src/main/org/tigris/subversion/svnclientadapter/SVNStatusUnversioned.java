@@ -112,4 +112,34 @@ public class SVNStatusUnversioned implements ISVNStatus {
         return null;
     }
 
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getLockComment()
+     */
+    public String getLockComment() {
+        return null;
+    }
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getLockCreationDate()
+     */
+    public Date getLockCreationDate() {
+        return null;
+    }
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getLockOwner()
+     */
+    public String getLockOwner() {
+        return null;
+    }
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getLockToken()
+     */
+    public String getLockToken() {
+        return null;
+    }
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getReposLock()
+     */
+    public ISVNLock getReposLock() {
+        return null;
+    }
 }
