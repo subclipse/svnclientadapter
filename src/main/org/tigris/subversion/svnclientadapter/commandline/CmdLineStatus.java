@@ -173,4 +173,18 @@ class CmdLineStatus  implements ISVNStatus {
         return statusPart.isCopied();
     }
 
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getLockCreationDate()
+     */
+    public Date getLockCreationDate() {
+        return infoPart.getLockCreationDate();
+    }
+    
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getLockOwner()
+     */
+    public String getLockOwner() {
+        return infoPart.getLockOwner();
+    }
+ 
 }

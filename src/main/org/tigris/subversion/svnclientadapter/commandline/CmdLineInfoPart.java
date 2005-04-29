@@ -51,6 +51,8 @@ class CmdLineInfoPart implements ISVNInfo {
 	private static final String KEY_COPIEDFROMREV = "Copied From Rev";
 	private static final String KEY_PROPSLASTUPDATED = "Properties Last Updated";
 	private static final String KEY_REPOSITORYUUID = "Repository UUID";
+	private static final String KEY_LOCKOWNER = "Lock Owner";
+	private static final String KEY_LOCKCREATIONDATE = "Lock Created";
 
 	//Fields
 	private Map infoMap = new HashMap();
@@ -159,8 +161,12 @@ class CmdLineInfoPart implements ISVNInfo {
 				String line = st.nextToken();
 				int middle = line.indexOf(':');
 				String key = line.substring(0, middle);
-				String value = line.substring(middle + 2);
-				infoMap.put(key, value);
+				if (key.startsWith("Lock Comment")) 
+				    break;
+				else {
+					String value = line.substring(middle + 2);
+					infoMap.put(key, value);
+				}
 			}
 		}
 	}
@@ -231,4 +237,18 @@ class CmdLineInfoPart implements ISVNInfo {
 	public SVNUrl getCopyUrl() {
 		return (unversioned) ? null : Helper.toSVNUrl(get(KEY_COPIEDFROMURL));
 	}
+
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNInfo#getLockCreationDate()
+     */
+    public Date getLockCreationDate() {
+ 		return (unversioned) ? null : Helper.toDate(get(KEY_LOCKCREATIONDATE));
+    }
+    
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNInfo#getLockOwner()
+     */
+    public String getLockOwner() {
+		return (unversioned) ? null : get(KEY_LOCKOWNER);
+    }
 }

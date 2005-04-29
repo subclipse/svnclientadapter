@@ -2,7 +2,6 @@ package org.tigris.subversion.svnclientadapter.commandline;
 
 import junit.framework.TestCase;
 
-import org.tigris.subversion.javahl.Notify;
 import org.tigris.subversion.svnclientadapter.commandline.parser.SvnOutputParser;
 
 
@@ -31,7 +30,7 @@ public class SvnOutputParserTest extends TestCase {
 	public void testParser() {
 		SvnOutputParser parser = new SvnOutputParser();
 		final Notification[] notification = new Notification[1]; 
-		parser.addListener(new Notify() {
+		parser.addListener(new CmdLineNotify() {
 			public void onNotify(
 					String path,
 			        int action,
@@ -49,13 +48,13 @@ public class SvnOutputParserTest extends TestCase {
 		
 		parser.parse(" U /home/cedric/project/mytarget.txt");
 		assertEquals("/home/cedric/project/mytarget.txt",notification[0].path);
-		assertEquals(Notify.Status.unchanged,notification[0].contentState);
-		assertEquals(Notify.Status.changed,notification[0].propState);
+		assertEquals(CmdLineNotify.Status.unchanged,notification[0].contentState);
+		assertEquals(CmdLineNotify.Status.changed,notification[0].propState);
 
 		parser.parse("C  /home/cedric/project/mytarget.txt");
 		assertEquals("/home/cedric/project/mytarget.txt",notification[0].path);
-		assertEquals(Notify.Status.conflicted,notification[0].contentState);
-		assertEquals(Notify.Status.unchanged,notification[0].propState);
+		assertEquals(CmdLineNotify.Status.conflicted,notification[0].contentState);
+		assertEquals(CmdLineNotify.Status.unchanged,notification[0].propState);
 		
 		
 		parser.parse("At revision 53.");

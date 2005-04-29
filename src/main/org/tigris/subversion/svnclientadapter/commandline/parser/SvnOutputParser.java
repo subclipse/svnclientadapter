@@ -22,9 +22,8 @@ import java.util.StringTokenizer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.regexp.RE;
-import org.tigris.subversion.javahl.NodeKind;
-import org.tigris.subversion.javahl.Notify;
+import org.tigris.subversion.svnclientadapter.SVNNodeKind;
+import org.tigris.subversion.svnclientadapter.commandline.CmdLineNotify;
 
 /**
  * parser for the output of svn
@@ -39,41 +38,41 @@ public class SvnOutputParser {
 	// See see subversion/clients/cmdline/notify.c for possible outputs
     // we depend on javahl because it would be a waste to duplicate the notification actions 
 	private SvnActionRE[] svnActionsRE = new SvnActionRE[] { 
-		new SvnActionRE("Skipped missing target: '(.+)'",Notify.Action.skip, Notify.Status.missing,new String[] { SvnActionRE.PATH } ),
-		new SvnActionRE("Skipped '(.+)'",Notify.Action.skip,SvnActionRE.PATH),
-		new SvnActionRE("D  ([^ ].+)",Notify.Action.update_delete,SvnActionRE.PATH),
-		new SvnActionRE("A  ([^ ].+)",Notify.Action.update_add,SvnActionRE.PATH),
-		new SvnActionRE("Restored '(.+)'",Notify.Action.restore,SvnActionRE.PATH),
-		new SvnActionRE("Reverted '(.+)'",Notify.Action.revert,SvnActionRE.PATH),
-		new SvnActionRE("Failed to revert '(.+)' -- try updating instead\\.",Notify.Action.failed_revert,SvnActionRE.PATH),
-		new SvnActionRE("Resolved conflicted state of '(.+)'",Notify.Action.resolved,SvnActionRE.PATH),
-		new SvnActionRE("A  (bin)  ([^ ].+)",Notify.Action.add,SvnActionRE.PATH),
-		new SvnActionRE("A         ([^ ].+)",Notify.Action.add,SvnActionRE.PATH),
-		new SvnActionRE("D         ([^ ].+)",Notify.Action.delete,SvnActionRE.PATH),
-		new SvnActionRE("([CGU ])([CGU ]) (.+)",Notify.Action.update_update,new String[] {SvnActionRE.CONTENTSTATE, SvnActionRE.PROPSTATE,SvnActionRE.PATH}),
-		new SvnActionRE("Fetching external item into '(.+)'",Notify.Action.update_external,SvnActionRE.PATH),
-		new SvnActionRE("Exported external at revision (\\d+)\\.",Notify.Action.update_completed,SvnActionRE.REVISION),
-		new SvnActionRE("Exported revision (\\d+)\\.",Notify.Action.update_completed,SvnActionRE.REVISION),
-		new SvnActionRE("Checked out external at revision (\\d+)\\.",Notify.Action.update_completed,SvnActionRE.REVISION),
-		new SvnActionRE("Checked out revision (\\d+)\\.",Notify.Action.update_completed,SvnActionRE.REVISION),
-		new SvnActionRE("Updated external to revision (\\d+)\\.",Notify.Action.update_completed,SvnActionRE.REVISION),
-		new SvnActionRE("Updated to revision (\\d+)\\.",Notify.Action.update_completed,SvnActionRE.REVISION),
-		new SvnActionRE("External at revision (\\d+)\\.",Notify.Action.update_completed,SvnActionRE.REVISION),
-		new SvnActionRE("At revision (\\d+)\\.",Notify.Action.update_completed,SvnActionRE.REVISION),
-		new SvnActionRE("External export complete\\.",Notify.Action.update_completed, Notify.Status.inapplicable, Notify.Status.inapplicable),
-		new SvnActionRE("Export complete\\.",Notify.Action.update_completed, Notify.Status.inapplicable, Notify.Status.inapplicable),
-		new SvnActionRE("External checkout complete\\.",Notify.Action.update_completed, Notify.Status.inapplicable, Notify.Status.inapplicable),
-		new SvnActionRE("Checkout complete\\.",Notify.Action.update_completed, Notify.Status.inapplicable, Notify.Status.inapplicable),
-		new SvnActionRE("External update complete\\.",Notify.Action.update_completed, Notify.Status.inapplicable, Notify.Status.inapplicable),
-		new SvnActionRE("Update complete\\.",Notify.Action.update_completed, Notify.Status.inapplicable, Notify.Status.inapplicable),
-		new SvnActionRE("Performing status on external item at '(.+)'",Notify.Action.status_external,SvnActionRE.PATH),
-		new SvnActionRE("Status against revision:  *(\\d+)",Notify.Action.status_completed,SvnActionRE.REVISION),
-		new SvnActionRE("Sending        (.+)",Notify.Action.commit_modified,SvnActionRE.PATH),
-		new SvnActionRE("Adding  (bin)  (.+)",Notify.Action.commit_added,SvnActionRE.PATH),
-		new SvnActionRE("Adding         (.+)",Notify.Action.commit_added,SvnActionRE.PATH),
-		new SvnActionRE("Deleting       (.+)",Notify.Action.commit_deleted,SvnActionRE.PATH),
-		new SvnActionRE("Replacing      (.+)",Notify.Action.commit_replaced,SvnActionRE.PATH),
-		new SvnActionRE("Transmitting file data \\.*",Notify.Action.commit_postfix_txdelta),
+		new SvnActionRE("Skipped missing target: '(.+)'",CmdLineNotify.Action.skip, CmdLineNotify.Status.missing,new String[] { SvnActionRE.PATH } ),
+		new SvnActionRE("Skipped '(.+)'",CmdLineNotify.Action.skip,SvnActionRE.PATH),
+		new SvnActionRE("D  ([^ ].+)",CmdLineNotify.Action.update_delete,SvnActionRE.PATH),
+		new SvnActionRE("A  ([^ ].+)",CmdLineNotify.Action.update_add,SvnActionRE.PATH),
+		new SvnActionRE("Restored '(.+)'",CmdLineNotify.Action.restore,SvnActionRE.PATH),
+		new SvnActionRE("Reverted '(.+)'",CmdLineNotify.Action.revert,SvnActionRE.PATH),
+		new SvnActionRE("Failed to revert '(.+)' -- try updating instead\\.",CmdLineNotify.Action.failed_revert,SvnActionRE.PATH),
+		new SvnActionRE("Resolved conflicted state of '(.+)'",CmdLineNotify.Action.resolved,SvnActionRE.PATH),
+		new SvnActionRE("A  (bin)  ([^ ].+)",CmdLineNotify.Action.add,SvnActionRE.PATH),
+		new SvnActionRE("A         ([^ ].+)",CmdLineNotify.Action.add,SvnActionRE.PATH),
+		new SvnActionRE("D         ([^ ].+)",CmdLineNotify.Action.delete,SvnActionRE.PATH),
+		new SvnActionRE("([CGU ])([CGU ]) (.+)",CmdLineNotify.Action.update_update,new String[] {SvnActionRE.CONTENTSTATE, SvnActionRE.PROPSTATE,SvnActionRE.PATH}),
+		new SvnActionRE("Fetching external item into '(.+)'",CmdLineNotify.Action.update_external,SvnActionRE.PATH),
+		new SvnActionRE("Exported external at revision (\\d+)\\.",CmdLineNotify.Action.update_completed,SvnActionRE.REVISION),
+		new SvnActionRE("Exported revision (\\d+)\\.",CmdLineNotify.Action.update_completed,SvnActionRE.REVISION),
+		new SvnActionRE("Checked out external at revision (\\d+)\\.",CmdLineNotify.Action.update_completed,SvnActionRE.REVISION),
+		new SvnActionRE("Checked out revision (\\d+)\\.",CmdLineNotify.Action.update_completed,SvnActionRE.REVISION),
+		new SvnActionRE("Updated external to revision (\\d+)\\.",CmdLineNotify.Action.update_completed,SvnActionRE.REVISION),
+		new SvnActionRE("Updated to revision (\\d+)\\.",CmdLineNotify.Action.update_completed,SvnActionRE.REVISION),
+		new SvnActionRE("External at revision (\\d+)\\.",CmdLineNotify.Action.update_completed,SvnActionRE.REVISION),
+		new SvnActionRE("At revision (\\d+)\\.",CmdLineNotify.Action.update_completed,SvnActionRE.REVISION),
+		new SvnActionRE("External export complete\\.",CmdLineNotify.Action.update_completed, CmdLineNotify.Status.inapplicable, CmdLineNotify.Status.inapplicable),
+		new SvnActionRE("Export complete\\.",CmdLineNotify.Action.update_completed, CmdLineNotify.Status.inapplicable, CmdLineNotify.Status.inapplicable),
+		new SvnActionRE("External checkout complete\\.",CmdLineNotify.Action.update_completed, CmdLineNotify.Status.inapplicable, CmdLineNotify.Status.inapplicable),
+		new SvnActionRE("Checkout complete\\.",CmdLineNotify.Action.update_completed, CmdLineNotify.Status.inapplicable, CmdLineNotify.Status.inapplicable),
+		new SvnActionRE("External update complete\\.",CmdLineNotify.Action.update_completed, CmdLineNotify.Status.inapplicable, CmdLineNotify.Status.inapplicable),
+		new SvnActionRE("Update complete\\.",CmdLineNotify.Action.update_completed, CmdLineNotify.Status.inapplicable, CmdLineNotify.Status.inapplicable),
+		new SvnActionRE("Performing status on external item at '(.+)'",CmdLineNotify.Action.status_external,SvnActionRE.PATH),
+		new SvnActionRE("Status against revision:  *(\\d+)",CmdLineNotify.Action.status_completed,SvnActionRE.REVISION),
+		new SvnActionRE("Sending        (.+)",CmdLineNotify.Action.commit_modified,SvnActionRE.PATH),
+		new SvnActionRE("Adding  (bin)  (.+)",CmdLineNotify.Action.commit_added,SvnActionRE.PATH),
+		new SvnActionRE("Adding         (.+)",CmdLineNotify.Action.commit_added,SvnActionRE.PATH),
+		new SvnActionRE("Deleting       (.+)",CmdLineNotify.Action.commit_deleted,SvnActionRE.PATH),
+		new SvnActionRE("Replacing      (.+)",CmdLineNotify.Action.commit_replaced,SvnActionRE.PATH),
+		new SvnActionRE("Transmitting file data \\.*",CmdLineNotify.Action.commit_postfix_txdelta),
         
         // this one is not a notification 
         new SvnActionRE("Committed revision (\\d+)\\.",-1,SvnActionRE.REVISION)
@@ -84,7 +83,7 @@ public class SvnOutputParser {
 	 * add a listener
 	 * @param listener
 	 */
-	public void addListener(Notify listener) {
+	public void addListener(CmdLineNotify listener) {
 		listeners.add(listener);
 	}
 	
@@ -92,7 +91,7 @@ public class SvnOutputParser {
 	 * remove a listener
 	 * @param listener
 	 */
-	public void removeListener(Notify listener) {
+	public void removeListener(CmdLineNotify listener) {
 		listeners.remove(listener);
 	}
 	
@@ -142,11 +141,11 @@ public class SvnOutputParser {
 
 	private void notifyListeners(SvnActionRE svnActionRE) {
 		for (Iterator it = listeners.iterator();it.hasNext();) {
-			Notify listener = (Notify)it.next();
+			CmdLineNotify listener = (CmdLineNotify)it.next();
 			listener.onNotify(
 					svnActionRE.getPath(),
 					svnActionRE.getAction(),
-			        NodeKind.unknown,   // we don't know the kind
+			        SVNNodeKind.UNKNOWN.toInt(),   // we don't know the kind
 			        (String)null,       // we don't know the mimeType
 			        svnActionRE.getContentState(),
 			        svnActionRE.getPropStatus(),

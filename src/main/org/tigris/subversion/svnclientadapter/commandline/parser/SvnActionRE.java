@@ -16,8 +16,8 @@
 package org.tigris.subversion.svnclientadapter.commandline.parser;
 
 import org.apache.regexp.RE;
-import org.tigris.subversion.javahl.Notify;
-import org.tigris.subversion.javahl.Revision;
+import org.tigris.subversion.svnclientadapter.SVNRevision;
+import org.tigris.subversion.svnclientadapter.commandline.CmdLineNotify;
 
 /**
  * regular expression to parse an svn notification line 
@@ -32,8 +32,8 @@ class SvnActionRE {
 	
 	private RE re;
 	private int action;
-	private int contentStatus = Notify.Status.unknown;
-	private int propStatus = Notify.Status.unknown;
+	private int contentStatus = CmdLineNotify.Status.unknown;
+	private int propStatus = CmdLineNotify.Status.unknown;
 	private String[] notificationProperties;
 	
 	/**
@@ -121,18 +121,18 @@ class SvnActionRE {
 
 	private int getStatus(char statusChar) {
 		if (statusChar == ' ')
-			return Notify.Status.unchanged;
+			return CmdLineNotify.Status.unchanged;
 		else
 	    if (statusChar == 'C')
-	    	return Notify.Status.conflicted;
+	    	return CmdLineNotify.Status.conflicted;
 	    else
 		if (statusChar == 'G')
-		   	return Notify.Status.merged;		    
+		   	return CmdLineNotify.Status.merged;		    
 	    else
 	    if (statusChar == 'U')
-		   	return Notify.Status.changed;
+		   	return CmdLineNotify.Status.changed;
 	    else
-	    	return Notify.Status.unknown;
+	    	return CmdLineNotify.Status.unknown;
 	}
 
 	/**
@@ -140,12 +140,12 @@ class SvnActionRE {
 	 * @see Notify#Status
 	 */
 	public int getContentState() {
-		if (contentStatus != Notify.Status.unknown) {
+		if (contentStatus != CmdLineNotify.Status.unknown) {
 			return contentStatus;
 		}
 		int index = getIndex(CONTENTSTATE);
 		if (index == -1) {
-			return Notify.Status.unknown;
+			return CmdLineNotify.Status.unknown;
 		} else {
 			String stateChar = re.getParen(index+1);
 			return getStatus(stateChar.charAt(0));
@@ -157,12 +157,12 @@ class SvnActionRE {
 	 * @see Notify#Status
 	 */
 	public int getPropStatus() {
-		if (propStatus != Notify.Status.unknown) {
+		if (propStatus != CmdLineNotify.Status.unknown) {
 			return propStatus;
 		}
 		int index = getIndex(PROPSTATE);
 		if (index == -1) {
-			return Notify.Status.unknown;
+			return CmdLineNotify.Status.unknown;
 		} else {
 			String stateChar = re.getParen(index+1);
 			return getStatus(stateChar.charAt(0));
@@ -175,7 +175,7 @@ class SvnActionRE {
 	public long getRevision() {
 		int index = getIndex(REVISION);
 		if (index == -1) {
-			return Revision.SVN_INVALID_REVNUM;
+			return SVNRevision.SVN_INVALID_REVNUM;
 		} else {
 			String revisionString = re.getParen(index+1);
 			return Long.parseLong(revisionString);

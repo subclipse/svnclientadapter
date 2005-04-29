@@ -18,9 +18,8 @@ package org.tigris.subversion.svnclientadapter.commandline;
 import java.io.InputStream;
 import java.util.ArrayList;
 
-import org.tigris.subversion.javahl.Notify;
-import org.tigris.subversion.javahl.Revision;
 import org.tigris.subversion.svnclientadapter.ISVNNotifyListener;
+import org.tigris.subversion.svnclientadapter.SVNRevision;
 import org.tigris.subversion.svnclientadapter.commandline.parser.SvnOutputParser;
 
 /**
@@ -36,7 +35,7 @@ public class SvnCommandLine extends CommandLine {
 	private String user;
 	private String pass;	
     private SvnOutputParser svnOutputParser = new SvnOutputParser();
-    private long revision = Revision.SVN_INVALID_REVNUM;
+    private long revision = SVNRevision.SVN_INVALID_REVNUM;
     private boolean parseSvnOutput = false;
     private String configDir = null;
     
@@ -837,19 +836,55 @@ public class SvnCommandLine extends CommandLine {
         addConfigInfo(args);        
         return execString(args,false);
     }
+    
+    String lock(String[] path, String comment, boolean force) throws CmdLineException {
+        setCommand(ISVNNotifyListener.Command.LOCK, true);
+		ArrayList args = new ArrayList();
+		args.add("lock");
+		if (force)
+		    args.add("--force");
+		if (comment != null && !comment.equals("")) {
+		    args.add("-m");
+		    args.add(comment);
+		}
+		addAuthInfo(args);
+        addConfigInfo(args);
+		        
+        for (int i = 0; i < path.length;i++) {
+        	args.add(path[i]);
+        }
+        
+		return execString(args,false);
+    }
+
+    String unlock(String[] path, boolean force) throws CmdLineException {
+        setCommand(ISVNNotifyListener.Command.UNLOCK, true);
+		ArrayList args = new ArrayList();
+		args.add("unlock");
+		if (force)
+		    args.add("--force");
+		addAuthInfo(args);
+        addConfigInfo(args);
+		        
+        for (int i = 0; i < path.length;i++) {
+        	args.add(path[i]);
+        }
+        
+		return execString(args,false);
+    }
 
     /*
 	 * (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.commandline.CommandLine#notifyFromSvnOutput(java.lang.String)
 	 */
 	protected void notifyFromSvnOutput(String svnOutput) {
-		this.revision = Revision.SVN_INVALID_REVNUM;
+		this.revision = SVNRevision.SVN_INVALID_REVNUM;
 		// we call the super implementation : handles logMessage and logCompleted
 		super.notifyFromSvnOutput(svnOutput);
 
 		if (parseSvnOutput) {
 			// we parse the svn output
-			Notify notify = new Notify() {
+			CmdLineNotify notify = new CmdLineNotify() {
 		
 				public void onNotify(
 						String path,
@@ -864,7 +899,7 @@ public class SvnCommandLine extends CommandLine {
 					if (path != null) {
 						notificationHandler.notifyListenersOfChange(path);
 					}
-					if (revision != Revision.SVN_INVALID_REVNUM) {
+					if (revision != SVNRevision.SVN_INVALID_REVNUM) {
 						SvnCommandLine.this.revision = revision;
 						notificationHandler.logRevision(revision);
 					}

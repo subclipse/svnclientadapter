@@ -1105,4 +1105,37 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
         	throw SVNClientException.wrapException(e);
         }
 	}
+    
+	/* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#lock(java.lang.String[], java.lang.String, boolean)
+     */
+    public void lock(File[] paths, String comment, boolean force)
+            throws SVNClientException {
+		String[] files = new String[paths.length];
+		for (int i = 0; i < paths.length; i++) {
+			files[i] = toString(paths[i]);
+		}
+		try {
+			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(paths));
+            String changedResources = _cmd.lock(files, comment, force);
+        } catch (CmdLineException e) {
+        	throw SVNClientException.wrapException(e);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#unlock(java.lang.String[], boolean)
+     */
+    public void unlock(File[] paths, boolean force) throws SVNClientException {
+		String[] files = new String[paths.length];
+		for (int i = 0; i < paths.length; i++) {
+			files[i] = toString(paths[i]);
+		}
+		try {
+			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(paths));
+            String changedResources = _cmd.unlock(files, force);
+        } catch (CmdLineException e) {
+        	throw SVNClientException.wrapException(e);
+        }
+    }
 }
