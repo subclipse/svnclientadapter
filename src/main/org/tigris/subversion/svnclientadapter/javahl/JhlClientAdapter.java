@@ -1661,6 +1661,9 @@ public class JhlClientAdapter extends AbstractClientAdapter {
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(paths));
 
             svnClient.lock(files, comment, force);
+            for (int i = 0; i < files.length; i++) {
+                notificationHandler.notifyListenersOfChange(files[i]);
+            }
         } catch (ClientException e) {
             notificationHandler.logException(e);
             throw new SVNClientException(e);
@@ -1686,6 +1689,9 @@ public class JhlClientAdapter extends AbstractClientAdapter {
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(paths));
 
             svnClient.unlock(files, force);
+            for (int i = 0; i < files.length; i++) {
+                notificationHandler.notifyListenersOfChange(files[i]);
+            }
         } catch (ClientException e) {
             notificationHandler.logException(e);
             throw new SVNClientException(e);

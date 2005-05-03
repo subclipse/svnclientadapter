@@ -100,9 +100,11 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements No
                 	logMessage(lock.getPath() + " locked by user " + lock.getOwner());
                 else
                     logMessage(path + "locked");
+        	    notify = false; // for JavaHL bug
             	break;
             case NotifyAction.unlocked:
                 logMessage(path + " unlocked");
+            	notify = false; // for JavaHL bug
             	break;
             case NotifyAction.update_delete :
                 logMessage("D  " + path);
