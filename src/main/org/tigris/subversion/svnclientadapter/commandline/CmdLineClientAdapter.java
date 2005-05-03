@@ -486,14 +486,21 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.subclipse.client.ISVNClientAdapter#commit(java.io.File[], java.lang.String, boolean)
 	 */
-	public long commit(File[] parents, String comment, boolean b) throws SVNClientException {
+	public long commit(File[] parents, String comment, boolean recurse) throws SVNClientException {
+		return commit(parents, comment, recurse , false);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.subclipse.client.ISVNClientAdapter#commit(java.io.File[], java.lang.String, boolean, boolean)
+	 */
+	public long commit(File[] parents, String comment, boolean recurse, boolean keepLocks) throws SVNClientException {
 		String[] paths = new String[parents.length];
 		for (int i = 0; i < parents.length; i++) {
 			paths[i] = toString(parents[i]);
 		}
 		try {
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(parents));
-			String changedResources = _cmd.checkin(paths, comment);
+			String changedResources = _cmd.checkin(paths, comment, keepLocks);
 			return _cmd.getRevision();
 		} catch (CmdLineException e) {
 			if ("".equals(e.getMessage()))
@@ -505,7 +512,7 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 				for (int i = 0; i < 50; i++) {
 					try {
 						notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(parents));
-						String changedResources = _cmd.checkin(paths, comment);
+						String changedResources = _cmd.checkin(paths, comment, keepLocks);
 						return _cmd.getRevision();
 					} catch (CmdLineException e1) {
 						try {

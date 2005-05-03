@@ -93,6 +93,19 @@ public interface ISVNClientAdapter {
 	public abstract long commit(File[] paths, String message, boolean recurse)
 		throws SVNClientException;
 	/**
+	 * Commits changes to the repository. This usually requires
+	 * authentication, see Auth.
+	 * @return Returns a long representing the revision. It returns a
+	 *         -1 if the revision number is invalid.
+	 * @param path files to commit.
+	 * @param message log message.
+	 * @param recurse whether the operation should be done recursively.
+	 * @param keepLocks whether to keep locks on files that are committed.
+	 * @exception ClientException
+	 */
+	public abstract long commit(File[] paths, String message, boolean recurse, boolean keepLocks)
+		throws SVNClientException;
+	/**
 	 * List directory entries of a URL
 	 * @param url
 	 * @param revision

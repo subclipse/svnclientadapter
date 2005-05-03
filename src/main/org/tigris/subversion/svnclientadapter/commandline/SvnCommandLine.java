@@ -170,10 +170,12 @@ public class SvnCommandLine extends CommandLine {
 	 *   committed resources.
 	 * @throws CmdLineException
 	 */
-	String checkin(String[] path, String message) throws CmdLineException {
+	String checkin(String[] path, String message, boolean keepLocks) throws CmdLineException {
         setCommand(ISVNNotifyListener.Command.COMMIT, true);
 		ArrayList args = new ArrayList();
 		args.add("ci");
+		if (keepLocks)
+		    args.add("--no-unlock");
 		args.add("--force-log");
 		args.add("-m");
 		args.add(message);

@@ -859,4 +859,11 @@ public class JavaSvnClientAdapter extends AbstractClientAdapter {
     public void unlock(File[] paths, boolean force) throws SVNClientException {
         notImplementedYet("unlock");
     }
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#commit(java.io.File[], java.lang.String, boolean, boolean)
+     */
+    public long commit(File[] paths, String message, boolean recurse,
+            boolean keepLocks) throws SVNClientException {
+        return commit(paths, message, recurse);
+    }
 }

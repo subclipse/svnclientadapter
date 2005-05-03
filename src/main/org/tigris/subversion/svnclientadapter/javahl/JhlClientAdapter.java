@@ -327,12 +327,29 @@ public class JhlClientAdapter extends AbstractClientAdapter {
      */
     public long commit(File[] paths, String message, boolean recurse)
         throws SVNClientException {
+        return commit(paths, message, recurse, false);
+    }
+
+    /**
+     * Commits changes to the repository. This usually requires
+     * authentication, see Auth.
+     * @return Returns a long representing the revision. It returns a
+     *         -1 if the revision number is invalid.
+     * @param path files to commit.
+     * @param message log message.
+     * @param recurse whether the operation should be done recursively.
+     * @exception ClientException
+     */
+    public long commit(File[] paths, String message, boolean recurse, boolean keepLocks)
+        throws SVNClientException {
         try {
             notificationHandler.setCommand(ISVNNotifyListener.Command.COMMIT);
             String[] files = new String[paths.length];
             String commandLine = "commit -m \""+message+"\"";
             if (!recurse)
                 commandLine+=" -N";
+            if (keepLocks)
+                commandLine+=" --no-unlock";
 
             for (int i = 0; i < paths.length; i++) {
                 files[i] = fileToSVNPath((File) paths[i], false);
@@ -341,7 +358,7 @@ public class JhlClientAdapter extends AbstractClientAdapter {
             notificationHandler.logCommandLine(commandLine);
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(paths));
 
-            long newRev = svnClient.commit(files, message, recurse);
+            long newRev = svnClient.commit(files, message, recurse, keepLocks);
             if (newRev > 0)
             	notificationHandler.logCompleted("Committed revision " + newRev + ".");
             return newRev;
@@ -1644,7 +1661,6 @@ public class JhlClientAdapter extends AbstractClientAdapter {
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(paths));
 
             svnClient.lock(files, comment, force);
-           	notificationHandler.logCompleted("One or more files were successfully locked.");
         } catch (ClientException e) {
             notificationHandler.logException(e);
             throw new SVNClientException(e);
@@ -1670,7 +1686,6 @@ public class JhlClientAdapter extends AbstractClientAdapter {
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(paths));
 
             svnClient.unlock(files, force);
-           	notificationHandler.logCompleted("One or more files were successfully unlocked.");
         } catch (ClientException e) {
             notificationHandler.logException(e);
             throw new SVNClientException(e);
