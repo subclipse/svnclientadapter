@@ -1661,9 +1661,19 @@ public class JhlClientAdapter extends AbstractClientAdapter {
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(paths));
 
             svnClient.lock(files, comment, force);
-            for (int i = 0; i < files.length; i++) {
-                notificationHandler.notifyListenersOfChange(files[i]);
+            // Workaround problem that lock method does not notify errors
+            boolean errors = false;
+            ISVNStatus status[] = this.getStatus(paths);
+            for (int i = 0; i < status.length; i++) {
+                if (status[i].getLockOwner() == null) {
+                    errors = true;
+                    notificationHandler.logError("Failed to lock " + status[i].getPath()); 
+                } else {
+                    notificationHandler.notifyListenersOfChange(status[i].getFile().getAbsolutePath());
+                }
             }
+            if (errors)
+                throw new SVNClientException("Failed to lock one or more of the selected resources.");
         } catch (ClientException e) {
             notificationHandler.logException(e);
             throw new SVNClientException(e);
@@ -1680,14 +1690,14 @@ public class JhlClientAdapter extends AbstractClientAdapter {
             String commandLine = "unlock ";
             if (force)
                 commandLine+=" --force";
-
+    
             for (int i = 0; i < paths.length; i++) {
                 files[i] = fileToSVNPath((File) paths[i], false);
                 commandLine+=" "+files[i].toString();
             }
             notificationHandler.logCommandLine(commandLine);
-			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(paths));
-
+    		notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(paths));
+    
             svnClient.unlock(files, force);
             for (int i = 0; i < files.length; i++) {
                 notificationHandler.notifyListenersOfChange(files[i]);
@@ -1696,6 +1706,6 @@ public class JhlClientAdapter extends AbstractClientAdapter {
             notificationHandler.logException(e);
             throw new SVNClientException(e);
         }
-
+    
     }
 }
