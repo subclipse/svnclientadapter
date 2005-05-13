@@ -41,6 +41,15 @@ import org.tigris.subversion.svnclientadapter.SVNNotificationHandler;
 public class JhlNotificationHandler extends SVNNotificationHandler implements Notify2 {
     private boolean receivedSomeChange;
     private boolean sentFirstTxdelta;
+    
+    private int updates;
+    private int adds;
+    private int deletes;
+    private int conflicts;
+    private int merges;
+    private int propConflicts;
+    private int propMerges;
+    private int propUpdates;
 
     /* (non-Javadoc)
      * @see org.tigris.subversion.javahl.Notify2#onNotify(org.tigris.subversion.javahl.NotifyInformation)
@@ -109,10 +118,12 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements No
             case NotifyAction.update_delete :
                 logMessage("D  " + path);
                 receivedSomeChange = true;
+                deletes += 1;
                 break;
             case NotifyAction.update_add :
                 logMessage("A  " + path);
                 receivedSomeChange = true;
+                adds += 1;
                 break;
             case NotifyAction.restore :
                 logMessage("Restored " + path);
@@ -145,28 +156,36 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements No
                     if (kind == NodeKind.file) {
                         if (contentState == NotifyStatus.conflicted) {
                             statecharBuf[0] = 'C';
+                            conflicts += 1;
                             error = true;
                         }
                         else if (contentState == NotifyStatus.merged) {
                             statecharBuf[0] = 'G';
+                            merges += 1;
                             error = true;
                         }
-                        else if (contentState == NotifyStatus.changed)
+                        else if (contentState == NotifyStatus.changed) {
                             statecharBuf[0] = 'U';
+                            updates += 1;
+                        }
                         else if (contentState == NotifyStatus.unchanged && command == ISVNNotifyListener.Command.MERGE
                                 && propState < NotifyStatus.obstructed)
                             break;
                     }
                     if (propState == NotifyStatus.conflicted) {
                         statecharBuf[1] = 'C';
+                        propConflicts += 1;
                         error = true;
                     }
                     else if (propState == NotifyStatus.merged) {
                         statecharBuf[1] = 'G';
+                        propMerges += 1;
                         error = true;
                     }
-                    else if (propState == NotifyStatus.changed)
+                    else if (propState == NotifyStatus.changed) {
                         statecharBuf[1] = 'U';
+                        propUpdates += 1;
+                    }
                     if (error)
                         logError("" + statecharBuf[0] + statecharBuf[1] + " " + path);                      
                     else
@@ -249,6 +268,71 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements No
     public void setCommand(int command) {
         receivedSomeChange = false;
         sentFirstTxdelta = false;
+        clearStats();
         super.setCommand(command);
+    }
+    
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.SVNNotificationHandler#logCompleted(java.lang.String)
+     */
+    public void logCompleted(String message) {
+        super.logCompleted(message);
+        logStats();
+        
+    }
+
+    private void clearStats(){
+        adds = 0;
+        updates = 0;
+        deletes = 0;
+        conflicts = 0;
+        merges = 0;
+        propConflicts = 0;
+        propMerges = 0;
+        propUpdates = 0;
+    }
+    
+    private void logStats() {
+        if (command == ISVNNotifyListener.Command.UPDATE
+                || command == ISVNNotifyListener.Command.MERGE
+                || command == ISVNNotifyListener.Command.SWITCH) {
+	        if (fileStats()) {
+	            logMessage("===== File Statistics: =====");
+		        if (conflicts > 0)
+		            logMessage("   Conflicts: " + conflicts);
+		        if (merges > 0)
+		            logMessage("      Merged: " + merges);
+		        if (deletes > 0)
+		            logMessage("     Deleted: " + deletes);
+		        if (adds > 0)
+		            logMessage("       Added: " + adds);
+		        if (updates > 0)
+		            logMessage("     Updated: " + updates);
+	        }
+	        if (propStats()){
+	            logMessage("===== Property Statistics: =====");
+		        if (propConflicts > 0)
+		            logMessage("   Conflicts: " + propConflicts);
+		        if (propMerges > 0)
+		            logMessage("      Merged: " + propMerges);
+		        if (propUpdates > 0)
+		            logMessage("     Updated: " + propUpdates);
+	        }
+        }
+    }
+    
+    private boolean fileStats() {
+        if (updates > 0 || adds > 0 || deletes > 0 
+                || conflicts > 0 || merges > 0)
+            return true;
+        return false;
+    }
+    
+    private boolean propStats() {
+        if (propUpdates > 0
+                || propConflicts > 0
+                || propMerges > 0)
+            return true;
+        return false;
     }
 }

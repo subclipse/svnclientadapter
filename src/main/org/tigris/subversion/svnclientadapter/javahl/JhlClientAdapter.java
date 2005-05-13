@@ -1549,7 +1549,7 @@ public class JhlClientAdapter extends AbstractClientAdapter {
             notificationHandler.setBaseDir(baseDir);
 
             svnClient.doSwitch(target, url.toString(),JhlConverter.convert(revision),recurse);
-            
+           
         } catch (ClientException e) {
             notificationHandler.logException(e);
             throw new SVNClientException(e);            
@@ -1625,7 +1625,10 @@ public class JhlClientAdapter extends AbstractClientAdapter {
             notificationHandler.setBaseDir(baseDir);
     
             svnClient.merge(path1.toString(), JhlConverter.convert(revision1), path2.toString(), JhlConverter.convert(revision2), target, force, recurse, false, dryRun );
-            
+            if (dryRun)
+                notificationHandler.logCompleted("Dry-run merge complete.");
+            else
+                notificationHandler.logCompleted("Merge complete.");
         } catch (ClientException e) {
             notificationHandler.logException(e);
             throw new SVNClientException(e);            
