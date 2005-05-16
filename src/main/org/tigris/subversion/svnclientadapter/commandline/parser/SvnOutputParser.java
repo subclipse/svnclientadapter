@@ -40,8 +40,8 @@ public class SvnOutputParser {
 	private SvnActionRE[] svnActionsRE = new SvnActionRE[] { 
 		new SvnActionRE("Skipped missing target: '(.+)'",CmdLineNotify.Action.skip, CmdLineNotify.Status.missing,new String[] { SvnActionRE.PATH } ),
 		new SvnActionRE("Skipped '(.+)'",CmdLineNotify.Action.skip,SvnActionRE.PATH),
-		new SvnActionRE("D  ([^ ].+)",CmdLineNotify.Action.update_delete,SvnActionRE.PATH),
-		new SvnActionRE("A  ([^ ].+)",CmdLineNotify.Action.update_add,SvnActionRE.PATH),
+		new SvnActionRE("D    ([^ ].+)",CmdLineNotify.Action.update_delete,SvnActionRE.PATH),
+		new SvnActionRE("A    ([^ ].+)",CmdLineNotify.Action.update_add,SvnActionRE.PATH),
 		new SvnActionRE("Restored '(.+)'",CmdLineNotify.Action.restore,SvnActionRE.PATH),
 		new SvnActionRE("Reverted '(.+)'",CmdLineNotify.Action.revert,SvnActionRE.PATH),
 		new SvnActionRE("Failed to revert '(.+)' -- try updating instead\\.",CmdLineNotify.Action.failed_revert,SvnActionRE.PATH),
@@ -49,7 +49,7 @@ public class SvnOutputParser {
 		new SvnActionRE("A  (bin)  ([^ ].+)",CmdLineNotify.Action.add,SvnActionRE.PATH),
 		new SvnActionRE("A         ([^ ].+)",CmdLineNotify.Action.add,SvnActionRE.PATH),
 		new SvnActionRE("D         ([^ ].+)",CmdLineNotify.Action.delete,SvnActionRE.PATH),
-		new SvnActionRE("([CGU ])([CGU ]) (.+)",CmdLineNotify.Action.update_update,new String[] {SvnActionRE.CONTENTSTATE, SvnActionRE.PROPSTATE,SvnActionRE.PATH}),
+		new SvnActionRE("([CGU ])([CGU ])   (.+)",CmdLineNotify.Action.update_update,new String[] {SvnActionRE.CONTENTSTATE, SvnActionRE.PROPSTATE,SvnActionRE.PATH}),
 		new SvnActionRE("Fetching external item into '(.+)'",CmdLineNotify.Action.update_external,SvnActionRE.PATH),
 		new SvnActionRE("Exported external at revision (\\d+)\\.",CmdLineNotify.Action.update_completed,SvnActionRE.REVISION),
 		new SvnActionRE("Exported revision (\\d+)\\.",CmdLineNotify.Action.update_completed,SvnActionRE.REVISION),
@@ -73,6 +73,8 @@ public class SvnOutputParser {
 		new SvnActionRE("Deleting       (.+)",CmdLineNotify.Action.commit_deleted,SvnActionRE.PATH),
 		new SvnActionRE("Replacing      (.+)",CmdLineNotify.Action.commit_replaced,SvnActionRE.PATH),
 		new SvnActionRE("Transmitting file data \\.*",CmdLineNotify.Action.commit_postfix_txdelta),
+		new SvnActionRE("'(.+)' locked by user.*",CmdLineNotify.Action.locked),
+		new SvnActionRE("'(.+)' unlocked.*",CmdLineNotify.Action.unlocked),
         
         // this one is not a notification 
         new SvnActionRE("Committed revision (\\d+)\\.",-1,SvnActionRE.REVISION)

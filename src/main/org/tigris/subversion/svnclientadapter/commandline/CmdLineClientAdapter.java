@@ -1128,6 +1128,11 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
         } catch (CmdLineException e) {
         	throw SVNClientException.wrapException(e);
         }
+        finally {
+            for (int i = 0; i < files.length; i++) {
+                notificationHandler.notifyListenersOfChange(files[i]);
+            }
+        }
     }
 
     /* (non-Javadoc)
@@ -1144,5 +1149,10 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
         } catch (CmdLineException e) {
         	throw SVNClientException.wrapException(e);
         }
-    }
+        finally {
+            for (int i = 0; i < files.length; i++) {
+                notificationHandler.notifyListenersOfChange(files[i]);
+            }
+        }
+   }
 }
