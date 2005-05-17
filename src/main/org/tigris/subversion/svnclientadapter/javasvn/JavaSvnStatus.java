@@ -245,4 +245,11 @@ public class JavaSvnStatus implements ISVNStatus {
         return null;
     }
     
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getLockComment()
+     */
+    public String getLockComment() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

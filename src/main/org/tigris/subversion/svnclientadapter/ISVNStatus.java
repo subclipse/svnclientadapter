@@ -119,4 +119,10 @@ public interface ISVNStatus {
      */
     public Date getLockCreationDate();
 
+    /**
+     * Returns the lock  comment
+     * @return the lock comment
+     */
+    public String getLockComment();
+
 }

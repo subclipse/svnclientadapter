@@ -187,4 +187,10 @@ class CmdLineStatus  implements ISVNStatus {
         return infoPart.getLockOwner();
     }
  
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getLockComment()
+     */
+    public String getLockComment() {
+        return infoPart.getLockComment();
+    }
 }

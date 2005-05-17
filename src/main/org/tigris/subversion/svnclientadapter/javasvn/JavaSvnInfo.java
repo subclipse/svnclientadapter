@@ -273,4 +273,11 @@ public class JavaSvnInfo implements ISVNInfo {
         // TODO Auto-generated method stub
         return null;
     }
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNInfo#getLockComment()
+     */
+    public String getLockComment() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

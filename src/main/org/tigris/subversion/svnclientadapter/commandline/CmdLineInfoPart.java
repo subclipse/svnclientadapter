@@ -16,8 +16,10 @@
 package org.tigris.subversion.svnclientadapter.commandline;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
@@ -53,6 +55,7 @@ class CmdLineInfoPart implements ISVNInfo {
 	private static final String KEY_REPOSITORYUUID = "Repository UUID";
 	private static final String KEY_LOCKOWNER = "Lock Owner";
 	private static final String KEY_LOCKCREATIONDATE = "Lock Created";
+	private static final String KEY_LOCKCOMMENT = "Lock Comment";
 
 	//Fields
 	private Map infoMap = new HashMap();
@@ -157,17 +160,25 @@ class CmdLineInfoPart implements ISVNInfo {
 			// it into a map with the key being the text to
 			// the left of the colon, and value being to the
 			// right.
+		    StringBuffer lockComment = new StringBuffer();
+		    boolean inComment = false;
 			while (st.hasMoreTokens()) {
 				String line = st.nextToken();
-				int middle = line.indexOf(':');
-				String key = line.substring(0, middle);
-				if (key.startsWith("Lock Comment")) 
-				    break;
-				else {
-					String value = line.substring(middle + 2);
-					infoMap.put(key, value);
+				if (inComment) {
+				    lockComment.append(line +"\n");
+				} else {
+					int middle = line.indexOf(':');
+					String key = line.substring(0, middle);
+					if (key.startsWith(KEY_LOCKCOMMENT)) 
+					    inComment = true;
+					else {
+						String value = line.substring(middle + 2);
+						infoMap.put(key, value);
+					}
 				}
 			}
+			if (inComment)
+			    infoMap.put(KEY_LOCKCOMMENT, lockComment.toString());
 		}
 	}
     
@@ -250,5 +261,35 @@ class CmdLineInfoPart implements ISVNInfo {
      */
     public String getLockOwner() {
 		return (unversioned) ? null : get(KEY_LOCKOWNER);
+    }
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNInfo#getLockComment()
+     */
+    public String getLockComment() {
+		return (unversioned) ? null : get(KEY_LOCKCOMMENT);
+    }
+    
+    public static String[] parseInfoParts(String infoLines) {
+		StringTokenizer st = new StringTokenizer(infoLines, Helper.NEWLINE+Helper.NEWLINE);
+		String current = null;
+		List infoParts = new ArrayList(st.countTokens());
+		while (st.hasMoreTokens()){
+		    String temp = st.nextToken();
+		    if (temp.startsWith("Path:") || temp.endsWith(":  (Not a versioned resource)")){
+		        if (current != null)
+		            infoParts.add(current);
+		        current = temp;
+		    } else {
+	            if (current == null)
+	                current = temp;
+	            else
+	                current += "\n" + temp;
+		    }
+		}
+		if (current!= null)
+            infoParts.add(current);
+        String[] infoArray = new String[infoParts.size()];
+        infoParts.toArray(infoArray);
+        return infoArray;
     }
 }

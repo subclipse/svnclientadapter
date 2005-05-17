@@ -151,4 +151,10 @@ public class SVNInfoUnversioned implements ISVNInfo {
     public String getLockOwner() {
         return null;
     }
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNInfo#getLockComment()
+     */
+    public String getLockComment() {
+        return null;
+    }
 }

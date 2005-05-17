@@ -237,4 +237,10 @@ public class JhlStatus implements ISVNStatus {
         return _s.getLockOwner();
     }
  
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getLockComment()
+     */
+    public String getLockComment() {
+        return _s.getLockComment();
+    }
 }

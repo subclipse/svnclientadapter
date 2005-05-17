@@ -126,5 +126,11 @@ public interface ISVNInfo
      * @return lock creation date
      */
     public Date getLockCreationDate();
+    
+    /**
+     * Retrieves the lock comment (may be null)
+     * @return lock comment
+     */
+    public String getLockComment();
 
 }

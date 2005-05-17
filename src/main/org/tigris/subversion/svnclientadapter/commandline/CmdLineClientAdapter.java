@@ -573,7 +573,7 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
             // this is not enough, so we get info from the files
             String infoLinesString = _cmd.info(targetsInfo);
                  
-            parts = StringUtils.split(infoLinesString,Helper.NEWLINE+Helper.NEWLINE);
+            parts = CmdLineInfoPart.parseInfoParts(infoLinesString);
             CmdLineInfoPart[] cmdLineInfoParts = new CmdLineInfoPart[parts.length];
             for (int i = 0; i < parts.length;i++) {
                 cmdLineInfoParts[i] = new CmdLineInfoPart(parts[i]);

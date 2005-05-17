@@ -183,4 +183,10 @@ public class JhlInfo implements ISVNInfo {
     public String getLockOwner() {
         return info.getLock().getOwner();
     }
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNInfo#getLockComment()
+     */
+    public String getLockComment() {
+        return info.getLock().getComment();
+    }
 }

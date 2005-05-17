@@ -47,7 +47,7 @@ public class CmdLineStatuses {
         if (infoLines.length() == 0) {
             cmdLineInfoParts = new CmdLineInfoPart[0]; 
         } else {
-            String[] parts = StringUtils.split(infoLines,Helper.NEWLINE+Helper.NEWLINE);
+            String[] parts = CmdLineInfoPart.parseInfoParts(infoLines);
             cmdLineInfoParts = new CmdLineInfoPart[parts.length];
             for (int i = 0; i < parts.length;i++) {
                 cmdLineInfoParts[i] = new CmdLineInfoPart(parts[i]);
