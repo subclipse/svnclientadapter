@@ -15,8 +15,8 @@
  */
 package org.tigris.subversion.svnclientadapter.javahl;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.util.logging.Logger;
+
 import org.tigris.subversion.javahl.ChangePath;
 import org.tigris.subversion.javahl.DirEntry;
 import org.tigris.subversion.javahl.Lock;
@@ -41,7 +41,7 @@ import org.tigris.subversion.svnclientadapter.SVNStatusKind;
  */
 public class JhlConverter {
 
-	private static Log log = LogFactory.getLog(JhlConverter.class);	
+	private static Logger log = Logger.getLogger(JhlConverter.class.getName());	
 	
 	private JhlConverter() {
 		//non-instantiable
@@ -58,7 +58,7 @@ public class JhlConverter {
             case SVNRevision.Kind.unspecified : return Revision.START;
             case SVNRevision.Kind.working : return Revision.WORKING;
             default: {
-        		log.error("unknown revision kind :"+svnRevision.getKind());
+        		log.severe("unknown revision kind :"+svnRevision.getKind());
             	return Revision.START; // should never go here
             }
         }
@@ -102,7 +102,7 @@ public class JhlConverter {
             case NodeKind.none : return SVNNodeKind.NONE; 
             case NodeKind.unknown : return SVNNodeKind.UNKNOWN;
             default: {
-            	log.error("unknown node kind :"+javahlNodeKind);
+            	log.severe("unknown node kind :"+javahlNodeKind);
             	return SVNNodeKind.UNKNOWN; // should never go here
             }
         }
@@ -143,7 +143,7 @@ public class JhlConverter {
             case Status.Kind.unversioned :
                 return SVNStatusKind.UNVERSIONED;
             default : {
-            	log.error("unknown status kind :"+kind);
+            	log.severe("unknown status kind :"+kind);
                 return SVNStatusKind.NONE;
             }
         }
@@ -215,7 +215,7 @@ public class JhlConverter {
         	case ScheduleKind.replace:
         		return SVNScheduleKind.REPLACE;        	
         	default : {
-        		log.error("unknown schedule kind :"+kind);
+        		log.severe("unknown schedule kind :"+kind);
         		return SVNScheduleKind.NORMAL;
         	}
         }

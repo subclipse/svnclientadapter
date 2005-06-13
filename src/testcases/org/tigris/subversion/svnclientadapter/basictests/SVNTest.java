@@ -19,11 +19,10 @@ package org.tigris.subversion.svnclientadapter.basictests;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.Logger;
 
 import junit.framework.TestCase;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.tigris.subversion.svnclientadapter.ISVNClientAdapter;
 import org.tigris.subversion.svnclientadapter.SVNClientAdapterFactory;
 import org.tigris.subversion.svnclientadapter.SVNClientException;
@@ -36,7 +35,7 @@ import org.tigris.subversion.svnclientadapter.utils.SvnServer;
  * common base class for the SvnclientAdapter tests
  */
 public abstract class SVNTest extends TestCase {
-    private static Log log = LogFactory.getLog(SVNTest.class);
+    private static Logger log = Logger.getLogger(SVNTest.class.getName());
 
     protected ISVNClientAdapter client;
 
@@ -66,7 +65,7 @@ public abstract class SVNTest extends TestCase {
     private SvnServer svnServer;
 
     static {
-        log.debug("Initializing client adapters factories");
+        log.fine("Initializing client adapters factories");
         try {
             JhlClientAdapterFactory.setup();
         } catch (SVNClientException e) {
@@ -150,14 +149,14 @@ public abstract class SVNTest extends TestCase {
             
             // create the repository
             File greekRepos = new File(localTmp, "repos");
-            log.debug("Creating repository :" + greekRepos.toString());
+            log.fine("Creating repository :" + greekRepos.toString());
             clientAdmin.createRepository(greekRepos,
                     ISVNClientAdapter.REPOSITORY_FSFS);
             FileUtils.copyFile(new File("test/svnserve.conf"), new File(
                     greekRepos, "conf/svnserve.conf"));
             FileUtils.copyFile(new File("test/passwd"), new File(greekRepos,
                     "conf/passwd"));
-            log.debug("Importing from : " + greekFiles.toString()
+            log.fine("Importing from : " + greekFiles.toString()
                     + " to repository :" + greekRepos.toString());
             clientAdmin.doImport(greekFiles, testsConfig
                     .makeReposUrl(greekRepos), logMessage, true);

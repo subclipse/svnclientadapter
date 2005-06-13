@@ -15,8 +15,8 @@
  */
 package org.tigris.subversion.svnclientadapter.javasvn;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.util.logging.Logger;
+
 import org.tigris.subversion.svnclientadapter.SVNNodeKind;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
 import org.tigris.subversion.svnclientadapter.SVNStatusKind;
@@ -29,7 +29,7 @@ import org.tmatesoft.svn.core.SVNStatus;
  * @author Cédric Chabanois
  */
 public class JavaSvnConverter {
-    private static Log log = LogFactory.getLog(JavaSvnConverter.class);
+    private static Logger log = Logger.getLogger(JavaSvnConverter.class.getName());
 
     static final SVNStatusKind[] STATUS_CONVERTION_TABLE = new SVNStatusKind[0x11];
 
@@ -52,7 +52,7 @@ public class JavaSvnConverter {
                 && javaSvnStatus < STATUS_CONVERTION_TABLE.length) {
             return STATUS_CONVERTION_TABLE[javaSvnStatus];
         } else {
-            log.error("unknown status kind :" + javaSvnStatus);
+            log.severe("unknown status kind :" + javaSvnStatus);
             return SVNStatusKind.NONE;
         }
     }

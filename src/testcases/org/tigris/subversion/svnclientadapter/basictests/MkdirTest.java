@@ -18,9 +18,9 @@
 package org.tigris.subversion.svnclientadapter.basictests;
 
 import java.io.File;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.tigris.subversion.svnclientadapter.SVNClientException;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
 import org.tigris.subversion.svnclientadapter.SVNStatusKind;
@@ -28,7 +28,7 @@ import org.tigris.subversion.svnclientadapter.SVNUrl;
 
 
 public class MkdirTest extends SVNTest {
-    private static Log log = LogFactory.getLog(MkdirTest.class);
+    private static Logger log = Logger.getLogger(MkdirTest.class.getName());
     
     
     /**
@@ -83,7 +83,7 @@ public class MkdirTest extends SVNTest {
 	    }
 	    catch(SVNClientException e)
 	    {
-            log.debug(e);
+			log.log(Level.FINE, e.getMessage(), e);
 	    }
 	
 	    // check the working copy status
@@ -107,7 +107,7 @@ public class MkdirTest extends SVNTest {
 	    }
 	    catch(SVNClientException e)
 	    {
-	        log.debug(e);
+			log.log(Level.FINE, e.getMessage(), e);
 	    }
 	
 	    // check the working copy status

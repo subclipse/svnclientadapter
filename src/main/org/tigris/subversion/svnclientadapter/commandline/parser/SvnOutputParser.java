@@ -19,9 +19,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.StringTokenizer;
+import java.util.logging.Logger;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.tigris.subversion.svnclientadapter.SVNNodeKind;
 import org.tigris.subversion.svnclientadapter.commandline.CmdLineNotify;
 
@@ -31,7 +30,7 @@ import org.tigris.subversion.svnclientadapter.commandline.CmdLineNotify;
  * @author Cédric Chabanois (cchabanois at no-log.org)
  */
 public class SvnOutputParser {
-	private static Log log = LogFactory.getLog(SvnOutputParser.class);
+	private static Logger log = Logger.getLogger(SvnOutputParser.class.getName());
 	
 	private static final String NEWLINE = "\n\r";
 	
@@ -116,7 +115,7 @@ public class SvnOutputParser {
 					notifyListeners(svnActionRE);
 				} else {
 					// if we don't find a matching svnActionRE, we just log it
-					log.warn("Can't find a svn action for svn output line : "+line);
+					log.warning("Can't find a svn action for svn output line : "+line);
 				}
 			}
 		}
@@ -132,7 +131,7 @@ public class SvnOutputParser {
 		for (int i = 0; i < svnActionsRE.length;i++) {
 			if (svnActionsRE[i].match(line)) {
 				if (result != null) {
-					log.error("Multiple regular expressions match : "+line);
+					log.severe("Multiple regular expressions match : "+line);
 				} else {
 					result = svnActionsRE[i]; 
 				}
