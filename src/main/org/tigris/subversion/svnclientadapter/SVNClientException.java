@@ -23,6 +23,8 @@ import java.lang.reflect.InvocationTargetException;
  */
 public class SVNClientException extends Exception {
 
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * 
 	 */
