@@ -49,7 +49,7 @@ import org.tigris.subversion.svnclientadapter.StringUtils;
  * executible to be in the path.</p>
  * 
  * @author Philip Schatz (schatz at tigris)
- * @author Cédric Chabanois (cchabanois at no-log.org)
+ * @author Cï¿½dric Chabanois (cchabanois at no-log.org)
  */
 public class CmdLineClientAdapter extends AbstractClientAdapter {
 
@@ -69,7 +69,7 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 			// this will need to be fixed when path to svn will be customizable
 			SvnCommandLine cmd = new SvnCommandLine("svn", new CmdLineNotificationHandler());
 			try {
-				String version = cmd.version();
+				cmd.version();
 	    		available = true;
 			} catch (Exception e) {
 				available = false;
@@ -272,7 +272,7 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 	public void revert(File file, boolean recursive) throws SVNClientException {
 		try {
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(file));
-			String changedFiles = _cmd.revert(new String[] { toString(file) }, recursive);
+			_cmd.revert(new String[] { toString(file) }, recursive);
 		} catch (CmdLineException e) {
 			throw SVNClientException.wrapException(e);
 		}
@@ -339,7 +339,6 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 	 */
 	public ISVNLogMessage[] getLogMessages(SVNUrl arg0, SVNRevision arg1, SVNRevision arg2, boolean fetchChangePath)
 		throws SVNClientException {
-		List tempLogs = new java.util.LinkedList();
 		String revRange = toString(arg1) + ":" + toString(arg2);
 
 		try {
@@ -410,8 +409,7 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 		throws SVNClientException {
 		try {
 			notificationHandler.setBaseDir(new File("."));
-			String changedResources =
-				_cmd.move(toString(url), toString(destUrl), message, toString(revision), false);
+			_cmd.move(toString(url), toString(destUrl), message, toString(revision), false);
 		} catch (CmdLineException e) {
 			throw SVNClientException.wrapException(e);
 		}
@@ -423,8 +421,7 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 	public void move(File file, File file2, boolean force) throws SVNClientException {
 		try {
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(new File[] {file,file2}));
-			String changedResources =
-				_cmd.move(toString(file), toString(file2), null, null, force);
+			_cmd.move(toString(file), toString(file2), null, null, force);
 		} catch (CmdLineException e) {
 			throw SVNClientException.wrapException(e);
 		}
@@ -455,7 +452,7 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 	public void addDirectory(File file, boolean recurse) throws SVNClientException {
 		try {
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(file));
-			String changedResources = _cmd.add(toString(file), recurse);
+			_cmd.add(toString(file), recurse);
 		} catch (CmdLineException e) {
 			//if something is already in svn and we
 			//try to add it, we get a warning.
@@ -472,7 +469,7 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 	public void addFile(File file) throws SVNClientException {
 		try {
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(file));
-			String changedResources = _cmd.add(toString(file), false);
+			_cmd.add(toString(file), false);
 		} catch (CmdLineException e) {
 			//if something is already in svn and we
 			//try to add it, we get a warning.
@@ -500,7 +497,7 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 		}
 		try {
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(parents));
-			String changedResources = _cmd.checkin(paths, comment, keepLocks);
+			_cmd.checkin(paths, comment, keepLocks);
 			return _cmd.getRevision();
 		} catch (CmdLineException e) {
 			if ("".equals(e.getMessage()))
@@ -512,7 +509,7 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 				for (int i = 0; i < 50; i++) {
 					try {
 						notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(parents));
-						String changedResources = _cmd.checkin(paths, comment, keepLocks);
+						_cmd.checkin(paths, comment, keepLocks);
 						return _cmd.getRevision();
 					} catch (CmdLineException e1) {
 						try {
@@ -533,7 +530,7 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 	public long update(File file, SVNRevision revision, boolean b) throws SVNClientException {
 		try {
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(file));
-			String changedResources = _cmd.update(toString(file), toString(revision));
+			_cmd.update(toString(file), toString(revision));
             return _cmd.getRevision();
 		} catch (CmdLineException e) {
 			throw SVNClientException.wrapException(e);
@@ -547,7 +544,7 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 		throws SVNClientException {
 		try {
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(destPath));
-			String changedResources = _cmd.checkout(toString(url), toString(destPath), toString(revision), b);
+			_cmd.checkout(toString(url), toString(destPath), toString(revision), b);
 		} catch (CmdLineException e) {
 			throw SVNClientException.wrapException(e);
 		}
@@ -688,7 +685,6 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
      */
 	public ISVNProperty propertyGet(File path, String propertyName) throws SVNClientException {
 		try {
-			String pathString = toString(path);
 			InputStream valueAndData = _cmd.propget(toString(path), propertyName);
             
 			byte[] bytes = streamToByteArray(valueAndData, false);
@@ -777,7 +773,7 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 		throws SVNClientException {
         try {
             notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
-            String changedResources = _cmd.importFiles(toString(path), toString(url), message, recurse);
+            _cmd.importFiles(toString(path), toString(url), message, recurse);
         } catch (CmdLineException e) {
             throw SVNClientException.wrapException(e);
         }
@@ -829,7 +825,6 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 		SVNRevision revisionStart,
 		SVNRevision revisionEnd)
 		throws SVNClientException {
-		List tempLogs = new java.util.LinkedList();
 		String revRange = toString(revisionStart) + ":" + toString(revisionEnd);
 
 		try {
@@ -992,7 +987,7 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 	{
 		try {
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
-			String changedFiles = _cmd.resolved(new String[] { toString(path) }, false);
+			_cmd.resolved(new String[] { toString(path) }, false);
 			
 			// there is no notification when we do svn resolve, we will do notification ourselves
 			notificationHandler.notifyListenersOfChange(path.getAbsolutePath());	
@@ -1057,7 +1052,7 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 	public void switchToUrl(File path, SVNUrl url, SVNRevision revision, boolean recurse) throws SVNClientException {
 		try {
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
-            String changedResources = _cmd.switchUrl(toString(path), toString(url), toString(revision));
+            _cmd.switchUrl(toString(path), toString(url), toString(revision));
         } catch (CmdLineException e) {
         	throw SVNClientException.wrapException(e);
         }
@@ -1093,7 +1088,7 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 			boolean recurse) throws SVNClientException {
 		try {
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(localPath));
-            String changedResources = _cmd.merge(toString(path1), toString(revision1), toString(path2), toString(revision2), toString(localPath), force, recurse, false);
+            _cmd.merge(toString(path1), toString(revision1), toString(path2), toString(revision2), toString(localPath), force, recurse, false);
         } catch (CmdLineException e) {
         	throw SVNClientException.wrapException(e);
         }
@@ -1107,7 +1102,7 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 			boolean recurse, boolean dryRun) throws SVNClientException {
 		try {
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(localPath));
-            String changedResources = _cmd.merge(toString(path1), toString(revision1), toString(path2), toString(revision2), toString(localPath), force, recurse, dryRun);
+            _cmd.merge(toString(path1), toString(revision1), toString(path2), toString(revision2), toString(localPath), force, recurse, dryRun);
         } catch (CmdLineException e) {
         	throw SVNClientException.wrapException(e);
         }
@@ -1124,7 +1119,7 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 		}
 		try {
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(paths));
-            String changedResources = _cmd.lock(files, comment, force);
+            _cmd.lock(files, comment, force);
         } catch (CmdLineException e) {
         	throw SVNClientException.wrapException(e);
         }
@@ -1145,7 +1140,7 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 		}
 		try {
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(paths));
-            String changedResources = _cmd.unlock(files, force);
+            _cmd.unlock(files, force);
         } catch (CmdLineException e) {
         	throw SVNClientException.wrapException(e);
         }

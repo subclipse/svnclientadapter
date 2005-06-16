@@ -28,14 +28,14 @@ import org.tigris.subversion.svnclientadapter.commandline.parser.SvnOutputParser
  * Is a bare-bones interface to using the Subversion commandline client.</p>
  *  
  * @author Philip Schatz (schatz at tigris)
- * @author Cédric Chabanois (cchabanois at no-log.org)
+ * @author Cï¿½dric Chabanois (cchabanois at no-log.org)
  * @author John M Flinchbaugh (john at hjsoft.com)
  */
 public class SvnCommandLine extends CommandLine {
 	private String user;
 	private String pass;	
     private SvnOutputParser svnOutputParser = new SvnOutputParser();
-    private long revision = SVNRevision.SVN_INVALID_REVNUM;
+    private long rev = SVNRevision.SVN_INVALID_REVNUM;
     private boolean parseSvnOutput = false;
     private String configDir = null;
     
@@ -880,7 +880,7 @@ public class SvnCommandLine extends CommandLine {
 	 * @see org.tigris.subversion.svnclientadapter.commandline.CommandLine#notifyFromSvnOutput(java.lang.String)
 	 */
 	protected void notifyFromSvnOutput(String svnOutput) {
-		this.revision = SVNRevision.SVN_INVALID_REVNUM;
+		this.rev = SVNRevision.SVN_INVALID_REVNUM;
 		// we call the super implementation : handles logMessage and logCompleted
 		super.notifyFromSvnOutput(svnOutput);
 
@@ -902,7 +902,7 @@ public class SvnCommandLine extends CommandLine {
 						notificationHandler.notifyListenersOfChange(path);
 					}
 					if (revision != SVNRevision.SVN_INVALID_REVNUM) {
-						SvnCommandLine.this.revision = revision;
+						SvnCommandLine.this.rev = revision;
 						notificationHandler.logRevision(revision);
 					}
 				}
@@ -939,7 +939,7 @@ public class SvnCommandLine extends CommandLine {
 	 * @return Returns the revision.
 	 */
 	public long getRevision() {
-		return revision;
+		return rev;
 	}
     
 }	

@@ -22,7 +22,7 @@ import org.tigris.subversion.svnclientadapter.commandline.CmdLineNotify;
 /**
  * regular expression to parse an svn notification line 
  * 
- * @author Cédric Chabanois (cchabanois at no-log.org) 
+ * @author Cï¿½dric Chabanois (cchabanois at no-log.org) 
  */
 class SvnActionRE {
 	public static final String PATH = "path";
@@ -90,10 +90,6 @@ class SvnActionRE {
 		return action;
 	}
 	
-	private RE getRE() {
-		return re;
-	}
-
 	private int getIndex(String notificationProperty) {
 		for (int i = 0; i < notificationProperties.length;i++) {
 			if (notificationProperties[i].equals(notificationProperty)) {

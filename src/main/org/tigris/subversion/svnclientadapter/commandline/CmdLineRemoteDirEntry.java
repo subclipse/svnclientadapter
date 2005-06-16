@@ -15,8 +15,6 @@
  */
 package org.tigris.subversion.svnclientadapter.commandline;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -41,7 +39,6 @@ class CmdLineRemoteDirEntry implements ISVNDirEntry {
     private static DateFormat df2 = new SimpleDateFormat("MMM dd  yyyy", Locale.US);
 
 	private String path;
-	private URL url;
 	private SVNRevision.Number revision;
 	private SVNNodeKind nodeKind;
 	private String lastCommitAuthor;
@@ -57,12 +54,6 @@ class CmdLineRemoteDirEntry implements ISVNDirEntry {
 		boolean folder = ('/' == line.charAt(last));
 
 		path = (folder) ? line.substring(41, last) : line.substring(41);
-
-		try {
-			url = new URL(baseUrl + '/' + path);
-		} catch (MalformedURLException e) {
-			//do nothing
-		}
 
         // "%7ld %-8.8s %10s %12s %s%s
 		revision = new SVNRevision.Number(Long.parseLong(line.substring(0, 7).trim()));

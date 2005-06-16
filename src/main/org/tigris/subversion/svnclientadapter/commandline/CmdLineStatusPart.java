@@ -67,8 +67,8 @@ class CmdLineStatusPart {
 	 * @return
 	 */
 	public boolean hasRemote() {
-		SVNStatusKind textStatus = getTextStatus();
-		return ((isManaged()) && (textStatus != SVNStatusKind.ADDED));
+		SVNStatusKind kind = getTextStatus();
+		return ((isManaged()) && (kind != SVNStatusKind.ADDED));
 	}
 
 	public SVNStatusKind getTextStatus() {

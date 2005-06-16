@@ -43,14 +43,12 @@ class CmdLineException extends Exception {
 	 * Static helper method for creating exceptions
 	 */
 	static CmdLineException wrapException(Exception e) {
-		Throwable t = e;
 		if (e instanceof InvocationTargetException) {
 			Throwable target =
 				((InvocationTargetException) e).getTargetException();
 			if (target instanceof CmdLineException) {
 				return (CmdLineException) target;
 			}
-			t = target;
 		}
 		return new CmdLineException(e);
 	}

@@ -52,7 +52,7 @@ import org.tigris.subversion.svnclientadapter.SVNUrl;
 /**
  * An adapter for SVNClient. Easier and safer to use than SVNClient
  *
- * @author Cédric Chabanois (cchabanois at no-log.org)
+ * @author Cï¿½dric Chabanois (cchabanois at no-log.org)
  * @author Panagiotis Korros (pkorros at bigfoot.com) 
  *
  */
@@ -62,7 +62,6 @@ public class JhlClientAdapter extends AbstractClientAdapter {
     private SVNClientSynchronized svnClient;
     private SVNAdmin svnAdmin;
     private JhlNotificationHandler notificationHandler;
-    private PromptUserPassword promptUserPasswordHandler;
     
     private static boolean availabilityCached = false;
     private static boolean available;
@@ -227,7 +226,6 @@ public class JhlClientAdapter extends AbstractClientAdapter {
      * Register callback interface to supply username and password on demand
      */
     public void setPromptUserPassword(PromptUserPassword prompt) {
-        promptUserPasswordHandler = prompt;
         svnClient.setPrompt(prompt);        
     }
 

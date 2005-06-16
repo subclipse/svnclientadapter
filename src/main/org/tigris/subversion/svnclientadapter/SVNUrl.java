@@ -28,7 +28,7 @@ import java.net.MalformedURLException;
  *
  * An SVNUrl is immutable. 
  *
- * @author Cédric Chabanois 
+ * @author Cï¿½dric Chabanois 
  *         <a href="mailto:cchabanois@ifrance.com">cchabanois@ifrance.com</a>
  *
  */
@@ -137,7 +137,7 @@ public class SVNUrl {
         if (getPort() != getDefaultPort(getProtocol())) {
             result += ":"+getPort();
         }
-        String[] segments = getPathSegments();
+
         for (int i = 0; i < segments.length;i++) {
             result+='/'+segments[i];
         }

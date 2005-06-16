@@ -26,7 +26,6 @@ import java.io.InputStreamReader;
  */
 public class CmdLineStreamPumper implements Runnable {
     private static final String NEWLINE = "\n\r";
-    private static final int SIZE = 128;
     private BufferedReader br;
     private boolean finished;
     private StringBuffer sb = new StringBuffer();
@@ -63,9 +62,6 @@ public class CmdLineStreamPumper implements Runnable {
             finished = false;
         }
 
-        final byte[] buf = new byte[SIZE];
-
-        int length;
         try {
             String st;
             while((st=br.readLine())!=null) {
