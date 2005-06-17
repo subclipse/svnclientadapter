@@ -1480,8 +1480,7 @@ public class JhlClientAdapter extends AbstractClientAdapter {
             
 			String target = fileToSVNPath(path, false);
 			notificationHandler.logCommandLine("info "+target);
-			File baseDir = SVNBaseDir.getBaseDir(path);
-			notificationHandler.setBaseDir(baseDir);
+			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
 			
             Info2[] info = svnClient.info2(target, Revision.HEAD, Revision.HEAD, false);
             if (info == null || info.length == 0) {
@@ -1495,7 +1494,31 @@ public class JhlClientAdapter extends AbstractClientAdapter {
 			throw new SVNClientException(e);            
 		}        
 	}
-    
+
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getInfo(org.tigris.subversion.svnclientadapter.SVNUrl)
+	 */
+	public ISVNInfo getInfo(SVNUrl url) throws SVNClientException {
+		try {
+			notificationHandler.setCommand(ISVNNotifyListener.Command.INFO);
+            
+			String target = url.toString();
+			notificationHandler.logCommandLine("info "+target);
+//			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(url));
+			
+            Info2[] info = svnClient.info2(target, Revision.HEAD, Revision.HEAD, false);
+            if (info == null || info.length == 0) {
+            	return new SVNInfoUnversioned(null);
+            } else {
+                return new JhlInfo(null, info[0]);    
+            }
+            
+		} catch (ClientException e) {
+			notificationHandler.logException(e);
+			throw new SVNClientException(e);            
+		}        
+	}
+
     public SVNUrl getRepositoryRoot(SVNUrl url) {
         return null;
         

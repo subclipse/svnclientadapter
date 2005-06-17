@@ -584,7 +584,15 @@ public interface ISVNClientAdapter {
 	 * @throws SVNClientException
 	 */
 	public ISVNInfo getInfo(File file) throws SVNClientException;
-	
+
+	/**
+	 * get information about an URL.
+	 * @param url
+	 * @return
+	 * @throws SVNClientException
+	 */
+	public ISVNInfo getInfo(SVNUrl url) throws SVNClientException;
+
     
     public SVNUrl getRepositoryRoot(SVNUrl url) throws SVNClientException;
 

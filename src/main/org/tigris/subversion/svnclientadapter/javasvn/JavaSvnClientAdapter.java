@@ -762,6 +762,14 @@ public class JavaSvnClientAdapter extends AbstractClientAdapter {
         return new InfoCommand(javaSvnConfig).getInfo(file);
     }
 
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getInfo(org.tigris.subversion.svnclientadapter.SVNUrl)
+     */
+    public ISVNInfo getInfo(SVNUrl url) throws SVNClientException {
+        notImplementedYet("getInfo(SVNUrl)");
+        return null;
+    }
+
     /*
      * (non-Javadoc)
      * 

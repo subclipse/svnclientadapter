@@ -1039,6 +1039,30 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 	}
 
 	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getInfo(org.tigris.subversion.svnclientadapter.SVNUrl)
+	 */
+	public ISVNInfo getInfo(SVNUrl url) throws SVNClientException {
+		return getInfo(new SVNUrl[] { url });
+	}
+
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getInfo(org.tigris.subversion.svnclientadapter.SVNUrl[])
+	 */
+	public ISVNInfo getInfo(SVNUrl[] urls) throws SVNClientException {
+        try {
+    		String[] urlStrings = new String[urls.length];
+    		for (int i = 0; i < urls.length; i++) {
+    			urlStrings[i] = toString(urls[i]);
+    		}
+			//notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(urls));
+            String cmdLineInfoStrings = _cmd.info(urlStrings);
+            return new CmdLineInfoPart(cmdLineInfoStrings);
+        } catch (CmdLineException e) {
+            throw SVNClientException.wrapException(e);
+        }        
+	}
+
+	/* (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getRepositoryRoot(org.tigris.subversion.svnclientadapter.SVNUrl, org.tigris.subversion.svnclientadapter.SVNRevision)
 	 */
 	public SVNUrl getRepositoryRoot(SVNUrl url) throws SVNClientException {
