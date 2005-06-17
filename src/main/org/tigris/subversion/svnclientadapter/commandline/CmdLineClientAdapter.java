@@ -687,7 +687,7 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 		try {
 			InputStream valueAndData = _cmd.propget(toString(path), propertyName);
             
-			byte[] bytes = streamToByteArray(valueAndData, false);
+			byte[] bytes = streamToByteArray(valueAndData, true);
             if (bytes.length == 0) {
                 return null; // the property does not exist
             }
