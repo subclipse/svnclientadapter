@@ -463,11 +463,16 @@ public class JavaSvnClientAdapter extends AbstractClientAdapter {
      * 
      * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getLogMessages(java.io.File,
      *      org.tigris.subversion.svnclientadapter.SVNRevision,
-     *      org.tigris.subversion.svnclientadapter.SVNRevision)
+     *      org.tigris.subversion.svnclientadapter.SVNRevision,
+     *      boolean)
      */
     public ISVNLogMessage[] getLogMessages(File path,
-            SVNRevision revisionStart, SVNRevision revisionEnd)
+            SVNRevision revisionStart, SVNRevision revisionEnd,
+            boolean fetchChangePath)
             throws SVNClientException {
+        // ### FIXME: JavaSVN doesn't appear to support a
+        // ### fetchChangePath arg for its File overload (only for
+        // ### SVNUrl).
         return new LogCommand(javaSvnConfig).getLogMessages(path, revisionStart, revisionEnd);
     }
 

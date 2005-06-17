@@ -49,7 +49,7 @@ import org.tigris.subversion.svnclientadapter.StringUtils;
  * executible to be in the path.</p>
  * 
  * @author Philip Schatz (schatz at tigris)
- * @author C�dric Chabanois (cchabanois at no-log.org)
+ * @author C~dric Chabanois (cchabanois at no-log.org)
  */
 public class CmdLineClientAdapter extends AbstractClientAdapter {
 
@@ -335,23 +335,11 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.tigris.subversion.subclipse.client.ISVNClientAdapter#getLogMessages(java.net.URL, org.tigris.subversion.subclipse.client.ISVNRevision, org.tigris.subversion.subclipse.client.ISVNRevision)
+	 * @see org.tigris.subversion.subclipse.client.ISVNClientAdapter#getLogMessages(java.net.URL, org.tigris.subversion.subclipse.client.ISVNRevision, org.tigris.subversion.subclipse.client.ISVNRevision, boolean)
 	 */
-	public ISVNLogMessage[] getLogMessages(SVNUrl arg0, SVNRevision arg1, SVNRevision arg2, boolean fetchChangePath)
+	public ISVNLogMessage[] getLogMessages(SVNUrl url, SVNRevision revStart, SVNRevision revEnd, boolean fetchChangePath)
 		throws SVNClientException {
-		String revRange = toString(arg1) + ":" + toString(arg2);
-
-		try {
-			String messages;
-			if (fetchChangePath) {
-			  messages = _cmd.log_v(toString(arg0), revRange);
-			} else {
-			  messages = _cmd.log(toString(arg0), revRange);	
-			}
-			return CmdLineLogMessage.createLogMessages(messages);			
-		} catch (CmdLineException e) {
-			throw SVNClientException.wrapException(e);
-		}
+        return getLogMessages((Object) url, revStart, revEnd, fetchChangePath);
 	}
 
 	/* (non-Javadoc)
@@ -818,21 +806,15 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 
     /*
      * (non-Javadoc)
-     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getLogMessages(java.io.File, org.tigris.subversion.svnclientadapter.SVNRevision, org.tigris.subversion.svnclientadapter.SVNRevision)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getLogMessages(java.io.File, org.tigris.subversion.svnclientadapter.SVNRevision, org.tigris.subversion.svnclientadapter.SVNRevision, boolean)
      */
 	public ISVNLogMessage[] getLogMessages(
 		File path,
-		SVNRevision revisionStart,
-		SVNRevision revisionEnd)
+		SVNRevision revStart,
+		SVNRevision revEnd,
+		boolean fetchChangePath)
 		throws SVNClientException {
-		String revRange = toString(revisionStart) + ":" + toString(revisionEnd);
-
-		try {
-			String messages = _cmd.log(toString(path), revRange);
-			return CmdLineLogMessage.createLogMessages(messages);
-			} catch (CmdLineException e) {
-			throw SVNClientException.wrapException(e);
-		}
+        return getLogMessages((Object) path, revStart, revEnd, fetchChangePath);
 	}
 
 	/* (non-Javadoc)
@@ -867,16 +849,42 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 		}
 	}
 
-	private static String toString(SVNUrl url) {
-		return (url == null) ? null : url.toString();
+    /**
+     * A safe <code>toString()</code> implementation which implements
+     * <code>null</code> checking on <code>obj</code>.
+     */
+	private static String toString(Object obj) {
+		return (obj == null) ? null : obj.toString();
 	}
 
-	private static String toString(File file) {
-		return (file == null) ? null : file.toString();
-	}
+    /**
+     * Implementation used by overloads of <code>getLogMessages()</code>.
+     *
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getLogMessages(org.tigris.subversion.svnclientadapter.SVNUrl, org.tigris.subversion.svnclientadapter.SVNRevision, org.tigris.subversion.svnclientadapter.SVNRevision, boolean)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getLogMessages(java.io.File, org.tigris.subversion.svnclientadapter.SVNRevision, org.tigris.subversion.svnclientadapter.SVNRevision, boolean)
+     */
+	private ISVNLogMessage[] getLogMessages(
+		Object pathOrUrl,
+		SVNRevision revisionStart,
+		SVNRevision revisionEnd,
+		boolean fetchChangePath)
+		throws SVNClientException {
+		String revRange = toString(revisionStart) + ":" +
+            toString(revisionEnd);
+		try {
+            String messages;
 
-	private static String toString(SVNRevision revision) {
-		return (revision == null) ? null : revision.toString();
+            // To acquire the paths associated with each delta, we'd
+            // have to include the --verbose argument.
+			if (fetchChangePath) {
+                messages = _cmd.log_v(toString(pathOrUrl), revRange);
+			} else {
+                messages = _cmd.log(toString(pathOrUrl), revRange);
+			}
+			return CmdLineLogMessage.createLogMessages(messages);
+        } catch (CmdLineException e) {
+			throw SVNClientException.wrapException(e);
+		}
 	}
 
 	private static void streamToFile(InputStream stream, File outFile) throws IOException {

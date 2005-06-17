@@ -97,6 +97,14 @@ public abstract class AbstractClientAdapter implements ISVNClientAdapter {
     }
     
     /* (non-Javadoc)
+	 * @see org.tigris.subversion.subclipse.client.ISVNClientAdapter#getLogMessages(java.io.File, org.tigris.subversion.subclipse.client.ISVNRevision, org.tigris.subversion.subclipse.client.ISVNRevision)
+	 */
+	public ISVNLogMessage[] getLogMessages(File arg0, SVNRevision arg1, SVNRevision arg2)
+		throws SVNClientException {
+		return getLogMessages(arg0, arg1, arg2, true);
+	}
+    
+    /* (non-Javadoc)
 	 * @see org.tigris.subversion.subclipse.client.ISVNClientAdapter#getLogMessages(java.net.URL, org.tigris.subversion.subclipse.client.ISVNRevision, org.tigris.subversion.subclipse.client.ISVNRevision)
 	 */
 	public ISVNLogMessage[] getLogMessages(SVNUrl arg0, SVNRevision arg1, SVNRevision arg2)

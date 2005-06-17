@@ -972,7 +972,8 @@ public class JhlClientAdapter extends AbstractClientAdapter {
 	public ISVNLogMessage[] getLogMessages(
 		File path,
 		SVNRevision revisionStart,
-		SVNRevision revisionEnd)
+		SVNRevision revisionEnd,
+		boolean fetchChangePath)
 		throws SVNClientException {
 		try {
 			notificationHandler.setCommand(
@@ -992,7 +993,7 @@ public class JhlClientAdapter extends AbstractClientAdapter {
                             JhlConverter.convert(revisionStart), 
                             JhlConverter.convert(revisionEnd),
                             false,   // don't stop on copy
-                            true));  // discover paths
+                            fetchChangePath));  // discover paths
 		} catch (ClientException e) {
 			notificationHandler.logException(e);
 			throw new SVNClientException(e);

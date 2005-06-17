@@ -351,7 +351,7 @@ public interface ISVNClientAdapter {
 	 * @param revisionStart
 	 * @param revisionEnd
 	 * @param fetchChangePath
-	 * @return
+	 * @return The list of log messages.
 	 */
 	public abstract ISVNLogMessage[] getLogMessages(
 		SVNUrl url,
@@ -364,8 +364,13 @@ public interface ISVNClientAdapter {
 	 * @param url
 	 * @param revisionStart
 	 * @param revisionEnd
-	 * @param fetchChangePath
-	 * @return
+	 * @param fetchChangePath Whether or not to interogate the
+	 * repository for the verbose log information containing the list
+	 * of paths touched by the delta specified by
+	 * <code>revisionStart</code> and <code>revisionEnd</code>.
+	 * Setting this to <code>false</code> results in a more performant
+	 * and memory efficient operation.
+	 * @return The list of log messages.
 	 */
 	public abstract ISVNLogMessage[] getLogMessages(
 		SVNUrl url,
@@ -378,12 +383,31 @@ public interface ISVNClientAdapter {
 	 * @param path
 	 * @param revisionStart
 	 * @param revisionEnd
-	 * @return
+	 * @return The list of log messages.
 	 */
 	public abstract ISVNLogMessage[] getLogMessages(
 		File path,
 		SVNRevision revisionStart,
 		SVNRevision revisionEnd)
+		throws SVNClientException;
+	/**
+	 * Get the log messages for a set of revision(s)
+	 * @param path
+	 * @param revisionStart
+	 * @param revisionEnd
+	 * @param fetchChangePath Whether or not to interogate the
+	 * repository for the verbose log information containing the list
+	 * of paths touched by the delta specified by
+	 * <code>revisionStart</code> and <code>revisionEnd</code>.
+	 * Setting this to <code>false</code> results in a more performant
+	 * and memory efficient operation.
+	 * @return The list of log messages.
+	 */
+	public abstract ISVNLogMessage[] getLogMessages(
+		File path,
+		SVNRevision revisionStart,
+		SVNRevision revisionEnd,
+		boolean fetchChangePath)
 		throws SVNClientException;
 	/**
 	 * get the content of a file
