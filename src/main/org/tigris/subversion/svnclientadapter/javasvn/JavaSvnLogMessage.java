@@ -88,6 +88,13 @@ public class JavaSvnLogMessage implements ISVNLogMessage {
         return svnLogEntry.getMessage();
     }
 
+    /**
+     * @return The value of {@link #getMesssage()}.
+     */
+    public String toString() {
+        return getMessage();
+    }
+
     /*
      * (non-Javadoc)
      * 

@@ -72,6 +72,13 @@ public class JhlLogMessage implements ISVNLogMessage {
 		return _m.getMessage();
 	}
 
+    /**
+     * @return The value of {@link #getMesssage()}.
+     */
+    public String toString() {
+        return getMessage();
+    }
+
     /*
      * (non-Javadoc)
      * @see org.tigris.subversion.svnclientadapter.ISVNLogMessage#getChangedPaths()

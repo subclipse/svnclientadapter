@@ -141,6 +141,13 @@ class CmdLineLogMessage implements ISVNLogMessage {
 	}
 	
     /**
+     * @return The value of {@link #getMesssage()}.
+     */
+    public String toString() {
+        return getMessage();
+    }
+
+    /**
      * creates CmdLineLogMessages from a xml string (see svn log --xml -v) 
      * @param cmdLineResults
      * @return
