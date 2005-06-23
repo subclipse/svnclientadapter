@@ -50,6 +50,7 @@ import org.tigris.subversion.svnclientadapter.SVNInfoUnversioned;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
 import org.tigris.subversion.svnclientadapter.SVNUrl;
 import org.tigris.subversion.svnclientadapter.SVNUrlUtils;
+import org.tigris.subversion.svnclientadapter.SVNRevision.Number;
 import org.tigris.subversion.svnclientadapter.javahl.JhlConverter;
 import org.tigris.subversion.svnclientadapter.javahl.JhlPropertyData;
 import org.tigris.subversion.svnclientadapter.javasvn.JavaSvnDirEntry;
@@ -879,4 +880,8 @@ public class JavaSvnClientAdapter extends AbstractClientAdapter {
             boolean keepLocks) throws SVNClientException {
         return commit(paths, message, recurse);
     }
+
+	public void setRevProperty(SVNUrl path, Number revisionNo, String propName, String propertyData, boolean force) throws SVNClientException {
+        notImplementedYet("setRevProperty");
+	}
 }

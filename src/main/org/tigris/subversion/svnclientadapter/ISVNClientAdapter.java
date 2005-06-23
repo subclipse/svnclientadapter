@@ -473,6 +473,15 @@ public interface ISVNClientAdapter {
 		boolean recurse)
 		throws SVNClientException;
 	/**
+     * set the revision property for a given revision
+     * @param revisionNo
+     * @param propName
+     * @param propertyData
+     * @param force
+     * @throws SVNClientException
+     */    
+    public abstract void setRevProperty(SVNUrl path, SVNRevision.Number revisionNo, String propName, String propertyData, boolean force) throws SVNClientException;
+	/**
 	 * get the ignored patterns for the given directory
 	 * if path is not a directory, returns null 
 	 */

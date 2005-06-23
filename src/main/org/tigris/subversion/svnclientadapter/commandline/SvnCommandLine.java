@@ -586,7 +586,7 @@ public class SvnCommandLine extends CommandLine {
 
 	/**
 	 * <p>
-	 * Set <tt>propName</tt> to <tt>propVal</tt> on files, dirs, or revisions.</p>
+	 * Set <tt>propName</tt> to <tt>propVal</tt> on files or dirs.</p>
 	 * 
 	 * @param propName name of the property.
 	 * @param propValue New value to set <tt>propName</tt> to.
@@ -836,6 +836,37 @@ public class SvnCommandLine extends CommandLine {
         return execString(args,false);
     }
     
+	/**
+	 * <p>
+	 * Set <tt>propName</tt> to <tt>propVal</tt> on revision <tt>revision</tt>.</p>
+	 * 
+	 * @param propName name of the property.
+	 * @param propValue New value to set <tt>propName</tt> to.
+	 * @param target Local path or URL to resource.
+	 * @param force If the propset should be forced.
+	 */
+	void revpropset(String propName, String propValue, String target, String revision, boolean force)
+		throws CmdLineException {
+        setCommand(ISVNNotifyListener.Command.PROPSET, false);
+		ArrayList args = new ArrayList();
+		args.add("propset");
+		args.add(propName);
+		
+		args.add("--revprop");
+		
+		args.add(propValue);
+		args.add(target);
+		
+		args.add("-r");
+		args.add(revision);
+
+		if (force)
+			args.add("--force");
+        addAuthInfo(args);
+        addConfigInfo(args);        
+		execVoid(args);
+	}
+
     String lock(String[] path, String comment, boolean force) throws CmdLineException {
         setCommand(ISVNNotifyListener.Command.LOCK, true);
 		ArrayList args = new ArrayList();

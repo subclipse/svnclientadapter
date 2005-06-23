@@ -732,6 +732,18 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
             }        
 	}
 
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#setRevProperty(org.tigris.subversion.svnclientadapter.SVNUrl, org.tigris.subversion.svnclientadapter.SVNRevision.Number, java.lang.String, java.lang.String, boolean)
+	 */
+	public void setRevProperty(SVNUrl path, SVNRevision.Number revisionNo, String propName, String propertyData, boolean force) throws SVNClientException {
+		try {
+			_cmd.revpropset(propName, propertyData, toString(path), Long.toString(revisionNo.getNumber()), force);
+			// there is no notification to send
+
+		} catch (CmdLineException e) {
+			throw SVNClientException.wrapException(e);
+		}
+     }
     /*
      * (non-Javadoc)
      * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#mkdir(java.io.File)

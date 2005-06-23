@@ -1733,4 +1733,25 @@ public class JhlClientAdapter extends AbstractClientAdapter {
         }
     
     }
+
+	public void setRevProperty(SVNUrl url, SVNRevision.Number revisionNo, String propName, String propertyData, boolean force) throws SVNClientException {
+		try {
+			notificationHandler.setCommand(ISVNNotifyListener.Command.PROPSET);
+
+			notificationHandler.logCommandLine(
+				"propset --revprop -r " + revisionNo.toString()
+					+ (force ? "--force " : "")
+					+ " \""
+					+ propName
+					+ "\"  \""
+					+ propertyData
+					+ "\" "
+					+ url.toString());
+			notificationHandler.setBaseDir();
+			svnClient.setRevProperty(url.toString(), propName, Revision.getInstance(revisionNo.getNumber()), propertyData, true);
+		} catch (ClientException e) {
+			notificationHandler.logException(e);
+			throw new SVNClientException(e);
+		}		
+	}
 }
