@@ -872,7 +872,7 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 		String revRange = toString(revisionStart) + ":" +
             toString(revisionEnd);
 		try {
-            String messages;
+            byte[] messages;
 
             // To acquire the paths associated with each delta, we'd
             // have to include the --verbose argument.

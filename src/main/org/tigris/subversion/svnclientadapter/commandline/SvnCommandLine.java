@@ -459,7 +459,7 @@ public class SvnCommandLine extends CommandLine {
 	 * @param revision Optional revision range to get log
 	 *   messages from.
 	 */
-	String log(String target, String revision) throws CmdLineException {
+	byte[] log(String target, String revision) throws CmdLineException {
         setCommand(ISVNNotifyListener.Command.LOG, false);		
 		ArrayList args = new ArrayList();
 		args.add("log");
@@ -469,7 +469,7 @@ public class SvnCommandLine extends CommandLine {
 		args.add("--xml");
 		addAuthInfo(args);
         addConfigInfo(args);
-        return execString(args,true);
+        return execBytes(args, true);
 	}
 	
 	/**
@@ -481,7 +481,7 @@ public class SvnCommandLine extends CommandLine {
 	 * @param revision Optional revision range to get log
 	 *   messages from.
 	 */
-	String log_v(String target, String revision) throws CmdLineException {
+	byte[] log_v(String target, String revision) throws CmdLineException {
         setCommand(ISVNNotifyListener.Command.LOG, false);		
 		ArrayList args = new ArrayList();
 		args.add("log");
@@ -492,7 +492,7 @@ public class SvnCommandLine extends CommandLine {
 		args.add("-v");
 		addAuthInfo(args);
         addConfigInfo(args);
-        return execString(args,true);
+        return execBytes(args, true);
 	}
 
 	/**
@@ -584,8 +584,6 @@ public class SvnCommandLine extends CommandLine {
 		return proc.getInputStream();
 	}
 
-
-
 	/**
 	 * <p>
 	 * Set <tt>propName</tt> to <tt>propVal</tt> on files, dirs, or revisions.</p>
@@ -608,7 +606,6 @@ public class SvnCommandLine extends CommandLine {
         addConfigInfo(args);        
 		execVoid(args);
 	}
-    
     /**
      * List the properties for the given file or dir
      * 

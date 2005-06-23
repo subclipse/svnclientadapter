@@ -16,6 +16,7 @@
 package org.tigris.subversion.svnclientadapter.commandline;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
@@ -124,6 +125,55 @@ abstract class CommandLine {
 
             notifyFromSvnOutput(outputString);
 			return outputString;
+		} catch (CmdLineException e) {
+            notificationHandler.logException(e);
+			throw e;
+		}
+	}
+
+	/**
+	 * runs the process and returns the results.
+	 * @param cmd
+	 * @return String
+	 */
+	protected byte[] execBytes(ArrayList svnArguments, boolean assumeUTF8) throws CmdLineException {
+		Process proc = execProcess(svnArguments);
+
+        CmdLineByteStreamPumper outPumper = new CmdLineByteStreamPumper(proc.getInputStream());
+        CmdLineStreamPumper errPumper = new CmdLineStreamPumper(proc.getErrorStream());
+
+        Thread threadOutPumper = new Thread(outPumper);
+        Thread threadErrPumper = new Thread(errPumper);
+        threadOutPumper.start();         
+        threadErrPumper.start();
+        try {
+            outPumper.waitFor();
+            errPumper.waitFor();
+        } catch (InterruptedException e) {
+        }
+        
+		try {
+            String errMessage = errPumper.toString();
+            if (errMessage.length() > 0) {
+                throw new CmdLineException(errMessage);        
+            }
+            byte[] bytes = outPumper.getBytes(); 
+
+            String notifyMessage = "";
+            if (assumeUTF8) {
+            	try {
+            		notifyMessage = new String(bytes, "UTF-8");
+				} catch (UnsupportedEncodingException e) {
+					// It is guaranteed to be there!
+				}
+            } else {
+            	// This uses the default charset, which is likely
+            	// wrong if we are trying to get the bytes, anyway...
+            	notifyMessage = new String(bytes);
+            }
+			notifyFromSvnOutput(notifyMessage);
+			
+			return bytes;
 		} catch (CmdLineException e) {
             notificationHandler.logException(e);
 			throw e;

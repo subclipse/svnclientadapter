@@ -15,10 +15,11 @@
  */
 package org.tigris.subversion.svnclientadapter.commandline;
 
-import java.io.StringReader;
+import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.StringTokenizer;
 
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -29,6 +30,7 @@ import org.tigris.subversion.svnclientadapter.SVNClientException;
 import org.tigris.subversion.svnclientadapter.SVNLogMessageChangePath;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -152,7 +154,7 @@ class CmdLineLogMessage implements ISVNLogMessage {
      * @param cmdLineResults
      * @return
      */
-	public static CmdLineLogMessage[] createLogMessages(String cmdLineResults) throws SVNClientException {
+	public static CmdLineLogMessage[] createLogMessages(byte[] cmdLineResults) throws SVNClientException {
 		Collection logMessages = new ArrayList();
 		
 		try {
@@ -161,72 +163,118 @@ class CmdLineLogMessage implements ISVNLogMessage {
 			factory.setValidating(false);
     
 			// Create the builder and parse the file
-			InputSource source = new InputSource(new StringReader(cmdLineResults));
+			InputSource source = new InputSource(new ByteArrayInputStream(cmdLineResults));
 
 			Document doc = factory.newDocumentBuilder().parse(source);
 			
+			// This is the XML we need to parse
+			// --verbose mode:
+			//			<logentry revision="5">
+			//				<author>Jesper</author>
+			//				<date>2005-06-18T10:42:52.338920Z</date>
+			//				<paths>
+			//					<path action="A">/trunk/Subclipse-test/org</path>
+			//					<path action="A">/trunk/Subclipse-test/org/tigris</path>
+			//				</paths>
+			//				<msg>This one is really really cool, too!</msg>
+			//			</logentry>
+			
+			// Not --verbose mode:
+			//			<logentry revision="5">
+			//				<author>Jesper</author>
+			//				<date>2005-06-18T10:42:52.338920Z</date>
+			//				<msg>This one is really really cool, too!</msg>
+			//			</logentry>
+
+			
 			NodeList nodes = doc.getElementsByTagName("logentry");
 			
-			for(int i = 0; i < nodes.getLength(); i++){
+			for(int i = 0; i < nodes.getLength(); i++) {
 				Node logEntry = nodes.item(i);
 				
-				Node authorNode = logEntry.getFirstChild();
-				Node dateNode = authorNode.getNextSibling();
-                Node pathsNode = dateNode.getNextSibling();
-                Node msgNode = pathsNode.getNextSibling();
-                // TODO: mybe get the nodes by their name
-                // if the msgNode is empty, the pathsNode is the msgNode
-                int pathsNodeLength = 0;
-                if (msgNode == null) {
-                	msgNode = pathsNode;
-                	pathsNode = null;
-                } else {
-                	pathsNodeLength = pathsNode.getChildNodes().getLength();
-                }
-                
+				Element authorNode = getFirstNamedElement(logEntry, "author");
+				if (authorNode == null) throw new Exception("'author' tag expected under 'logentry'");
+				
+				Element dateNode = getNextNamedElement(authorNode, "date");
+				if (dateNode == null) throw new Exception("'date' tag expected under 'logentry'");
+
+				Element pathsNode = getNextNamedElement(dateNode, "paths");
+
+				Element msgNode = getNextNamedElement(pathsNode != null ? pathsNode : dateNode, "msg");
+
 				Node revisionAttribute = logEntry.getAttributes().getNamedItem("revision");
 
                 SVNRevision.Number rev = Helper.toRevNum(revisionAttribute.getNodeValue());
 				String author = authorNode.getFirstChild().getNodeValue();
 				Date date = Helper.convertXMLDate(dateNode.getFirstChild().getNodeValue());
+
 				Node msgTextNode = msgNode.getFirstChild();
                 String msg;
 				if(msgTextNode != null)
 					msg = msgTextNode.getNodeValue();
 				else
 					msg = "";
-                
-                ISVNLogMessageChangePath[] logMessageChangePath = new ISVNLogMessageChangePath[pathsNodeLength];
-                for (int j = 0; j < pathsNodeLength;j++) {
-                	Node pathNode = pathsNode.getChildNodes().item(j);
-                    String path = pathNode.getFirstChild().getNodeValue();
-                    NamedNodeMap attributes = pathNode.getAttributes();
-                    char action = attributes.getNamedItem("action").getNodeValue().charAt(0);
-                    Node copyFromPathNode = attributes.getNamedItem("copyfrom-path");
-                    Node copyFromRevNode = attributes.getNamedItem("copyfrom-rev");
-                    String copyFromPath = null;
-                    if (copyFromPathNode != null) {
-                        copyFromPath = copyFromPathNode.getNodeValue();
-                    }
-                    SVNRevision.Number copyFromRev = null;
-                    if (copyFromRevNode != null) {
-                        copyFromRev = Helper.toRevNum(copyFromRevNode.getNodeValue());
-                    }
-                    logMessageChangePath[j] = new SVNLogMessageChangePath(
-                            path, copyFromRev, copyFromPath, action);
+
+				List paths = new ArrayList();
+				Element pathNode = getFirstNamedElement(pathsNode, "path");
+				while (pathNode != null) {
+                	String path = pathNode.getFirstChild().getNodeValue();
+
+                	NamedNodeMap attributes = pathNode.getAttributes();
+                	char action = attributes.getNamedItem("action").getNodeValue().charAt(0);
+                	Node copyFromPathNode = attributes.getNamedItem("copyfrom-path");
+                	Node copyFromRevNode = attributes.getNamedItem("copyfrom-rev");
+                	String copyFromPath = null;
+                	if (copyFromPathNode != null) {
+                		copyFromPath = copyFromPathNode.getNodeValue();
+                	}
+                	SVNRevision.Number copyFromRev = null;
+                	if (copyFromRevNode != null) {
+                		copyFromRev = Helper.toRevNum(copyFromRevNode.getNodeValue());
+                	}
+                    paths.add(new SVNLogMessageChangePath(
+                            path, copyFromRev, copyFromPath, action));
+					
+                    pathNode = getNextNamedElement(pathNode, "path");
                 }
-                
+				ISVNLogMessageChangePath[] logMessageChangePath = (ISVNLogMessageChangePath[])paths.toArray(new ISVNLogMessageChangePath[paths.size()]);
+					
                 CmdLineLogMessage logMessage = new CmdLineLogMessage(rev, author, date, msg, logMessageChangePath);
 
 				logMessages.add(logMessage);				
 			}
-			
 		} catch (Exception e) {
 			throw new SVNClientException(e);
 		} 
 		
 		return (CmdLineLogMessage[]) logMessages.toArray(new CmdLineLogMessage[logMessages.size()]);		
 	
+	}
+
+	/**
+	 * Not exactly XPath, but finds a named node
+	 * @param logEntry
+	 * @param elementName
+	 * @return
+	 */
+	private static Element getFirstNamedElement(Node parent, String elementName) {
+		if (parent == null) return null;
+		return findNamedElementSibling(parent.getFirstChild(), elementName);
+	}
+
+	private static Element getNextNamedElement(Node foundNode, String elementName) {
+		if (foundNode == null) return null;
+		return findNamedElementSibling(foundNode.getNextSibling(), elementName);
+	}
+
+	private static Element findNamedElementSibling(Node sibling, String elementName) {
+		if (sibling == null) return null;
+		while (sibling != null) {
+			if (sibling.getNodeType() == Node.ELEMENT_NODE && sibling.getNodeName().equals(elementName))
+				return (Element)sibling;
+			sibling = sibling.getNextSibling();
+		}
+		return null;
 	}
 
 	/* (non-Javadoc)
