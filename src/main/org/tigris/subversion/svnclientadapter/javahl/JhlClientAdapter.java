@@ -44,6 +44,7 @@ import org.tigris.subversion.svnclientadapter.ISVNProperty;
 import org.tigris.subversion.svnclientadapter.ISVNStatus;
 import org.tigris.subversion.svnclientadapter.SVNBaseDir;
 import org.tigris.subversion.svnclientadapter.SVNClientException;
+import org.tigris.subversion.svnclientadapter.SVNConstants;
 import org.tigris.subversion.svnclientadapter.SVNInfoUnversioned;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
 import org.tigris.subversion.svnclientadapter.SVNStatusUnversioned;
@@ -1066,7 +1067,8 @@ public class JhlClientAdapter extends AbstractClientAdapter {
 				// svn should not contact the repository when we want to get base
 				// file but it does.
 				// Until this is corrected, we get the file directly if we can
-				File file = new File(path.getParentFile(),".svn/text-base/"+path.getName()+".svn-base");
+		 		 		 		 File file = new File(path.getParentFile(), 
+		 		 		 		 		 		 SVNConstants.SVN_DIRNAME + "/text-base/"+path.getName()+".svn-base");
 				try {
 					FileInputStream in = new FileInputStream(file);
 					return in;

@@ -37,6 +37,7 @@ import org.tigris.subversion.svnclientadapter.ISVNProperty;
 import org.tigris.subversion.svnclientadapter.ISVNStatus;
 import org.tigris.subversion.svnclientadapter.SVNBaseDir;
 import org.tigris.subversion.svnclientadapter.SVNClientException;
+import org.tigris.subversion.svnclientadapter.SVNConstants;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
 import org.tigris.subversion.svnclientadapter.SVNStatusUnversioned;
 import org.tigris.subversion.svnclientadapter.SVNUrl;
@@ -114,7 +115,7 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 	}
 
     private boolean isManagedDir(File dir) {
-        File entries = new File(dir,".svn/entries");
+        File entries = new File(dir, SVNConstants.SVN_DIRNAME + "/entries");
         return entries.exists();
     }
 
