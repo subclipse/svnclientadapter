@@ -44,7 +44,6 @@ import org.tigris.subversion.svnclientadapter.ISVNProperty;
 import org.tigris.subversion.svnclientadapter.ISVNStatus;
 import org.tigris.subversion.svnclientadapter.SVNBaseDir;
 import org.tigris.subversion.svnclientadapter.SVNClientException;
-import org.tigris.subversion.svnclientadapter.SVNConstants;
 import org.tigris.subversion.svnclientadapter.SVNInfoUnversioned;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
 import org.tigris.subversion.svnclientadapter.SVNStatusUnversioned;
@@ -1378,15 +1377,14 @@ public class JhlClientAdapter extends AbstractClientAdapter {
             if(revisionEnd == null)
                 revisionEnd = SVNRevision.HEAD;
             String commandLine = "blame ";
-            if(revisionEnd != SVNRevision.HEAD || !revisionStart.equals(new SVNRevision.Number(1)))
-                commandLine = commandLine + "-r " + revisionStart.toString() + ":" + revisionEnd.toString() + " ";
-            commandLine = commandLine + target.toString();
+            commandLine = commandLine + "-r " + revisionEnd.toString() + " ";
+            commandLine = commandLine + target.toString() + "@HEAD";
             notificationHandler.logCommandLine(commandLine);
 			notificationHandler.setBaseDir();
 			
 			JhlAnnotations annotations = new JhlAnnotations();
-            svnClient.blame(target, JhlConverter.convert(revisionStart), JhlConverter.convert(revisionEnd), annotations);
-			return annotations;
+            svnClient.blame(target, Revision.HEAD, JhlConverter.convert(revisionStart), JhlConverter.convert(revisionEnd), annotations);
+            return annotations;
         } catch (ClientException e) { 
             notificationHandler.logException(e);
             throw new SVNClientException(e);

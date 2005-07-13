@@ -778,9 +778,9 @@ public class SvnCommandLine extends CommandLine {
 		setCommand(ISVNNotifyListener.Command.ANNOTATE, false);
 		ArrayList args = new ArrayList();
 		args.add("annotate");
-		args.add(path);
 		args.add("-r");
-		args.add(validRev(revisionStart)+":"+validRev(revisionEnd));
+		args.add(validRev(revisionEnd));
+		args.add(path);
 		addAuthInfo(args);
         addConfigInfo(args);        
 		return execString(args,false);
