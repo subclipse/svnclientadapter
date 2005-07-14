@@ -50,6 +50,7 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements No
     private int propConflicts;
     private int propMerges;
     private int propUpdates;
+    private boolean inExternal;
 
     /* (non-Javadoc)
      * @see org.tigris.subversion.javahl.Notify2#onNotify(org.tigris.subversion.javahl.NotifyInformation)
@@ -194,6 +195,7 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements No
                 break;
             case NotifyAction.update_external :
                 logMessage("Updating external location at: " + path);
+            	inExternal = true;
                 break;
             case NotifyAction.update_completed :
                 notify = false;
@@ -277,8 +279,10 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements No
      */
     public void logCompleted(String message) {
         super.logCompleted(message);
-        logStats();
-        
+        if (inExternal)
+            inExternal = false;
+        else
+            logStats();
     }
 
     private void clearStats(){
@@ -290,6 +294,7 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements No
         propConflicts = 0;
         propMerges = 0;
         propUpdates = 0;
+        inExternal = false;
     }
     
     private void logStats() {
