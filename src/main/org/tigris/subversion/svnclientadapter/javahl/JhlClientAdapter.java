@@ -46,6 +46,7 @@ import org.tigris.subversion.svnclientadapter.SVNBaseDir;
 import org.tigris.subversion.svnclientadapter.SVNClientException;
 import org.tigris.subversion.svnclientadapter.SVNInfoUnversioned;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
+import org.tigris.subversion.svnclientadapter.SVNStatusKind;
 import org.tigris.subversion.svnclientadapter.SVNStatusUnversioned;
 import org.tigris.subversion.svnclientadapter.SVNUrl;
 
@@ -1054,29 +1055,13 @@ public class JhlClientAdapter extends AbstractClientAdapter {
 								+ target);
 			notificationHandler.setBaseDir();                
 			
-            /*
-               there's  abit of a gotcha here: the text-base is stored without
-               eol-style conversion or keywords! this will result in spurious due
-               to line endings and keyword expansion,making external diffing
-               of the wc and the text-base useless in the case of client/server
-               line terminator mismatch. --mcclain 7/14/2004
-
-
 			if (revision.equals(SVNRevision.BASE)) {
-				// svn should not contact the repository when we want to get base
-				// file but it does.
-				// Until this is corrected, we get the file directly if we can
-		 		 		 		 File file = new File(path.getParentFile(), 
-		 		 		 		 		 		 SVNConstants.SVN_DIRNAME + "/text-base/"+path.getName()+".svn-base");
-				try {
-					FileInputStream in = new FileInputStream(file);
-					return in;
-				} catch (FileNotFoundException e) {
-					// we do nothing, we will use svnClient.fileContent instead				
-				}
+			    // This is to work-around a JavaHL problem when trying to
+			    // retrieve the base revision of a newly added file.
+			    ISVNStatus status = getSingleStatus(path);
+			    if (status.getTextStatus().equals(SVNStatusKind.ADDED))
+			        return new ByteArrayInputStream(new byte[0]);
 			}
-            */
-			
 			byte[] contents = svnClient.fileContent(target, JhlConverter.convert(revision));
 			InputStream input = new ByteArrayInputStream(contents);
 			return input;
