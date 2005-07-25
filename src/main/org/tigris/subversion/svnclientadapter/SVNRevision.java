@@ -29,7 +29,8 @@ import java.util.Locale;
  */
 public class SVNRevision 
 {
-	private static DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'");
+	// See chapter 3 section 3.3 of the SVN book for valid date strings 
+	private static DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd'T'HHmmssZ");
     protected int revKind;
 
     public SVNRevision(int kind)
