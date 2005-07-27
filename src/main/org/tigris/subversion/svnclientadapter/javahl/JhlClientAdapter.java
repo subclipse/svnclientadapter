@@ -80,6 +80,7 @@ public class JhlClientAdapter extends AbstractClientAdapter {
      * @return
      */
     public static boolean isAvailable() {
+    	StringBuffer javaHLErrors = new StringBuffer("Failed to load JavaHL Library.\nThese are the errors that were encountered:\n");
     	if (!availabilityCached) {
 	            // if library is already loaded, it will not be reloaded
 	
@@ -92,71 +93,115 @@ public class JhlClientAdapter extends AbstractClientAdapter {
 					try {
 						System.loadLibrary("libapr");
 			        } catch (Exception e) {
+		               	javaHLErrors.append(e.getMessage() + "\n");
 			        } catch (UnsatisfiedLinkError e) {
+		               	javaHLErrors.append(e.getMessage() + "\n");
 			        }
 					try {
 						System.loadLibrary("libapriconv");
 			        } catch (Exception e) {
+		               	javaHLErrors.append(e.getMessage() + "\n");
 			        } catch (UnsatisfiedLinkError e) {
+		               	javaHLErrors.append(e.getMessage() + "\n");
 			        }
 					try {
 						System.loadLibrary("libeay32");
 			        } catch (Exception e) {
+		               	javaHLErrors.append(e.getMessage() + "\n");
 			        } catch (UnsatisfiedLinkError e) {
+		               	javaHLErrors.append(e.getMessage() + "\n");
 			        }
 					try {
 						System.loadLibrary("libdb43");
 			        } catch (Exception e) {
+		               	javaHLErrors.append(e.getMessage() + "\n");
 			        } catch (UnsatisfiedLinkError e) {
+		               	javaHLErrors.append(e.getMessage() + "\n");
 			        }
 					try {
 						System.loadLibrary("ssleay32");
 			        } catch (Exception e) {
+		               	javaHLErrors.append(e.getMessage() + "\n");
 			        } catch (UnsatisfiedLinkError e) {
+		               	javaHLErrors.append(e.getMessage() + "\n");
 			        }
 					try {
 						System.loadLibrary("libaprutil");
 			        } catch (Exception e) {
+		               	javaHLErrors.append(e.getMessage() + "\n");
 			        } catch (UnsatisfiedLinkError e) {
+		               	javaHLErrors.append(e.getMessage() + "\n");
 			        }
 					try {
 						System.loadLibrary("intl3_svn");
 			        } catch (Exception e) {
+		               	javaHLErrors.append(e.getMessage() + "\n");
 			        } catch (UnsatisfiedLinkError e) {
+		               	javaHLErrors.append(e.getMessage() + "\n");
 			        }
 				}
 	        	//workaround to solve Subclipse ISSUE #83
-	
+			available = false;
 	        try {
-	            /*
-	             * first try to load the library by the new name.
-	             * if that fails, try to load the library by the old name.
-	             */
-	            try
-	            {
-	                System.loadLibrary("libsvnjavahl-1");
-	            }
-	            catch(UnsatisfiedLinkError ex)
-	            {
-	                try
-	                {
-	                    System.loadLibrary("svnjavahl-1");
-	                }
-	                catch (UnsatisfiedLinkError e)
-	                {
-	                    System.loadLibrary("svnjavahl");
-	                }
-	            }        	
+		        /*
+		         * see if the user has specified the fully qualified path to the native
+		         * library
+		         */
+		       try
+		       {
+		            String specifiedLibraryName =
+		                    System.getProperty("subversion.native.library");
+		            if(specifiedLibraryName != null) {
+		                System.load(specifiedLibraryName);
+		            	   available = true;
+		            }
+		        }
+		        catch(UnsatisfiedLinkError ex)
+		        {
+		        		javaHLErrors.append(ex.getMessage() + "\n");
+		        }
+		        if (!available) {
+		            /*
+		             * first try to load the library by the new name.
+		             * if that fails, try to load the library by the old name.
+		             */
+		            try
+		            {
+		                System.loadLibrary("libsvnjavahl-1");
+		            }
+		            catch(UnsatisfiedLinkError ex)
+		            {
+		            	  javaHLErrors.append(ex.getMessage() + "\n");
+		               try
+		               {
+		                    System.loadLibrary("svnjavahl-1");
+		               }
+		               catch (UnsatisfiedLinkError e)
+		               {
+		               	javaHLErrors.append(e.getMessage() + "\n");
+	                     System.loadLibrary("svnjavahl");
+		               }
+		            }
 	        	
 	            available = true;
+		        }
 	        } catch (Exception e) {
 	        	available = false;
+	        	javaHLErrors.append(e.getMessage() + "\n");
 	        } catch (UnsatisfiedLinkError e) {
 	        	available = false;
+	        	javaHLErrors.append(e.getMessage() + "\n");
 	        } finally {
 	        	availabilityCached = true;
 	        }
     	}
+    	if (!available) {
+    		String libraryPath = System.getProperty("java.library.path");
+    		if (libraryPath != null)
+    			javaHLErrors.append("java.library.path = " + libraryPath);
+    		System.out.println(javaHLErrors.toString());
+    	}
+    		
     	return available;
     }
 
