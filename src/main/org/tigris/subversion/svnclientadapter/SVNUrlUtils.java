@@ -68,12 +68,26 @@ public class SVNUrlUtils {
     }
 
     /**
-     * get path of url relative to rootUrl 
+     * Get path of url relative to rootUrl 
      * @param rootUrl
      * @param url
      * @return relative path or null if rootUrl is not a parent of url
      */
-    public static String getRelativePath(SVNUrl rootUrl, SVNUrl url) {
+    public static String getRelativePath(SVNUrl rootUrl, SVNUrl url)
+    {
+    	return getRelativePath(rootUrl, url, false);
+    }
+    
+    /**
+     * Get path of url relative to rootUrl 
+     * @param rootUrl
+     * @param url
+     * @param includeStartingSlash whether the realtive url should start with / or not
+     * @return relative path or null if rootUrl is not a parent of url
+     */
+    public static String getRelativePath(SVNUrl rootUrl, SVNUrl url, boolean includeStartingSlash ) 
+    {
+    	//TODO Isn't there a more efficient way than to convert those urls to Strings ?
         String rootUrlStr = rootUrl.toString();
         String urlStr = url.toString();
         if (urlStr.indexOf(rootUrlStr) == -1) {
@@ -82,7 +96,7 @@ public class SVNUrlUtils {
         if (urlStr.length() == rootUrlStr.length()) {
             return "";
         }
-        return urlStr.substring(rootUrlStr.length()+1);
+        return urlStr.substring(rootUrlStr.length() + (includeStartingSlash ? 0 : 1));
     }
     
     
@@ -105,20 +119,41 @@ public class SVNUrlUtils {
      */
     public static SVNUrl getUrlFromLocalFileName(String localFileName, SVNUrl parentUrl, String parentPathName)
     {
+    	return getUrlFromLocalFileName(localFileName, parentUrl.toString(), parentPathName);
+    }
+
+    /**
+     * Get url representing the fileName of workink copy.
+     * Use the parent's (not necesarily direct parent) WC fileName and SVNUrl to calculate it.
+     * E.g.
+     * <code>
+     *   SVNUrl rootUrl = new SVNUrl("http://svn.collab.net:81/repos/mydir");
+     *   String rootPath = "C:\\Documents and Settings\\User\\My Documents\\Eclipse\\mydir";
+     *   String filePath = "C:\\Documents and Settings\\User\\My Documents\\Eclipse\\mydir\\mydir2\\myFile.txt";
+     *   SVNUrl expected = new SVNUrl("http://svn.collab.net:81/repos/mydir/mydir2/myFile.txt");
+     *   assertEquals(expected,SVNUrlUtils.getUrlFromLocalFileName(filePath, rootUrl, rootPath));
+     * </code>
+     *  
+     * @param localFileName name of the file representing working copy of resource
+     * @param parentUrl url string of a resource preceeding the localFileName in hierarchy
+     * @param parentPathName WC fileName of a resource preceeding the localFileName in hierarchy
+     * @return
+     */
+    public static SVNUrl getUrlFromLocalFileName(String localFileName, String parentUrl, String parentPathName)
+    {
     	String parentPath = (parentPathName.indexOf('\\') > 0) ? parentPathName.replaceAll("\\\\","/") : parentPathName;
     	String localFile = (localFileName.indexOf('\\') > 0) ? localFileName.replaceAll("\\\\","/") : localFileName;
     	if (localFile.indexOf(parentPath) != 0) return null;
     	char lastChar = parentPath.charAt(parentPath.length() - 1);
     	String relativeFileName = localFile.substring(parentPath.length() + (((lastChar != '\\') && (lastChar != '/')) ? 1 : 0));
-    	String urlPrefix = parentUrl.toString();
         try {
-        	if (urlPrefix.charAt(urlPrefix.length()-1) == '/')
+        	if (parentUrl.charAt(parentUrl.length()-1) == '/')
         	{
-        		return new SVNUrl(urlPrefix + relativeFileName);
+        		return new SVNUrl(parentUrl + relativeFileName);
         	}
         	else
         	{
-        		return new SVNUrl(urlPrefix + "/" + relativeFileName);    	
+        		return new SVNUrl(parentUrl + "/" + relativeFileName);    	
         	}
         } catch (MalformedURLException e) {
             return null;

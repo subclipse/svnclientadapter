@@ -33,6 +33,8 @@ import java.net.MalformedURLException;
  *
  */
 public class SVNUrl {
+	protected static char SEGMENT_SEPARATOR = '/'; 
+	
     private String protocol; // http, file, svn or svn+ssh
     private String[] segments;
     private String host;
@@ -40,11 +42,42 @@ public class SVNUrl {
 
     public SVNUrl(String svnUrl) throws MalformedURLException {
         if(svnUrl == null)
-            throw new MalformedURLException("Svn url cannot be null. Is this  a versioned resource?");
+            throw new MalformedURLException("Svn url cannot be null. Is this a versioned resource?");
    
         parseUrl(svnUrl);
     }
+    
+    private SVNUrl(String protocol, String host, int port, String[] segments)
+    {
+    	super();
+    	this.protocol = protocol;
+    	this.host = host;
+    	this.port = port;
+    	this.segments = segments;
+    }
 
+    /**
+     * Asnwer a new SVNUrl with added segments
+     * @param path a String of path segment(s) to ba appended to receiver
+     * @return new SVNUrl 
+     */
+    public SVNUrl appendPath(String path)
+    {
+    	String[] segmentsToAdd = StringUtils.split(path, SEGMENT_SEPARATOR);
+    	//Skip the starting slash
+    	if ((segmentsToAdd.length > 0) && (segmentsToAdd[0].equals("")))
+    	{
+    		String[] newSegmentsToAdd = new String[segmentsToAdd.length - 1];
+    		System.arraycopy(segmentsToAdd, 1, newSegmentsToAdd, 0, segmentsToAdd.length - 1);
+    		segmentsToAdd = newSegmentsToAdd;    		
+    	}
+    	
+    	String[] newSegments = new String[segments.length + segmentsToAdd.length];
+    	System.arraycopy(segments, 0, newSegments, 0, segments.length);
+   		System.arraycopy(segmentsToAdd, 0, newSegments, segments.length, segmentsToAdd.length);
+    	return new SVNUrl(this.protocol, this.host, this.port, newSegments);
+    }
+    
     /**
      * verifies that the url is correct
      * @throws MalformedURLException
@@ -129,19 +162,41 @@ public class SVNUrl {
     }
     
     /**
-     * get the url. The url returned never ends with "/"
+     * Get the url as String. The url returned never ends with "/"
      * @return
      */
-    public String get() {
-        String result = getProtocol()+"://"+getHost(); 
+    private String get() {
+    	//Be sofisticated and compute the StringBuffer size up-front. 
+    	StringBuffer buffer = new StringBuffer(calculateUrlLength());
+        buffer.append(getProtocol());
+        buffer.append("://");
+        buffer.append(getHost()); 
         if (getPort() != getDefaultPort(getProtocol())) {
-            result += ":"+getPort();
+        	buffer.append(":");
+        	buffer.append(getPort());
         }
 
         for (int i = 0; i < segments.length;i++) {
-            result+='/'+segments[i];
+        	buffer.append(SEGMENT_SEPARATOR);
+        	buffer.append(segments[i]);
         }
-        return result; 
+        return buffer.toString(); 
+    }
+    
+    private int calculateUrlLength()
+    {
+    	int result = 3; // Size of "://"
+    	if (getProtocol() != null) result += getProtocol().length();
+    	if (getHost() != null) result += getHost().length();
+        if (getPort() != getDefaultPort(getProtocol())) {
+        	result++; //Add one for ":"
+        	result += String.valueOf(getPort()).length();
+        }
+        for (int i = 0; i < segments.length;i++) {
+            result++; // Add 1 for separator
+            result += segments[i].length();
+        }
+        return result;
     }
     
     /**
@@ -181,17 +236,18 @@ public class SVNUrl {
     }
     
     /**
-     * 
+     * Return new SVNUrl which represents parent of the receiver 
      * @return the parent url or null if no parent
      */
     public SVNUrl getParent() {
-    	try {
-    		String url = get();
-    		
-    		return new SVNUrl(url.substring(0,url.lastIndexOf('/')));
-    	} catch (MalformedURLException e) {
+    	if ((segments.length == 0) ||
+    		((segments.length == 1) && ((host == null) || (host.length() == 0))))
+    	{
     		return null;
     	}
+    	String[] parentSegments = new String[segments.length - 1];
+    	System.arraycopy(segments, 0, parentSegments, 0, segments.length - 1);
+    	return new SVNUrl(this.protocol, this.host, this.port, parentSegments);
     }
     
 	/* (non-Javadoc)

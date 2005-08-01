@@ -30,7 +30,8 @@ public class SVNUrlUtilsTest extends TestCase {
         SVNUrl url = new SVNUrl("http://svn.collab.net:81/repos/subclipse/myfile.txt");
         SVNUrl rootUrl = new SVNUrl("http://svn.collab.net:81/repos");
         assertEquals("subclipse/myfile.txt",SVNUrlUtils.getRelativePath(rootUrl,url));
-        assertEquals("",SVNUrlUtils.getRelativePath(rootUrl,rootUrl));
+		assertEquals("/subclipse/myfile.txt", SVNUrlUtils.getRelativePath(rootUrl, url, true));
+		assertEquals("/subclipse/myfile.txt", url.toString().substring(rootUrl.toString().length()));
     }
     
     public void testGetUrlFromLocalFileName() throws Exception {

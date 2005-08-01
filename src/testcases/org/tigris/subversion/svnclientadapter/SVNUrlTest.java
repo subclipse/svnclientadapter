@@ -95,4 +95,22 @@ public class SVNUrlTest extends TestCase
 		assertEquals("file:///repos",url1.getParent().getParent().toString());		  		
 		assertEquals(null,url1.getParent().getParent().getParent());
    }
+    
+	public void testUtilGetLastSegment() throws Exception 
+	{
+        SVNUrl http1 = new SVNUrl("HTTP://SVN.collab.net/repos/subclipse/");
+        SVNUrl http2 = new SVNUrl("http://svn.collab.net:80/repos/subclipse");
+		assertEquals("subclipse", http1.getLastPathSegment());
+		assertEquals("subclipse", http2.getLastPathSegment());
+	}
+
+	public void testAppendPath() throws Exception
+	{
+        SVNUrl http1 = new SVNUrl("HTTP://SVN.collab.net/repos/subclipse/");
+        SVNUrl http2 = new SVNUrl("HTTP://SVN.collab.net/repos/subclipse/mydirectory/myfile.txt");
+		assertEquals(http2, http1.appendPath("/mydirectory/myfile.txt"));
+		assertEquals(http2, http1.appendPath("mydirectory/myfile.txt"));
+		assertEquals(http1, http1.appendPath(""));
+	}
+
 }

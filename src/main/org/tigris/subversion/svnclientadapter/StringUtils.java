@@ -15,7 +15,7 @@
  */
 package org.tigris.subversion.svnclientadapter;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -29,7 +29,7 @@ public class StringUtils {
 	 */
 	static public String[] split(String str, char separator) {
 		int pos = 0;
-		List list = new LinkedList();
+		List list = new ArrayList();
 		int length = str.length();
 		for (int i = 0; i < length;i++) {
 			char ch = str.charAt(i);
@@ -41,7 +41,7 @@ public class StringUtils {
 		if (pos != length) {
 			list.add(str.substring(pos,length));
 		}
-		return (String[])list.toArray(new String[0]);
+		return (String[])list.toArray(new String[list.size()]);
 	}
 
 	/**
@@ -51,7 +51,7 @@ public class StringUtils {
 	 * @return
 	 */
 	static public String[] split(String str, String separator) {
-		List list = new LinkedList();
+		List list = new ArrayList();
 		StringBuffer sb = new StringBuffer(str);
 		int pos;
 		
@@ -62,7 +62,7 @@ public class StringUtils {
 		if (sb.length() > 0) {
 			list.add(sb.toString());
 		}
-		return (String[])list.toArray(new String[0]);
+		return (String[])list.toArray(new String[list.size()]);
 	}
 
 	
