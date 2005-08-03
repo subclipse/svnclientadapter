@@ -2,15 +2,12 @@ package org.tigris.subversion.svnclientadapter.commandline;
 
 import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.List;
 
 import junit.framework.TestCase;
 
 import org.tigris.subversion.svnclientadapter.SVNClientException;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
 import org.tigris.subversion.svnclientadapter.commandline.parser.SvnOutputParser;
-import org.w3c.dom.Element;
 
 
 public class SvnOutputParserTest extends TestCase {

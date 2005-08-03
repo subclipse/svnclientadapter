@@ -79,9 +79,9 @@ public class TestsConfig {
         if (adminClientType == null) {
             adminClientType = clientType;
         }
-        if (adminClientType.equals("javasvn")) {
-            adminClientType = "javahl";
-        }
+//        if (adminClientType.equals("javasvn")) {
+//            adminClientType = "javahl";
+//        }
         System.out.println("Using "+adminClientType+" factory for admin commands...");
         
         rootDirectoryName = System.getProperty("test.rootdir");
