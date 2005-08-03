@@ -38,6 +38,7 @@ public class JhlClientAdapter extends AbstractJhlClientAdapter {
     
     private static boolean availabilityCached = false;
     private static boolean available;
+	private static StringBuffer javaHLErrors = new StringBuffer("Failed to load JavaHL Library.\nThese are the errors that were encountered:\n");
 
     public JhlClientAdapter() {
         svnClient = new SVNClientSynchronized();
@@ -52,7 +53,6 @@ public class JhlClientAdapter extends AbstractJhlClientAdapter {
      * @return
      */
     public static boolean isAvailable() {
-    	StringBuffer javaHLErrors = new StringBuffer("Failed to load JavaHL Library.\nThese are the errors that were encountered:\n");
     	if (!availabilityCached) {
 	            // if library is already loaded, it will not be reloaded
 	
@@ -166,15 +166,22 @@ public class JhlClientAdapter extends AbstractJhlClientAdapter {
 	        } finally {
 	        	availabilityCached = true;
 	        }
-    	}
-    	if (!available) {
-    		String libraryPath = System.getProperty("java.library.path");
-    		if (libraryPath != null)
-    			javaHLErrors.append("java.library.path = " + libraryPath);
-    		System.out.println(javaHLErrors.toString());
+	    	if (!available) {
+	    		String libraryPath = System.getProperty("java.library.path");
+	    		if (libraryPath != null)
+	    			javaHLErrors.append("java.library.path = " + libraryPath);
+	    		System.out.println(javaHLErrors.toString());
+	    	}
     	}
     		
     	return available;
+    }
+    
+    public static String getLibraryLoadErrors() {
+        if (isAvailable())
+            return "";
+        else
+            return javaHLErrors.toString();
     }
 
 	/* (non-Javadoc)
