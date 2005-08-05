@@ -120,7 +120,7 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
     }
 
 	/* (non-Javadoc)
-	 * @see org.tigris.subversion.subclipse.client.ISVNClientAdapter#getSingleStatus(java.io.File)
+	 * @see org.tigris.subversion.subclipse.client.ISVNClientAdapter#getStatus(java.io.File[])
 	 */
 	public ISVNStatus[] getStatus(File[] files) throws SVNClientException {
         
