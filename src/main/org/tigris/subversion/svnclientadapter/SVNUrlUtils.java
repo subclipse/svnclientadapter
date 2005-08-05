@@ -143,10 +143,12 @@ public class SVNUrlUtils {
     {
     	String parentPath = (parentPathName.indexOf('\\') > 0) ? parentPathName.replaceAll("\\\\","/") : parentPathName;
     	String localFile = (localFileName.indexOf('\\') > 0) ? localFileName.replaceAll("\\\\","/") : localFileName;
-    	if (localFile.indexOf(parentPath) != 0) return null;
-    	char lastChar = parentPath.charAt(parentPath.length() - 1);
-    	String relativeFileName = localFile.substring(parentPath.length() + (((lastChar != '\\') && (lastChar != '/')) ? 1 : 0));
         try {
+        	if (localFile.indexOf(parentPath) != 0) return null;
+        	if (localFile.length() == parentPath.length()) return new SVNUrl(parentUrl);
+        	char lastChar = parentPath.charAt(parentPath.length() - 1);
+        	String relativeFileName = localFile.substring(parentPath.length() + (((lastChar != '\\') && (lastChar != '/')) ? 1 : 0));
+
         	if (parentUrl.charAt(parentUrl.length()-1) == '/')
         	{
         		return new SVNUrl(parentUrl + relativeFileName);

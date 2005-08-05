@@ -58,6 +58,12 @@ public class SVNUrlUtilsTest extends TestCase {
 
         rootPath = "C:/Documents and Settings/User/My Documents/Eclipse/mydir/";
         assertEquals(expected,SVNUrlUtils.getUrlFromLocalFileName(filePath, rootUrl, rootPath));
+
+        expected = new SVNUrl("http://svn.collab.net:81/repos/mydir");
+        rootUrl = new SVNUrl("http://svn.collab.net:81/repos/mydir");
+        rootPath = "C:\\Documents and Settings\\User\\My Documents\\Eclipse\\mydir";
+        filePath = "C:\\Documents and Settings\\User\\My Documents\\Eclipse\\mydir";
+        assertEquals(expected,SVNUrlUtils.getUrlFromLocalFileName(filePath, rootUrl, rootPath));
     }
     
 }
