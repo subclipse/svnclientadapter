@@ -707,4 +707,10 @@ public interface ISVNClientAdapter {
     public abstract void unlock(File[] paths, boolean force)
             throws SVNClientException;
 
+    /**
+     * Indicates whether a status call that contacts the
+     * server includes the remote info in the status object
+     */
+    public abstract boolean statusReturnsRemoteInfo();
+
 }

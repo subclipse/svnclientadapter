@@ -164,4 +164,8 @@ public abstract class AbstractClientAdapter implements ISVNClientAdapter {
     public void addPasswordCallback(ISVNPromptUserPassword callback) {
         // Default implementation does nothing
     }
+ 
+    public boolean statusReturnsRemoteInfo() {
+         return false;
+    }
 }

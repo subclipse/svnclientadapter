@@ -73,4 +73,7 @@ public class JavaSvnClientAdapter extends AbstractJhlClientAdapter {
         if (svnAdmin != null)
             svnAdmin.addPasswordCallback(callback);
     }
+    public boolean statusReturnsRemoteInfo() {
+        return true;
+    }
 }
