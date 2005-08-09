@@ -231,14 +231,16 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements No
                 }
                 break;
             case NotifyAction.status_external :
-              logMessage("Performing status on external item at "+path);
+              if (!skipCommand())
+                logMessage("Performing status on external item at "+path);
               notify = false;
               break;
             case NotifyAction.status_completed :
               notify = false;
               if (revision >= 0) {
                 logRevision(revision);
-                logMessage("Status against revision: "+ revision);
+                if (!skipCommand())
+                    logMessage("Status against revision: "+ revision);
               }
               break;                
             case NotifyAction.commit_modified :

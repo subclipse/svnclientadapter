@@ -190,7 +190,7 @@ public abstract class SVNNotificationHandler {
      * For certain commands we just want to skip the logging of the
      * command line
      */
-    private boolean skipCommand() {
+    protected boolean skipCommand() {
         if (command == ISVNNotifyListener.Command.CAT ||
                 command == ISVNNotifyListener.Command.INFO ||
                 command == ISVNNotifyListener.Command.LOG ||
