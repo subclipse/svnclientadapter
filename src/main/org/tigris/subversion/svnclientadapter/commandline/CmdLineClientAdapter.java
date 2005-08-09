@@ -57,6 +57,7 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 	//Fields
     private CmdLineNotificationHandler notificationHandler = new CmdLineNotificationHandler();
 	private SvnCommandLine _cmd = new SvnCommandLine("svn",notificationHandler);
+	private SvnMultiArgCommandLine _cmdMulti = new SvnMultiArgCommandLine("svn",notificationHandler);
 	private SvnAdminCommandLine svnAdminCmd = new SvnAdminCommandLine("svnadmin",notificationHandler);
     private String version = null;
 
@@ -525,6 +526,20 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 			throw SVNClientException.wrapException(e);
 		}
 	}
+
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#update(java.io.File[], org.tigris.subversion.svnclientadapter.SVNRevision, boolean, boolean)
+     */
+    public long[] update(File[] files, SVNRevision revision, boolean recurse, boolean ignoreExternals) throws SVNClientException
+    {
+		try {
+			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(files[0]));
+			_cmdMulti.update(toString(files), toString(revision));
+            return _cmdMulti.getRevisions();
+		} catch (CmdLineException e) {
+			throw SVNClientException.wrapException(e);
+		}    	
+    }
 
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.subclipse.client.ISVNClientAdapter#checkout(java.net.URL, java.io.File, org.tigris.subversion.subclipse.client.ISVNRevision, boolean)

@@ -34,9 +34,9 @@ import org.tigris.subversion.svnclientadapter.commandline.parser.SvnOutputParser
 public class SvnCommandLine extends CommandLine {
 	private String user;
 	private String pass;	
-    private SvnOutputParser svnOutputParser = new SvnOutputParser();
+    protected SvnOutputParser svnOutputParser = new SvnOutputParser();
     private long rev = SVNRevision.SVN_INVALID_REVNUM;
-    private boolean parseSvnOutput = false;
+    protected boolean parseSvnOutput = false;
     private String configDir = null;
     
     
@@ -766,6 +766,30 @@ public class SvnCommandLine extends CommandLine {
 	}
 
 	/**
+	 * <p>
+	 * Bring changes from the repository into the working copy.</p>
+	 * 
+	 * @param paths Local paths to possibly update.
+	 * @param revision Optional revision to update to.
+	 */
+	String update(String[] paths, String revision) throws CmdLineException {
+		StringBuffer pathsArg = new StringBuffer();
+		for (int i = 0; i < paths.length; i++) {
+			pathsArg.append(paths[i]);
+			pathsArg.append(" ");
+		}
+        setCommand(ISVNNotifyListener.Command.UPDATE, true);
+		ArrayList args = new ArrayList();
+		args.add("up");
+		args.add("-r");
+		args.add(validRev(revision));
+		args.add(pathsArg.toString());
+		addAuthInfo(args);
+        addConfigInfo(args);        
+		return execString(args,false);
+	}
+
+	/**
 	 * Output the content of specified files or URLs with revision and 
 	 * author information in-line.
 	 * @param path
@@ -939,6 +963,17 @@ public class SvnCommandLine extends CommandLine {
 			}
 		}
 		
+	}
+	
+	/**
+	 * We call the super implementation : handles logMessage and logCompleted.
+	 * This method main reason is to provide subclasses way to call super.super.notifyFromSvnOutput()
+	 * @param svnOutput
+	 */
+	protected void notifyMessagesFromSvnOutput(String svnOutput) {
+		this.rev = SVNRevision.SVN_INVALID_REVNUM;
+		// we call the super implementation : handles logMessage and logCompleted
+		super.notifyFromSvnOutput(svnOutput);
 	}
 	
 	/**

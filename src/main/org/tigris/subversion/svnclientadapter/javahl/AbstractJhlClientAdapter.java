@@ -807,6 +807,36 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 		}
 	}
 
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#update(java.io.File[], org.tigris.subversion.svnclientadapter.SVNRevision, boolean, boolean)
+     */
+    public long[] update(File[] path, SVNRevision revision, boolean recurse, boolean ignoreExternals) 
+        throws SVNClientException
+	{
+		try {
+			notificationHandler.setCommand(ISVNNotifyListener.Command.UPDATE);
+			String[] targets = new String[path.length];
+			StringBuffer targetsString = new StringBuffer();
+			for (int i = 0; i < targets.length; i++) {
+				targets[i] = fileToSVNPath(path[i], false);
+				targetsString.append(targets[i]);
+				targetsString.append(" ");
+			}
+			notificationHandler.logCommandLine(
+				"update -r "
+					+ revision.toString()
+					+ ' '
+					+ (recurse ? "" : "-N ")
+					+ (ignoreExternals ? "--ignore-externals " : "")
+					+ targetsString.toString());
+			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
+			return svnClient.update(targets, JhlConverter.convert(revision), recurse, ignoreExternals);
+		} catch (ClientException e) {
+			notificationHandler.logException(e);
+			throw new SVNClientException(e);
+		}    	
+	}
+	
     /**
      * Restore pristine working copy file (undo all local edits)
      * @param path
