@@ -326,6 +326,7 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements No
 		            logMessage("     Updated: " + propUpdates);
 	        }
         }
+        clearStats();
     }
     
     private boolean fileStats() {
