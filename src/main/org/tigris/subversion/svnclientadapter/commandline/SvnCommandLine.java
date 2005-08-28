@@ -804,7 +804,14 @@ public class SvnCommandLine extends CommandLine {
 		ArrayList args = new ArrayList();
 		args.add("annotate");
 		args.add("-r");
-		args.add(validRev(revisionEnd));
+		if ((revisionStart != null) && (revisionStart.length() > 0))
+		{
+			args.add(validRev(revisionStart) + ":" + validRev(revisionEnd));	
+		}
+		else
+		{
+			args.add(validRev(revisionEnd));			
+		}
 		args.add(path);
 		addAuthInfo(args);
         addConfigInfo(args);        
