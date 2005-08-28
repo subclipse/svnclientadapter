@@ -292,7 +292,7 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 			//read byte-by-byte and put it in a vector.
 			//then take the vector and fill a byteArray.
 			byte[] byteArray;
-			byteArray = streamToByteArray(content, false);
+			byteArray = streamToByteArray(content);
 			return new ByteArrayInputStream(byteArray);
 		} catch (IOException e) {
 			throw SVNClientException.wrapException(e);
@@ -314,7 +314,7 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 			//read byte-by-byte and put it in a vector.
 			//then take the vector and fill a byteArray.
 			byte[] byteArray;
-			byteArray = streamToByteArray(content, false);
+			byteArray = streamToByteArray(content);
 			return new ByteArrayInputStream(byteArray);
 		} catch (IOException e) {
 			throw SVNClientException.wrapException(e);
@@ -691,14 +691,12 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 		try {
 			InputStream valueAndData = _cmd.propget(toString(path), propertyName);
             
-			byte[] bytes = streamToByteArray(valueAndData, true);
+			byte[] bytes = streamToByteArray(valueAndData);
             if (bytes.length == 0) {
                 return null; // the property does not exist
             }
             
-			String value = new String(bytes).trim();
-
-			return new CmdLineProperty(propertyName, value, path, bytes);
+			return new CmdLineProperty(propertyName, new String(bytes), path, bytes);
 		} catch (CmdLineException e) {
 			throw SVNClientException.wrapException(e);
 		} catch (IOException e) {
@@ -929,7 +927,7 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 		}
 	}
 
-	private static byte[] streamToByteArray(InputStream stream, boolean removeTrailing)
+	private static byte[] streamToByteArray(InputStream stream)
 		throws IOException {
 		//read byte-by-byte and put it in a vector.
 		//then take the vector and fill a byteArray.
@@ -938,10 +936,6 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 		while ((tempByte = stream.read()) != -1) {
 			buffer.add(new Byte((byte) tempByte));
 		}
-
-		// This assumes that \n is only one byte (it is 2 on windows)
-		if (removeTrailing && !buffer.isEmpty())
-			buffer.remove(buffer.size() - 1);
 
 		byte[] byteArray = new byte[buffer.size()];
 		for (int i = 0; i < byteArray.length; i++) {

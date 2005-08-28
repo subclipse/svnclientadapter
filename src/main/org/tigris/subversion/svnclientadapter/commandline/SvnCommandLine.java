@@ -569,6 +569,7 @@ public class SvnCommandLine extends CommandLine {
         setCommand(ISVNNotifyListener.Command.PROPGET, false);
 		ArrayList args = new ArrayList();
 		args.add("propget");
+		args.add("--strict");
 		args.add(propName);
 		args.add(path);
         addAuthInfo(args);
