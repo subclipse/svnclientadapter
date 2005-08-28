@@ -15,15 +15,23 @@
  */
 package org.tigris.subversion.svnclientadapter.commandline;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.io.ByteArrayInputStream;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
-import java.util.Locale;
+
+import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.tigris.subversion.svnclientadapter.ISVNDirEntry;
+import org.tigris.subversion.svnclientadapter.SVNClientException;
 import org.tigris.subversion.svnclientadapter.SVNNodeKind;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
+import org.tigris.subversion.svnclientadapter.SVNRevision.Number;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 
 /**
  * <p>
@@ -32,11 +40,7 @@ import org.tigris.subversion.svnclientadapter.SVNRevision;
  * 
  * @author Philip Schatz (schatz at tigris)
  */
-class CmdLineRemoteDirEntry implements ISVNDirEntry {
-
-	//Fields
-	private static DateFormat df1 = new SimpleDateFormat("MMM dd hh:mm", Locale.US);
-    private static DateFormat df2 = new SimpleDateFormat("MMM dd  yyyy", Locale.US);
+class CmdLineRemoteDirEntry extends CmdLineXmlCommand implements ISVNDirEntry {
 
 	private String path;
 	private SVNRevision.Number revision;
@@ -45,50 +49,117 @@ class CmdLineRemoteDirEntry implements ISVNDirEntry {
 	private Date lastChangedDate;
 	private long size;
 
-	//Constructors
-	CmdLineRemoteDirEntry(String baseUrl, String line) {
-
-        // see ls-cmd.c for the format used
-        
-		int last = line.length() - 1;
-		boolean folder = ('/' == line.charAt(last));
-
-		path = (folder) ? line.substring(41, last) : line.substring(41);
-
-        // "%7ld %-8.8s %10s %12s %s%s
-		revision = new SVNRevision.Number(Long.parseLong(line.substring(0, 7).trim()));
-		nodeKind = (folder) ? SVNNodeKind.DIR : SVNNodeKind.FILE;
-		lastCommitAuthor = line.substring(8, 16).trim();
-
-        String sizeStr = line.substring(17, 27).trim();
-        if (sizeStr.equals("")) {
-            // since svn revision 7530, the file size column is left blank for directories
-            size = 0;
-        }
-        else {
-		    size = Long.parseLong(sizeStr);
-        }
-        
-        String dateString = line.substring(28, 39);
-        
-        try {
-            // two formats are possible (see ls-cmd.c) depending on the numbers of days between current date
-            // and lastChangedDate
-            if (dateString.indexOf(':') != -1) {
-                // %b %d %H:%M
-                lastChangedDate = df1.parse(dateString); // something like "Sep 24 18:01"
-            }
-            else
-            {
-                // %b %d  %Y
-                lastChangedDate = df2.parse(dateString); // something like "Mar 01  2003"
-            }
-		} catch (ParseException e1) {
-			e1.printStackTrace();
-		}
+    /**
+	 * @param path
+	 * @param revision
+	 * @param size
+	 * @param author
+	 * @param date
+	 * @param kind
+	 */
+	protected CmdLineRemoteDirEntry(String path, Number revision, long size, String author, Date date, SVNNodeKind kind ) {
+		super();
+		lastCommitAuthor = author;
+		lastChangedDate = date;
+		nodeKind = kind;
+		this.path = path;
+		this.revision = revision;
+		this.size = size;
 	}
 
-	//Methods
+
+	/**
+     * creates CmdLineRemoteDirEntries from a xml string (see svn list --xml) 
+     * @param cmdLineResults
+     * @return
+     */
+	public static CmdLineRemoteDirEntry[] createDirEntries(byte[] cmdLineResults) throws SVNClientException {
+		Collection logMessages = new ArrayList();
+		
+		try {
+			// Create a builder factory
+			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+			factory.setValidating(false);
+    
+			// Create the builder and parse the file
+			InputSource source = new InputSource(new ByteArrayInputStream(cmdLineResults));
+
+			Document doc = factory.newDocumentBuilder().parse(source);
+			
+			// This is the XML we need to parse
+			//<?xml version="1.0" encoding="utf-8"?>
+			//<lists>
+			//<list path=".">
+			//<entry kind="file">
+			//	<name>svnClientAdapter.jar</name>
+			//	<size>8199</size>
+			//	<commit revision="409">
+			//		<author>cchab</author>
+			//		<date>2004-01-31T16:44:06.761532Z</date>
+			//	</commit>
+			//</entry>
+			//</list>
+			//</lists>
+			
+			NodeList nodes = doc.getElementsByTagName("entry");
+			
+			for(int i = 0; i < nodes.getLength(); i++) {
+				Node logEntry = nodes.item(i);
+
+				String kindName = logEntry.getAttributes().getNamedItem("kind").getNodeValue();
+
+				Element nameNode = getFirstNamedElement(logEntry, "name");
+				if (nameNode == null) throw new Exception("'name' tag expected under 'entry'");
+				String name = nameNode.getFirstChild().getNodeValue();
+
+				long size = 0;
+				Element sizeNode = null;
+				if ("file".equals(kindName))
+				{
+					sizeNode = getNextNamedElement(nameNode, "size");
+					if (sizeNode == null) throw new Exception("'size' tag expected under 'entry'");
+					size = Long.parseLong(sizeNode.getFirstChild().getNodeValue());
+				}
+				else
+				{
+					sizeNode = nameNode; 
+				}
+
+				Element commitNode = getNextNamedElement(sizeNode, "commit");
+				if (commitNode == null) throw new Exception("'commit' tag expected under 'entry'");
+				Node revisionAttribute = commitNode.getAttributes().getNamedItem("revision");
+                SVNRevision.Number rev = Helper.toRevNum(revisionAttribute.getNodeValue());
+
+				Element authorNode = getFirstNamedElement(commitNode, "author");
+				if (authorNode == null) throw new Exception("'author' tag expected under 'commit'");
+				String author = authorNode.getFirstChild().getNodeValue();
+				
+				Element dateNode = getNextNamedElement(authorNode, "date");
+				if (dateNode == null) throw new Exception("'date' tag expected under 'commit'");
+				Date date = Helper.convertXMLDate(dateNode.getFirstChild().getNodeValue());
+
+				SVNNodeKind kind = SVNNodeKind.UNKNOWN;
+				if ("file".equals(kindName))
+				{
+					kind = SVNNodeKind.FILE;					
+				}
+				else if ("dir".equals(kindName))
+				{
+					kind = SVNNodeKind.DIR;
+				}
+
+				CmdLineRemoteDirEntry entry = new CmdLineRemoteDirEntry(name, rev, size, author, date, kind);
+
+				logMessages.add(entry);			
+			}
+		} catch (Exception e) {
+			throw new SVNClientException(e);
+		} 
+		
+		return (CmdLineRemoteDirEntry[]) logMessages.toArray(new CmdLineRemoteDirEntry[logMessages.size()]);		
+	
+	}
+
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.subclipse.client.ISVNDirEntry#getHasProps()
 	 */

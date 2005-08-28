@@ -181,19 +181,11 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 
     private ISVNDirEntry[] getList(String target, SVNRevision rev, boolean recursive)
 		throws SVNClientException {
-		List entries = new java.util.LinkedList();
 	
-		String listLine;
+		byte[] listXml;
 		try {
-			listLine = _cmd.list(target, toString(rev), recursive);
-	
-			StringTokenizer st = new StringTokenizer(listLine, Helper.NEWLINE);
-			while (st.hasMoreTokens()) {
-				String dirLine = st.nextToken();
-				CmdLineRemoteDirEntry entry = new CmdLineRemoteDirEntry(target, dirLine);
-				entries.add(entry);
-			}
-			return (ISVNDirEntry[]) entries.toArray(new ISVNDirEntry[entries.size()]);
+			listXml = _cmd.list(target, toString(rev), recursive);	
+			return CmdLineRemoteDirEntry.createDirEntries(listXml);
 		} catch (CmdLineException e) {
 			throw SVNClientException.wrapException(e);
 		}

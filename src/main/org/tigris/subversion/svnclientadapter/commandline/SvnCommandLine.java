@@ -429,20 +429,20 @@ public class SvnCommandLine extends CommandLine {
 	 *   Defaults to <tt>HEAD</tt>.
 	 * @param recursive Should this operation recurse into sub-directories
 	 */
-	String list(String url, String revision, boolean recursive) throws CmdLineException {
+	byte[] list(String url, String revision, boolean recursive) throws CmdLineException {
         setCommand(ISVNNotifyListener.Command.LS, false);
 		ArrayList args = new ArrayList();
 		args.add("list");
 		if (recursive) {
 			args.add("-R");
 		}
-		args.add("-v");
+		args.add("--xml");
 		args.add("-r");
 		args.add(revision);
 		args.add(url);
 		addAuthInfo(args);
         addConfigInfo(args);		
-		return execString(args,false);
+		return execBytes(args,false);
 	}
 
 	/**

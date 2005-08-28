@@ -41,7 +41,7 @@ import org.xml.sax.InputSource;
  * 
  * @author Philip Schatz (schatz at tigris)
  */
-class CmdLineLogMessage implements ISVNLogMessage {
+class CmdLineLogMessage extends CmdLineXmlCommand implements ISVNLogMessage {
 
 	private SVNRevision.Number rev;
 	private String author;
@@ -249,32 +249,6 @@ class CmdLineLogMessage implements ISVNLogMessage {
 		
 		return (CmdLineLogMessage[]) logMessages.toArray(new CmdLineLogMessage[logMessages.size()]);		
 	
-	}
-
-	/**
-	 * Not exactly XPath, but finds a named node
-	 * @param logEntry
-	 * @param elementName
-	 * @return
-	 */
-	private static Element getFirstNamedElement(Node parent, String elementName) {
-		if (parent == null) return null;
-		return findNamedElementSibling(parent.getFirstChild(), elementName);
-	}
-
-	private static Element getNextNamedElement(Node foundNode, String elementName) {
-		if (foundNode == null) return null;
-		return findNamedElementSibling(foundNode.getNextSibling(), elementName);
-	}
-
-	private static Element findNamedElementSibling(Node sibling, String elementName) {
-		if (sibling == null) return null;
-		while (sibling != null) {
-			if (sibling.getNodeType() == Node.ELEMENT_NODE && sibling.getNodeName().equals(elementName))
-				return (Element)sibling;
-			sibling = sibling.getNextSibling();
-		}
-		return null;
 	}
 
 	/* (non-Javadoc)
