@@ -18,6 +18,7 @@
 package org.tigris.subversion.svnclientadapter.basictests;
 
 import java.io.File;
+import java.io.FileOutputStream;
 
 import org.tigris.subversion.svnclientadapter.ISVNInfo;
 import org.tigris.subversion.svnclientadapter.SVNNodeKind;
@@ -44,6 +45,20 @@ public class InfoTest extends SVNTest {
 	            info.getSchedule());
 	    assertEquals("wrong node kind from info", SVNNodeKind.FILE,
 	            info.getNodeKind());
+	    
+	    //Test added file.
+	    File fileAdded = new File(thisTest.getWCPath()+"/A/added.txt");
+	    new FileOutputStream(fileAdded).close();
+	    client.addFile(fileAdded);
+
+	    // get the item information and test it
+	    info = client.getInfo(new File(thisTest.getWCPath()+"/A/added.txt"));
+
+	    File fileUnversioned = new File(thisTest.getWCPath()+"/A/unversioned.txt");
+	    new FileOutputStream(fileUnversioned).close();
+
+	    // get the item information and test it
+	    info = client.getInfo(new File(thisTest.getWCPath()+"/A/unversioned.txt"));
 	}
 
 }

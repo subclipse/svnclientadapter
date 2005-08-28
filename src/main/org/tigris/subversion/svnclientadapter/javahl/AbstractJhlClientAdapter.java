@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.tigris.subversion.javahl.ClientException;
+import org.tigris.subversion.javahl.Info;
 import org.tigris.subversion.javahl.Info2;
 import org.tigris.subversion.javahl.PromptUserPassword;
 import org.tigris.subversion.javahl.PropertyData;
@@ -1392,11 +1393,18 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 			notificationHandler.logCommandLine("info "+target);
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
 			
-            Info2[] info = svnClient.info2(target, Revision.HEAD, Revision.HEAD, false);
-            if (info == null || info.length == 0) {
+			Info info = svnClient.info(target);
+			if (info.getUuid() == null)
+			{
+				//Item is not in repository (yet or anymore ?)
+				
+			}
+			
+            Info2[] info2 = svnClient.info2(target, Revision.HEAD, Revision.HEAD, false);
+            if (info2 == null || info2.length == 0) {
             	return new SVNInfoUnversioned(path);
             } else {
-                return new JhlInfo(path,info[0]);    
+                return new JhlInfo2(path,info2[0]);
             }
             
 		} catch (ClientException e) {
@@ -1420,7 +1428,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
             if (info == null || info.length == 0) {
             	return new SVNInfoUnversioned(null);
             } else {
-                return new JhlInfo(null, info[0]);    
+                return new JhlInfo2(null, info[0]);    
             }
             
 		} catch (ClientException e) {
