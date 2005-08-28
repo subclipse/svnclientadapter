@@ -23,6 +23,7 @@ public class StringUtils {
 
 	/**
 	 * we can't use String.split as it is a JDK 1.4 method.
+	 * //TODO Java 1.4 is not aproblem anymore. Isn't it ? 
 	 * @param str
 	 * @param separator
 	 * @return

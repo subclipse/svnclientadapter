@@ -1085,7 +1085,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 		String propertyName,
 		File propertyFile,
 		boolean recurse)
-		throws SVNClientException, IOException {
+		throws SVNClientException {
 		try {
 			notificationHandler.setCommand(ISVNNotifyListener.Command.PROPSET);
 
@@ -1099,11 +1099,25 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 					+ "\" "
 					+ target);
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
-			byte[] propertyBytes;
+			byte[] propertyBytes = new byte[(int) propertyFile.length()];
 
-			FileInputStream is = new FileInputStream(propertyFile);
-			propertyBytes = new byte[(int) propertyFile.length()];
-			is.read(propertyBytes);
+			FileInputStream is = null;
+			try {
+				is = new FileInputStream(propertyFile);
+				is.read(propertyBytes);
+			}
+			catch (IOException ioe) {
+				throw new SVNClientException(ioe);
+			}
+			finally {
+				if (is != null) {
+					try {
+						is.close();
+					} catch (IOException e) {
+						// ignore
+					}
+				}
+			}
 
 			svnClient.propertySet(target, propertyName, propertyBytes, recurse);
 

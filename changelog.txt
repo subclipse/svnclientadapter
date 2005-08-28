@@ -1,3 +1,11 @@
+* 0.9.34
+- removed dependency on commons-lang
+- updated to JavaSVN 0.9.2
+- updated to jakarta-regexp-1.4
+- win32 javahl dlls updated to 1.2.3
+- several untracked additions and changes to API done meanwhile
+
+
 * 0.9.23
 - dlls updated using svn-win32-1.1.0.zip, libsvnjavahl-1.dll and svn-javahl.jar updated using svn-win32-1.1.0_javahl.zip
 - new junit tests adapted from http://svn.collab.net/viewcvs/svn/trunk/subversion/bindings/java/javahl/src/org/tigris/subversion/javahl/tests/

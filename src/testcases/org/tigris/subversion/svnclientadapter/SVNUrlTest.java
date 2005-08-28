@@ -1,3 +1,18 @@
+/*
+ *  Copyright(c) 2003-2004 by the authors indicated in the @author tags.
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
 package org.tigris.subversion.svnclientadapter;
 
 import java.net.MalformedURLException;
@@ -17,7 +32,7 @@ public class SVNUrlTest extends TestCase
    {
         try
         {
-            SVNUrl svnurl= new SVNUrl(null);
+            new SVNUrl(null);
             fail("should have thrown malformed url exeption.");
         }
         catch (MalformedURLException e)
@@ -41,7 +56,9 @@ public class SVNUrlTest extends TestCase
     
     public void testCaseInsensitiveHttpProtocols() throws Exception {
        SVNUrl https = new SVNUrl("HTTPS://svn.collab.net/repos/subclipse/");
+       assertEquals("https://svn.collab.net/repos/subclipse",https.toString());
        SVNUrl http = new SVNUrl("HTTP://svn.collab.net/repos/subclipse/");
+       assertEquals("http://svn.collab.net/repos/subclipse",http.toString());
     }
     
     public void testGetParent() throws Exception {

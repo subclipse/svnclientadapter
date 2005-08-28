@@ -1,19 +1,15 @@
 <!-- This file is an ANT build script. ANT is a Java based build tool. -->
-<!-- It is available from http://jakarta.apache.org/ant/               -->
+<!-- It is available from http://ant.apache.org/               -->
 
 <project name="svnClientAdapter" default="all" basedir=".">
 
-<!-- 
-       $Id$
-  -->
-
   <!-- all properties are in build.properties -->
   <property file="build.properties"/>
-
+  <property name="debug" value="off"/>
+	
   <path id="project.classpath">
-    <pathelement location="${svnjavahl.jar}"/>
 	<pathelement location="${jakarta-regexp.jar}"/>
-	<pathelement location="${commons-lang.jar}"/>
+    <pathelement location="${svnjavahl.jar}"/>
   	<pathelement location="${javasvn.jar}"/>
   	<pathelement location="${jsch.jar}"/>
   </path>
@@ -24,6 +20,7 @@
   <target name="clean">
     <delete dir="${build.lib.dir}"/>
     <delete dir="${build.classes.dir}"/>
+    <delete dir="${build.javadoc.dir}"/>
   </target>
 
   <!-- ================================================================= -->
@@ -31,14 +28,14 @@
   <!-- ================================================================= -->
   <target name="compile" description="compile all sources files">
     <mkdir dir="${build.classes.dir}" />
-    <depend srcdir="${src.main.dir}"
-            destdir="${build.classes.dir}"
+    <depend srcDir="${src.main.dir}"
+            destDir="${build.classes.dir}"
             cache="${build.cache.dir}"/>
     <javac srcdir="${src.main.dir}"
            destdir="${build.classes.dir}"
            debug="${debug}"
            includes="**"
-	   classpathref="project.classpath">
+		   classpathref="project.classpath">
     </javac>
   </target>
 
@@ -75,24 +72,29 @@
     <delete dir="${build.distrib.dir}"/>
 	<mkdir dir="${build.distrib.dir}"/>
 	<mkdir dir="${build.distrib.dir}/lib"/>
+    <copy file="${build.lib.dir}/svnClientAdapter.jar" todir="${build.distrib.dir}/lib"/>
 	<copy file="readme.txt" todir="${build.distrib.dir}"/>
+	<copy file="license.txt" todir="${build.distrib.dir}"/>
 	<copy file="changelog.txt" todir="${build.distrib.dir}"/>
-	<copy file="libsvnjavahl-1.dll" todir="${build.distrib.dir}"/>
-  	<copy file="iconv.dll" todir="${build.distrib.dir}"/>
-  	<copy file="intl.dll" todir="${build.distrib.dir}"/>
+  	<!-- required libs -->
+	<copy file="${jakarta-regexp.jar}" todir="${build.distrib.dir}/lib"/>
+	<copy file="${svnjavahl.jar}" todir="${build.distrib.dir}/lib"/>
+	<copy file="${javasvn.jar}" todir="${build.distrib.dir}/lib"/>
+	<copy file="${jsch.jar}" todir="${build.distrib.dir}/lib"/>
+  	<!-- JavaHL win32 dlls -->
+ 	<copy file="intl3_svn.dll" todir="${build.distrib.dir}"/>
   	<copy file="libapr.dll" todir="${build.distrib.dir}"/>
   	<copy file="libapriconv.dll" todir="${build.distrib.dir}"/>
   	<copy file="libaprutil.dll" todir="${build.distrib.dir}"/>
-	<copy file="libdb42.dll" todir="${build.distrib.dir}"/>
+	<copy file="libdb43.dll" todir="${build.distrib.dir}"/>
   	<copy file="libeay32.dll" todir="${build.distrib.dir}"/>
+	<copy file="libsvnjavahl-1.dll" todir="${build.distrib.dir}"/>
 	<copy file="ssleay32.dll" todir="${build.distrib.dir}"/>
-	<copy file="${svnjavahl.jar}" todir="${build.distrib.dir}/lib"/>
-	<copy file="${jakarta-regexp.jar}" todir="${build.distrib.dir}/lib"/>
-	<copy file="${commons-lang.jar}" todir="${build.distrib.dir}/lib"/>
-    <copy file="${build.lib.dir}/svnClientAdapter.jar" todir="${build.distrib.dir}/lib"/>
+  	<!-- Javadoc files -->
     <copy todir="${build.distrib.dir}/javadoc">
       <fileset dir="${build.javadoc.dir}"/>
     </copy>
+  	<!-- Samples -->
     <copy todir="${build.distrib.dir}/samples">
       <fileset dir="${src.samples.dir}"/>
     </copy>	

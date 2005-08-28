@@ -18,7 +18,6 @@ package org.tigris.subversion.svnclientadapter.javahl;
 import java.io.File;
 import java.text.MessageFormat;
 
-import org.apache.commons.lang.SystemUtils;
 import org.tigris.subversion.javahl.ClientException;
 import org.tigris.subversion.javahl.SVNAdmin;
 import org.tigris.subversion.javahl.SVNClientSynchronized;
@@ -61,7 +60,7 @@ public class JhlClientAdapter extends AbstractJhlClientAdapter {
     		    // javaHL was built diffently.  Ultimately, if javaHL fails to load
     		    // because of a problem in one of these libraries the proper behavior
     		    // will still occur -- meaning JavaHL adapter is disabled.
-				if(SystemUtils.IS_OS_WINDOWS) {
+				if(isOsWindows()) {
 					try {
 						System.loadLibrary("libapr");
 			        } catch (Exception e) {
@@ -207,4 +206,19 @@ public class JhlClientAdapter extends AbstractJhlClientAdapter {
 	    
 	}
 
+	/**
+	 * Answer whether running on Windows OS.
+	 * (Actual code extracted from org.apache.commons.lang.SystemUtils.IS_OS_WINDOWS)
+	 * (For such one simple method it does make sense to introduce dependency on whole commons-lang.jar)
+	 * @return
+	 */
+	public static boolean isOsWindows()
+	{
+        try {
+            return System.getProperty("os.name").startsWith("Windows");
+        } catch (SecurityException ex) {
+            // we are not allowed to look at this property
+            return false;
+        }
+	}
 }

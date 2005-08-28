@@ -292,11 +292,16 @@ public class DeleteTest extends SVNTest {
         // create the working copy
         OneTest thisTest = new OneTest("basicRemoveUrls",getGreekTestConfig());
 
+        ISVNDirEntry[] entries = null;
+        entries = client.getList(new SVNUrl(thisTest.getUrl()+"/A"), SVNRevision.HEAD, false);
+        assertEquals(4, entries.length);
+        
         // remove A/mi
         client.remove(new SVNUrl[] { new SVNUrl(thisTest.getUrl()+"/A/mu") },"A/mu removed");
         
         // list directory A
-        ISVNDirEntry[] entries = client.getList(new SVNUrl(thisTest.getUrl()+"/A"), SVNRevision.HEAD, false);
+        entries = client.getList(new SVNUrl(thisTest.getUrl()+"/A"), SVNRevision.HEAD, false);
+        assertEquals(3, entries.length);
     }       
     
 

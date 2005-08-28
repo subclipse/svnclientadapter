@@ -48,17 +48,23 @@ public class PropertiesTest extends SVNTest {
     public void testBasicKeywords() throws Throwable {
         OneTest thisTest = new OneTest("basicGetProperties",
                 getGreekTestConfig());
-        File file = new File(thisTest.getWorkingCopy() + "/A");
+
+        File dir = new File(thisTest.getWorkingCopy() + "/A");
         SVNKeywords keywords = new SVNKeywords();
         keywords.setLastChangedDate(true);
         keywords.setLastChangedRevision(true);
-        client.setKeywords(file, keywords,true);
+        client.setKeywords(dir, keywords,true);
         
-        keywords = client.getKeywords(file);
-        assertTrue(keywords.isLastChangedDate());
-        assertTrue(keywords.isLastChangedRevision());
+        keywords = client.getKeywords(dir);
+        assertFalse(keywords.isLastChangedDate());
+        assertFalse(keywords.isLastChangedRevision());
         
         File fileMu = new File(thisTest.getWorkingCopy() + "/A/mu");
+        keywords = new SVNKeywords();
+        keywords.setLastChangedDate(true);
+        keywords.setLastChangedRevision(true);
+        client.setKeywords(dir, keywords,true);
+        
         keywords = client.getKeywords(fileMu);
         assertTrue(keywords.isLastChangedDate());
         assertTrue(keywords.isLastChangedRevision());
