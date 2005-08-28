@@ -1394,10 +1394,12 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
 			
 			Info info = svnClient.info(target);
-			if (info.getUuid() == null)
+            if (info == null) {
+            	return new SVNInfoUnversioned(path);
+            } else if (info.getUuid() == null)
 			{
 				//Item is not in repository (yet or anymore ?)
-				
+                return new JhlInfo(path, info);
 			}
 			
             Info2[] info2 = svnClient.info2(target, Revision.HEAD, Revision.HEAD, false);
