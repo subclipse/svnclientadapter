@@ -35,7 +35,7 @@ import org.tigris.subversion.svnclientadapter.utils.SvnServer;
  * common base class for the SvnclientAdapter tests
  */
 public abstract class SVNTest extends TestCase {
-    private static Logger log = Logger.getLogger(SVNTest.class.getName());
+    private static final Logger log = Logger.getLogger(SVNTest.class.getName());
 
     protected ISVNClientAdapter client;
 

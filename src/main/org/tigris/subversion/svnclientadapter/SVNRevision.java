@@ -30,7 +30,7 @@ import java.util.Locale;
 public class SVNRevision 
 {
 	// See chapter 3 section 3.3 of the SVN book for valid date strings 
-	private static DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd'T'HHmmssZ");
+	protected static final DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd'T'HHmmssZ");
     protected int revKind;
 
     public SVNRevision(int kind)
@@ -63,6 +63,14 @@ public class SVNRevision
             return false;
 
         return ((SVNRevision)target).revKind == revKind;        
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    public int hashCode()
+    {
+    	return revKind;
     }
 
     public static final SVNRevision HEAD = new SVNRevision(Kind.head);
@@ -100,6 +108,11 @@ public class SVNRevision
 
             return ((SVNRevision.Number)target).revNumber == revNumber;        
         }
+        
+        public int hashCode()
+        {
+        	return (int) revNumber;
+        }
     }
 
     public static class DateSpec extends SVNRevision
@@ -110,20 +123,35 @@ public class SVNRevision
             super(Kind.date);
             revDate = date;
         }
+        
         public Date getDate()
         {
             return revDate;
         }
 
+        /* (non-Javadoc)
+         * @see java.lang.Object#toString()
+         */
         public String toString() {
-            return '{' +dateFormat.format(revDate)+ '}';
+            return '{' + dateFormat.format(revDate)+ '}';
         }
 
+        /* (non-Javadoc)
+         * @see java.lang.Object#equals(java.lang.Object)
+         */
         public boolean equals(Object target) {
             if (!super.equals(target))
                 return false;
 
             return ((SVNRevision.DateSpec)target).revDate.equals(revDate);        
+        }
+        
+        /* (non-Javadoc)
+         * @see java.lang.Object#hashCode()
+         */
+        public int hashCode()
+        {
+        	return revDate.hashCode();
         }
         
     }

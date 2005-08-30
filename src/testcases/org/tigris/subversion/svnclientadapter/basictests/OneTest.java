@@ -30,7 +30,7 @@ import org.tigris.subversion.svnclientadapter.SVNUrl;
  * test.
  */
 public class OneTest {
-    private static Logger log = Logger.getLogger(OneTest.class.getName());	
+    private static final Logger log = Logger.getLogger(OneTest.class.getName());	
     protected String testName;
 
     protected TestsConfig testsConfig = TestsConfig.getTestsConfig();
@@ -180,15 +180,15 @@ public class OneTest {
 	/**
 	 * Create the repository for the beginning of the test
 	 * 
-	 * @param testName
+	 * @param aTestName
 	 *            the name of the test
 	 * @return the repository directory
 	 * @throws Exception
 	 */
-	protected File createStartRepository(String testName) throws Exception {
+	protected File createStartRepository(String aTestName) throws Exception {
         // build a clean repository directory
-		File repos = new File(testsConfig.repositories, testName);
-        log.fine("Creating repository for test "+testName+" at "+repos.toString());        
+		File repos = new File(testsConfig.repositories, aTestName);
+        log.fine("Creating repository for test "+aTestName+" at "+repos.toString());        
 		FileUtils.removeDirectoryWithContent(repos);
 		FileUtils.copyFiles(config.reposDirectory, repos);
 
@@ -200,21 +200,21 @@ public class OneTest {
 	 * 
 	 * @param repos
 	 *            the repository directory
-	 * @param testName
+	 * @param aTestName
 	 *            the name of the test
 	 * @return the directory of the working copy
 	 * @throws Exception
 	 */
-	protected File createStartWorkingCopy(File repos, String testName)
+	protected File createStartWorkingCopy(File repos, String aTestName)
 			throws Exception {
 		// build a clean working directory
-		SVNUrl url = testsConfig.makeReposUrl(repos);
-		workingCopy = new File(testsConfig.workingCopies, testName);
+		SVNUrl anUrl = testsConfig.makeReposUrl(repos);
+		workingCopy = new File(testsConfig.workingCopies, aTestName);
         log.fine("Creating working copy at "+workingCopy.toString());
         
 		FileUtils.removeDirectoryWithContent(workingCopy);
 		// checkout the repository
-		config.client.checkout(url, workingCopy, SVNRevision.HEAD, true);
+		config.client.checkout(anUrl, workingCopy, SVNRevision.HEAD, true);
 		// sanity check the working with its expected status
 		checkStatusesExpectedWC();
         checkEntriesExpectedRepository();

@@ -17,7 +17,7 @@ package org.tigris.subversion.svnclientadapter.commandline.parser;
 
 import org.apache.regexp.RE;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
-import org.tigris.subversion.svnclientadapter.commandline.CmdLineNotify;
+import org.tigris.subversion.svnclientadapter.commandline.CmdLineNotifyStatus;
 
 /**
  * regular expression to parse an svn notification line 
@@ -32,8 +32,8 @@ class SvnActionRE {
 	
 	private RE re;
 	private int action;
-	private int contentStatus = CmdLineNotify.Status.unknown;
-	private int propStatus = CmdLineNotify.Status.unknown;
+	private int contentStatus = CmdLineNotifyStatus.unknown;
+	private int propStatus = CmdLineNotifyStatus.unknown;
 	private String[] notificationProperties;
 	
 	/**
@@ -117,18 +117,18 @@ class SvnActionRE {
 
 	private int getStatus(char statusChar) {
 		if (statusChar == ' ')
-			return CmdLineNotify.Status.unchanged;
+			return CmdLineNotifyStatus.unchanged;
 		else
 	    if (statusChar == 'C')
-	    	return CmdLineNotify.Status.conflicted;
+	    	return CmdLineNotifyStatus.conflicted;
 	    else
 		if (statusChar == 'G')
-		   	return CmdLineNotify.Status.merged;		    
+		   	return CmdLineNotifyStatus.merged;		    
 	    else
 	    if (statusChar == 'U')
-		   	return CmdLineNotify.Status.changed;
+		   	return CmdLineNotifyStatus.changed;
 	    else
-	    	return CmdLineNotify.Status.unknown;
+	    	return CmdLineNotifyStatus.unknown;
 	}
 
 	/**
@@ -136,12 +136,12 @@ class SvnActionRE {
 	 * @see Notify#Status
 	 */
 	public int getContentState() {
-		if (contentStatus != CmdLineNotify.Status.unknown) {
+		if (contentStatus != CmdLineNotifyStatus.unknown) {
 			return contentStatus;
 		}
 		int index = getIndex(CONTENTSTATE);
 		if (index == -1) {
-			return CmdLineNotify.Status.unknown;
+			return CmdLineNotifyStatus.unknown;
 		} else {
 			String stateChar = re.getParen(index+1);
 			return getStatus(stateChar.charAt(0));
@@ -153,12 +153,12 @@ class SvnActionRE {
 	 * @see Notify#Status
 	 */
 	public int getPropStatus() {
-		if (propStatus != CmdLineNotify.Status.unknown) {
+		if (propStatus != CmdLineNotifyStatus.unknown) {
 			return propStatus;
 		}
 		int index = getIndex(PROPSTATE);
 		if (index == -1) {
-			return CmdLineNotify.Status.unknown;
+			return CmdLineNotifyStatus.unknown;
 		} else {
 			String stateChar = re.getParen(index+1);
 			return getStatus(stateChar.charAt(0));

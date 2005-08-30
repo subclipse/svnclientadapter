@@ -27,6 +27,7 @@ import org.tigris.subversion.javahl.Info2;
 import org.tigris.subversion.javahl.PromptUserPassword;
 import org.tigris.subversion.javahl.PropertyData;
 import org.tigris.subversion.javahl.Revision;
+import org.tigris.subversion.javahl.RevisionKind;
 import org.tigris.subversion.javahl.SVNClient;
 import org.tigris.subversion.javahl.SVNClientInterface;
 import org.tigris.subversion.javahl.Status;
@@ -76,7 +77,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
     /**
      * the default prompter : never prompts the user
      */
-    protected class DefaultPromptUserPassword implements PromptUserPassword {
+    protected static class DefaultPromptUserPassword implements PromptUserPassword {
 
         public String askQuestion(String realm, String question, boolean showAnswer) {
             return "";
@@ -256,8 +257,8 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
                 commandLine+=" --no-unlock";
 
             for (int i = 0; i < paths.length; i++) {
-                files[i] = fileToSVNPath((File) paths[i], false);
-                commandLine+=" "+files[i].toString();
+                files[i] = fileToSVNPath(paths[i], false);
+                commandLine+=" "+ files[i];
             }
             notificationHandler.logCommandLine(commandLine);
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(paths));
@@ -1227,11 +1228,11 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
             String svnOutFile = fileToSVNPath(outFile, false);
             
             String commandLine = "diff ";
-            if ( (oldPathRevision.getKind() != Revision.Kind.base) ||
-                 (newPathRevision.getKind() != Revision.Kind.working) )
+            if ( (oldPathRevision.getKind() != RevisionKind.base) ||
+                 (newPathRevision.getKind() != RevisionKind.working) )
             {
                 commandLine += "-r "+oldPathRevision.toString();
-                if (newPathRevision.getKind() != Revision.Kind.working)
+                if (newPathRevision.getKind() != RevisionKind.working)
                     commandLine+= ":"+newPathRevision.toString();
                 commandLine += " ";         
             }
@@ -1275,11 +1276,11 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
             String svnOutFile = fileToSVNPath(outFile, false);
             
             String commandLine = "diff ";
-            if ( (oldUrlRevision.getKind() != Revision.Kind.head) ||
-                 (newUrlRevision.getKind() != Revision.Kind.head) )
+            if ( (oldUrlRevision.getKind() != RevisionKind.head) ||
+                 (newUrlRevision.getKind() != RevisionKind.head) )
             {
                 commandLine += "-r "+oldUrlRevision.toString();
-                if (newUrlRevision.getKind() != Revision.Kind.head)
+                if (newUrlRevision.getKind() != RevisionKind.head)
                     commandLine+= ":"+newUrlRevision.toString();
                 commandLine += " ";         
             }
@@ -1312,7 +1313,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
                 revisionEnd = SVNRevision.HEAD;
             String commandLine = "blame ";
             commandLine = commandLine + "-r " + revisionEnd.toString() + " ";
-            commandLine = commandLine + target.toString() + "@HEAD";
+            commandLine = commandLine + target + "@HEAD";
             notificationHandler.logCommandLine(commandLine);
 			notificationHandler.setBaseDir();
 			
@@ -1598,8 +1599,8 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
                 commandLine+=" --force";
 
             for (int i = 0; i < paths.length; i++) {
-                files[i] = fileToSVNPath((File) paths[i], false);
-                commandLine+=" "+files[i].toString();
+                files[i] = fileToSVNPath(paths[i], false);
+                commandLine+=" "+files[i];
             }
             notificationHandler.logCommandLine(commandLine);
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(paths));
@@ -1636,8 +1637,8 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
                 commandLine+=" --force";
     
             for (int i = 0; i < paths.length; i++) {
-                files[i] = fileToSVNPath((File) paths[i], false);
-                commandLine+=" "+files[i].toString();
+                files[i] = fileToSVNPath(paths[i], false);
+                commandLine+=" "+files[i];
             }
             notificationHandler.logCommandLine(commandLine);
     		notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(paths));

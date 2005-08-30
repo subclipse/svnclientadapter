@@ -41,49 +41,49 @@ public class SVNStatusKind {
     private static final int locked = 14;
     
     /** does not exist */
-    public static SVNStatusKind NONE = new SVNStatusKind(none);
+    public static final SVNStatusKind NONE = new SVNStatusKind(none);
     
     /** exists, but uninteresting. */
-    public static SVNStatusKind NORMAL = new SVNStatusKind(normal);
+    public static final SVNStatusKind NORMAL = new SVNStatusKind(normal);
     
     /** is scheduled for addition */
-    public static SVNStatusKind ADDED = new SVNStatusKind(added);
+    public static final SVNStatusKind ADDED = new SVNStatusKind(added);
     
     /** under v.c., but is missing */
-    public static SVNStatusKind MISSING = new SVNStatusKind(missing);
+    public static final SVNStatusKind MISSING = new SVNStatusKind(missing);
     
     /** a directory doesn't contain a complete entries list  */
-    public static SVNStatusKind INCOMPLETE = new SVNStatusKind(incomplete);
+    public static final SVNStatusKind INCOMPLETE = new SVNStatusKind(incomplete);
     
     /** scheduled for deletion */
-    public static SVNStatusKind DELETED = new SVNStatusKind(deleted);
+    public static final SVNStatusKind DELETED = new SVNStatusKind(deleted);
     
     /** was deleted and then re-added */
-    public static SVNStatusKind REPLACED = new SVNStatusKind(replaced);
+    public static final SVNStatusKind REPLACED = new SVNStatusKind(replaced);
     
     /** text or props have been modified */
-    public static SVNStatusKind MODIFIED = new SVNStatusKind(modified);
+    public static final SVNStatusKind MODIFIED = new SVNStatusKind(modified);
     
     /** local mods received repos mods */
-    public static SVNStatusKind MERGED = new SVNStatusKind(merged);
+    public static final SVNStatusKind MERGED = new SVNStatusKind(merged);
     
     /** local mods received conflicting repos mods */
-    public static SVNStatusKind CONFLICTED = new SVNStatusKind(conflicted);
+    public static final SVNStatusKind CONFLICTED = new SVNStatusKind(conflicted);
     
     /** an unversioned resource is in the way of the versioned resource */
-    public static SVNStatusKind OBSTRUCTED = new SVNStatusKind(obstructed);
+    public static final SVNStatusKind OBSTRUCTED = new SVNStatusKind(obstructed);
     
     /** a resource marked as ignored */
-    public static SVNStatusKind IGNORED = new SVNStatusKind(ignored);
+    public static final SVNStatusKind IGNORED = new SVNStatusKind(ignored);
     
     /** an unversioned path populated by an svn:external property */
-    public static SVNStatusKind EXTERNAL = new SVNStatusKind(external);
+    public static final SVNStatusKind EXTERNAL = new SVNStatusKind(external);
     
     /** is not a versioned thing in this wc */
-    public static SVNStatusKind UNVERSIONED = new SVNStatusKind(unversioned);
+    public static final SVNStatusKind UNVERSIONED = new SVNStatusKind(unversioned);
     
-    
-    public static SVNStatusKind LOCKED = new SVNStatusKind(locked);
+    /** a resource marked as locked */
+    public static final SVNStatusKind LOCKED = new SVNStatusKind(locked);
     
     //Constructors
     /**

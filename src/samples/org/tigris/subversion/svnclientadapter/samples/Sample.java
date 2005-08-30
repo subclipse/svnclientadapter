@@ -37,7 +37,7 @@ import org.tigris.subversion.svnclientadapter.javahl.JhlClientAdapterFactory;
  */
 public class Sample {
 
-	public class NotifyListener implements ISVNNotifyListener {
+	public static class NotifyListener implements ISVNNotifyListener {
 		public void setCommand(int cmd) {
 			// the command that is being executed. See ISVNNotifyListener.Command
 			// ISVNNotifyListener.Command.ADD for example 

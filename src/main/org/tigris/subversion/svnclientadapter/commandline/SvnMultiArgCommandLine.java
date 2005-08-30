@@ -27,7 +27,7 @@ import org.tigris.subversion.svnclientadapter.SVNRevision;
  */
 public class SvnMultiArgCommandLine extends SvnCommandLine {
 
-    private List revs = new ArrayList();
+    protected List revs = new ArrayList();
 	
 	SvnMultiArgCommandLine(String svnPath,CmdLineNotificationHandler notificationHandler) {
 		super(svnPath,notificationHandler);

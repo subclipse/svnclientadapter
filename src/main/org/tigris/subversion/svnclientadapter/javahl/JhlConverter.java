@@ -23,8 +23,10 @@ import org.tigris.subversion.javahl.Lock;
 import org.tigris.subversion.javahl.LogMessage;
 import org.tigris.subversion.javahl.NodeKind;
 import org.tigris.subversion.javahl.Revision;
+import org.tigris.subversion.javahl.RevisionKind;
 import org.tigris.subversion.javahl.ScheduleKind;
 import org.tigris.subversion.javahl.Status;
+import org.tigris.subversion.javahl.StatusKind;
 import org.tigris.subversion.svnclientadapter.ISVNLogMessage;
 import org.tigris.subversion.svnclientadapter.ISVNLogMessageChangePath;
 import org.tigris.subversion.svnclientadapter.ISVNStatus;
@@ -41,7 +43,7 @@ import org.tigris.subversion.svnclientadapter.SVNStatusKind;
  */
 public class JhlConverter {
 
-	private static Logger log = Logger.getLogger(JhlConverter.class.getName());	
+	private static final Logger log = Logger.getLogger(JhlConverter.class.getName());	
 	
 	private JhlConverter() {
 		//non-instantiable
@@ -66,11 +68,11 @@ public class JhlConverter {
 
 	static SVNRevision convert(Revision rev) {
 		switch (rev.getKind()) {
-			case Revision.Kind.base :
+			case RevisionKind.base :
 				return SVNRevision.BASE;
-			case Revision.Kind.committed :
+			case RevisionKind.committed :
 				return SVNRevision.COMMITTED;
-			case Revision.Kind.number :
+			case RevisionKind.number :
 				Revision.Number n = (Revision.Number) rev;
 				if (n.getNumber() == -1) {
 					// we return null when resource is not managed ...
@@ -78,9 +80,9 @@ public class JhlConverter {
 				} else {
 					return new SVNRevision.Number(n.getNumber());
 				}
-			case Revision.Kind.previous :
+			case RevisionKind.previous :
 				return SVNRevision.PREVIOUS;
-			case Revision.Kind.working :
+			case RevisionKind.working :
 				return SVNRevision.WORKING;
 			default :
 				return SVNRevision.HEAD;
@@ -114,33 +116,33 @@ public class JhlConverter {
 
     public static SVNStatusKind convertStatusKind(int kind) {
         switch (kind) {
-            case Status.Kind.none :
+            case StatusKind.none :
                 return SVNStatusKind.NONE;
-            case Status.Kind.normal :
+            case StatusKind.normal :
                 return SVNStatusKind.NORMAL;                
-            case Status.Kind.added :
+            case StatusKind.added :
                 return SVNStatusKind.ADDED;
-            case Status.Kind.missing :
+            case StatusKind.missing :
                 return SVNStatusKind.MISSING;
-            case Status.Kind.incomplete :
+            case StatusKind.incomplete :
                 return SVNStatusKind.INCOMPLETE;
-            case Status.Kind.deleted :
+            case StatusKind.deleted :
                 return SVNStatusKind.DELETED;
-            case Status.Kind.replaced :
+            case StatusKind.replaced :
                 return SVNStatusKind.REPLACED;                                                
-            case Status.Kind.modified :
+            case StatusKind.modified :
                 return SVNStatusKind.MODIFIED;
-            case Status.Kind.merged :
+            case StatusKind.merged :
                 return SVNStatusKind.MERGED;                
-            case Status.Kind.conflicted :
+            case StatusKind.conflicted :
                 return SVNStatusKind.CONFLICTED;
-            case Status.Kind.obstructed :
+            case StatusKind.obstructed :
                 return SVNStatusKind.OBSTRUCTED;
-            case Status.Kind.ignored :
+            case StatusKind.ignored :
                 return SVNStatusKind.IGNORED;  
-            case Status.Kind.external:
+            case StatusKind.external:
                 return SVNStatusKind.EXTERNAL;
-            case Status.Kind.unversioned :
+            case StatusKind.unversioned :
                 return SVNStatusKind.UNVERSIONED;
             default : {
             	log.severe("unknown status kind :"+kind);
@@ -188,18 +190,7 @@ public class JhlConverter {
             return new SVNLogMessageChangePath[0];
         SVNLogMessageChangePath[] jhlChangePaths = new SVNLogMessageChangePath[changePaths.length];
         for(int i=0; i < changePaths.length; i++) {
-            ChangePath changePath = changePaths[i];
-            
-            SVNRevision.Number copySrcRevision = null;
-            if (changePath.getCopySrcRevision() != -1) {
-                copySrcRevision = new SVNRevision.Number(changePath.getCopySrcRevision());	
-            }
-            
-        	jhlChangePaths[i] = new SVNLogMessageChangePath(
-                    changePath.getPath(),
-                    copySrcRevision,
-                    changePath.getCopySrcPath(),
-                    changePath.getAction());
+        	jhlChangePaths[i] = new SVNLogMessageChangePath(changePaths[i]);
         }
         return jhlChangePaths;
     }

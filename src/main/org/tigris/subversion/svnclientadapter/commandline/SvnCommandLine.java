@@ -35,7 +35,7 @@ public class SvnCommandLine extends CommandLine {
 	private String user;
 	private String pass;	
     protected SvnOutputParser svnOutputParser = new SvnOutputParser();
-    private long rev = SVNRevision.SVN_INVALID_REVNUM;
+    protected long rev = SVNRevision.SVN_INVALID_REVNUM;
     protected boolean parseSvnOutput = false;
     private String configDir = null;
     
@@ -475,7 +475,7 @@ public class SvnCommandLine extends CommandLine {
 	 * @param revision Optional revision range to get log
 	 *   messages from.
 	 */
-	byte[] log_v(String target, String revision) throws CmdLineException {
+	byte[] logVerbose(String target, String revision) throws CmdLineException {
         setCommand(ISVNNotifyListener.Command.LOG, false);		
 		ArrayList args = new ArrayList();
 		args.add("log");

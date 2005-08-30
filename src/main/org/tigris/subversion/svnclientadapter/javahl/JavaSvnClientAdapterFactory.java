@@ -24,7 +24,8 @@ import org.tigris.subversion.svnclientadapter.SVNClientException;
  * To register this factory, just call {@link JavaSvnClientAdapterFactory#setup()} 
  */
 public class JavaSvnClientAdapterFactory extends SVNClientAdapterFactory {
-    public static String JAVASVN_CLIENT = "javasvn";
+	
+    public static final String JAVASVN_CLIENT = "javasvn";
     
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.SVNClientAdapterFactory#createSVNClientImpl()

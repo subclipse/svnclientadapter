@@ -895,7 +895,7 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
             // To acquire the paths associated with each delta, we'd
             // have to include the --verbose argument.
 			if (fetchChangePath) {
-                messages = _cmd.log_v(toString(pathOrUrl), revRange);
+                messages = _cmd.logVerbose(toString(pathOrUrl), revRange);
 			} else {
                 messages = _cmd.log(toString(pathOrUrl), revRange);
 			}

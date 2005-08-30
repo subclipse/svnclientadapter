@@ -28,7 +28,7 @@ import org.tigris.subversion.svnclientadapter.SVNUrl;
 
 
 public class MkdirTest extends SVNTest {
-    private static Logger log = Logger.getLogger(MkdirTest.class.getName());
+    private static final Logger log = Logger.getLogger(MkdirTest.class.getName());
     
     
     /**

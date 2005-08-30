@@ -42,8 +42,6 @@ public class SVNBaseDir {
      * 
      * @param file1
      * @param file2
-     * @return @throws
-     *         SVNClientException
      */
     static File getCommonPart(File file1, File file2) {
     		if (file1 == null)
@@ -99,10 +97,8 @@ public class SVNBaseDir {
      * get the base directory for the given file
      * 
      * @param file
-     * @return @throws
-     *         SVNClientException
      */
-    static public File getBaseDir(File file) throws SVNClientException {
+    static public File getBaseDir(File file) {
         return getBaseDir(new File[] { file });
     }
 
@@ -111,10 +107,8 @@ public class SVNBaseDir {
      * directory for the set of files
      * 
      * @param files
-     * @return @throws
-     *         SVNClientException
      */
-    static public File getBaseDir(File[] files) throws SVNClientException {
+    static public File getBaseDir(File[] files) {
         File rootDir = getRootDir(files);
 
         // get the common part between current directory and other files

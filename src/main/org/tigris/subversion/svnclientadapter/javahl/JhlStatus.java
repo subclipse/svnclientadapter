@@ -48,10 +48,7 @@ public class JhlStatus implements ISVNStatus {
 	public SVNUrl getUrl() {
 		try {
             String url = _s.getUrl();
-            if (url == null)
-                return null;
-            else
-                return new SVNUrl(url);
+            return (url != null) ? new SVNUrl(url) : null;
         } catch (MalformedURLException e) {
             //should never happen.
             return null;
@@ -66,7 +63,7 @@ public class JhlStatus implements ISVNStatus {
         // we don't use 
         // return (SVNRevision.Number)JhlConverter.convert(_s.getLastChangedRevision());
         // as _s.getLastChangedRevision() is currently broken if revision is -1 
-        return (SVNRevision.Number)JhlConverter.convertRevisionNumber(_s.getLastChangedRevisionNumber());
+        return JhlConverter.convertRevisionNumber(_s.getLastChangedRevisionNumber());
 	}
 
 	/*
@@ -113,7 +110,7 @@ public class JhlStatus implements ISVNStatus {
 	 * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getRevision()
 	 */
 	public SVNRevision.Number getRevision() {
-		return (SVNRevision.Number)JhlConverter.convertRevisionNumber(_s.getRevisionNumber());
+		return JhlConverter.convertRevisionNumber(_s.getRevisionNumber());
 	}
 
 	/*
@@ -156,10 +153,7 @@ public class JhlStatus implements ISVNStatus {
 	public SVNUrl getUrlCopiedFrom() {
 		try {
             String url = _s.getUrlCopiedFrom();
-            if (url == null)
-                return null;
-            else
-                return new SVNUrl(url);
+            return (url != null) ? new SVNUrl(url) : null;
         } catch (MalformedURLException e) {
             //should never happen.
             return null;
@@ -191,41 +185,38 @@ public class JhlStatus implements ISVNStatus {
      * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getConflictNew()
      */
     public File getConflictNew() {
-        String path = _s.getConflictNew();
-        if (path != null) {
-            return new File(getFile().getParent(), path).getAbsoluteFile();    
-        } else {
-            return null;
-        }
+		String path = _s.getConflictNew();
+		return (path != null) ? new File(getFile().getParent(), path)
+				.getAbsoluteFile() : null;
     }
 
-    /* (non-Javadoc)
-     * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getConflictOld()
-     */
+    /*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getConflictOld()
+	 */
     public File getConflictOld() {
-        String path = _s.getConflictOld();
-        if (path != null) {
-            return new File(getFile().getParent(),path).getAbsoluteFile();    
-        } else {
-            return null;
-        }
-    }
+		String path = _s.getConflictOld();
+		return (path != null) ? new File(getFile().getParent(), path)
+				.getAbsoluteFile() : null;
+	}
 
-    /* (non-Javadoc)
-     * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getConflictWorking()
-     */
+    /*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getConflictWorking()
+	 */
     public File getConflictWorking() {
-        String path = _s.getConflictWorking();
-        if (path != null) {
-            return new File(getFile().getParent(),path).getAbsoluteFile();    
-        } else {
-            return null;
-        }
-    }
+		String path = _s.getConflictWorking();
+		return (path != null) ? new File(getFile().getParent(), path)
+				.getAbsoluteFile() : null;
+	}
     
-    /* (non-Javadoc)
-     * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getLockCreationDate()
-     */
+    /*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getLockCreationDate()
+	 */
     public Date getLockCreationDate() {
         return _s.getLockCreationDate();
     }

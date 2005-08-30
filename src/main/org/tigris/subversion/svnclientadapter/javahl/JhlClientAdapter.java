@@ -64,51 +64,51 @@ public class JhlClientAdapter extends AbstractJhlClientAdapter {
 					try {
 						System.loadLibrary("libapr");
 			        } catch (Exception e) {
-		               	javaHLErrors.append(e.getMessage() + "\n");
+		               	javaHLErrors.append(e.getMessage()).append("\n");
 			        } catch (UnsatisfiedLinkError e) {
-		               	javaHLErrors.append(e.getMessage() + "\n");
+		               	javaHLErrors.append(e.getMessage()).append("\n");
 			        }
 					try {
 						System.loadLibrary("libapriconv");
 			        } catch (Exception e) {
-		               	javaHLErrors.append(e.getMessage() + "\n");
+		               	javaHLErrors.append(e.getMessage()).append("\n");
 			        } catch (UnsatisfiedLinkError e) {
-		               	javaHLErrors.append(e.getMessage() + "\n");
+		               	javaHLErrors.append(e.getMessage()).append("\n");
 			        }
 					try {
 						System.loadLibrary("libeay32");
 			        } catch (Exception e) {
-		               	javaHLErrors.append(e.getMessage() + "\n");
+		               	javaHLErrors.append(e.getMessage()).append("\n");
 			        } catch (UnsatisfiedLinkError e) {
-		               	javaHLErrors.append(e.getMessage() + "\n");
+		               	javaHLErrors.append(e.getMessage()).append("\n");
 			        }
 					try {
 						System.loadLibrary("libdb43");
 			        } catch (Exception e) {
-		               	javaHLErrors.append(e.getMessage() + "\n");
+		               	javaHLErrors.append(e.getMessage()).append("\n");
 			        } catch (UnsatisfiedLinkError e) {
-		               	javaHLErrors.append(e.getMessage() + "\n");
+		               	javaHLErrors.append(e.getMessage()).append("\n");
 			        }
 					try {
 						System.loadLibrary("ssleay32");
 			        } catch (Exception e) {
-		               	javaHLErrors.append(e.getMessage() + "\n");
+		               	javaHLErrors.append(e.getMessage()).append("\n");
 			        } catch (UnsatisfiedLinkError e) {
-		               	javaHLErrors.append(e.getMessage() + "\n");
+		               	javaHLErrors.append(e.getMessage()).append("\n");
 			        }
 					try {
 						System.loadLibrary("libaprutil");
 			        } catch (Exception e) {
-		               	javaHLErrors.append(e.getMessage() + "\n");
+		               	javaHLErrors.append(e.getMessage()).append("\n");
 			        } catch (UnsatisfiedLinkError e) {
-		               	javaHLErrors.append(e.getMessage() + "\n");
+		               	javaHLErrors.append(e.getMessage()).append("\n");
 			        }
 					try {
 						System.loadLibrary("intl3_svn");
 			        } catch (Exception e) {
-		               	javaHLErrors.append(e.getMessage() + "\n");
+		               	javaHLErrors.append(e.getMessage()).append("\n");
 			        } catch (UnsatisfiedLinkError e) {
-		               	javaHLErrors.append(e.getMessage() + "\n");
+		               	javaHLErrors.append(e.getMessage()).append("\n");
 			        }
 				}
 	        	//workaround to solve Subclipse ISSUE #83
@@ -129,7 +129,7 @@ public class JhlClientAdapter extends AbstractJhlClientAdapter {
 		        }
 		        catch(UnsatisfiedLinkError ex)
 		        {
-		        		javaHLErrors.append(ex.getMessage() + "\n");
+		        		javaHLErrors.append(ex.getMessage()).append("\n");
 		        }
 		        if (!available) {
 		            /*
@@ -149,7 +149,7 @@ public class JhlClientAdapter extends AbstractJhlClientAdapter {
 		               }
 		               catch (UnsatisfiedLinkError e)
 		               {
-		               	javaHLErrors.append(e.getMessage() + "\n");
+		               	javaHLErrors.append(e.getMessage()).append("\n");
 	                     System.loadLibrary("svnjavahl");
 		               }
 		            }
@@ -158,10 +158,10 @@ public class JhlClientAdapter extends AbstractJhlClientAdapter {
 		        }
 	        } catch (Exception e) {
 	        	available = false;
-	        	javaHLErrors.append(e.getMessage() + "\n");
+	        	javaHLErrors.append(e.getMessage()).append("\n");
 	        } catch (UnsatisfiedLinkError e) {
 	        	available = false;
-	        	javaHLErrors.append(e.getMessage() + "\n");
+	        	javaHLErrors.append(e.getMessage()).append("\n");
 	        } finally {
 	        	availabilityCached = true;
 	        }

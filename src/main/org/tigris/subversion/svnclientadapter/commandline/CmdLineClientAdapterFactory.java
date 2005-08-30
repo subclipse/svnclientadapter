@@ -24,7 +24,7 @@ import org.tigris.subversion.svnclientadapter.SVNClientException;
  * To register this factory, just call {@link CmdLineClientAdapterFactory#setup()} 
  */
 public class CmdLineClientAdapterFactory extends SVNClientAdapterFactory {
-    public static String COMMANDLINE_CLIENT = "commandline";
+    public static final String COMMANDLINE_CLIENT = "commandline";
     
     private CmdLineClientAdapterFactory() {
     }

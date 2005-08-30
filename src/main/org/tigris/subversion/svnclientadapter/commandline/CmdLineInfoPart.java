@@ -165,7 +165,7 @@ class CmdLineInfoPart implements ISVNInfo {
 			while (st.hasMoreTokens()) {
 				String line = st.nextToken();
 				if (inComment) {
-				    lockComment.append(line +"\n");
+				    lockComment.append(line).append("\n");
 				} else {
 					int middle = line.indexOf(':');
 					String key = line.substring(0, middle);

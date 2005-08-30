@@ -45,7 +45,7 @@ public class ExpectedWC
      * the map of the items of the working copy. The relative path is the key
      * for the map
      */
-    private Map items = new HashMap();
+    protected Map items = new HashMap();
 
     /**
      * Generate from the expected state of the working copy a new working copy
@@ -491,7 +491,7 @@ public class ExpectedWC
          * @param path      the path of the item.
          * @param content   the content of the item. A null signals a directory.
          */
-        private Item(String path, String content)
+        protected Item(String path, String content)
         {
             myPath = path;
             myContent = content;
@@ -515,7 +515,7 @@ public class ExpectedWC
          * @param owner the new WC
          * @return  the copied item
          */
-        private Item copy(ExpectedWC owner)
+        protected Item copy(ExpectedWC owner)
         {
             return new Item(this, owner);
         }

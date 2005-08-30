@@ -35,7 +35,7 @@ import org.tigris.subversion.svnclientadapter.SVNRevision.Number;
  * @author Cédric Chabanois
  */
 public class JhlInfo implements ISVNInfo {
-	private static Logger log = Logger.getLogger(JhlInfo.class.getName());
+	private static final Logger log = Logger.getLogger(JhlInfo.class.getName());
 	
 	private Info info;
 	private File file;

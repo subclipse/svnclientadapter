@@ -16,6 +16,7 @@
 package org.tigris.subversion.svnclientadapter.commandline;
 
 import java.io.InputStream;
+import java.util.Date;
 
 import org.tigris.subversion.svnclientadapter.AnnotateInputStream;
 import org.tigris.subversion.svnclientadapter.ISVNAnnotations;
@@ -43,10 +44,8 @@ public class CmdLineAnnotations implements ISVNAnnotations {
         this(new String(annotations), lineSeparator);
     }
 
-    /**
-     * get the revision for the given line number
-     * @param lineNumber
-     * @return
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNAnnotations#getRevision(int)
      */
     public long getRevision(int lineNumber) {
         if (lineNumber >= lines.length)
@@ -64,11 +63,17 @@ public class CmdLineAnnotations implements ISVNAnnotations {
             }
         }
     }
-    
-    /**
-     * get the author for the given line number or null
-     * @param lineNumber
-     * @return
+
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNAnnotations#getChanged(int)
+     */
+    public Date getChanged(int lineNumber) {
+    	//Client adapter does not support verbose output with dates
+    	return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNAnnotations#getAuthor(int)
      */
     public String getAuthor(int lineNumber) {
         if (lineNumber >= lines.length)
@@ -89,17 +94,15 @@ public class CmdLineAnnotations implements ISVNAnnotations {
         }
     }
 
-    /**
-     * get the given line
-     * @param lineNumber
-     * @return
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNAnnotations#getLine(int)
      */
     public String getLine(int lineNumber) {
         if (lineNumber >= lines.length)
             return null;
         else
         {
-            String line = (String)lines[lineNumber];
+            String line = lines[lineNumber];
             return line.substring(18);            
         }
     }    

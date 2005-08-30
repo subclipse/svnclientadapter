@@ -27,7 +27,7 @@ import org.tigris.subversion.svnclientadapter.commandline.parser.SvnOutputParser
 
 public class SvnOutputParserTest extends TestCase {
 
-	private class Notification {
+	private static class Notification {
 		public String path;
 		int action;
         int kind;

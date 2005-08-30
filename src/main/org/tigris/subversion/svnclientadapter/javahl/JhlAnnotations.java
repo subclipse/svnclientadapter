@@ -25,14 +25,13 @@ import org.tigris.subversion.svnclientadapter.AnnotateInputStream;
 import org.tigris.subversion.svnclientadapter.ISVNAnnotations;
 
 /**
- * for now, we don't use this class because jhl blame method that takes
- * a BlameCallback as parameter does not seem to work ...  
+ * A BlameCallback implementation class for JavaHL blame() method.  
  * 
  */
 public class JhlAnnotations implements ISVNAnnotations, BlameCallback {
 	private List annotations = new ArrayList();
 
-	private class Annotation {
+	private static class Annotation {
 		long revision;
 		String author;
 		Date changed;
@@ -71,6 +70,15 @@ public class JhlAnnotations implements ISVNAnnotations, BlameCallback {
 		}
 	}
 
+	public Date getChanged(int lineNumber) {
+		Annotation annotation = getAnnotation(lineNumber);
+		if (annotation == null) {
+			return null;
+		} else {
+			return annotation.changed;
+		}
+	}
+
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNAnnotations#getLine(int)
 	 */
@@ -102,9 +110,9 @@ public class JhlAnnotations implements ISVNAnnotations, BlameCallback {
     public void singleLine(Date changed, long revision, String author,
                            String line) {
     	Annotation annotation = new Annotation();
-    	annotation.author = author;
     	annotation.changed = changed;
     	annotation.revision = revision;
+    	annotation.author = author;
     	annotation.line = line;
     	annotations.add(annotation);
     }

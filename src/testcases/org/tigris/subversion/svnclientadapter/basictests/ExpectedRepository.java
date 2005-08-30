@@ -18,7 +18,7 @@ public class ExpectedRepository {
      * the map of the items of the repository. The relative path is the key
      * for the map
      */
-    private Map items = new HashMap();    
+    protected Map items = new HashMap();    
 
     /**
      * Copy an expected working copy state
@@ -212,7 +212,7 @@ public class ExpectedRepository {
          * @param path      the path of the item.
          * @param content   the content of the item. A null signals a directory.
          */
-        private Item(String path, String content)
+        protected Item(String path, String content)
         {
             myPath = path;
             myContent = content;
@@ -236,7 +236,7 @@ public class ExpectedRepository {
          * @param owner the new WC
          * @return  the copied item
          */
-        private Item copy(ExpectedRepository owner)
+        protected Item copy(ExpectedRepository owner)
         {
             return new Item(this, owner);
         }        

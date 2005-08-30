@@ -24,7 +24,8 @@ import org.tigris.subversion.svnclientadapter.SVNClientException;
  * To register this factory, just call {@link JhlClientAdapterFactory#setup()} 
  */
 public class JhlClientAdapterFactory extends SVNClientAdapterFactory {
-    public static String JAVAHL_CLIENT = "javahl";
+	
+    public static final String JAVAHL_CLIENT = "javahl";
     
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.SVNClientAdapterFactory#createSVNClientImpl()

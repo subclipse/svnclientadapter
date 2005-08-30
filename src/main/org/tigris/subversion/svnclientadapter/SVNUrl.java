@@ -33,7 +33,8 @@ import java.net.MalformedURLException;
  *
  */
 public class SVNUrl {
-	protected static char SEGMENT_SEPARATOR = '/'; 
+	
+	protected static final char SEGMENT_SEPARATOR = '/'; 
 	
     private String protocol; // http, file, svn or svn+ssh
     private String[] segments;
@@ -262,5 +263,13 @@ public class SVNUrl {
 			return false;
 		SVNUrl url = (SVNUrl) target;
 		return get().equals(url.get());
+	}
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	public int hashCode()
+	{
+		return get().hashCode();
 	}
 }

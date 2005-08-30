@@ -16,9 +16,16 @@
 package org.tigris.subversion.svnclientadapter;
 
 import java.io.InputStream;
+import java.util.Date;
 
 public interface ISVNAnnotations {
 	
+	/**
+	 * get the date of last change for the given line number
+	 * @param lineNumber
+	 * @return
+	 */
+	public abstract Date getChanged(int lineNumber);
 	
 	/**
 	 * get the revision for the given line number
