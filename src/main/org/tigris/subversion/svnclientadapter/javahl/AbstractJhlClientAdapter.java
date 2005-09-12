@@ -832,7 +832,10 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 					+ (ignoreExternals ? "--ignore-externals " : "")
 					+ targetsString.toString());
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
-			return svnClient.update(targets, JhlConverter.convert(revision), recurse, ignoreExternals);
+			notificationHandler.holdStats();
+			long[] rtnCode =  svnClient.update(targets, JhlConverter.convert(revision), recurse, ignoreExternals);
+			notificationHandler.releaseStats();
+			return rtnCode;
 		} catch (ClientException e) {
 			notificationHandler.logException(e);
 			throw new SVNClientException(e);

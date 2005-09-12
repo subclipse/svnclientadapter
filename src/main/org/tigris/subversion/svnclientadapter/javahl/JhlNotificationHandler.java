@@ -51,6 +51,9 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements No
     private int propMerges;
     private int propUpdates;
     private boolean inExternal;
+    private boolean holdStats;
+    private String lastUpdate;
+    private String lastExternalUpdate;
 
     /* (non-Javadoc)
      * @see org.tigris.subversion.javahl.Notify2#onNotify(org.tigris.subversion.javahl.NotifyInformation)
@@ -211,7 +214,16 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements No
                     }                       
                     else
                     if (receivedSomeChange) {
-                        logCompleted("Updated to revision "+revision+".");
+                        if (holdStats) {
+                        // Hold off until the releaseStats() method
+                        // is executed.  Keeps noise out of the log.
+                            if (inExternal)
+                                lastExternalUpdate = "Updated to revision "+revision+".";
+                            else
+                                lastUpdate = "Updated to revision "+revision+".";
+                            
+                        } else
+                            logCompleted("Updated to revision "+revision+".");
                     }
                     else {
                         logCompleted("At revision "+revision+".");
@@ -297,9 +309,14 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements No
         propMerges = 0;
         propUpdates = 0;
         inExternal = false;
+        holdStats = false;
+        lastUpdate = null;
+        lastExternalUpdate = null;
     }
     
     private void logStats() {
+        if (holdStats)
+            return;
         if (command == ISVNNotifyListener.Command.UPDATE
                 || command == ISVNNotifyListener.Command.MERGE
                 || command == ISVNNotifyListener.Command.SWITCH) {
@@ -342,5 +359,35 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements No
                 || propMerges > 0)
             return true;
         return false;
+    }
+
+   
+    /**
+     * Put a hold on the logging of stats.  This method allows
+     * the update method to hold off logging stats until all of
+     * a set of updates are completed.
+     */
+    public void holdStats() {
+        this.holdStats = true;
+    }
+    
+    
+    /**
+     * Perform the logging of any accumulated stats.
+     * The update method will call this after the command completes
+     * so that the stats logging can wait until the very end.
+     */
+    public void releaseStats() {
+        this.holdStats = false;
+        if (command == ISVNNotifyListener.Command.UPDATE) {
+            // In addition to the stats, need to send the 
+            // Updated to revision N. messages that normally
+            // appear in the log.
+            if (lastExternalUpdate != null)
+                logCompleted(lastExternalUpdate);
+            if (lastUpdate != null)
+                logCompleted(lastUpdate);
+        }
+        logStats();
     }
 }
