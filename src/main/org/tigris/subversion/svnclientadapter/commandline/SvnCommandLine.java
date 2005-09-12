@@ -956,7 +956,7 @@ public class SvnCommandLine extends CommandLine {
 					}
 					if (revision != SVNRevision.SVN_INVALID_REVNUM) {
 						SvnCommandLine.this.rev = revision;
-						notificationHandler.logRevision(revision);
+						notificationHandler.logRevision(revision, path);
 					}
 				}
 				

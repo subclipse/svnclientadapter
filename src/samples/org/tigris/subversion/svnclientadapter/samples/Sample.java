@@ -56,7 +56,7 @@ public class Sample {
 			System.out.println("error :" +message);
 		}
     
-        public void logRevision(long revision) {
+        public void logRevision(long revision, String path) {
 			// when command completes against revision
 			System.out.println("revision :" +revision);
         }

@@ -72,11 +72,11 @@ public abstract class SVNNotificationHandler {
         }                        
     }
 
-    public void logRevision(long revision) {
+    public void logRevision(long revision, String path) {
         if (logEnabled) {
             for(Iterator it=notifylisteners.iterator(); it.hasNext();) {
                 ISVNNotifyListener listener = (ISVNNotifyListener)it.next();
-                listener.logRevision(revision);
+                listener.logRevision(revision, path);
             }
         }                        
     }    

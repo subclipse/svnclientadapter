@@ -60,7 +60,7 @@ public class SvnMultiArgCommandLine extends SvnCommandLine {
 					}
 					SvnMultiArgCommandLine.this.revs.add(new Long(revision));
 					if (revision != SVNRevision.SVN_INVALID_REVNUM) {
-						notificationHandler.logRevision(revision);
+						notificationHandler.logRevision(revision, path);
 					}
 				}
 				

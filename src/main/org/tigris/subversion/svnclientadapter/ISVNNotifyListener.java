@@ -84,9 +84,10 @@ public interface ISVNNotifyListener {
      * that the command completed against the specified
      * revision.
      *  
-     * @param commandLine
+     * @param revision 
+     * @param path - path to folder which revision is reported (either root, or some of svn:externals)
      */
-    public void logRevision(long revision);
+    public void logRevision(long revision, String path);
 
     /**
      * called when a command has completed
