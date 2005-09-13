@@ -169,7 +169,7 @@ public class JhlClientAdapter extends AbstractJhlClientAdapter {
 	    		String libraryPath = System.getProperty("java.library.path");
 	    		if (libraryPath != null)
 	    			javaHLErrors.append("java.library.path = " + libraryPath);
-	    		System.out.println(javaHLErrors.toString());
+	    		// System.out.println(javaHLErrors.toString());
 	    	}
     	}
     		
