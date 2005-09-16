@@ -78,4 +78,35 @@ public interface ISVNPromptUserPassword {
 	 * @return      was the save data check box checked
 	 */
 	public boolean userAllowedSave();
+
+	/**
+	 * Request the SSH info to be used from the user.
+	 * the save data check box status will be queried by userAllowedSave
+	 * @param realm     realm for the username
+	 * @param username  username in the realm
+	 * @param sshPort   the port number to use
+	 * @param maySave   should a save data check box be enabled.
+	 * @return          password as entered or null if canceled.
+	 */
+    public boolean promptSSH(String realm, String username, int sshPort, boolean maySave);
+    
+	/**
+	 * retrieve the SSH key file entered during the prompt call
+	 * @return the key file
+	 */
+    public String getSSHPrivateKeyPath();
+    
+	/**
+	 * retrieve the passphrase for the key file entered during
+	 * the prompt call
+	 * @return the passphrase
+	 */
+    public String getSSHPrivateKeyPassphrase();
+
+	/**
+	 * retrieve the SSH port entered during the prompt call
+	 * @return the port number
+	 */
+    public int getSSHPort();
+
 }

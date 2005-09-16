@@ -15,10 +15,10 @@
  */
 package org.tigris.subversion.svnclientadapter.javahl;
 
-import org.tigris.subversion.javahl.PromptUserPassword3;
 import org.tigris.subversion.svnclientadapter.ISVNPromptUserPassword;
+import org.tmatesoft.svn.core.javahl.PromptUserPassword4;
 
-public class JhlPromptUserPassword implements PromptUserPassword3 {
+public class JhlPromptUserPassword implements PromptUserPassword4 {
 
     private ISVNPromptUserPassword worker;
     
@@ -90,4 +90,17 @@ public class JhlPromptUserPassword implements PromptUserPassword3 {
         return this.worker.getPassword();
     }
 
+    public int getSSHPort() {
+        return this.worker.getSSHPort();
+    }
+    public String getSSHPrivateKeyPassphrase() {
+        return this.worker.getSSHPrivateKeyPassphrase();
+    }
+    public String getSSHPrivateKeyPath() {
+        return this.worker.getSSHPrivateKeyPath();
+    }
+    public boolean promptSSH(String realm, String username, int sshPort,
+            boolean maySave) {
+        return this.worker.promptSSH(realm, username, sshPort, maySave);
+    }
 }
