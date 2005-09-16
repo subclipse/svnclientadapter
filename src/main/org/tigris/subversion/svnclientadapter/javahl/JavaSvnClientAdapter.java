@@ -40,11 +40,11 @@ public class JavaSvnClientAdapter extends AbstractJhlClientAdapter {
         notificationHandler = new JhlNotificationHandler();
         svnClient.notification2(notificationHandler);        
         svnClient.setPrompt(new DefaultPromptUserPassword());
-        getSvnAdmin();
     }
 
     public void createRepository(File path, String repositoryType)
             throws SVNClientException {
+        getSvnAdmin();
         if (svnAdmin == null)
             throw new SVNClientException("Create repository method not implemented.");
         else {
@@ -54,17 +54,19 @@ public class JavaSvnClientAdapter extends AbstractJhlClientAdapter {
     }
     
     private void getSvnAdmin () {
-        try {
-            JhlClientAdapterFactory.setup();
-        } catch (SVNClientException e) {
-        }
-        svnAdmin = SVNClientAdapterFactory.createSVNClient(JhlClientAdapterFactory.JAVAHL_CLIENT);
         if (svnAdmin == null) {
 	        try {
-	            CmdLineClientAdapterFactory.setup();
-	        } catch (SVNClientException ex) {
+	            JhlClientAdapterFactory.setup();
+	        } catch (SVNClientException e) {
 	        }
-            svnAdmin = SVNClientAdapterFactory.createSVNClient(CmdLineClientAdapterFactory.COMMANDLINE_CLIENT);
+	        svnAdmin = SVNClientAdapterFactory.createSVNClient(JhlClientAdapterFactory.JAVAHL_CLIENT);
+	        if (svnAdmin == null) {
+		        try {
+		            CmdLineClientAdapterFactory.setup();
+		        } catch (SVNClientException ex) {
+		        }
+	            svnAdmin = SVNClientAdapterFactory.createSVNClient(CmdLineClientAdapterFactory.COMMANDLINE_CLIENT);
+	        }
         }
         
     }
