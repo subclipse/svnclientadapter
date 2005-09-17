@@ -15,7 +15,9 @@
  */
 package org.tigris.subversion.svnclientadapter.commandline.parser;
 
-import org.apache.regexp.RE;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.tigris.subversion.svnclientadapter.SVNRevision;
 import org.tigris.subversion.svnclientadapter.commandline.CmdLineNotifyStatus;
 
@@ -29,8 +31,9 @@ class SvnActionRE {
 	public static final String CONTENTSTATE = "contentState";
 	public static final String PROPSTATE = "propState";
 	public static final String REVISION = "revision";
-	
-	private RE re;
+
+	private Pattern pattern;
+	private Matcher matcher;
 	private int action;
 	private int contentStatus = CmdLineNotifyStatus.unknown;
 	private int propStatus = CmdLineNotifyStatus.unknown;
@@ -47,19 +50,19 @@ class SvnActionRE {
 	 * PATH, CONTENTSTATE, PROPSTATE, REVISION
 	 */
 	public SvnActionRE(String re, int action, String[] notificationProperties) {
-		this.re = new RE('^'+re+'$');
+		this.pattern = Pattern.compile('^'+re+'$');
 		this.action = action;
 		this.notificationProperties = notificationProperties;
 	}
 
 	public SvnActionRE(String re, int action, String notificationProperty) {
-		this.re = new RE('^'+re+'$');
+		this.pattern = Pattern.compile('^'+re+'$');
 		this.action = action;
 		this.notificationProperties = new String[] { notificationProperty };
 	}
 
 	public SvnActionRE(String re, int action) {
-		this.re = new RE('^'+re+'$');
+		this.pattern = Pattern.compile('^'+re+'$');
 		this.action = action;
 		this.notificationProperties = new String[] { };
 	}
@@ -100,7 +103,8 @@ class SvnActionRE {
 	}
 	
 	public boolean match(String line) {
-		return re.match(line);
+		this.matcher = pattern.matcher(line);
+		return this.matcher.matches();
 	}
 	
 	/**
@@ -111,7 +115,7 @@ class SvnActionRE {
 		if (index == -1) {
 			return null;
 		} else {
-			return re.getParen(index+1);
+			return matcher.group(index+1);
 		}
 	}
 
@@ -143,7 +147,7 @@ class SvnActionRE {
 		if (index == -1) {
 			return CmdLineNotifyStatus.unknown;
 		} else {
-			String stateChar = re.getParen(index+1);
+			String stateChar = matcher.group(index+1);
 			return getStatus(stateChar.charAt(0));
 		}			
 	}
@@ -160,7 +164,7 @@ class SvnActionRE {
 		if (index == -1) {
 			return CmdLineNotifyStatus.unknown;
 		} else {
-			String stateChar = re.getParen(index+1);
+			String stateChar = matcher.group(index+1);
 			return getStatus(stateChar.charAt(0));
 		}			
 	}
@@ -173,7 +177,7 @@ class SvnActionRE {
 		if (index == -1) {
 			return SVNRevision.SVN_INVALID_REVNUM;
 		} else {
-			String revisionString = re.getParen(index+1);
+			String revisionString = matcher.group(index+1);
 			return Long.parseLong(revisionString);
 		}					
 	}
