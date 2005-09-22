@@ -87,7 +87,8 @@ abstract class CommandLine {
 		/* run the process */
 		Process proc = null;
 		try {
-			proc = rt.exec(argsArray);
+			//Set the LANG env variable so the svn's output is not localized
+			proc = rt.exec(argsArray, new String[] {"LANG=C", "LC_ALL=C"});
 		} catch (IOException e) {
 			throw new CmdLineException(e);
 		}

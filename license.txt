@@ -1,3 +1,12 @@
+SVNClientAdapter Library License
+
+This license applies to all portions of SVNClientAdapter library, which 
+are not externally-maintained libraries (e.g. JavaHL or JavaSVN).
+
+Such libraries have their own licenses; we recommend you read them, as
+their terms may differ from the terms below.
+
+=============================================================================
                                  Apache License
                            Version 2.0, January 2004
                         http://www.apache.org/licenses/

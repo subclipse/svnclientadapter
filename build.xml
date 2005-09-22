@@ -8,7 +8,6 @@
   <property name="debug" value="off"/>
 	
   <path id="project.classpath">
-	<pathelement location="${jakarta-regexp.jar}"/>
     <pathelement location="${svnjavahl.jar}"/>
   	<pathelement location="${javasvn.jar}"/>
   	<pathelement location="${jsch.jar}"/>
@@ -17,7 +16,7 @@
   <!-- ================================================================= -->
   <!-- cleans everything                                                 -->
   <!-- ================================================================= -->
-  <target name="clean">
+  <target name="clean" description="Clean everything">
     <delete dir="${build.lib.dir}"/>
     <delete dir="${build.classes.dir}"/>
     <delete dir="${build.javadoc.dir}"/>
@@ -26,7 +25,7 @@
   <!-- ================================================================= -->
   <!-- compile                                                           -->
   <!-- ================================================================= -->
-  <target name="compile" description="compile all sources files">
+  <target name="compile" description="Compile all sources files">
     <mkdir dir="${build.classes.dir}" />
     <depend srcDir="${src.main.dir}"
             destDir="${build.classes.dir}"
@@ -42,7 +41,7 @@
   <!-- ================================================================= -->
   <!-- javadoc                                                           -->
   <!-- ================================================================= -->
-  <target name="javadoc" description="create javadoc">
+  <target name="javadoc" description="Create javadoc">
     <mkdir dir="${build.javadoc.dir}" />
     <javadoc sourcepath="${src.main.dir}"
 	              classpathref="project.classpath"
@@ -56,19 +55,28 @@
   <!-- ================================================================= -->
   <!-- create svnClientAdapter.jar                                       -->
   <!-- ================================================================= -->
-  <target name="svnClientAdapter.jar" depends="compile" description="generate svnClientAdapter.jar">
+  <target name="svnClientAdapter.jar" depends="compile" description="Generate svnClientAdapter.jar">
+  	<tstamp/>
     <mkdir dir="${build.lib.dir}" />
     <jar jarfile="${build.lib.dir}/svnClientAdapter.jar"
          basedir="${build.classes.dir}"
          includes="**/*.class"
          excludes="**/*Test*.class">
+   	  <manifest>
+   	    <section name="org.tigris.subversion.svnclientadapter">
+   	      <attribute name="Specification-Title" value="SVNClientAdapter"/>
+   	      <attribute name="Specification-Version" value="${svnClientAdapter.version}"/>
+   	      <attribute name="Implementation-Title" value="org.tigris.subversion.svnclientadapter"/>
+   	      <attribute name="Implementation-Version" value="${svnClientAdapter.buildRev} (${TODAY})"/> 
+   	    </section>
+   	  </manifest>
     </jar>
   </target>
 
   <!-- ================================================================= -->
   <!-- make distribution                                                 -->
   <!-- ================================================================= -->
-  <target name="makeDistrib" depends="clean,svnClientAdapter.jar,javadoc" description="make binary distribution">
+  <target name="makeDistrib" depends="clean,svnClientAdapter.jar,javadoc" description="Make binary distribution">
     <delete dir="${build.distrib.dir}"/>
 	<mkdir dir="${build.distrib.dir}"/>
 	<mkdir dir="${build.distrib.dir}/lib"/>
@@ -77,10 +85,12 @@
 	<copy file="license.txt" todir="${build.distrib.dir}"/>
 	<copy file="changelog.txt" todir="${build.distrib.dir}"/>
   	<!-- required libs -->
-	<copy file="${jakarta-regexp.jar}" todir="${build.distrib.dir}/lib"/>
 	<copy file="${svnjavahl.jar}" todir="${build.distrib.dir}/lib"/>
+	<copy file="JAVAHL-LICENSE" todir="${build.distrib.dir}/lib"/>  	
 	<copy file="${javasvn.jar}" todir="${build.distrib.dir}/lib"/>
+	<copy file="JAVASVN-LICENSE" todir="${build.distrib.dir}/lib"/>  	
 	<copy file="${jsch.jar}" todir="${build.distrib.dir}/lib"/>
+	<copy file="JSCH-LICENSE" todir="${build.distrib.dir}/lib"/>
   	<!-- JavaHL win32 dlls -->
  	<copy file="intl3_svn.dll" todir="${build.distrib.dir}"/>
   	<copy file="libapr.dll" todir="${build.distrib.dir}"/>
