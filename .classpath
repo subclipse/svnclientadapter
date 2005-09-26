@@ -7,6 +7,6 @@
 	<classpathentry kind="var" path="JUNIT_HOME/junit.jar"/>
 	<classpathentry sourcepath="/JavaHL 1.2/src" kind="lib" path="lib/svnjavahl.jar"/>
 	<classpathentry kind="lib" path="lib/javasvn.jar"/>
-	<classpathentry kind="lib" path="lib/jsch.jar"/>
+	<classpathentry kind="lib" path="lib/ganymed.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
