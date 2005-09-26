@@ -659,9 +659,19 @@ public interface ISVNClientAdapter {
 	 * @throws SVNClientException
 	 */
 	public void cancelOperation() throws SVNClientException;
-	
+
 	/**
-	 * get information about a file or directory.
+	 * Get information about a file or directory from working copy.
+	 * Uses info() call which does NOT contact the repository
+	 * @param file
+	 * @return
+	 * @throws SVNClientException
+	 */
+	public ISVNInfo getInfoFromWorkingCopy(File file) throws SVNClientException;
+
+	/**
+	 * Get information about a file or directory.
+	 * Uses info2() call which contacts the repository
 	 * @param file
 	 * @return
 	 * @throws SVNClientException
@@ -669,7 +679,8 @@ public interface ISVNClientAdapter {
 	public ISVNInfo getInfo(File file) throws SVNClientException;
 
 	/**
-	 * get information about an URL.
+	 * Get information about an URL.
+	 * Uses info2() call which contacts the repository
 	 * @param url
 	 * @return
 	 * @throws SVNClientException

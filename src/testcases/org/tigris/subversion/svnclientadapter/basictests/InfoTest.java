@@ -71,4 +71,42 @@ public class InfoTest extends SVNTest {
 	    assertNull("wrong node kind from info", info.getNodeKind());
 	}
 
+	public void testInfoFromWorkingCopy() throws Throwable
+	{
+	    // create the working copy
+	    OneTest thisTest = new OneTest("basicInfo",getGreekTestConfig());
+	
+	    // get the item information and test it
+	    ISVNInfo info = client.getInfoFromWorkingCopy(new File(thisTest.getWCPath()+"/A/mu"));
+	    assertEquals("wrong revision from info", new SVNRevision.Number(1),
+	            info.getLastChangedRevision());
+	    assertEquals("wrong schedule kind from info", SVNScheduleKind.NORMAL,
+	            info.getSchedule());
+	    assertEquals("wrong node kind from info", SVNNodeKind.FILE,
+	            info.getNodeKind());
+	    
+	    //Test added file.
+	    File fileAdded = new File(thisTest.getWCPath()+"/A/added.txt");
+	    new FileOutputStream(fileAdded).close();
+	    client.addFile(fileAdded);
+
+	    // get the item information and test it
+	    info = client.getInfoFromWorkingCopy(fileAdded);
+	    assertEquals(fileAdded, info.getFile());
+	    assertNull("wrong revision from info", info.getLastChangedRevision());
+	    assertEquals("wrong schedule kind from info", SVNScheduleKind.ADD,
+	            info.getSchedule());
+	    assertEquals("wrong node kind from info", SVNNodeKind.FILE,
+	            info.getNodeKind());
+
+	    File fileUnversioned = new File(thisTest.getWCPath()+"/A/unversioned.txt");
+	    new FileOutputStream(fileUnversioned).close();
+
+	    // get the item information and test it
+	    info = client.getInfoFromWorkingCopy(fileUnversioned);
+	    assertEquals(fileUnversioned, info.getFile());
+	    assertNull("wrong revision from info", info.getLastChangedRevision());
+	    assertNull("wrong schedule kind from info", info.getSchedule());
+	    assertNull("wrong node kind from info", info.getNodeKind());
+	}
 }

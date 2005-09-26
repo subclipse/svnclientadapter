@@ -1047,6 +1047,19 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 	}
 	
 	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getInfoFromWorkingCopy(java.io.File)
+	 */
+	public ISVNInfo getInfoFromWorkingCopy(File path) throws SVNClientException {
+        try {
+            notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
+            String cmdLineInfoStrings = _cmd.info(new String[] { toString(path) });
+            return new CmdLineInfoPart(cmdLineInfoStrings);
+        } catch (CmdLineException e) {
+            throw SVNClientException.wrapException(e);
+        }        
+	}
+
+	/* (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getInfo(java.io.File)
 	 */
 	public ISVNInfo getInfo(File path) throws SVNClientException {
@@ -1056,8 +1069,7 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
             return new CmdLineInfoPart(cmdLineInfoStrings);
         } catch (CmdLineException e) {
             throw SVNClientException.wrapException(e);
-        }
-        
+        }        
 	}
 
 	/* (non-Javadoc)

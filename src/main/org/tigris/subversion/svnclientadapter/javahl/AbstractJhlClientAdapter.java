@@ -1385,7 +1385,29 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 			throw new SVNClientException(e);			
 		}
 	}
-	
+
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getInfoFromWorkingCopy(java.io.File)
+	 */
+	public ISVNInfo getInfoFromWorkingCopy(File path) throws SVNClientException {
+		try {
+			notificationHandler.setCommand(ISVNNotifyListener.Command.INFO);
+            
+			String target = fileToSVNPath(path, false);
+			notificationHandler.logCommandLine("info "+target);
+			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
+			
+			Info info = svnClient.info(target);
+            if (info == null) {
+            	return new SVNInfoUnversioned(path);
+            } 
+            return new JhlInfo(path, info);
+		} catch (ClientException e) {
+			notificationHandler.logException(e);
+			throw new SVNClientException(e);            
+		}        
+	}
+
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getInfo(java.io.File)
 	 */
@@ -1397,6 +1419,8 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 			notificationHandler.logCommandLine("info "+target);
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
 			
+			//Call the simple info() first to check whether the resource actually exists in repositiory.
+			//If yes, the call info2() later to get more data from the repository.
 			Info info = svnClient.info(target);
             if (info == null) {
             	return new SVNInfoUnversioned(path);
