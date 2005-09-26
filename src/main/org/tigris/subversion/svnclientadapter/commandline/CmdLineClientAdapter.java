@@ -1123,9 +1123,6 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
         }
     }
     
-    private void notImplementedYet() throws SVNClientException {
-        throw new SVNClientException("Not implemented yet");
-    }
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#merge(org.tigris.subversion.svnclientadapter.SVNUrl, org.tigris.subversion.svnclientadapter.SVNRevision, org.tigris.subversion.svnclientadapter.SVNUrl, org.tigris.subversion.svnclientadapter.SVNRevision, java.io.File, boolean, boolean)
 	 */

@@ -108,6 +108,28 @@ public interface ISVNClientAdapter {
 	public abstract long commit(File[] paths, String message, boolean recurse, boolean keepLocks)
 		throws SVNClientException;
 	/**
+	 * Commits changes to the repository. This usually requires
+	 * authentication, see Auth.
+	 * 
+	 * This differs from the normal commit method in that it can accept paths from
+	 * more than one working copy.
+	 * 
+	 * @return Returns an array of longs representing the revisions. It returns a
+	 *         -1 if the revision number is invalid.
+	 * @param path files to commit.
+	 * @param message log message.
+	 * @param recurse whether the operation should be done recursively.
+	 * @param keepLocks whether to keep locks on files that are committed.
+	 * @param atomic  whether to attempt to perform the commit from multiple
+	 * working copies atomically.  Files from the same repository will be
+	 * processed with one commit operation.  If files span multiple repositories
+	 * they will be processed in multiple commits.
+	 * When atomic is false, you will get one commit per WC.
+	 * @exception SVNClientException
+	 */
+	public abstract long[] commitAcrossWC(File[] paths, String message, boolean recurse, boolean keepLocks, boolean Atomic)
+		throws SVNClientException;
+	/**
 	 * List directory entries of a URL
 	 * @param url
 	 * @param revision
@@ -740,5 +762,12 @@ public interface ISVNClientAdapter {
      * server includes the remote info in the status object
      */
     public abstract boolean statusReturnsRemoteInfo();
+
+    /**
+     * Indicates whether the commitAcrossWC method is
+     * supported in the adapter
+     */
+    public abstract boolean canCommitAcrossWC();
+
 
 }

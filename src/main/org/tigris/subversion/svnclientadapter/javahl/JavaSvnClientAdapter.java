@@ -17,8 +17,11 @@ package org.tigris.subversion.svnclientadapter.javahl;
 
 import java.io.File;
 
+import org.tigris.subversion.javahl.ClientException;
 import org.tigris.subversion.svnclientadapter.ISVNClientAdapter;
+import org.tigris.subversion.svnclientadapter.ISVNNotifyListener;
 import org.tigris.subversion.svnclientadapter.ISVNPromptUserPassword;
+import org.tigris.subversion.svnclientadapter.SVNBaseDir;
 import org.tigris.subversion.svnclientadapter.SVNClientAdapterFactory;
 import org.tigris.subversion.svnclientadapter.SVNClientException;
 import org.tigris.subversion.svnclientadapter.commandline.CmdLineClientAdapterFactory;
@@ -76,6 +79,42 @@ public class JavaSvnClientAdapter extends AbstractJhlClientAdapter {
             svnAdmin.addPasswordCallback(callback);
     }
     public boolean statusReturnsRemoteInfo() {
+        return true;
+    }
+    public long[] commitAcrossWC(File[] paths, String message, boolean recurse,
+            boolean keepLocks, boolean atomic) throws SVNClientException {
+        try {
+            notificationHandler.setCommand(ISVNNotifyListener.Command.COMMIT);
+            String[] files = new String[paths.length];
+            String commandLine = "commit -m \""+message+"\"";
+            if (!recurse)
+                commandLine+=" -N";
+            if (keepLocks)
+                commandLine+=" --no-unlock";
+
+            for (int i = 0; i < paths.length; i++) {
+                files[i] = fileToSVNPath(paths[i], false);
+                commandLine+=" "+ files[i];
+            }
+            notificationHandler.logCommandLine(commandLine);
+			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(paths));
+
+            long[] newRev = ((SVNClientImpl)svnClient).commit(files, message, recurse, keepLocks, atomic);
+            if (newRev != null){
+                for (int i = 0; i < newRev.length; i++) {
+                    if (newRev[i] > 0)
+                        notificationHandler.logCompleted("Committed revision " + newRev[i] + ".");
+                }
+            }
+            return newRev;
+        } catch (ClientException e) {
+            notificationHandler.logException(e);
+            throw new SVNClientException(e);
+        }
+
+     }
+    
+    public boolean canCommitAcrossWC() {
         return true;
     }
 }

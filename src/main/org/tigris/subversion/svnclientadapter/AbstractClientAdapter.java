@@ -168,4 +168,17 @@ public abstract class AbstractClientAdapter implements ISVNClientAdapter {
     public boolean statusReturnsRemoteInfo() {
          return false;
     }
+    public long[] commitAcrossWC(File[] paths, String message, boolean recurse,
+            boolean keepLocks, boolean Atomic) throws SVNClientException {
+        notImplementedYet();
+        return null;
+    }
+    
+    protected void notImplementedYet() throws SVNClientException {
+        throw new SVNClientException("Not implemented yet");
+    }
+
+    public boolean canCommitAcrossWC() {
+        return false;
+    }
 }
