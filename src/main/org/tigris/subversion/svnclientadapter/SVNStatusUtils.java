@@ -58,6 +58,14 @@ public class SVNStatusUtils {
         return status.getTextStatus().equals(SVNStatusKind.DELETED);
     }
 
+    public static boolean isReplaced(ISVNStatus status) {
+        return status.getTextStatus().equals(SVNStatusKind.REPLACED);
+    }
+
+    public static boolean isMissing(ISVNStatus status) {
+        return status.getTextStatus().equals(SVNStatusKind.MISSING);
+    }
+
     public static boolean isIgnored(ISVNStatus status) {
         return status.getTextStatus().equals(SVNStatusKind.IGNORED);
     }
@@ -81,5 +89,29 @@ public class SVNStatusUtils {
     public static boolean isPropConflicted(ISVNStatus status) {
         return status.getPropStatus().equals(SVNStatusKind.CONFLICTED);
     }    
-    
+
+    /**
+     * Answer whether the status is "outgoing", i.e. whether resource with such status could/should be commited 
+     * @param status
+     * @return
+     */
+    public static boolean isReadyForCommit(ISVNStatus status) {
+ 		return isTextModified(status) || isAdded(status) || isDeleted(status)
+				|| isReplaced(status) || isPropModified(status)
+				|| isTextConflicted(status) || isPropConflicted(status) ||
+				(!isManaged(status) && !isIgnored(status));
+    }    
+
+    /**
+     * Answer whether the status was "changed", i.e. whether resource with such status could/should be reverted 
+     * @param status
+     * @return
+     */
+    public static boolean isReadyForRevert(ISVNStatus status) {
+ 		return isTextModified(status) || isAdded(status) || isDeleted(status)
+ 				|| isMissing(status)
+				|| isReplaced(status) || isPropModified(status)
+				|| isTextConflicted(status) || isPropConflicted(status);
+    }
+
 }
