@@ -15,6 +15,10 @@
  */
 package org.tigris.subversion.svnclientadapter.commandline;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -25,6 +29,7 @@ import java.util.StringTokenizer;
  *  
  * @author Philip Schatz (schatz at tigris)
  * @author Cédric Chabanois (cchabanois at no-log.org)
+ * @author Daniel Rall
  */
 abstract class CommandLine {
 
@@ -96,6 +101,25 @@ abstract class CommandLine {
 		return proc;
 	}
 
+    /**
+     * Pumps the output from both provided streams, blocking until
+     * complete.
+     *
+     * @param outPumper The process output stream.
+     * @param outPumper The process error stream.
+     */
+    private void pumpProcessStreams(StreamPumper outPumper,
+                                    StreamPumper errPumper) {
+        new Thread(outPumper).start();
+        new Thread(errPumper).start();
+
+        try {
+            outPumper.waitFor();
+            errPumper.waitFor();
+        } catch (InterruptedException ignored) {
+        }
+    }
+
 	/**
 	 * Runs the process and returns the results.
 	 * @param svnArguments The arguments to pass to the command-line
@@ -106,20 +130,12 @@ abstract class CommandLine {
 	protected String execString(ArrayList svnArguments, boolean coalesceLines)
         throws CmdLineException {
 		Process proc = execProcess(svnArguments);
+        StreamPumper outPumper =
+            new CharacterStreamPumper(proc.getInputStream(), coalesceLines);
+        StreamPumper errPumper =
+            new CharacterStreamPumper(proc.getErrorStream(), false);
+        pumpProcessStreams(outPumper, errPumper);
 
-        CmdLineStreamPumper outPumper = new CmdLineStreamPumper(proc.getInputStream(),coalesceLines);
-        CmdLineStreamPumper errPumper = new CmdLineStreamPumper(proc.getErrorStream());
-
-        Thread threadOutPumper = new Thread(outPumper);
-        Thread threadErrPumper = new Thread(errPumper);
-        threadOutPumper.start();         
-        threadErrPumper.start();
-        try {
-            outPumper.waitFor();
-            errPumper.waitFor();
-        } catch (InterruptedException e) {
-        }
-        
 		try {
             String errMessage = errPumper.toString();
             if (errMessage.length() > 0) {
@@ -146,19 +162,11 @@ abstract class CommandLine {
 	protected byte[] execBytes(ArrayList svnArguments, boolean assumeUTF8)
         throws CmdLineException {
 		Process proc = execProcess(svnArguments);
-
-        CmdLineByteStreamPumper outPumper = new CmdLineByteStreamPumper(proc.getInputStream());
-        CmdLineStreamPumper errPumper = new CmdLineStreamPumper(proc.getErrorStream());
-
-        Thread threadOutPumper = new Thread(outPumper);
-        Thread threadErrPumper = new Thread(errPumper);
-        threadOutPumper.start();         
-        threadErrPumper.start();
-        try {
-            outPumper.waitFor();
-            errPumper.waitFor();
-        } catch (InterruptedException e) {
-        }
+        ByteStreamPumper outPumper =
+            new ByteStreamPumper(proc.getInputStream());
+        StreamPumper errPumper =
+            new CharacterStreamPumper(proc.getErrorStream(), false);
+        pumpProcessStreams(outPumper, errPumper);
         
 		try {
             String errMessage = errPumper.toString();
@@ -215,7 +223,139 @@ abstract class CommandLine {
             notificationHandler.logCompleted(st.nextToken());
     }
     	
-	
-	
-}
+    /**
+     * Pulls all the data out of a stream.  Inspired by Ant's
+     * StreamPumper (by Robert Field).
+     */
+    private static abstract class StreamPumper implements Runnable {
+        private boolean finished;
 
+        /**
+         * Copies data from the input stream to the internal buffer.
+         * Terminates as soon as the input stream is closed, or an
+         * error occurs.
+         */
+        public void run() {
+            synchronized (this) {
+                // Just in case this object is reused in the future.
+                this.finished = false;
+            }
+
+            try {
+                pumpStream();
+            } catch (IOException ignored) {
+            } finally {
+                synchronized (this) {
+                    this.finished = true;
+                    notify();
+                }
+            }
+        }
+
+        /**
+         * Called by {@link #run()} to pull the data out of the
+         * stream.
+         */
+        protected abstract void pumpStream()
+            throws IOException;
+
+        /**
+         * Tells whether the end of the stream has been reached.
+         * @return true is the stream has been exhausted.
+         **/
+        public synchronized boolean isFinished() {
+            return this.finished;
+        }
+
+        /**
+         * This method blocks until the stream pumper finishes.
+         * @see #isFinished()
+         **/
+        public synchronized void waitFor()
+            throws InterruptedException {
+            while (!isFinished()) {
+                wait();
+            }
+        }
+    }
+
+    /** Extracts character data from streams. */
+    private static class CharacterStreamPumper extends StreamPumper {
+        private static final String NEWLINE =
+            System.getProperty("line.separator");
+        private BufferedReader reader;
+        private StringBuffer sb = new StringBuffer();
+        private boolean coalesceLines = false;
+
+        /**
+         * @param is Input stream from which to read the data.
+         * @param coalesceLines Whether to coalesce lines.
+         */
+        public CharacterStreamPumper(InputStream is, boolean coalesceLines) {
+            this.reader = new BufferedReader(new InputStreamReader(is));
+            this.coalesceLines = coalesceLines;
+        }
+
+        /**
+         * Copies data from the input stream to the internal string
+         * buffer.
+         */
+        protected void pumpStream()
+            throws IOException {
+            String line;
+            while((line = this.reader.readLine()) != null) {
+                if (this.coalesceLines) {
+                    this.sb.append(line);
+                } else {
+                    this.sb.append(line).append(NEWLINE);
+                }
+            }
+        }
+
+        public synchronized String toString() {
+            return this.sb.toString();
+        }
+    }
+
+    /** Extracts byte data from streams. */
+    private static class ByteStreamPumper extends StreamPumper {
+        private InputStream bis;
+        private ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        private final static int BUFFER_LENGTH = 1024;
+        private byte[] inputBuffer = new byte[BUFFER_LENGTH];
+
+        /**
+         * Create a new stream pumper.
+         *
+         * @param is input stream to read data from
+         * @param coaleasceLines if true, it will coaleasce lines
+         */
+        public ByteStreamPumper(InputStream is) {
+            this.bis = is;
+        }
+
+        /**
+         * Copies data from the input stream to the string buffer
+         *
+         * Terminates as soon as the input stream is closed or an error occurs.
+         */
+        protected void pumpStream()
+            throws IOException {
+            int bytesRead;
+            while ((bytesRead = this.bis.read(this.inputBuffer)) != -1) {
+                this.bytes.write(this.inputBuffer, 0, bytesRead);
+            }
+            this.bytes.flush();
+            this.bytes.close();
+            this.bis.close();
+        }
+    
+        /**
+         * @return A byte array contaning the raw bytes read from the
+         * input stream.
+         */
+        public synchronized byte[] getBytes() {
+            return bytes.toByteArray();
+        }
+    }
+}
