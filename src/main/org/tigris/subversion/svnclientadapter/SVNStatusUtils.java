@@ -22,10 +22,16 @@ package org.tigris.subversion.svnclientadapter;
  */
 public class SVNStatusUtils {
     
+    /**
+     * @param textStatus The status information to examine
+     * (non-<code>null</code>).
+     * @return Whether <code>textStatus</code> denotes a versioned
+     * resource.
+     */
     public static boolean isManaged(SVNStatusKind textStatus) {
-        return ((!textStatus.equals(SVNStatusKind.UNVERSIONED))
-                && (!textStatus.equals(SVNStatusKind.NONE)) && (!textStatus
-                .equals(SVNStatusKind.IGNORED)));
+        return (!textStatus.equals(SVNStatusKind.UNVERSIONED)
+                && !textStatus.equals(SVNStatusKind.NONE)
+                && !textStatus.equals(SVNStatusKind.IGNORED));
     }
     
     /**
