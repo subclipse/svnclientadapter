@@ -29,21 +29,22 @@ public class CmdLineStreamPumper implements Runnable {
     private BufferedReader br;
     private boolean finished;
     private StringBuffer sb = new StringBuffer();
-    private boolean coaleasceLines = false;
+    private boolean coalesceLines = false;
 
     /**
-     * Create a new stream pumper.
+     * Create a new stream pumper instance.
      *
      * @param is input stream to read data from
-     * @param coaleasceLines if true, it will coaleasce lines
+     * @param coalesceLines Whether to coalesce lines.
      */
-    public CmdLineStreamPumper(InputStream is, boolean coaleasceLines) {
+    public CmdLineStreamPumper(InputStream is, boolean coalesceLines) {
         br = new BufferedReader(new InputStreamReader(is));
-        this.coaleasceLines = coaleasceLines;
+        this.coalesceLines = coalesceLines;
     }
 
     /**
-     * Create a new stream pumper.
+     * Create a new stream pumper instance which does not coalesce
+     * lines.
      *
      * @param is input stream to read data from
      */
@@ -65,7 +66,7 @@ public class CmdLineStreamPumper implements Runnable {
         try {
             String st;
             while((st=br.readLine())!=null) {
-                if (coaleasceLines) {
+                if (coalesceLines) {
                     sb.append(st);
                 } else {
                     sb.append(st+NEWLINE);                    
