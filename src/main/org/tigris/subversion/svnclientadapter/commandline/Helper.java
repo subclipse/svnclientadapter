@@ -25,12 +25,12 @@ import org.tigris.subversion.svnclientadapter.SVNRevision;
 import org.tigris.subversion.svnclientadapter.SVNUrl;
 
 /**
- * 
  * @author Philip Schatz (schatz at tigris)
+ * @author Daniel Rall
  */
 class Helper {
 
-	static final String NEWLINE = "\n\r";
+	static final String NEWLINE = System.getProperty("line.separator");
 	private static DateFormat df =
 		new SimpleDateFormat("yyyy-MM-dd hh:mm:ss Z");
 

@@ -281,8 +281,6 @@ abstract class CommandLine {
 
     /** Extracts character data from streams. */
     private static class CharacterStreamPumper extends StreamPumper {
-        private static final String NEWLINE =
-            System.getProperty("line.separator");
         private BufferedReader reader;
         private StringBuffer sb = new StringBuffer();
         private boolean coalesceLines = false;
@@ -307,7 +305,7 @@ abstract class CommandLine {
                 if (this.coalesceLines) {
                     this.sb.append(line);
                 } else {
-                    this.sb.append(line).append(NEWLINE);
+                    this.sb.append(line).append(Helper.NEWLINE);
                 }
             }
         }
