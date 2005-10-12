@@ -97,11 +97,14 @@ abstract class CommandLine {
 	}
 
 	/**
-	 * runs the process and returns the results.
-	 * @param cmd
+	 * Runs the process and returns the results.
+	 * @param svnArguments The arguments to pass to the command-line
+	 * binary.
+     * @param coalesceLines
 	 * @return String
 	 */
-	protected String execString(ArrayList svnArguments, boolean coalesceLines) throws CmdLineException {
+	protected String execString(ArrayList svnArguments, boolean coalesceLines)
+        throws CmdLineException {
 		Process proc = execProcess(svnArguments);
 
         CmdLineStreamPumper outPumper = new CmdLineStreamPumper(proc.getInputStream(),coalesceLines);
@@ -133,11 +136,15 @@ abstract class CommandLine {
 	}
 
 	/**
-	 * runs the process and returns the results.
-	 * @param cmd
+	 * Runs the process and returns the results.
+	 * @param svnArguments The arguments to pass to the command-line
+	 * binary.
+     * @param assumeUTF8 Whether the output of the command should be
+     * treated as UTF-8 (as opposed to the JVM's default encoding).
 	 * @return String
 	 */
-	protected byte[] execBytes(ArrayList svnArguments, boolean assumeUTF8) throws CmdLineException {
+	protected byte[] execBytes(ArrayList svnArguments, boolean assumeUTF8)
+        throws CmdLineException {
 		Process proc = execProcess(svnArguments);
 
         CmdLineByteStreamPumper outPumper = new CmdLineByteStreamPumper(proc.getInputStream());
