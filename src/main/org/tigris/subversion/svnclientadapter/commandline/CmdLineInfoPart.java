@@ -272,13 +272,19 @@ class CmdLineInfoPart implements ISVNInfo {
 		return (unversioned) ? null : get(KEY_LOCKCOMMENT);
     }
     
+    /**
+     * @param infoLines The text output by <code>svn info</code>.
+     * @return The lines contained by <code>infoLines</code> as an
+     * array.
+     */
     public static String[] parseInfoParts(String infoLines) {
-		StringTokenizer st = new StringTokenizer(infoLines, Helper.NEWLINE+Helper.NEWLINE);
+		StringTokenizer st = new StringTokenizer(infoLines, Helper.NEWLINE);
 		String current = null;
 		List infoParts = new ArrayList(st.countTokens());
-		while (st.hasMoreTokens()){
+		while (st.hasMoreTokens()) {
 		    String temp = st.nextToken();
-		    if (temp.startsWith("Path:") || temp.endsWith(":  (Not a versioned resource)")){
+		    if (temp.startsWith("Path:") ||
+                temp.endsWith(":  (Not a versioned resource)")) {
 		        if (current != null)
 		            infoParts.add(current);
 		        current = temp;
@@ -289,7 +295,7 @@ class CmdLineInfoPart implements ISVNInfo {
 	                current += "\n" + temp;
 		    }
 		}
-		if (current!= null)
+		if (current != null)
             infoParts.add(current);
         String[] infoArray = new String[infoParts.size()];
         infoParts.toArray(infoArray);
