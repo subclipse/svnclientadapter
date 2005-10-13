@@ -65,11 +65,14 @@ public interface ISVNStatus {
 	 */
 	SVNRevision.Number getRevision();
 
+    /**
+     * @return The path to this item relative to the directory from
+     * which <code>status</code> was run.
+     */
 	String getPath();
     
     /**
-     * 
-     * @return the absolute file corresponding to this resource
+     * @return The absolute path to this item.
      */
     File getFile();
 
