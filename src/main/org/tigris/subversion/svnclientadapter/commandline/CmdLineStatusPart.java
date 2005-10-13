@@ -41,10 +41,6 @@ class CmdLineStatusPart {
      * Note that there is not output for files that do not exist and are not deleted
      */    
 	CmdLineStatusPart(String statusLine) {
-		setStatus(statusLine);
-	}
-
-	private void setStatus(String statusLine) {
 		textStatus = statusLine.charAt(0);
 		propStatus = statusLine.charAt(1);
 		history = statusLine.charAt(3);
@@ -64,8 +60,7 @@ class CmdLineStatusPart {
 	 * @return
 	 */
 	public boolean hasRemote() {
-		SVNStatusKind kind = getTextStatus();
-		return ((isManaged()) && (kind != SVNStatusKind.ADDED));
+		return (isManaged() && getTextStatus() != SVNStatusKind.ADDED);
 	}
 
     /**
