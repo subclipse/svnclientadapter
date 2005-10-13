@@ -20,14 +20,13 @@ import java.io.File;
 import org.tigris.subversion.svnclientadapter.SVNStatusKind;
 
 /**
- * Represents one line in the result of a "svn status -v --no-ignore"command
+ * Represents one line in the result of a <code>svn status -v
+ * --no-ignore</code> command.
  */
 class CmdLineStatusPart {
 
-	//"Constants"
 	public static final int STATUS_FILE_WIDTH = 40;
 
-	//Fields
 	private char textStatus;
 	private char propStatus;
 	
@@ -35,7 +34,6 @@ class CmdLineStatusPart {
     private File file;
 
 
-    //Constructors
     /**
      * here are some statusLine samples :
      * A               0       ?   ?           added.txt
@@ -46,7 +44,6 @@ class CmdLineStatusPart {
 		setStatus(statusLine);
 	}
 
-	//Methods
 	private void setStatus(String statusLine) {
 		textStatus = statusLine.charAt(0);
 		propStatus = statusLine.charAt(1);
@@ -71,6 +68,9 @@ class CmdLineStatusPart {
 		return ((isManaged()) && (kind != SVNStatusKind.ADDED));
 	}
 
+    /**
+     * @return The status of the item itself (e.g. directory or file).
+     */
 	public SVNStatusKind getTextStatus() {
 		switch (textStatus) {
 			case ' ' : // none or normal
@@ -117,10 +117,16 @@ class CmdLineStatusPart {
 		}		
 	}
 
+    /**
+     * @return Whether this item was copied from another location.
+     */
 	public boolean isCopied() {
 		return (history == '+');
 	}
 
+    /**
+     * @return The absolute path to this item.
+     */
     public File getFile() {
         return file.getAbsoluteFile();
     }
