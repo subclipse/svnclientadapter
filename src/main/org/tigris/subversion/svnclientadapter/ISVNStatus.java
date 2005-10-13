@@ -77,8 +77,8 @@ public interface ISVNStatus {
     File getFile();
 
     /**
-     * @return return the nodekind of the managed resource
-     * if resource is not managed, SVNNodeKind.UNKNOWN is returned 
+     * @return The node kind of the managed resource, or {@link
+     * SVNNodeKind#UNKNOWN} not managed.
      */
 	SVNNodeKind getNodeKind();
 

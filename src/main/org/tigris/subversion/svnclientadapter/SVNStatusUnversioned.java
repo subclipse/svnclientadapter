@@ -82,11 +82,15 @@ public class SVNStatusUnversioned implements ISVNStatus {
         return file.getAbsoluteFile();
     }
     
+    /**
+     * @return As this status does not describe a managed resource, we
+     * cannot pretend to know the node kind, and thus always return
+     * {@link SVNNodeKind#UNKNOWN}.
+     */
 	public SVNNodeKind getNodeKind() {
-        // getNodeKind returns the kind of the managed resource. If file is
-        // not managed we must return UNKNOWN
         return SVNNodeKind.UNKNOWN;
 	}
+
 	public SVNUrl getUrlCopiedFrom() {
 		return null;
 	}
