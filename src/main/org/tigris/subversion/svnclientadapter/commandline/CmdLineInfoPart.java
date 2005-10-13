@@ -153,6 +153,9 @@ class CmdLineInfoPart implements ISVNInfo {
 		if (st.countTokens() == 1) {
 			unversioned = true;
             String line = st.nextToken();
+            // ### As of Subversion 1.3, this warning message is
+            // ### printed to stderr.  Are we ever even going to see
+            // ### this text?
             infoMap.put(KEY_PATH,line.substring(0,line.indexOf(":  (Not a versioned resource)")));
 		} else {
 
