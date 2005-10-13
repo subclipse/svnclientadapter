@@ -24,9 +24,11 @@ import org.tigris.subversion.svnclientadapter.SVNStatusUnversioned;
 import org.tigris.subversion.svnclientadapter.StringUtils;
 
 /**
- * Statuses
+ * Digests <code>status</code> and <code>info</code> information from
+ * the command-line.
  * 
  * @author Cédric Chabanois (cchabanois at no-log.org)
+ * @author Daniel Rall
  */
 public class CmdLineStatuses {
     private CmdLineInfoPart[] cmdLineInfoParts;
@@ -53,46 +55,53 @@ public class CmdLineStatuses {
                 cmdLineInfoParts[i] = new CmdLineInfoPart(parts[i]);
             }
         }        
-        getStatuses();
+        this.cmdLineStatuses = buildStatuses();
     }
     
-    CmdLineStatuses(CmdLineInfoPart[] cmdLineInfoParts, CmdLineStatusPart[] cmdLineStatusParts) {
+    CmdLineStatuses(CmdLineInfoPart[] cmdLineInfoParts,
+                    CmdLineStatusPart[] cmdLineStatusParts) {
         this.cmdLineInfoParts = cmdLineInfoParts;
         this.cmdLineStatusParts = cmdLineStatusParts;
-        getStatuses();
-    }
-
-    private void getStatuses() {
-        List statuses = new LinkedList();
-        for (int i = 0; i < cmdLineInfoParts.length;i++) {
-            CmdLineInfoPart cmdLineInfoPart = cmdLineInfoParts[i];
-            
-            // find the corresponding status
-            CmdLineStatusPart cmdLineStatusPart = getCmdLineStatusPart(cmdLineInfoPart.getFile());
-            if (!cmdLineInfoPart.isVersioned()) {
-                boolean isIgnored;
-                if (cmdLineStatusPart == null) {
-                    // when resource is not managed and resource is not ignored, there is no
-                    // corresponding cmdLineInfoPart 
-                    isIgnored = false;
-                } else {
-                    isIgnored = cmdLineStatusPart.isIgnored(); 
-                }
-                statuses.add(new SVNStatusUnversioned(cmdLineInfoPart.getFile(),isIgnored));              
-            } else {
-                statuses.add(new CmdLineStatus(cmdLineStatusPart,cmdLineInfoPart)); 
-            }
-        }
-        cmdLineStatuses = (ISVNStatus[])statuses.toArray(new ISVNStatus[statuses.size()]);        
+        this.cmdLineStatuses = buildStatuses();
     }
 
     /**
-     * @return the statusPart corresponding to the given file or null if none found
+     * Procures status objects for the {@link #cmdLineStatuses}
+     * instance field.
      */
-    private CmdLineStatusPart getCmdLineStatusPart(File file) {
-        for (int j = 0;j < cmdLineStatusParts.length;j++) {
-            if (file.equals(cmdLineStatusParts[j].getFile())) {
-                return cmdLineStatusParts[j];             
+    private ISVNStatus[] buildStatuses() {
+        List statuses = new LinkedList();
+        for (int i = 0; i < cmdLineStatusParts.length; i++) {
+            CmdLineStatusPart cmdLineStatusPart = cmdLineStatusParts[i];
+            File absPath = cmdLineStatusPart.getFile();
+            if (cmdLineStatusPart == null || !cmdLineStatusPart.isManaged()) {
+                boolean isIgnored = false;
+                if (cmdLineStatusPart != null) {
+                    isIgnored = cmdLineStatusPart.isIgnored();
+                }
+                statuses.add(new SVNStatusUnversioned(absPath, isIgnored));
+            } else {
+                CmdLineInfoPart cmdLineInfoPart =
+                    getCorrespondingInfoPart(absPath);
+                statuses.add(new CmdLineStatus(cmdLineStatusPart,
+                                               cmdLineInfoPart));
+            }
+        }
+
+        return (ISVNStatus [])
+            statuses.toArray(new ISVNStatus[statuses.size()]);
+    }
+
+    /**
+     * @param absPath The absolute path to an item which we have a
+     * status for.
+     * @return The info corresponding to the specified path, or
+     * <code>null</code> if not found.
+     */
+    private CmdLineInfoPart getCorrespondingInfoPart(File absPath) {
+        for (int i = 0; i < cmdLineInfoParts.length; i++) {
+            if (absPath.equals(cmdLineInfoParts[i].getFile())) {
+                return cmdLineInfoParts[i];
             }
         }
         return null;

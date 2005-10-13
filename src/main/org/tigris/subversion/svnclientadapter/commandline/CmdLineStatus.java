@@ -30,6 +30,7 @@ import org.tigris.subversion.svnclientadapter.SVNRevision.Number;
  * 
  * @author Philip Schatz (schatz at tigris)
  * @author Cédric Chabanois (cchabanois at no-log.org)
+ * @author Daniel Rall
  */
 class CmdLineStatus  implements ISVNStatus {
     private CmdLineStatusPart statusPart;
@@ -105,8 +106,11 @@ class CmdLineStatus  implements ISVNStatus {
 		return infoPart.getPath();
 	}
     
+    /**
+     * @return The absolute path to this item.
+     */
     public File getFile() {
-        return new File(getPath()).getAbsoluteFile();
+        return statusPart.getFile();
     }
     
 
