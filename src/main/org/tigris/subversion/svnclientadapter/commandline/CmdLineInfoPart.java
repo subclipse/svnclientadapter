@@ -115,10 +115,10 @@ class CmdLineInfoPart implements ISVNInfo {
 		return get(KEY_PATH);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.tigris.subversion.svnclientadapter.ISVNInfo#getFile()
-	 */
+    /**
+     * @return The absolute path to this item.
+     * @see org.tigris.subversion.svnclientadapter.ISVNInfo#getFile()
+     */
     public File getFile() {
         return new File(getPath()).getAbsoluteFile();
     }
