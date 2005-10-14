@@ -57,8 +57,13 @@ public class SVNStatusUnversioned implements ISVNStatus {
     	return SVNStatusKind.UNVERSIONED;
 	}
 	
+    /**
+     * @return As this status does not describe a managed resource, we
+     * cannot pretend that there is property status, and thus always
+     * return {@link SVNStatusKind#NONE}.
+     */
 	public SVNStatusKind getPropStatus() {
-		return SVNStatusKind.NORMAL;
+		return SVNStatusKind.NONE;
 	}
 	
     public SVNStatusKind getRepositoryTextStatus() {
