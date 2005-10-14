@@ -31,7 +31,8 @@ public class SVNStatusUnversioned implements ISVNStatus {
 	
     public SVNStatusUnversioned(File file, boolean isIgnored) {
         this.file = file;
-        this.isIgnored = isIgnored; // a file can be unversioned and ignored ...
+        // A file can be both unversioned and ignored.
+        this.isIgnored = isIgnored;
     }
     
 	public SVNStatusUnversioned(File file) {
@@ -41,15 +42,19 @@ public class SVNStatusUnversioned implements ISVNStatus {
 	public SVNUrl getUrl() {
 		return null;
 	}
+
 	public SVNRevision.Number getLastChangedRevision() {
 		return null;
 	}
+
 	public Date getLastChangedDate() {
 		return null;
 	}
+
 	public String getLastCommitAuthor() {
 		return null;
 	}
+
 	public SVNStatusKind getTextStatus() {
         if (isIgnored) {
         	return SVNStatusKind.IGNORED;
@@ -77,12 +82,15 @@ public class SVNStatusUnversioned implements ISVNStatus {
 	public SVNRevision.Number getRevision() {
 		return SVNRevision.INVALID_REVISION;
 	}
+
 	public boolean isCopied() {
 		return false;
 	}
+
 	public String getPath() {
 		return file.getPath();
 	}
+
     public File getFile() {
         return file.getAbsoluteFile();
     }
@@ -100,52 +108,56 @@ public class SVNStatusUnversioned implements ISVNStatus {
 		return null;
 	}
 
-    /* (non-Javadoc)
+    /**
      * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getConflictNew()
      */
     public File getConflictNew() {
         return null;
     }
 
-    /* (non-Javadoc)
+    /**
      * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getConflictOld()
      */
     public File getConflictOld() {
         return null;
     }
 
-    /* (non-Javadoc)
+    /**
      * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getConflictWorking()
      */
     public File getConflictWorking() {
         return null;
     }
 
-    /* (non-Javadoc)
+    /**
      * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getLockComment()
      */
     public String getLockComment() {
         return null;
     }
-    /* (non-Javadoc)
+
+    /**
      * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getLockCreationDate()
      */
     public Date getLockCreationDate() {
         return null;
     }
-    /* (non-Javadoc)
+
+    /**
      * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getLockOwner()
      */
     public String getLockOwner() {
         return null;
     }
-    /* (non-Javadoc)
+
+    /**
      * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getLockToken()
      */
     public String getLockToken() {
         return null;
     }
-    /* (non-Javadoc)
+
+    /**
      * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getReposLock()
      */
     public ISVNLock getReposLock() {
