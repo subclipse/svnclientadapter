@@ -77,7 +77,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
     /**
      * the default prompter : never prompts the user
      */
-    protected static class DefaultPromptUserPassword implements PromptUserPassword {
+    public static class DefaultPromptUserPassword implements PromptUserPassword {
 
         public String askQuestion(String realm, String question, boolean showAnswer) {
             return "";

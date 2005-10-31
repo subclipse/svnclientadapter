@@ -13,7 +13,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.tigris.subversion.svnclientadapter.javahl;
+package org.tigris.subversion.svnclientadapter.javasvn;
 
 import java.io.File;
 
@@ -25,6 +25,9 @@ import org.tigris.subversion.svnclientadapter.SVNBaseDir;
 import org.tigris.subversion.svnclientadapter.SVNClientAdapterFactory;
 import org.tigris.subversion.svnclientadapter.SVNClientException;
 import org.tigris.subversion.svnclientadapter.commandline.CmdLineClientAdapterFactory;
+import org.tigris.subversion.svnclientadapter.javahl.AbstractJhlClientAdapter;
+import org.tigris.subversion.svnclientadapter.javahl.JhlClientAdapterFactory;
+import org.tigris.subversion.svnclientadapter.javahl.JhlNotificationHandler;
 import org.tmatesoft.svn.core.javahl.SVNClientImpl;
 
 /**

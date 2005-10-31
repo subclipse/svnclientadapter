@@ -13,7 +13,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.tigris.subversion.svnclientadapter.javahl;
+package org.tigris.subversion.svnclientadapter.javasvn;
 
 import org.tigris.subversion.svnclientadapter.ISVNPromptUserPassword;
 import org.tmatesoft.svn.core.javahl.PromptUserPassword4;
