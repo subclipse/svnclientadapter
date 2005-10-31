@@ -74,9 +74,12 @@ public class JavaSvnClientAdapter extends AbstractJhlClientAdapter {
         
     }
     public void addPasswordCallback(ISVNPromptUserPassword callback) {
-        super.addPasswordCallback(callback);
-        if (svnAdmin != null)
-            svnAdmin.addPasswordCallback(callback);
+        if (callback != null) {
+	        JavaSvnPromptUserPassword prompt = new JavaSvnPromptUserPassword(callback);
+	        this.setPromptUserPassword(prompt);
+	        if (svnAdmin != null)
+	            svnAdmin.addPasswordCallback(callback);
+        }
     }
     public boolean statusReturnsRemoteInfo() {
         return true;
@@ -117,4 +120,6 @@ public class JavaSvnClientAdapter extends AbstractJhlClientAdapter {
     public boolean canCommitAcrossWC() {
         return true;
     }
+
+   
 }
