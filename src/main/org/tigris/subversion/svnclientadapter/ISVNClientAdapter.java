@@ -780,5 +780,18 @@ public interface ISVNClientAdapter {
      */
     public abstract boolean canCommitAcrossWC();
 
+    /**
+     * Returns the name of the Subversion administrative 
+     * working copy directory.  Typically will be ".svn".
+     */
+    public abstract String getAdminDirectoryName();
+
+    /**
+     * Returns whether the passed folder name is a Subversion
+     * administrative working copy directory.  Will always return
+     * true if ".svn" is passed.  Otherwise, will be based on the
+     * Subversion runtime
+     */
+    public abstract boolean isAdminDirectory(String name);
 
 }

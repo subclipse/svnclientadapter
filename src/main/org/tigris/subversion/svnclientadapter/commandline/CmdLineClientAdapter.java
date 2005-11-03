@@ -15,15 +15,18 @@
  */
 package org.tigris.subversion.svnclientadapter.commandline;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
@@ -37,7 +40,6 @@ import org.tigris.subversion.svnclientadapter.ISVNProperty;
 import org.tigris.subversion.svnclientadapter.ISVNStatus;
 import org.tigris.subversion.svnclientadapter.SVNBaseDir;
 import org.tigris.subversion.svnclientadapter.SVNClientException;
-import org.tigris.subversion.svnclientadapter.SVNConstants;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
 import org.tigris.subversion.svnclientadapter.SVNStatusUnversioned;
 import org.tigris.subversion.svnclientadapter.SVNUrl;
@@ -63,6 +65,24 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 
     private static boolean availabilityCached = false;
     private static boolean available;
+    private static String dirName;
+
+	/**
+	 * Answer whether running on Windows OS.
+	 * (Actual code extracted from org.apache.commons.lang.SystemUtils.IS_OS_WINDOWS)
+	 * (For such one simple method it does make sense to introduce dependency on whole commons-lang.jar)
+	 * @return
+	 */
+	public static boolean isOsWindows()
+	{
+        try {
+            return System.getProperty("os.name").startsWith("Windows");
+        } catch (SecurityException ex) {
+            // we are not allowed to look at this property
+            return false;
+        }
+	}
+
     
 	//Methods
 	public static boolean isAvailable() {
@@ -116,7 +136,7 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 	}
 
     private boolean isManagedDir(File dir) {
-        File entries = new File(dir, SVNConstants.SVN_DIRNAME + "/entries");
+        File entries = new File(dir, getAdminDirectoryName() + "/entries");
         return entries.exists();
     }
 
@@ -1205,4 +1225,68 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
             }
         }
    }
+    
+    public String getAdminDirectoryName(){
+        if (dirName == null) {
+            // svn only supports this feature on Windows
+            if (isOsWindows())
+                dirName = getEnvironmentVariable("SVN_ASP_DOT_NET_HACK");
+            // If the environment variable was present, then use _svn
+            // as the directory name, otherwise the default of .svn
+            if (dirName != null)
+                dirName = "_svn";
+            else
+                dirName = ".svn";
+        }
+        return dirName;
+    }
+    
+	public boolean isAdminDirectory(String name) {
+		if (getAdminDirectoryName().equals(name) || ".svn".equals(name))
+			return true;
+		else
+			return false;
+	}
+	
+    public static String getEnvironmentVariable(String var) {
+        try {
+            // pre-Java 1.5 this throws an Error.  On Java 1.5 it
+            // returns the environment variable
+           return System.getenv(var);
+        } catch(Error e) {
+            try {
+                // This means we are on 1.4.  Get all variables into
+                // a Properties object and get the variable from that
+                return getEnvVars().getProperty(var);
+            } catch (Throwable e1) {
+                return null;
+            }
+        }
+    }
+
+    public static Properties getEnvVars() throws Throwable {
+        Process p = null;
+        Properties envVars = new Properties();
+        Runtime r = Runtime.getRuntime();
+        if (isOsWindows()) {
+            if (System.getProperty("os.name").toLowerCase().indexOf("windows 9") > -1) 
+                p = r.exec( "command.com /c set" );
+            else
+                p = r.exec( "cmd.exe /c set" );
+        } else {
+            p = r.exec( "env" );
+        }
+        if (p != null) {
+	        BufferedReader br = new BufferedReader(
+	                new InputStreamReader(p.getInputStream()));
+	        String line;
+	        while( (line = br.readLine()) != null ) {
+				int idx = line.indexOf( '=' );
+				String key = line.substring( 0, idx );
+				String value = line.substring( idx+1 );
+				envVars.setProperty( key, value );
+	        }
+        }
+        return envVars;
+	}
 }

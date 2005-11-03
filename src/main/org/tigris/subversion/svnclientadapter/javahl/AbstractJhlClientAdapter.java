@@ -1701,4 +1701,12 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 			throw new SVNClientException(e);
 		}		
 	}
+
+	public String getAdminDirectoryName() {
+		return svnClient.getAdminDirectoryName();
+	}
+
+	public boolean isAdminDirectory(String name) {
+		return svnClient.isAdminDirectory(name);
+	}
 }
