@@ -233,4 +233,8 @@ public class JhlClientAdapter extends AbstractJhlClientAdapter {
             return false;
         }
 	}
+
+	public boolean statusReturnsRemoteInfo() {
+		return true;
+	}
 }

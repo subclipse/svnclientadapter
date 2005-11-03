@@ -63,7 +63,10 @@ public class JhlStatus implements ISVNStatus {
         // we don't use 
         // return (SVNRevision.Number)JhlConverter.convert(_s.getLastChangedRevision());
         // as _s.getLastChangedRevision() is currently broken if revision is -1 
-        return JhlConverter.convertRevisionNumber(_s.getLastChangedRevisionNumber());
+		if (_s.getReposLastCmtAuthor() == null)
+			return JhlConverter.convertRevisionNumber(_s.getLastChangedRevisionNumber());
+		else
+			return JhlConverter.convertRevisionNumber(_s.getReposLastCmtRevisionNumber());
 	}
 
 	/*
@@ -71,7 +74,10 @@ public class JhlStatus implements ISVNStatus {
 	 * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getLastChangedDate()
 	 */
 	public Date getLastChangedDate() {
-		return _s.getLastChangedDate();
+		if (_s.getReposLastCmtAuthor() == null)
+			return _s.getLastChangedDate();
+		else
+			return _s.getReposLastCmtDate();
 	}
 
 	/*
@@ -79,7 +85,10 @@ public class JhlStatus implements ISVNStatus {
 	 * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getLastCommitAuthor()
 	 */
 	public String getLastCommitAuthor() {
-		return _s.getLastCommitAuthor();
+		if (_s.getReposLastCmtAuthor() == null)
+			return _s.getLastCommitAuthor();
+		else
+			return _s.getReposLastCmtAuthor();
 	}
 
 	/*
@@ -142,7 +151,11 @@ public class JhlStatus implements ISVNStatus {
 	 * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getNodeKind()
 	 */
 	public SVNNodeKind getNodeKind() {
-        SVNNodeKind nodeKind = JhlConverter.convertNodeKind(_s.getNodeKind());
+		SVNNodeKind nodeKind;
+		if (_s.getReposLastCmtAuthor() == null)
+			nodeKind = JhlConverter.convertNodeKind(_s.getNodeKind());
+		else
+			nodeKind = JhlConverter.convertNodeKind(_s.getReposKind());
         return nodeKind;
 	}
 	
