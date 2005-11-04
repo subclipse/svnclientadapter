@@ -172,15 +172,14 @@ public class JhlClientAdapter extends AbstractJhlClientAdapter {
 	    		// System.out.println(javaHLErrors.toString());
 	    	} else {
 	    	    // At this point, the library appears to be available, but
-	    	    // it could be a 1.1.x version of JavaHL.  We have to try
-	    	    // to create an object to be sure.
+	    	    // it could be a 1.2.x version of JavaHL.  We have to try
+	    	    // to execute a 1.3.x method to be sure.
 	            try {
 	                SVNClientSynchronized svnClient = new SVNClientSynchronized();
-	                JhlNotificationHandler notificationHandler = new JhlNotificationHandler();
-	                svnClient.notification2(notificationHandler);
+	                String dirname = svnClient.getAdminDirectoryName();
 	            } catch (UnsatisfiedLinkError e) {
 	                available = false;
-	                javaHLErrors.append("Incompatible JavaHL library loaded.  1.2.x or later required.");
+	                javaHLErrors.append("Incompatible JavaHL library loaded.  1.3.x or later required.");
 	            }
 	    	}
     	}
