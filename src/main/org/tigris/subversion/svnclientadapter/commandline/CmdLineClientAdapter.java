@@ -353,7 +353,7 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 	 */
 	public ISVNLogMessage[] getLogMessages(SVNUrl url, SVNRevision revStart, SVNRevision revEnd, boolean fetchChangePath)
 		throws SVNClientException {
-        return getLogMessages((Object) url, revStart, revEnd, fetchChangePath);
+        return getLogMessages((Object) url, revStart, revEnd, false, fetchChangePath, 0);
 	}
 
 	/* (non-Javadoc)
@@ -852,7 +852,7 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 		SVNRevision revEnd,
 		boolean fetchChangePath)
 		throws SVNClientException {
-        return getLogMessages((Object) path, revStart, revEnd, fetchChangePath);
+        return getLogMessages((Object) path, revStart, revEnd, false, fetchChangePath, 0);
 	}
 
 	/* (non-Javadoc)
@@ -905,7 +905,9 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 		Object pathOrUrl,
 		SVNRevision revisionStart,
 		SVNRevision revisionEnd,
-		boolean fetchChangePath)
+		boolean stopOnCopy,
+		boolean fetchChangePath,
+		long limit)
 		throws SVNClientException {
 		String revRange = toString(revisionStart) + ":" +
             toString(revisionEnd);
@@ -915,9 +917,9 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
             // To acquire the paths associated with each delta, we'd
             // have to include the --verbose argument.
 			if (fetchChangePath) {
-                messages = _cmd.logVerbose(toString(pathOrUrl), revRange);
+                messages = _cmd.logVerbose(toString(pathOrUrl), revRange, stopOnCopy, limit);
 			} else {
-                messages = _cmd.log(toString(pathOrUrl), revRange);
+                messages = _cmd.log(toString(pathOrUrl), revRange, stopOnCopy, limit);
 			}
 			return CmdLineLogMessage.createLogMessages(messages);
         } catch (CmdLineException e) {
@@ -1289,4 +1291,16 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
         }
         return envVars;
 	}
+    public ISVNLogMessage[] getLogMessages(File path,
+            SVNRevision revStart, SVNRevision revEnd,
+            boolean stopOnCopy, boolean fetchChangePath, long limit)
+            throws SVNClientException {
+        return getLogMessages((Object) path, revStart, revEnd, stopOnCopy, fetchChangePath, limit);
+    }
+    public ISVNLogMessage[] getLogMessages(File path,
+            SVNRevision revStart, SVNRevision revEnd,
+            boolean stopOnCopy, boolean fetchChangePath)
+            throws SVNClientException {
+        return getLogMessages((Object) path, revStart, revEnd, stopOnCopy, fetchChangePath, 0);
+    }
 }

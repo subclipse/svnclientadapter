@@ -453,7 +453,7 @@ public class SvnCommandLine extends CommandLine {
 	 * @param revision Optional revision range to get log
 	 *   messages from.
 	 */
-	byte[] log(String target, String revision) throws CmdLineException {
+	byte[] log(String target, String revision, boolean stopOnCopy, long limit ) throws CmdLineException {
         setCommand(ISVNNotifyListener.Command.LOG, false);		
 		ArrayList args = new ArrayList();
 		args.add("log");
@@ -461,6 +461,12 @@ public class SvnCommandLine extends CommandLine {
 		args.add(validRev(revision));
 		args.add(target);
 		args.add("--xml");
+		if (stopOnCopy)
+		    args.add("--stop-on-copy");
+		if (limit > 0) {
+		    args.add("--limit");
+		    args.add(Long.toString(limit));
+		}
 		addAuthInfo(args);
         addConfigInfo(args);
         return execBytes(args, true);
@@ -475,7 +481,7 @@ public class SvnCommandLine extends CommandLine {
 	 * @param revision Optional revision range to get log
 	 *   messages from.
 	 */
-	byte[] logVerbose(String target, String revision) throws CmdLineException {
+	byte[] logVerbose(String target, String revision, boolean stopOnCopy, long limit ) throws CmdLineException {
         setCommand(ISVNNotifyListener.Command.LOG, false);		
 		ArrayList args = new ArrayList();
 		args.add("log");
@@ -484,6 +490,12 @@ public class SvnCommandLine extends CommandLine {
 		args.add(target);
 		args.add("--xml");
 		args.add("-v");
+		if (stopOnCopy)
+		    args.add("--stop-on-copy");
+		if (limit > 0) {
+		    args.add("--limit");
+		    args.add(Long.toString(limit));
+		}
 		addAuthInfo(args);
         addConfigInfo(args);
         return execBytes(args, true);

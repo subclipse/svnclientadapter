@@ -878,28 +878,9 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 		SVNRevision revisionEnd,
 		boolean fetchChangePath)
 		throws SVNClientException {
-		try {
-			notificationHandler.setCommand(ISVNNotifyListener.Command.LOG);
-			String target = url.toString();
-			notificationHandler.logCommandLine(
-				"log -r "
-					+ revisionStart.toString()
-					+ ":"
-					+ revisionEnd.toString()
-					+ " "
-					+ target);
-			notificationHandler.setBaseDir();
-			return JhlConverter.convert(
-                    svnClient.logMessages(
-                            target, 
-                            JhlConverter.convert(revisionStart), 
-                            JhlConverter.convert(revisionEnd),
-                            false,  // don't stop on copy
-							fetchChangePath)); // discover paths
-		} catch (ClientException e) {
-			notificationHandler.logException(e);
-			throw new SVNClientException(e);
-		}
+		String target = url.toString();;
+		notificationHandler.setBaseDir();
+        return this.getLogMessages(target, revisionStart, revisionEnd, false, fetchChangePath, 0);
 	} 
     
     /**
@@ -915,29 +896,9 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 		SVNRevision revisionEnd,
 		boolean fetchChangePath)
 		throws SVNClientException {
-		try {
-			notificationHandler.setCommand(
-				ISVNNotifyListener.Command.LOG);
-			String target = fileToSVNPath(path, false);
-			notificationHandler.logCommandLine(
-				"log -r "
-					+ revisionStart.toString()
-					+ ":"
-					+ revisionEnd.toString()
-					+ " "
-					+ target);
-			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
-			return JhlConverter.convert(
-                    svnClient.logMessages(
-                            target, 
-                            JhlConverter.convert(revisionStart), 
-                            JhlConverter.convert(revisionEnd),
-                            false,   // don't stop on copy
-                            fetchChangePath));  // discover paths
-		} catch (ClientException e) {
-			notificationHandler.logException(e);
-			throw new SVNClientException(e);
-		}
+		String target = fileToSVNPath(path, false);
+		notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
+	    return this.getLogMessages(target, revisionStart, revisionEnd, false, fetchChangePath, 0);
 	}    
 
 
@@ -1709,4 +1670,55 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 	public boolean isAdminDirectory(String name) {
 		return svnClient.isAdminDirectory(name);
 	}
+    private ISVNLogMessage[] getLogMessages(String target,
+            SVNRevision revisionStart, SVNRevision revisionEnd,
+            boolean stopOnCopy, boolean fetchChangePath, long limit)
+            throws SVNClientException {
+		try {
+			notificationHandler.setCommand(
+				ISVNNotifyListener.Command.LOG);
+			String logExtras = "";
+			if (stopOnCopy)
+			    logExtras = logExtras + " --stop-on-copy";
+			if (limit > 0 )
+			    logExtras = logExtras + " --limit " + limit;
+			notificationHandler.logCommandLine(
+				"log -r "
+					+ revisionStart.toString()
+					+ ":"
+					+ revisionEnd.toString()
+					+ " "
+					+ target
+					+ logExtras);
+			return JhlConverter.convert(
+                    svnClient.logMessages(
+                            target, 
+                            JhlConverter.convert(revisionStart), 
+                            JhlConverter.convert(revisionEnd),
+                            stopOnCopy, 
+                            fetchChangePath, 
+                            limit));  
+		} catch (ClientException e) {
+			notificationHandler.logException(e);
+			throw new SVNClientException(e);
+		}
+    }
+    
+    public ISVNLogMessage[] getLogMessages(File path,
+            SVNRevision revisionStart, SVNRevision revisionEnd,
+            boolean stopOnCopy, boolean fetchChangePath, long limit)
+            throws SVNClientException {
+			String target = fileToSVNPath(path, false);
+			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
+	        return this.getLogMessages(target, revisionStart, revisionEnd, stopOnCopy, fetchChangePath, limit);
+    }
+    
+    public ISVNLogMessage[] getLogMessages(File path,
+            SVNRevision revisionStart, SVNRevision revisionEnd,
+            boolean stopOnCopy, boolean fetchChangePath)
+            throws SVNClientException {
+		String target = fileToSVNPath(path, false);
+		notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
+        return this.getLogMessages(target, revisionStart, revisionEnd, stopOnCopy, fetchChangePath, 0);
+    }
 }
