@@ -54,6 +54,8 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements No
     private boolean holdStats;
     private String lastUpdate;
     private String lastExternalUpdate;
+    
+    private static final int COMMIT_ACROSS_WC_COMPLETED = -11;
 
     /* (non-Javadoc)
      * @see org.tigris.subversion.javahl.Notify2#onNotify(org.tigris.subversion.javahl.NotifyInformation)
@@ -274,6 +276,9 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements No
                     sentFirstTxdelta = true;
                 }
                 break;                              
+            case COMMIT_ACROSS_WC_COMPLETED :
+                notify = false;
+                logCompleted("Committed revision " + revision + ".");
         }
         if (notify) {
             // only when the status changed

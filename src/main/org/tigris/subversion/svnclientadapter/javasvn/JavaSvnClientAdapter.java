@@ -106,12 +106,6 @@ public class JavaSvnClientAdapter extends AbstractJhlClientAdapter {
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(paths));
 
             long[] newRev = ((SVNClientImpl)svnClient).commit(files, message, recurse, keepLocks, atomic);
-            if (newRev != null){
-                for (int i = 0; i < newRev.length; i++) {
-                    if (newRev[i] > 0)
-                        notificationHandler.logCompleted("Committed revision " + newRev[i] + ".");
-                }
-            }
             return newRev;
         } catch (ClientException e) {
             notificationHandler.logException(e);
