@@ -493,6 +493,7 @@ public interface ISVNClientAdapter {
     /**
      * Retrieve the log messages for an item
      * @param url           url to get the log message for.
+     * @param pegRevision   peg revision for URL
      * @param revisionStart first revision to show
      * @param revisionEnd   last revision to show
      * @param stopOnCopy    do not continue on copy operations
@@ -504,6 +505,7 @@ public interface ISVNClientAdapter {
      */
     public abstract ISVNLogMessage[] getLogMessages(
             SVNUrl url, 
+            SVNRevision pegRevision,
             SVNRevision revisionStart,
             SVNRevision revisionEnd,
             boolean stopOnCopy,

@@ -1297,7 +1297,7 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
             throws SVNClientException {
         return getLogMessages((Object) path, revStart, revEnd, stopOnCopy, fetchChangePath, limit);
     }
-    public ISVNLogMessage[] getLogMessages(SVNUrl url,
+    public ISVNLogMessage[] getLogMessages(SVNUrl url, SVNRevision pegRevision,
             SVNRevision revStart, SVNRevision revEnd,
             boolean stopOnCopy, boolean fetchChangePath, long limit)
             throws SVNClientException {
