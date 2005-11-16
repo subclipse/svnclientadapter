@@ -1721,4 +1721,20 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 		notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
         return this.getLogMessages(target, revisionStart, revisionEnd, stopOnCopy, fetchChangePath, 0);
     }
+    
+    public void relocate(String from, String to, String path, boolean recurse)
+            throws SVNClientException {
+		try {
+			notificationHandler.setCommand(ISVNNotifyListener.Command.RELOCATE);
+			if (recurse)
+			    notificationHandler.logCommandLine("switch --relocate "+ from + " " + to + " " + path);
+			else
+			    notificationHandler.logCommandLine("switch --relocate -N"+ from + " " + to + " " + path);
+			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(new File(path)));
+			svnClient.relocate(from, to, path, recurse);
+		} catch (ClientException e) {
+			notificationHandler.logException(e);
+			throw new SVNClientException(e);            
+		}        
+    }
 }

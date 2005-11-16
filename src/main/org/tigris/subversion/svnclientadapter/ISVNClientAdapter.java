@@ -481,7 +481,6 @@ public interface ISVNClientAdapter {
      * @param limit         limit the number of log messages (if 0 or less no
      *                      limit)
      * @return array of LogMessages
-     * @since 1.2
      */
     public abstract ISVNLogMessage[] getLogMessages(
             File path, 
@@ -831,5 +830,17 @@ public interface ISVNClientAdapter {
      * Subversion runtime
      */
     public abstract boolean isAdminDirectory(String name);
+
+
+    /**
+     * Rewrite the url's in the working copy
+     * @param from      old url
+     * @param to        new url
+     * @param path      working copy path
+     * @param recurse   recurse into subdirectories
+     * @throws SVNClientException
+     */
+    public abstract void relocate(String from, String to, String path, boolean recurse)
+            throws SVNClientException;
 
 }

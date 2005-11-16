@@ -57,6 +57,7 @@ public interface ISVNNotifyListener {
         public static final int MERGE = 27;
         public static final int LOCK = 28;
         public static final int UNLOCK = 29;
+        public static final int RELOCATE = 30;
     }    
 
     public void setCommand(int command);

@@ -845,6 +845,24 @@ public class SvnCommandLine extends CommandLine {
         addConfigInfo(args);        
         return execString(args,false);
     }
+
+    /**
+     * Update the working copy to point to a new repository URL.
+     */
+    String relocate(String from, String to, String path, boolean recurse) throws CmdLineException {
+        setCommand(ISVNNotifyListener.Command.RELOCATE, false);
+        ArrayList args = new ArrayList();
+        args.add("sw");
+        args.add("--relocate");
+        if (!recurse)
+            args.add("-N");
+        args.add(from);
+        args.add(to);
+        args.add(path);
+        addAuthInfo(args);
+        addConfigInfo(args);        
+        return execString(args,false);
+    }
     
     /**
      * Update the working copy to mirror a new URL within the repository.

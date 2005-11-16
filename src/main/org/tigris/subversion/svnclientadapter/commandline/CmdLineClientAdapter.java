@@ -1303,4 +1303,14 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
             throws SVNClientException {
         return getLogMessages((Object) path, revStart, revEnd, stopOnCopy, fetchChangePath, 0);
     }
+    
+    public void relocate(String from, String to, String path, boolean recurse)
+            throws SVNClientException {
+		try {
+			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(new File(path)));
+            _cmd.relocate(from, to, path, recurse);
+        } catch (CmdLineException e) {
+        	throw SVNClientException.wrapException(e);
+        }
+    }
 }
