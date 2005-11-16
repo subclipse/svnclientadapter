@@ -21,7 +21,6 @@ import org.tigris.subversion.javahl.ClientException;
 import org.tigris.subversion.svnclientadapter.ISVNClientAdapter;
 import org.tigris.subversion.svnclientadapter.ISVNNotifyListener;
 import org.tigris.subversion.svnclientadapter.ISVNPromptUserPassword;
-import org.tigris.subversion.svnclientadapter.SVNBaseDir;
 import org.tigris.subversion.svnclientadapter.SVNClientAdapterFactory;
 import org.tigris.subversion.svnclientadapter.SVNClientException;
 import org.tigris.subversion.svnclientadapter.commandline.CmdLineClientAdapterFactory;
@@ -103,7 +102,7 @@ public class JavaSvnClientAdapter extends AbstractJhlClientAdapter {
                 commandLine+=" "+ files[i];
             }
             notificationHandler.logCommandLine(commandLine);
-			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(paths));
+			notificationHandler.setBaseDir();
 
             long[] newRev = ((SVNClientImpl)svnClient).commit(files, message, recurse, keepLocks, atomic);
             return newRev;
