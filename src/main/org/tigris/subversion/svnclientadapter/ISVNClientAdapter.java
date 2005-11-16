@@ -472,7 +472,7 @@ public interface ISVNClientAdapter {
             throws SVNClientException;
     /**
      * Retrieve the log messages for an item
-     * @param path          path or url to get the log message for.
+     * @param path          path to get the log message for.
      * @param revisionStart first revision to show
      * @param revisionEnd   last revision to show
      * @param stopOnCopy    do not continue on copy operations
@@ -484,6 +484,26 @@ public interface ISVNClientAdapter {
      */
     public abstract ISVNLogMessage[] getLogMessages(
             File path, 
+            SVNRevision revisionStart,
+            SVNRevision revisionEnd,
+            boolean stopOnCopy,
+            boolean fetchChangePath,
+            long limit)
+            throws SVNClientException;
+    /**
+     * Retrieve the log messages for an item
+     * @param url           url to get the log message for.
+     * @param revisionStart first revision to show
+     * @param revisionEnd   last revision to show
+     * @param stopOnCopy    do not continue on copy operations
+     * @param fetchChangePath  returns the paths of the changed items in the
+     *                      returned objects
+     * @param limit         limit the number of log messages (if 0 or less no
+     *                      limit)
+     * @return array of LogMessages
+     */
+    public abstract ISVNLogMessage[] getLogMessages(
+            SVNUrl url, 
             SVNRevision revisionStart,
             SVNRevision revisionEnd,
             boolean stopOnCopy,

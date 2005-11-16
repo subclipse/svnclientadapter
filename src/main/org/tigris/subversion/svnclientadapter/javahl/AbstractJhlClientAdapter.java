@@ -1713,6 +1713,15 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 	        return this.getLogMessages(target, revisionStart, revisionEnd, stopOnCopy, fetchChangePath, limit);
     }
     
+    public ISVNLogMessage[] getLogMessages(SVNUrl url,
+            SVNRevision revisionStart, SVNRevision revisionEnd,
+            boolean stopOnCopy, boolean fetchChangePath, long limit)
+            throws SVNClientException {
+			String target = url.toString();;
+			notificationHandler.setBaseDir();
+	        return this.getLogMessages(target, revisionStart, revisionEnd, stopOnCopy, fetchChangePath, limit);
+    }
+    
     public ISVNLogMessage[] getLogMessages(File path,
             SVNRevision revisionStart, SVNRevision revisionEnd,
             boolean stopOnCopy, boolean fetchChangePath)
