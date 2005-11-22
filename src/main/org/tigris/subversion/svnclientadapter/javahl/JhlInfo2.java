@@ -174,19 +174,28 @@ public class JhlInfo2 implements ISVNInfo {
      * @see org.tigris.subversion.svnclientadapter.ISVNInfo#getLockCreationDate()
      */
     public Date getLockCreationDate() {
-        return info.getLock().getCreationDate();
+    	if (info.getLock() == null)
+    		return null;
+    	else
+    		return info.getLock().getCreationDate();
     }
 
     /* (non-Javadoc)
      * @see org.tigris.subversion.svnclientadapter.ISVNInfo#getLockOwner()
      */
     public String getLockOwner() {
-        return info.getLock().getOwner();
+    	if (info.getLock() == null)
+    		return null;
+    	else
+    		return info.getLock().getOwner();
     }
     /* (non-Javadoc)
      * @see org.tigris.subversion.svnclientadapter.ISVNInfo#getLockComment()
      */
     public String getLockComment() {
-        return info.getLock().getComment();
+    	if (info.getLock() == null)
+    		return null;
+    	else
+    		return info.getLock().getComment();
     }
 }
