@@ -716,6 +716,23 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 		}
 	}
 
+	public ISVNProperty propertyGet(SVNUrl url, String propertyName) throws SVNClientException {
+		try {
+			InputStream valueAndData = _cmd.propget(url.toString(), propertyName);
+            
+			byte[] bytes = streamToByteArray(valueAndData);
+            if (bytes.length == 0) {
+                return null; // the property does not exist
+            }
+            
+			return new CmdLineProperty(propertyName, new String(bytes), null, bytes);
+		} catch (CmdLineException e) {
+			throw SVNClientException.wrapException(e);
+		} catch (IOException e) {
+			throw SVNClientException.wrapException(e);
+		}
+	}
+
     /*
      * (non-Javadoc)
      * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#propertySet(java.io.File, java.lang.String, java.io.File, boolean)
@@ -1012,6 +1029,28 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 				} else {
 					propertyName = propertyLine.substring(2);
 					properties.add(propertyGet(path,propertyName));
+				}
+			}
+			return (ISVNProperty[]) properties.toArray(new ISVNProperty[0]);
+			
+		} catch (CmdLineException e) {
+			throw SVNClientException.wrapException(e);
+		}
+	}
+
+	public ISVNProperty[] getProperties(SVNUrl url) throws SVNClientException {
+		try {
+			String propertiesString = _cmd.proplist(url.toString(), false);
+			String propertyName;
+			List properties = new LinkedList();
+			
+			StringTokenizer st = new StringTokenizer(propertiesString, Helper.NEWLINE);
+			while (st.hasMoreTokens()) {
+				String propertyLine = st.nextToken();
+				if (propertyLine.startsWith("Properties on '")) {
+				} else {
+					propertyName = propertyLine.substring(2);
+					properties.add(propertyGet(url,propertyName));
 				}
 			}
 			return (ISVNProperty[]) properties.toArray(new ISVNProperty[0]);

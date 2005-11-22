@@ -1001,6 +1001,35 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 		}		
 	}
 
+	/**
+	 * returns the svn properties for the given url
+	 * @param url
+	 * @return
+	 * @throws SVNClientException
+	 */
+	public ISVNProperty[] getProperties(SVNUrl url) throws SVNClientException {
+		try {
+			notificationHandler.setCommand(ISVNNotifyListener.Command.PROPLIST);
+			String target = url.toString();
+			notificationHandler.logCommandLine(
+					"proplist "+ target);
+			notificationHandler.setBaseDir();
+			PropertyData[] propertiesData = svnClient.properties(target);
+			if (propertiesData == null) {
+				// no properties
+				return new JhlPropertyData[0];
+			}
+			JhlPropertyData[] svnProperties = new JhlPropertyData[propertiesData.length];
+			for (int i = 0; i < propertiesData.length;i++) {
+				svnProperties[i] = new JhlPropertyData(propertiesData[i]);  
+			}
+			return svnProperties;
+		} catch (ClientException e) {
+			notificationHandler.logException(e);
+			throw new SVNClientException(e);
+		}		
+	}
+
     /**
      * set a property
      * @param path
@@ -1118,6 +1147,35 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 			notificationHandler.logCommandLine(
 				"propget " + propertyName + " " + target);
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
+			PropertyData propData = svnClient.propertyGet(target, propertyName);
+            if (propData == null)
+                return null;
+            else
+			    return new JhlPropertyData(propData);
+		} catch (ClientException e) {
+			notificationHandler.logException(e);
+			throw new SVNClientException(e);
+		}
+
+	}
+
+	/**
+     * get a property
+     * @param url
+     * @param propertyName
+     * @param propertyValue
+     * @return the property or null if property was not found
+     * @throws ClientException
+     */
+	public ISVNProperty propertyGet(SVNUrl url, String propertyName)
+		throws SVNClientException {
+		try {
+			notificationHandler.setCommand(ISVNNotifyListener.Command.PROPGET);
+
+			String target = url.toString();
+			notificationHandler.logCommandLine(
+				"propget " + propertyName + " " + target);
+			notificationHandler.setBaseDir();
 			PropertyData propData = svnClient.propertyGet(target, propertyName);
             if (propData == null)
                 return null;

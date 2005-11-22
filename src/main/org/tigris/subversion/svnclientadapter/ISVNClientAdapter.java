@@ -563,6 +563,17 @@ public interface ISVNClientAdapter {
 	 */
 	public abstract ISVNProperty propertyGet(File path, String propertyName)
 		throws SVNClientException;
+
+	/**
+	 * get a property or null if property is not found
+	 * @param url
+	 * @param propertyName
+	 * @param propertyValue
+	 * @return
+	 * @throws SVNClientException
+	 */
+	public abstract ISVNProperty propertyGet(SVNUrl url, String propertyName)
+		throws SVNClientException;
 	/**
 	 * delete a property
 	 * @param path
@@ -694,6 +705,14 @@ public interface ISVNClientAdapter {
      * @throws SVNClientException
      */    
 	public abstract ISVNProperty[] getProperties(File path) throws SVNClientException;
+    
+    /**
+     * Get all the properties for the given url
+     * @param url
+     * @return
+     * @throws SVNClientException
+     */    
+	public abstract ISVNProperty[] getProperties(SVNUrl url) throws SVNClientException;
 
 	/**
 	 * Remove 'conflicted' state on working copy files or directories
