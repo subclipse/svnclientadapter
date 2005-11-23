@@ -1652,22 +1652,12 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(paths));
 
             svnClient.lock(files, comment, force);
-            // Workaround problem that lock method does not notify errors
-            boolean errors = false;
-            ISVNStatus status[] = this.getStatus(paths);
-            for (int i = 0; i < status.length; i++) {
-                if (status[i].getLockOwner() == null) {
-                    errors = true;
-                    notificationHandler.logError("Failed to lock " + status[i].getPath()); 
-                } else {
-                    notificationHandler.notifyListenersOfChange(status[i].getFile().getAbsolutePath());
-                }
+            for (int i = 0; i < files.length; i++) {
+                notificationHandler.notifyListenersOfChange(files[i]);
             }
-            if (errors)
-                throw new SVNClientException("Failed to lock one or more of the selected resources.");
         } catch (ClientException e) {
             notificationHandler.logException(e);
-            throw new SVNClientException(e);
+//            throw new SVNClientException(e);
         }
 
     }
@@ -1695,7 +1685,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
             }
         } catch (ClientException e) {
             notificationHandler.logException(e);
-            throw new SVNClientException(e);
+ //           throw new SVNClientException(e);
         }
     
     }
