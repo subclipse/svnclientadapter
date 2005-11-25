@@ -98,7 +98,7 @@ public class SVNUrl {
             (!protocol.equalsIgnoreCase("https")) &&
             (!protocol.equalsIgnoreCase("file")) &&
             (!protocol.equalsIgnoreCase("svn")) &&
-            (!protocol.equalsIgnoreCase("svn+ssh")) ) {
+            (!protocol.startsWith("svn+")) ) {
             throw new MalformedURLException("Invalid svn url :"+svnUrl);
         }
         parsed = parsed.substring(i+3);
@@ -156,7 +156,7 @@ public class SVNUrl {
             port = 80;
         } else if ("https".equals(protocol)) {
             port = 443;
-        } else if ("svn+ssh".equals(protocol)) {
+        } else if (protocol != null && protocol.startsWith("svn+")) {
             port = 22;
         }
         return port;
