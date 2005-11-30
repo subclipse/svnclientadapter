@@ -845,6 +845,26 @@ public interface ISVNClientAdapter {
      * @param force break an existing lock
      * @throws SVNClientException
      */
+    public abstract void lock(SVNUrl[] paths, String comment, boolean force)
+            throws SVNClientException;
+
+    /**
+     * Unlock a working copy item
+     * @param paths  path of the items to unlock
+     * @param force break an existing lock
+     * @throws SVNClientException
+     */
+    public abstract void unlock(SVNUrl[] paths, boolean force)
+            throws SVNClientException;
+
+
+    /**
+     * Lock a working copy item
+     * @param paths  path of the items to lock
+     * @param comment
+     * @param force break an existing lock
+     * @throws SVNClientException
+     */
     public abstract void lock(File[] paths, String comment, boolean force)
             throws SVNClientException;
 

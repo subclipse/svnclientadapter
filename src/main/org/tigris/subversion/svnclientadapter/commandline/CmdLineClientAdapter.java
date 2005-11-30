@@ -1224,8 +1224,36 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
         }
 	}
     
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#lock(SVNUrl[], java.lang.String, boolean)
+     */
+    public void lock(SVNUrl[] uris, String comment, boolean force)
+        throws SVNClientException {
+        // notificationHandler isn't used because we're operating on
+        // the repository (rather than the WC).
+        try {
+            _cmd.lock(uris, comment, force);
+        } catch (CmdLineException e) {
+            throw SVNClientException.wrapException(e);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#unlock(SVNUrl[], boolean)
+     */
+    public void unlock(SVNUrl[] uris, boolean force)
+        throws SVNClientException {
+        // notificationHandler isn't used because we're operating on
+        // the repository (rather than the WC).
+        try {
+            _cmd.unlock(uris, force);
+        } catch (CmdLineException e) {
+            throw SVNClientException.wrapException(e);
+        }
+    }
+    
 	/* (non-Javadoc)
-     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#lock(java.lang.String[], java.lang.String, boolean)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#lock(java.io.File[], java.lang.String, boolean)
      */
     public void lock(File[] paths, String comment, boolean force)
             throws SVNClientException {

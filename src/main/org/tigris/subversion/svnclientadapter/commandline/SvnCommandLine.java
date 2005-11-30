@@ -924,7 +924,14 @@ public class SvnCommandLine extends CommandLine {
 		execVoid(args);
 	}
 
-    String lock(String[] path, String comment, boolean force) throws CmdLineException {
+    /**
+     * @param paths Represents either WC paths, or repository URIs.
+     * @param comment The comment to use for the lock operation.
+     * @param force Whether to include <code>--force</code> in the
+     * command-line.
+     */
+    String lock(Object[] paths, String comment, boolean force)
+        throws CmdLineException {
         setCommand(ISVNNotifyListener.Command.LOCK, true);
 		ArrayList args = new ArrayList();
 		args.add("lock");
@@ -937,14 +944,20 @@ public class SvnCommandLine extends CommandLine {
 		addAuthInfo(args);
         addConfigInfo(args);
 		        
-        for (int i = 0; i < path.length;i++) {
-        	args.add(path[i]);
+        for (int i = 0; i < paths.length; i++) {
+        	args.add(paths[i]);
         }
         
-		return execString(args,false);
+		return execString(args, false);
     }
 
-    String unlock(String[] path, boolean force) throws CmdLineException {
+    /**
+     * @param paths Represents either WC paths, or repository URIs.
+     * @param comment The comment to use for the lock operation.
+     * @param force Whether to include <code>--force</code> in the
+     * command-line.
+     */
+    String unlock(Object[] paths, boolean force) throws CmdLineException {
         setCommand(ISVNNotifyListener.Command.UNLOCK, true);
 		ArrayList args = new ArrayList();
 		args.add("unlock");
@@ -953,8 +966,8 @@ public class SvnCommandLine extends CommandLine {
 		addAuthInfo(args);
         addConfigInfo(args);
 		        
-        for (int i = 0; i < path.length;i++) {
-        	args.add(path[i]);
+        for (int i = 0; i < paths.length;i++) {
+        	args.add(paths[i]);
         }
         
 		return execString(args,false);

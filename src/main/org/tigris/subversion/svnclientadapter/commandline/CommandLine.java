@@ -33,6 +33,13 @@ import java.util.StringTokenizer;
  */
 abstract class CommandLine {
 
+    /**
+     * Environment variables set when invoking the command-line.
+     * Includes <code>LANG</code> and <code>LC_ALL</code>, set such
+     * that Subversion's output is not localized.
+     */
+    private static final String[] ENV_VARS = { "LANG=C", "LC_ALL=C" };
+
 	protected String CMD;
     protected CmdLineNotificationHandler notificationHandler;
     
@@ -51,54 +58,58 @@ abstract class CommandLine {
 
 
     /**
-     * execute the given svn command and returns the corresponding process  
+     * Executes the given svn command and returns the corresponding
+     * <code>Process</code> object.
+     *
+     * @param svnArguments The command-line arguments to execute.
      */
-	protected Process execProcess(ArrayList svnArguments) throws CmdLineException {
-		Runtime rt = Runtime.getRuntime();
+	protected Process execProcess(ArrayList svnArguments)
+        throws CmdLineException {
+		// We add "svn" or "svnadmin" to the arguments (as
+		// appropriate), and convert it to an array of strings.
+        int svnArgsLen = svnArguments.size();
+        String[] cmdline = new String[svnArgsLen + 1];
+        cmdline[0] = CMD;
 
-		String svnCommand = "";
+		StringBuffer svnCommand = new StringBuffer();
 		boolean nextIsPassword = false;
-		for (int i = 0; i < svnArguments.size(); i++) {
+
+		for (int i = 0; i < svnArgsLen; i++) {
 			if (i != 0)
-				svnCommand += " ";
+				svnCommand.append(' ');
 			
-			String arg = (String)svnArguments.get(i);
+			Object arg = svnArguments.get(i);
+            if (arg != null)
+                arg = arg.toString();
 			
-			if (arg == "") {
+			if ("".equals(arg)) {
 				arg = "\"\"";
-				svnArguments.set(i, arg);
 			}
 			
 			if (nextIsPassword) {
-				svnCommand += "*******";
+				// Avoid showing the password on the console.
+				svnCommand.append("*******");
 				nextIsPassword = false;	
 			} else {
-				svnCommand += arg;
+				svnCommand.append(arg);
 			}
 			
-			if (arg.equals("--password")) {
-				// we don't want to show the password in the console ...
+			if ("--password".equals(arg)) {
 				nextIsPassword = true;
-			}				
+			}
+
+            // Regardless of the data type passed in via svnArguments,
+            // at this point we expect to have a String object.
+            cmdline[i + 1] = (String) arg;
 		}
-        notificationHandler.logCommandLine(svnCommand);
+        notificationHandler.logCommandLine(svnCommand.toString());
 
-		// we add "svn" or "svnadmin" to  the arguments and convert it to an array of strings
-		ArrayList argsArrayList = new ArrayList(svnArguments);
-		argsArrayList.add(0,CMD);
-		String[] argsArray = new String[argsArrayList.size()];
-		argsArrayList.toArray(argsArray);
-
-		/* run the process */
-		Process proc = null;
+		// Run the command, and return the associated Process object.
 		try {
-			//Set the LANG env variable so the svn's output is not localized
-			proc = rt.exec(argsArray, new String[] {"LANG=C", "LC_ALL=C"});
+            return Runtime.getRuntime().exec(cmdline, ENV_VARS);
 		} catch (IOException e) {
 			throw new CmdLineException(e);
 		}
-
-		return proc;
 	}
 
     /**
@@ -122,10 +133,10 @@ abstract class CommandLine {
 
 	/**
 	 * Runs the process and returns the results.
-	 * @param svnArguments The arguments to pass to the command-line
-	 * binary.
+     *
+	 * @param svnArguments The command-line arguments to execute.
      * @param coalesceLines
-	 * @return String
+	 * @return Any output returned from execution of the command-line.
 	 */
 	protected String execString(ArrayList svnArguments, boolean coalesceLines)
         throws CmdLineException {

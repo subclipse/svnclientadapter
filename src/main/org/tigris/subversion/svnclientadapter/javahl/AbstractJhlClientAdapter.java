@@ -1634,6 +1634,23 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 	        this.setPromptUserPassword(prompt);
         }
     }
+    /**
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#lock(SVNUrl[], java.lang.String, boolean)
+     */
+    public void lock(SVNUrl[] uris, String comment, boolean force)
+            throws SVNClientException {
+        notImplementedYet();
+    }
+
+    /**
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#unlock(SVNUrl[], boolean)
+     */
+    public void unlock(SVNUrl[] uris, boolean force)
+        throws SVNClientException {
+        notImplementedYet();
+    
+    }
+
     /* (non-Javadoc)
      * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#lock(java.lang.String[], java.lang.String, boolean)
      */
