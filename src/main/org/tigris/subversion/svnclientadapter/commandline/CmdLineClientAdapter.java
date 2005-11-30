@@ -1358,4 +1358,17 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
         	throw SVNClientException.wrapException(e);
         }
     }
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#diff(java.io.File, org.tigris.subversion.svnclientadapter.SVNUrl, org.tigris.subversion.svnclientadapter.SVNRevision, java.io.File, boolean)
+	 */
+	public void diff(File path, SVNUrl url, SVNRevision urlRevision,
+			File outFile, boolean recurse) throws SVNClientException {
+		diff(
+				toString(path),
+				null,
+				toString(url) + "@" + toString(urlRevision),
+				null,
+				outFile,
+				recurse);
+	}
 }

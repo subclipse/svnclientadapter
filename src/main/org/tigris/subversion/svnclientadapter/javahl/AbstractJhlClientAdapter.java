@@ -1796,4 +1796,32 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 			throw new SVNClientException(e);            
 		}        
     }
+    
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#diff(java.io.File, org.tigris.subversion.svnclientadapter.SVNUrl, org.tigris.subversion.svnclientadapter.SVNRevision, java.io.File, boolean)
+	 */
+	public void diff(File path, SVNUrl url, SVNRevision urlRevision,
+			File outFile, boolean recurse) throws SVNClientException {
+        try {
+            notificationHandler.setCommand(ISVNNotifyListener.Command.DIFF);
+                
+            // we don't want canonical file path (otherwise the complete file name
+            // would be in the patch). This way the user can choose to use a relative
+            // path
+            String wcPath = fileToSVNPath(path, false);
+            String svnOutFile = fileToSVNPath(outFile, false);
+            
+            String commandLine = "diff --old " + wcPath + " ";
+           	commandLine += "--new " + url.toString();
+            if (!urlRevision.equals(SVNRevision.HEAD))
+            	commandLine += "@"+ urlRevision.toString();
+            
+            notificationHandler.logCommandLine(commandLine);
+			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
+            svnClient.diff(wcPath,Revision.WORKING,url.toString(),JhlConverter.convert(urlRevision), svnOutFile, recurse);
+        } catch (ClientException e) {
+            notificationHandler.logException(e);
+            throw new SVNClientException(e);            
+        }
+	}
 }

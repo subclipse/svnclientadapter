@@ -648,6 +648,17 @@ public interface ISVNClientAdapter {
 		File outFile,
 		boolean recurse)
 		throws SVNClientException;
+	
+	/**
+	 * display the differences between WC and url. 
+	 */
+	public abstract void diff(
+		File path,
+		SVNUrl url,
+		SVNRevision urlRevision,
+		File outFile,
+		boolean recurse)
+		throws SVNClientException;
 
     /**
      * returns the keywords used for substitution for the given resource

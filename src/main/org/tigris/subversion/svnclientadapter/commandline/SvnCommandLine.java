@@ -330,11 +330,13 @@ public class SvnCommandLine extends CommandLine {
         setCommand(ISVNNotifyListener.Command.DIFF, false);
 		ArrayList args = new ArrayList();
 		args.add("diff");
-		args.add("-r");
-		if (newRev.equals("WORKING")) { // "WORKING" is not a valid revision argument at least in 0,35,1
-			args.add(oldRev);
-		} else {
-			args.add(oldRev+":"+newRev);			
+		if (newRev != null) {
+			args.add("-r");
+			if (newRev.equals("WORKING")) { // "WORKING" is not a valid revision argument at least in 0,35,1
+				args.add(oldRev);
+			} else {
+				args.add(oldRev+":"+newRev);			
+			}
 		}
 		args.add("--old");
 		args.add(oldPath);
