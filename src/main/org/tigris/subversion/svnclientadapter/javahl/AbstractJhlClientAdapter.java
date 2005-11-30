@@ -1224,59 +1224,82 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
         }        
     }
     
+    private void doDiff(String oldTarget, SVNRevision oldTargetRev, String newTarget, SVNRevision newTargetRev,
+            File outFile, boolean recurse) throws SVNClientException {
+        try {
+            notificationHandler.setCommand(ISVNNotifyListener.Command.DIFF);
+                
+            if (oldTarget == null)
+                oldTarget = ".";
+            if (newTarget == null)
+                newTarget = oldTarget;
+            if (oldTargetRev == null)
+                oldTargetRev = SVNRevision.BASE;
+            if (newTargetRev == null)
+                newTargetRev = SVNRevision.WORKING;
+            
+            String svnOutFile = fileToSVNPath(outFile, false);
+            
+            String commandLine = "diff ";
+            if ( (oldTargetRev.getKind() != RevisionKind.base) ||
+                 (newTargetRev.getKind() != RevisionKind.working) )
+            {
+                commandLine += "-r "+ oldTargetRev.toString();
+                if (newTargetRev.getKind() != RevisionKind.working)
+                    commandLine+= ":"+ newTargetRev.toString();
+                commandLine += " ";         
+            }
+            if (!oldTarget.equals("."))
+                commandLine += "--old " + oldTarget + " ";
+            if (!newTarget.equals(oldTarget))
+                commandLine += "--new " + newTarget + " ";
+            
+            notificationHandler.logCommandLine(commandLine);
+            svnClient.diff(oldTarget,JhlConverter.convert(oldTargetRev),newTarget,JhlConverter.convert(newTargetRev), svnOutFile, recurse);
+        } catch (ClientException e) {
+            notificationHandler.logException(e);
+            throw new SVNClientException(e);            
+        }
+        
+    }
+    
     /**
      * display the differences between two paths. 
      */
     public void diff(File oldPath, SVNRevision oldPathRevision,
                      File newPath, SVNRevision newPathRevision,
                      File outFile, boolean recurse) throws SVNClientException {
-        try {
-            notificationHandler.setCommand(ISVNNotifyListener.Command.DIFF);
-                
-            if (oldPath == null)
-                oldPath = new File(".");
-            if (newPath == null)
-                newPath = oldPath;
-            if (oldPathRevision == null)
-                oldPathRevision = SVNRevision.BASE;
-            if (newPathRevision == null)
-                newPathRevision = SVNRevision.WORKING;
-            
-            // we don't want canonical file path (otherwise the complete file name
-            // would be in the patch). This way the user can choose to use a relative
-            // path
-            String oldTarget = fileToSVNPath(oldPath, false);
-            String newTarget = fileToSVNPath(newPath, false);
-            String svnOutFile = fileToSVNPath(outFile, false);
-            
-            String commandLine = "diff ";
-            if ( (oldPathRevision.getKind() != RevisionKind.base) ||
-                 (newPathRevision.getKind() != RevisionKind.working) )
-            {
-                commandLine += "-r "+oldPathRevision.toString();
-                if (newPathRevision.getKind() != RevisionKind.working)
-                    commandLine+= ":"+newPathRevision.toString();
-                commandLine += " ";         
-            }
-            if (!oldPath.equals(new File(".")))
-                commandLine += "--old "+oldTarget+" ";
-            if (!newPath.equals(oldPath))
-                commandLine += "--new "+newTarget+" ";
-            
-            notificationHandler.logCommandLine(commandLine);
-			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(new File[]{oldPath,newPath}));
-            svnClient.diff(oldTarget,JhlConverter.convert(oldPathRevision),newTarget,JhlConverter.convert(newPathRevision), svnOutFile, recurse);
-        } catch (ClientException e) {
-            notificationHandler.logException(e);
-            throw new SVNClientException(e);            
-        }
+        if (oldPath == null)
+            oldPath = new File(".");
+        if (newPath == null)
+            newPath = oldPath;
+        
+        // we don't want canonical file path (otherwise the complete file name
+        // would be in the patch). This way the user can choose to use a relative
+        // path
+        String oldTarget = fileToSVNPath(oldPath, false);
+        String newTarget = fileToSVNPath(newPath, false);
+        
+		notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(new File[]{oldPath,newPath}));
+		this.doDiff(oldTarget, oldPathRevision, newTarget, newPathRevision, outFile, recurse);
     }
 
     /**
      * diff between path and head revision
      */
     public void diff(File path, File outFile, boolean recurse) throws SVNClientException {
-        diff(path, null,null,null,outFile,recurse);
+        String oldTarget = fileToSVNPath(path, false);
+		notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
+        this.doDiff(oldTarget, null,null,null,outFile,recurse);
+    }
+    
+    public void diff(File path, SVNRevision pathRevision, SVNUrl url,
+            SVNRevision urlRevision, File outFile, boolean recurse)
+            throws SVNClientException {
+        String oldTarget = url.toString();
+        String newTarget = fileToSVNPath(path, false);
+		notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
+		this.doDiff(oldTarget, urlRevision, newTarget, pathRevision, outFile, recurse);
     }
 
     /**
@@ -1285,38 +1308,10 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
     public void diff(SVNUrl oldUrl, SVNRevision oldUrlRevision,
                      SVNUrl newUrl, SVNRevision newUrlRevision,
                      File outFile, boolean recurse) throws SVNClientException {
-        try {
-            notificationHandler.setCommand(ISVNNotifyListener.Command.DIFF);
-                
-            if (newUrl == null)
-                newUrl = oldUrl;
-            if (oldUrlRevision == null)
-                oldUrlRevision = SVNRevision.HEAD;
-            if (newUrlRevision == null)
-                newUrlRevision = SVNRevision.HEAD;
-            
-            String svnOutFile = fileToSVNPath(outFile, false);
-            
-            String commandLine = "diff ";
-            if ( (oldUrlRevision.getKind() != RevisionKind.head) ||
-                 (newUrlRevision.getKind() != RevisionKind.head) )
-            {
-                commandLine += "-r "+oldUrlRevision.toString();
-                if (newUrlRevision.getKind() != RevisionKind.head)
-                    commandLine+= ":"+newUrlRevision.toString();
-                commandLine += " ";         
-            }
-            commandLine += oldUrl+" ";
-            if (!newUrl.equals(oldUrl))
-                commandLine += newUrl+" ";
-            
-            notificationHandler.logCommandLine(commandLine);
-			notificationHandler.setBaseDir();
-            svnClient.diff(oldUrl.toString(),JhlConverter.convert(oldUrlRevision),newUrl.toString(),JhlConverter.convert(newUrlRevision), svnOutFile, recurse);
-        } catch (ClientException e) {
-            notificationHandler.logException(e);
-            throw new SVNClientException(e);            
-        }
+        if (newUrl == null)
+            newUrl = oldUrl;
+		notificationHandler.setBaseDir();
+		this.doDiff(oldUrl.toString(), oldUrlRevision, newUrl.toString(), newUrlRevision, outFile, recurse);
     }
 
     public void diff(SVNUrl url, SVNRevision oldUrlRevision, SVNRevision newUrlRevision,

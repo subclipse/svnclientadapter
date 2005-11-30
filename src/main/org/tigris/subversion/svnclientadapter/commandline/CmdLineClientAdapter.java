@@ -663,7 +663,7 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
      * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#diff(java.io.File, java.io.File, boolean)
      */
 	public void diff(File path, File outFile, boolean recurse) throws SVNClientException {
-		diff(path, null, null, null, outFile, recurse);
+		diff(path, null, path, null, outFile, recurse);
 	}
 
     /*
@@ -680,6 +680,18 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 		throws SVNClientException {
 		diff(toString(oldUrl), oldUrlRevision, toString(newUrl), newUrlRevision, outFile, recurse);
 	}
+	
+    public void diff(File path, SVNRevision pathRevision, SVNUrl url,
+            SVNRevision urlRevision, File outFile, boolean recurse)
+            throws SVNClientException {
+		diff(
+				toString(url),
+				urlRevision,
+				toString(path),
+				pathRevision,
+				outFile,
+				recurse);
+    }
 
     /*
      * (non-Javadoc)
