@@ -20,7 +20,8 @@ import java.text.MessageFormat;
 
 import org.tigris.subversion.javahl.ClientException;
 import org.tigris.subversion.javahl.SVNAdmin;
-import org.tigris.subversion.javahl.SVNClientSynchronized;
+import org.tigris.subversion.javahl.SVNClient;
+import org.tigris.subversion.javahl.SVNClientInterface;
 import org.tigris.subversion.svnclientadapter.ISVNNotifyListener;
 import org.tigris.subversion.svnclientadapter.SVNClientException;
 
@@ -40,7 +41,7 @@ public class JhlClientAdapter extends AbstractJhlClientAdapter {
 	private static StringBuffer javaHLErrors = new StringBuffer("Failed to load JavaHL Library.\nThese are the errors that were encountered:\n");
 
     public JhlClientAdapter() {
-        svnClient = new SVNClientSynchronized();
+        svnClient = new SVNClient();
         svnAdmin = new SVNAdmin();
         notificationHandler = new JhlNotificationHandler();
         svnClient.notification2(notificationHandler);
@@ -175,7 +176,7 @@ public class JhlClientAdapter extends AbstractJhlClientAdapter {
 	    	    // it could be a 1.2.x version of JavaHL.  We have to try
 	    	    // to execute a 1.3.x method to be sure.
 	            try {
-	                SVNClientSynchronized svnClient = new SVNClientSynchronized();
+	                SVNClientInterface svnClient = new SVNClient();
 	                String dirname = svnClient.getAdminDirectoryName();
 	            } catch (UnsatisfiedLinkError e) {
 	                available = false;
