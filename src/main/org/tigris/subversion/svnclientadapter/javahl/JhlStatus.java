@@ -66,6 +66,8 @@ public class JhlStatus implements ISVNStatus {
 		if (_s.getReposLastCmtAuthor() == null)
 			return JhlConverter.convertRevisionNumber(_s.getLastChangedRevisionNumber());
 		else
+			if (_s.getReposLastCmtRevisionNumber() == 0)
+				return null;
 			return JhlConverter.convertRevisionNumber(_s.getReposLastCmtRevisionNumber());
 	}
 
