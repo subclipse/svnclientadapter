@@ -140,6 +140,8 @@ public abstract class SVNNotificationHandler {
 	}
     
     private File getAbsoluteFile(String path) {
+        if (path == null)
+            return null;
 		File f = new File(path);
 		if (!f.isAbsolute()) {
 			f = new File(baseDir,path);
@@ -148,6 +150,8 @@ public abstract class SVNNotificationHandler {
     }
     
     public void notifyListenersOfChange(String path) {
+        if (path == null)
+            return;
 		File f = getAbsoluteFile(path);
 		if (f == null) {
 			// this should not happen
@@ -173,6 +177,8 @@ public abstract class SVNNotificationHandler {
     }
     
     public void notifyListenersOfChange(String path, SVNNodeKind kind) {
+        if (path == null)
+            return;
 		File f = getAbsoluteFile(path);
 		if (f == null) {
 			// this should not happen

@@ -57,6 +57,7 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements No
     private String lastExternalUpdate;
     
     private static final int COMMIT_ACROSS_WC_COMPLETED = -11;
+    private static final int ENDED_ABNORMAL = -1;
 
     /* (non-Javadoc)
      * @see org.tigris.subversion.javahl.Notify2#onNotify(org.tigris.subversion.javahl.NotifyInformation)
@@ -99,6 +100,10 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements No
         boolean notify = true;
 
         switch (action) {
+        	case ENDED_ABNORMAL:
+                logError(Policy.bind("notify.end.abnormal")); //$NON-NLS-1$
+                notify = false;                                
+                break;
             case NotifyAction.skip :
                 logMessage(Policy.bind("notify.skipped", path)); //$NON-NLS-1$
                 notify = false;                                
