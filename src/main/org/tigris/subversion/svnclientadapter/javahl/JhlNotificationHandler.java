@@ -70,7 +70,8 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements No
                       info.getContentState(),
                       info.getPropState(),
                       info.getRevision(),
-                      info.getLock());
+                      info.getLock(),
+					 info.getErrMsg());
     }
     
     /**
@@ -93,7 +94,8 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements No
         int contentState,
         int propState,
         long revision,
-        Lock lock) {
+        Lock lock,
+		String errorMsg) {
 
         // for some actions, we don't want to call notifyListenersOfChange :
         // when the status of the target has not been modified 
@@ -101,7 +103,7 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements No
 
         switch (action) {
         	case ENDED_ABNORMAL:
-                logError(Policy.bind("notify.end.abnormal")); //$NON-NLS-1$
+                logError(errorMsg); //$NON-NLS-1$
                 notify = false;                                
                 break;
             case NotifyAction.skip :
