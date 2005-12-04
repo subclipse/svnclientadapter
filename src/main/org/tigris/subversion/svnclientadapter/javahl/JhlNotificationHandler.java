@@ -102,8 +102,13 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements No
         boolean notify = true;
 
         switch (action) {
-        	case ENDED_ABNORMAL:
-                logError(errorMsg); //$NON-NLS-1$
+        		case ENDED_ABNORMAL:
+        		   if (command == ISVNNotifyListener.Command.COMMIT)
+         		   logError(Policy.bind("notify.commit.abnormal")); //$NON-NLS-1$
+        		   else
+        		       logError(Policy.bind("notify.end.abnormal")); //$NON-NLS-1$
+        		   if (errorMsg != null)
+        			  logError(errorMsg); 
                 notify = false;                                
                 break;
             case NotifyAction.skip :
