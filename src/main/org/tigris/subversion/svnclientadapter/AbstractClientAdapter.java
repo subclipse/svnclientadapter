@@ -181,4 +181,21 @@ public abstract class AbstractClientAdapter implements ISVNClientAdapter {
     public boolean canCommitAcrossWC() {
         return false;
     }
+    
+    public void mkdir(SVNUrl url, boolean makeParents, String message)
+            throws SVNClientException {
+        if (makeParents) {
+            SVNUrl parent = url.getParent();
+            if (parent != null) {
+		        ISVNInfo info = null;
+		        try {
+		            info = this.getInfo(parent);
+		        } catch (SVNClientException e) {
+		        }
+		        if (info == null)
+		            this.mkdir(parent, makeParents, message);
+            }
+        }
+        this.mkdir(url, message);
+    }
 }

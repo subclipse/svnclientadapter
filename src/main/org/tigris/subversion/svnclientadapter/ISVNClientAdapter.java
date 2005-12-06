@@ -325,6 +325,15 @@ public interface ISVNClientAdapter {
 	public abstract void mkdir(SVNUrl url, String message)
 		throws SVNClientException;
 	/**
+	 * Creates a directory directly in a repository
+	 * @param url
+	 * @param makeParents
+	 * @param message
+	 * @throws SVNClientException
+	 */
+	public abstract void mkdir(SVNUrl url, boolean makeParents, String message)
+		throws SVNClientException;
+	/**
 	 * creates a directory on disk and schedules it for addition.
 	 * @param file
 	 * @throws SVNClientException
