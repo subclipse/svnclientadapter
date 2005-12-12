@@ -16,9 +16,9 @@
 package org.tigris.subversion.svnclientadapter.javasvn;
 
 import org.tigris.subversion.svnclientadapter.ISVNPromptUserPassword;
-import org.tmatesoft.svn.core.javahl.PromptUserPassword4;
+import org.tmatesoft.svn.core.javahl.PromptUserPasswordSSH;;
 
-public class JavaSvnPromptUserPassword implements PromptUserPassword4 {
+public class JavaSvnPromptUserPassword implements PromptUserPasswordSSH {
 
     private ISVNPromptUserPassword worker;
     
