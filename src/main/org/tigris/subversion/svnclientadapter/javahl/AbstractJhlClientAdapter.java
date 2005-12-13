@@ -249,6 +249,8 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
     public long commit(File[] paths, String message, boolean recurse, boolean keepLocks)
         throws SVNClientException {
         try {
+        	if (message == null)
+        		message = "";
             notificationHandler.setCommand(ISVNNotifyListener.Command.COMMIT);
             String[] files = new String[paths.length];
             String commandLine = "commit -m \""+message+"\"";
