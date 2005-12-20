@@ -86,7 +86,7 @@ public interface ISVNPromptUserPassword {
 	 * @param username  username in the realm
 	 * @param sshPort   the port number to use
 	 * @param maySave   should a save data check box be enabled.
-	 * @return          password as entered or null if canceled.
+	 * @return          true if OK was pressed
 	 */
     public boolean promptSSH(String realm, String username, int sshPort, boolean maySave);
     
@@ -108,5 +108,28 @@ public interface ISVNPromptUserPassword {
 	 * @return the port number
 	 */
     public int getSSHPort();
+
+	/**
+	 * Request the SSL client certificate info to be used from the user.
+	 * the save data check box status will be queried by userAllowedSave
+	 * @param realm     realm for the action
+	 * @param maySave   should a save data check box be enabled.
+	 * @return          true if OK was pressed
+	 */
+    public boolean promptSSL(String realm, boolean maySave);
+    
+	/**
+	 * retrieve the password for the certifcate
+	 * @return the password
+	 */
+    public String getSSLClientCertPassword();
+
+    
+	/**
+	 * retrieve the SSL certificate entered during the prompt call
+	 * @return the certificate
+	 */
+    public String getSSLClientCertPath();
+
 
 }

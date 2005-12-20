@@ -16,9 +16,10 @@
 package org.tigris.subversion.svnclientadapter.javasvn;
 
 import org.tigris.subversion.svnclientadapter.ISVNPromptUserPassword;
-import org.tmatesoft.svn.core.javahl.PromptUserPasswordSSH;;
+import org.tmatesoft.svn.core.javahl.PromptUserPasswordSSH;
+import org.tmatesoft.svn.core.javahl.PromptUserPasswordSSL;
 
-public class JavaSvnPromptUserPassword implements PromptUserPasswordSSH {
+public class JavaSvnPromptUserPassword implements PromptUserPasswordSSH, PromptUserPasswordSSL {
 
     private ISVNPromptUserPassword worker;
     
@@ -102,5 +103,14 @@ public class JavaSvnPromptUserPassword implements PromptUserPasswordSSH {
     public boolean promptSSH(String realm, String username, int sshPort,
             boolean maySave) {
         return this.worker.promptSSH(realm, username, sshPort, maySave);
+    }
+    public String getSSLClientCertPassword() {
+        return this.worker.getSSLClientCertPassword();
+    }
+    public String getSSLClientCertPath() {
+        return this.worker.getSSLClientCertPath();
+    }
+    public boolean promptSSL(String realm, boolean maySave) {
+        return this.worker.promptSSL(realm, maySave);
     }
 }
