@@ -233,6 +233,8 @@ public class SVNUrl {
     }
     
     public String getLastPathSegment() {
+        if (segments.length == 0)
+            return "";
     	return segments[segments.length-1];
     }
     

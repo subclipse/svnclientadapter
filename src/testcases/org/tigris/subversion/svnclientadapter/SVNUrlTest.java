@@ -117,8 +117,14 @@ public class SVNUrlTest extends TestCase
 	{
         SVNUrl http1 = new SVNUrl("HTTP://SVN.collab.net/repos/subclipse/");
         SVNUrl http2 = new SVNUrl("http://svn.collab.net:80/repos/subclipse");
+        SVNUrl http3 = new SVNUrl("http://svn.collab.net/");
+        SVNUrl svn1 = new SVNUrl("svn://svn.collab.net/repos/subclipse");
+        SVNUrl svn2 = new SVNUrl("svn://svn.collab.net/");
 		assertEquals("subclipse", http1.getLastPathSegment());
 		assertEquals("subclipse", http2.getLastPathSegment());
+		assertEquals("", http3.getLastPathSegment());
+		assertEquals("subclipse", svn1.getLastPathSegment());
+		assertEquals("", svn2.getLastPathSegment());
 	}
 
 	public void testAppendPath() throws Exception
