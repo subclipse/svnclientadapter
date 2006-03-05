@@ -89,6 +89,9 @@ public class JavaSvnClientAdapter extends AbstractJhlClientAdapter {
     public long[] commitAcrossWC(File[] paths, String message, boolean recurse,
             boolean keepLocks, boolean atomic) throws SVNClientException {
         try {
+            if (message == null) {
+            	message = "";
+            }
             notificationHandler.setCommand(ISVNNotifyListener.Command.COMMIT);
             String[] files = new String[paths.length];
             String commandLine = "commit -m \""+message+"\"";
