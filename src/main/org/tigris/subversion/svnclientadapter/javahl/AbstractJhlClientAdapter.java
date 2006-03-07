@@ -486,6 +486,8 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 	public void copy(File srcPath, SVNUrl destUrl, String message)
 		throws SVNClientException {
 		try {
+        	if (message == null)
+        		message = "";
 			notificationHandler.setCommand(ISVNNotifyListener.Command.COPY);
 			String src = fileToSVNPath(srcPath, false);
 			String dest = destUrl.toString();
@@ -533,6 +535,8 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 		SVNRevision revision)
 		throws SVNClientException {
 		try {
+        	if (message == null)
+        		message = "";
 			notificationHandler.setCommand(ISVNNotifyListener.Command.COPY);
 			String src = srcUrl.toString();
 			String dest = destUrl.toString();
@@ -553,6 +557,8 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 	 */
 	public void remove(SVNUrl url[], String message) throws SVNClientException {
         try {
+        	if (message == null)
+        		message = "";
             notificationHandler.setCommand(ISVNNotifyListener.Command.REMOVE);
 
             String commandLine = "delete -m \""+message+"\"";
@@ -673,6 +679,8 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 		boolean recurse)
 		throws SVNClientException {
 		try {
+        	if (message == null)
+        		message = "";
 			notificationHandler.setCommand(ISVNNotifyListener.Command.IMPORT);
 			String src = fileToSVNPath(path, false);
 			String dest = url.toString();
@@ -701,7 +709,9 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 	 */
 	public void mkdir(SVNUrl url, String message) throws SVNClientException {
         try {
-            notificationHandler.setCommand(ISVNNotifyListener.Command.MKDIR);
+        	if (message == null)
+        		message = "";
+           notificationHandler.setCommand(ISVNNotifyListener.Command.MKDIR);
 		    String target = url.toString();
             notificationHandler.logCommandLine(
                 "mkdir -m \""+message+"\" "+target);
@@ -767,6 +777,8 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 		SVNRevision revision)
 		throws SVNClientException {
 		try {
+        	if (message == null)
+        		message = "";
 			notificationHandler.setCommand(ISVNNotifyListener.Command.MOVE);
 			String src = srcUrl.toString();
 			String dest = destUrl.toString();
