@@ -45,7 +45,7 @@ public class SVNUrl {
         if(svnUrl == null)
             throw new MalformedURLException("Svn url cannot be null. Is this a versioned resource?");
    
-        parseUrl(svnUrl);
+        parseUrl(svnUrl.trim());
     }
     
     private SVNUrl(String protocol, String host, int port, String[] segments)
