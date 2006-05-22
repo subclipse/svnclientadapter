@@ -116,11 +116,17 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements No
                 notify = false;                                
                 break;
             case NotifyAction.failed_lock: 
-                logError(Policy.bind("notify.lock.failed", path)); //$NON-NLS-1$
+            	if (errorMsg == null)
+            		logError(Policy.bind("notify.lock.failed", path)); //$NON-NLS-1$
+            	else
+            		logError(errorMsg);
                 notify = false;
                 break;
             case NotifyAction.failed_unlock:
-                logError(Policy.bind("notify.unlock.failed", path)); //$NON-NLS-1$
+            	if (errorMsg == null)
+            		logError(Policy.bind("notify.unlock.failed", path)); //$NON-NLS-1$
+            	else
+            		logError(errorMsg);
             	notify = false;
             	break;
             case NotifyAction.locked:
