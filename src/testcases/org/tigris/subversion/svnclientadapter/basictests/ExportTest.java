@@ -5,6 +5,8 @@ import java.io.File;
 import org.tigris.subversion.svnclientadapter.SVNClientException;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
 import org.tigris.subversion.svnclientadapter.SVNUrl;
+import org.tigris.subversion.svnclientadapter.testUtils.OneTest;
+import org.tigris.subversion.svnclientadapter.testUtils.SVNTest;
 
 public class ExportTest extends SVNTest {
 

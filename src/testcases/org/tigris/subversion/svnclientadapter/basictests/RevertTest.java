@@ -22,6 +22,9 @@ import java.io.FileOutputStream;
 import java.io.PrintWriter;
 
 import org.tigris.subversion.svnclientadapter.SVNStatusKind;
+import org.tigris.subversion.svnclientadapter.testUtils.FileUtils;
+import org.tigris.subversion.svnclientadapter.testUtils.OneTest;
+import org.tigris.subversion.svnclientadapter.testUtils.SVNTest;
 
 
 public class RevertTest extends SVNTest {

@@ -23,6 +23,8 @@ import java.io.PrintWriter;
 
 import org.tigris.subversion.svnclientadapter.SVNRevision;
 import org.tigris.subversion.svnclientadapter.SVNStatusKind;
+import org.tigris.subversion.svnclientadapter.testUtils.OneTest;
+import org.tigris.subversion.svnclientadapter.testUtils.SVNTest;
 
 public class UpdateTest extends SVNTest {
 

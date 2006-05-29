@@ -15,7 +15,7 @@
  * ====================================================================
  * @endcopyright
  */
-package org.tigris.subversion.svnclientadapter.basictests;
+package org.tigris.subversion.svnclientadapter.testUtils;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -28,6 +28,8 @@ import org.tigris.subversion.svnclientadapter.SVNUrl;
  */
 public class TestsConfig {
 
+    private static TestsConfig testsConfig;
+
     public String clientType;    
     
     public String adminClientType;
@@ -37,7 +39,6 @@ public class TestsConfig {
      * If not set, the file url of the rootDirectoryName is used.
      */
     public SVNUrl rootUrl;
-
     
     /**
      * the root directory. All other files and directories will created in
@@ -62,11 +63,11 @@ public class TestsConfig {
      * will be created here.
      */
     public File workingCopies;
-    
-    public String protocol;
 
-    private static TestsConfig testsConfig;
+    public String serverHostname;
+    public int serverPort;
     
+    public String protocol;    
     
     private TestsConfig() throws SVNClientException {
         clientType = System.getProperty("test.clientType");
@@ -88,7 +89,18 @@ public class TestsConfig {
         if (rootDirectoryName == null)
             rootDirectoryName = System.getProperty("user.dir");
         rootDir = new File(rootDirectoryName);
-    
+
+        if (System.getProperty("test.serverHostname") != null) {         	
+        	serverHostname = System.getProperty("test.serverHostname");
+        } else {
+        	serverHostname = "127.0.0.1";
+        }
+        if (System.getProperty("test.serverPort") != null) {
+        	serverPort = Integer.valueOf(System.getProperty("test.serverPort")).intValue();
+        } else {
+        	serverPort = 3690;
+        }
+
         protocol = System.getProperty("test.protocol");
         if (protocol == null)
         	protocol = "file";
@@ -106,10 +118,10 @@ public class TestsConfig {
                 rootUrlStr = rootUrlStr.replaceFirst("file:/", "file:///");
         } else
         if (protocol.equals("svn")) {
-        	rootUrlStr = "svn://localhost";
+        	rootUrlStr = "svn://" + serverHostname;
         } else
         if (protocol.equals("http")) {
-            rootUrlStr = "http://localhost:8080/svn/repos";
+            rootUrlStr = "http://" + serverHostname + ":8080/svn/repos";
         }
         
         

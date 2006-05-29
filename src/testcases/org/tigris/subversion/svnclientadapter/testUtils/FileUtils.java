@@ -1,4 +1,4 @@
-package org.tigris.subversion.svnclientadapter.basictests;
+package org.tigris.subversion.svnclientadapter.testUtils;
 
 import java.io.File;
 import java.io.FileInputStream;

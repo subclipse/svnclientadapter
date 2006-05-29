@@ -15,7 +15,7 @@
  * ====================================================================
  * @endcopyright
  */
-package org.tigris.subversion.svnclientadapter.basictests;
+package org.tigris.subversion.svnclientadapter.testUtils;
 
 import java.io.File;
 import java.util.logging.Logger;
@@ -84,7 +84,7 @@ public class OneTest {
 	 * @return second test object.
 	 * @throws Exception
 	 */
-	protected OneTest copy(String append) throws Exception {
+	public OneTest copy(String append) throws Exception {
 		return new OneTest(this, append);
 	}
 

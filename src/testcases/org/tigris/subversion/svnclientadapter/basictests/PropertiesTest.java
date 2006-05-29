@@ -6,6 +6,8 @@ import java.util.Map;
 
 import org.tigris.subversion.svnclientadapter.ISVNProperty;
 import org.tigris.subversion.svnclientadapter.SVNKeywords;
+import org.tigris.subversion.svnclientadapter.testUtils.OneTest;
+import org.tigris.subversion.svnclientadapter.testUtils.SVNTest;
 
 public class PropertiesTest extends SVNTest {
 

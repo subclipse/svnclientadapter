@@ -1,7 +1,7 @@
 <!-- This file is an ANT build script. ANT is a Java based build tool. -->
 <!-- It is available from http://ant.apache.org/               -->
 
-<project name="svnClientAdapter" default="all" basedir=".">
+<project name="svnClientAdapter" default="makeDistrib" basedir=".">
 
   <!-- all properties are in build.properties -->
   <property file="build.properties"/>
@@ -116,18 +116,32 @@
   <!-- ================================================================= -->
   <target name="runTests" depends="svnClientAdapter.jar, compileTests"
           description="run junit tests">
-    <fail message="[FIXME] Make the JUnit tests actually work" />
-
     <echo message="Please wait, tests can take a long time to execute...."
       level="info"/>
+    <echo message="Running client adapters tests ..." level="info"/>
     <junit printsummary="yes" haltonfailure="false">
       <classpath>
         <pathelement location="${build.classes.dir}"/>
         <path refid="project.classpath"/>	
       </classpath>
-      <formatter type="plain"/>
-      <test name="org.tigris.subversion.svnant.SvnJavaHLTest" fork="true"/>
-      <test name="org.tigris.subversion.svnant.SvnCmdLineTest" fork="true"/>
+      <formatter type="brief" usefile="false"/>
+      <test name="org.tigris.subversion.svnclientadapter.basictests.SVNJavahlTests" fork="true"/>
+      <test name="org.tigris.subversion.svnclientadapter.basictests.SVNJavaSVNTests" fork="true"/>
+      <test name="org.tigris.subversion.svnclientadapter.basictests.SVNCmdLineTests" fork="true"/>
+    </junit>
+    <echo message="Running misc tests ..." level="info"/>
+    <junit printsummary="yes" haltonfailure="false">
+      <classpath>
+        <pathelement location="${build.classes.dir}"/>
+        <path refid="project.classpath"/>	
+      </classpath>
+      <formatter type="brief " usefile="false"/>
+  	  <batchtest fork="yes">
+   	    <fileset dir="${src.tests.dir}}">
+   	      <include name="**/*Test*.java"/>
+   	      <exclude name="**/org/tigris/subversion/svnclientadapter/basictests/*"/>
+   	    </fileset>
+   	  </batchtest>
     </junit>
   </target>
 

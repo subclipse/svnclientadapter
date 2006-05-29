@@ -24,6 +24,8 @@ import org.tigris.subversion.svnclientadapter.ISVNLogMessage;
 import org.tigris.subversion.svnclientadapter.ISVNLogMessageChangePath;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
 import org.tigris.subversion.svnclientadapter.SVNUrl;
+import org.tigris.subversion.svnclientadapter.testUtils.OneTest;
+import org.tigris.subversion.svnclientadapter.testUtils.SVNTest;
 
 public class LogTest extends SVNTest {
 

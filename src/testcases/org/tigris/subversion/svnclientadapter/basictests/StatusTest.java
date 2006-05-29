@@ -17,6 +17,9 @@
  */
 package org.tigris.subversion.svnclientadapter.basictests;
 
+import org.tigris.subversion.svnclientadapter.testUtils.OneTest;
+import org.tigris.subversion.svnclientadapter.testUtils.SVNTest;
+
 
 public class StatusTest extends SVNTest {
 

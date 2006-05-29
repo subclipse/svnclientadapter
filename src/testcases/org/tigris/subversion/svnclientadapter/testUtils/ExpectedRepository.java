@@ -1,4 +1,4 @@
-package org.tigris.subversion.svnclientadapter.basictests;
+package org.tigris.subversion.svnclientadapter.testUtils;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -92,7 +92,7 @@ public class ExpectedRepository {
      * @param singleFilePath    the path to be checked
      * @throws Exception
      */
-    void check(ISVNDirEntry[] tested, String singleFilePath) throws Exception
+    public void check(ISVNDirEntry[] tested, String singleFilePath) throws Exception
     {
         Assert.assertEquals("not a single dir entry", 1, tested.length);
         Item item = (Item)items.get(singleFilePath);
@@ -110,7 +110,7 @@ public class ExpectedRepository {
      * @param recursive     the recursive flag of the call
      * @throws Exception
      */
-    void check(ISVNDirEntry[] tested, String basePath, boolean recursive)
+    public void check(ISVNDirEntry[] tested, String basePath, boolean recursive)
             throws Exception
     {
         // clear the touched flag of all items

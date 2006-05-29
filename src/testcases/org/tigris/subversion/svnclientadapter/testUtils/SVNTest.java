@@ -15,7 +15,7 @@
  * ====================================================================
  * @endcopyright
  */
-package org.tigris.subversion.svnclientadapter.basictests;
+package org.tigris.subversion.svnclientadapter.testUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,7 +29,6 @@ import org.tigris.subversion.svnclientadapter.SVNClientException;
 import org.tigris.subversion.svnclientadapter.commandline.CmdLineClientAdapterFactory;
 import org.tigris.subversion.svnclientadapter.javahl.JhlClientAdapterFactory;
 import org.tigris.subversion.svnclientadapter.javasvn.JavaSvnClientAdapterFactory;
-import org.tigris.subversion.svnclientadapter.utils.SvnServer;
 
 /**
  * common base class for the SvnclientAdapter tests
@@ -119,20 +118,26 @@ public abstract class SVNTest extends TestCase {
 
     protected void startServer(File repository) throws IOException {
         if (testsConfig.protocol.equals("svn")) {
-            svnServer = new SvnServer();
-            svnServer.setRepository(repository);
-            System.out.print("Starting svnserve : ");
-            svnServer.start();
-            System.out.println("done.");
+        	//Start it only if it was not running already (e.g. by testSuite)
+        	if (!SvnServer.isSvnServerRunning()) {
+        		System.out.print("Starting svnserve : ");
+        		svnServer = SvnServer.startSvnServer(testsConfig.serverHostname, testsConfig.serverPort, repository);;
+        		System.out.println("done.");
+        	} else {
+        		//clear the variable so we'll not stop the server which we didn't started.
+        		svnServer = null;
+        	}
         }
     }
 
     protected void stopServer() {
         if (testsConfig.protocol.equals("svn")) {
-            System.out.print("Stopping svnserve : ");
-            svnServer.kill();
-            System.out.println("done.");
-            svnServer = null;
+        	if (svnServer != null) {
+        		System.out.print("Stopping svnserve : ");
+        		SvnServer.stopSvnServer(svnServer);
+        		System.out.println("done.");
+        		svnServer = null;
+        	}
         }
     }
 

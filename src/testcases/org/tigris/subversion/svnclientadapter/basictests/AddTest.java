@@ -21,6 +21,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 
 import org.tigris.subversion.svnclientadapter.SVNStatusKind;
+import org.tigris.subversion.svnclientadapter.testUtils.OneTest;
+import org.tigris.subversion.svnclientadapter.testUtils.SVNTest;
 
 
 public class AddTest extends SVNTest {

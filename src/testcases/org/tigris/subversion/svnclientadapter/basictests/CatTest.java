@@ -21,11 +21,15 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Locale;
 
 import org.tigris.subversion.svnclientadapter.SVNRevision;
 import org.tigris.subversion.svnclientadapter.SVNUrl;
+import org.tigris.subversion.svnclientadapter.testUtils.OneTest;
+import org.tigris.subversion.svnclientadapter.testUtils.SVNTest;
 
 public class CatTest extends SVNTest {
 
@@ -94,6 +98,28 @@ public class CatTest extends SVNTest {
         // the content should be the same
         assertTrue("content changed", Arrays.equals(content, testContent));
     }
+
+    //TODO <letenay> enable this when SVNRevision.getRevision(string, formatter) is commited.
+//    public void testDateStringCat() throws Throwable {
+//        // create the working copy
+//        OneTest thisTest = new OneTest("testDateCat", getGreekTestConfig());
+//
+//        // modify A/mu        
+//        modifyAMu(thisTest);
+//        
+//        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);
+////        DateFormat df = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, Locale.US);
+//
+//        // get the content using date
+//        InputStream is = client.getContent(new File(thisTest.getWCPath()
+//                + "/A/mu"), SVNRevision.getRevision(df.format(new Date()), df));
+//        byte[] content = new byte[is.available()];
+//        is.read(content);
+//        byte[] testContent = thisTest.getExpectedWC().getItemContent("A/mu").getBytes();
+//
+//        // the content should be the same
+//        assertTrue("content changed", Arrays.equals(content, testContent));
+//    }
 
     public void testUrlCat() throws Throwable {
         // create the working copy

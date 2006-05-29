@@ -1,4 +1,4 @@
-package org.tigris.subversion.svnclientadapter.basictests;
+package org.tigris.subversion.svnclientadapter.testUtils;
 
 public class ExpectedGreekRepositoryFactory {
 
