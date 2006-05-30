@@ -113,15 +113,15 @@ public abstract class SVNTest extends TestCase {
         clientAdmin.setUsername("cedric");
         clientAdmin.setPassword("cedricpass");
 
-        startServer(testsConfig.rootDir);
+        startServer();
     }
 
-    protected void startServer(File repository) throws IOException {
+    protected void startServer() throws IOException {
         if (testsConfig.protocol.equals("svn")) {
         	//Start it only if it was not running already (e.g. by testSuite)
         	if (!SvnServer.isSvnServerRunning()) {
         		System.out.print("Starting svnserve : ");
-        		svnServer = SvnServer.startSvnServer(testsConfig.serverHostname, testsConfig.serverPort, repository);;
+        		svnServer = SvnServer.startSvnServer(testsConfig.serverHostname, testsConfig.serverPort, testsConfig.rootDir);;
         		System.out.println("done.");
         	} else {
         		//clear the variable so we'll not stop the server which we didn't started.
@@ -166,11 +166,7 @@ public abstract class SVNTest extends TestCase {
             clientAdmin.doImport(greekFiles, testsConfig
                     .makeReposUrl(greekRepos), logMessage, true);
 
-            greekTestConfig = new TestConfig();
-            greekTestConfig.client = client;
-            greekTestConfig.reposDirectory = greekRepos;
-            greekTestConfig.expectedWC = greekWC;
-            greekTestConfig.expectedRepository = greekRepository;
+            greekTestConfig = new TestConfig(client, greekRepos, greekWC, greekRepository);
         }
         return greekTestConfig;
     }

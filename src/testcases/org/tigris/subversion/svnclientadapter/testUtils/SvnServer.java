@@ -15,8 +15,10 @@
  */
 package org.tigris.subversion.svnclientadapter.testUtils;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 
 import org.tigris.subversion.svnclientadapter.utils.Command;
 
@@ -24,20 +26,23 @@ import org.tigris.subversion.svnclientadapter.utils.Command;
  * Start a svn server
  */
 public class SvnServer {
-	
+
 	private static SvnServer singleton = null;
+
 	private Command command;
+
 	final private int listenPort;
+
 	final private String listenHost;
 
 	private File repository;
 
-	public static boolean isSvnServerRunning()
-	{
+	public static boolean isSvnServerRunning() {
 		return singleton != null;
 	}
-	
-	public static SvnServer startSvnServer(String listenHost, int listenPort, File repository) throws IOException {
+
+	public static SvnServer startSvnServer(String listenHost, int listenPort,
+			File repository) throws IOException {
 		singleton = new SvnServer(listenHost, listenPort, repository);
 		singleton.start();
 		return singleton;
@@ -50,9 +55,18 @@ public class SvnServer {
 
 	private SvnServer(String listenHost, int listenPort, File repository) {
 		super();
-		this.listenHost = (listenHost != null) ? listenHost : "127.0.0.1";
-		this.listenPort = (listenPort != 0) ? listenPort : 3690;
+		this.listenHost = listenHost;
+		this.listenPort = listenPort;
 		this.repository = repository;
+		if ((listenHost == null) || (listenHost.length() == 0)) {
+			throw new IllegalArgumentException("listenHost must not be null !");
+		}
+		if (listenPort == 0) {
+			throw new IllegalArgumentException("listenPort must not be 0 !");
+		}
+		if (repository == null) {
+			throw new IllegalArgumentException("repository must not be null !");
+		}
 	}
 
 	/**
@@ -93,7 +107,26 @@ public class SvnServer {
 	protected Command getSvnServerCommmand() {
 		return new Command(
 				(System.getProperty("os.name").indexOf("Win") > -1) ? "svnserve.exe"
-						: "/usr/local/bin/svnserve");
+						: whichSvnserve());
+	}
+
+	private String whichSvnserve() {
+		try {
+			Process whichProc = Runtime.getRuntime().exec(
+					"/usr/bin/which svnserve");
+
+			BufferedReader reader = new BufferedReader(new InputStreamReader(
+					whichProc.getInputStream()));
+
+			try {
+				return reader.readLine();
+			} catch (IOException e) {
+				throw new RuntimeException("Cannot locate svnserve command !",
+						e);
+			}
+		} catch (IOException e1) {
+			throw new RuntimeException("Cannot locate svnserve command !", e1);
+		}
 	}
 
 }

@@ -68,8 +68,8 @@ public class OneTest {
 	public OneTest(String testName, TestConfig config) throws Exception {
 		this.testName = testName;
         this.config = config;
-		this.expectedWC = config.expectedWC.copy();
-        this.expectedRepository = config.expectedRepository.copy();
+		this.expectedWC = config.getExpectedWC().copy();
+        this.expectedRepository = config.getExpectedRepository().copy();
 		repository = createStartRepository(testName);
 		url = testsConfig.makeReposUrl(repository);
 		workingCopy = createStartWorkingCopy(repository, testName);
@@ -190,7 +190,7 @@ public class OneTest {
 		File repos = new File(testsConfig.repositories, aTestName);
         log.fine("Creating repository for test "+aTestName+" at "+repos.toString());        
 		FileUtils.removeDirectoryWithContent(repos);
-		FileUtils.copyFiles(config.reposDirectory, repos);
+		FileUtils.copyFiles(config.getReposDirectory(), repos);
 
 		return repos;
 	}
@@ -214,7 +214,7 @@ public class OneTest {
         
 		FileUtils.removeDirectoryWithContent(workingCopy);
 		// checkout the repository
-		config.client.checkout(anUrl, workingCopy, SVNRevision.HEAD, true);
+		config.getClient().checkout(anUrl, workingCopy, SVNRevision.HEAD, true);
 		// sanity check the working with its expected status
 		checkStatusesExpectedWC();
         checkEntriesExpectedRepository();
@@ -227,7 +227,7 @@ public class OneTest {
 	 * @throws Exception
 	 */
 	public void checkStatusesExpectedWC() throws Exception {
-		ISVNStatus[] states = config.client.getStatus(workingCopy, true, true);
+		ISVNStatus[] states = config.getClient().getStatus(workingCopy, true, true);
 		expectedWC.check(states, workingCopy.getAbsolutePath());
 	}
     
@@ -236,7 +236,7 @@ public class OneTest {
      * @throws Exception
      */
     public void checkEntriesExpectedRepository() throws Exception {
-        ISVNDirEntry[] entries = config.client.getList(getUrl(), SVNRevision.HEAD, true);
+        ISVNDirEntry[] entries = config.getClient().getList(getUrl(), SVNRevision.HEAD, true);
         expectedRepository.check(entries,"", true);
     }
 }
