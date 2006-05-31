@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.StringTokenizer;
 
 /**
- * common methods for both SvnCommandLine and SvnAdminCommandLine 
+ * Common superclass for both SvnCommandLine and SvnAdminCommandLine 
  *  
  * @author Philip Schatz (schatz at tigris)
  * @author Cédric Chabanois (cchabanois at no-log.org)
@@ -33,29 +33,20 @@ import java.util.StringTokenizer;
  */
 abstract class CommandLine {
 
-    /**
-     * Environment variables set when invoking the command-line.
-     * Includes <code>LANG</code> and <code>LC_ALL</code>, set such
-     * that Subversion's output is not localized.
-     */
-    private static final String[] ENV_VARS = { "LANG=C", "LC_ALL=C" };
-
-	protected String CMD;
+	protected String commandName;
     protected CmdLineNotificationHandler notificationHandler;
+    protected Process process;
     
-	//Constructors
-	CommandLine(String svnPath,CmdLineNotificationHandler notificationHandler) {
-		CMD = svnPath;
+	protected CommandLine(String commandName, CmdLineNotificationHandler notificationHandler) {
+		this.commandName = commandName;
         this.notificationHandler = notificationHandler;
 	}
 
-	//Methods
 	String version() throws CmdLineException {
 		ArrayList args = new ArrayList();
 		args.add("--version");
 		return execString(args,false);
 	}
-
 
     /**
      * Executes the given svn command and returns the corresponding
@@ -69,7 +60,7 @@ abstract class CommandLine {
 		// appropriate), and convert it to an array of strings.
         int svnArgsLen = svnArguments.size();
         String[] cmdline = new String[svnArgsLen + 1];
-        cmdline[0] = CMD;
+        cmdline[0] = commandName;
 
 		StringBuffer svnCommand = new StringBuffer();
 		boolean nextIsPassword = false;
@@ -106,12 +97,26 @@ abstract class CommandLine {
 
 		// Run the command, and return the associated Process object.
 		try {
-            return Runtime.getRuntime().exec(cmdline, ENV_VARS);
+            return process = Runtime.getRuntime().exec(cmdline, getEnvironmentVariables());
 		} catch (IOException e) {
 			throw new CmdLineException(e);
 		}
 	}
 
+    /**
+     * Get environment variables to be set when invoking the command-line.
+     * Includes <code>LANG</code> and <code>LC_ALL</code> so Subversion's output is not localized.
+     * <code>Systemroot</code> is required on windows platform. 
+     * Without this variable present, the windows' DNS resolver does not work.
+     * The <code>PATH</code> is there, well, just to be sure ;-)
+     */
+	protected String[] getEnvironmentVariables()
+	{
+		final String path = "PATH=" + CmdLineClientAdapter.getEnvironmentVariable("PATH");
+		final String systemRoot = "SystemRoot=" + CmdLineClientAdapter.getEnvironmentVariable("SystemRoot");
+		return new String[] { "LANG=C", "LC_ALL=C", path, systemRoot };
+	}
+	
     /**
      * Pumps the output from both provided streams, blocking until
      * complete.
@@ -234,6 +239,11 @@ abstract class CommandLine {
             notificationHandler.logCompleted(st.nextToken());
     }
     	
+
+    protected void stopProcess() {
+        process.destroy();
+    }
+
     /**
      * Pulls all the data out of a stream.  Inspired by Ant's
      * StreamPumper (by Robert Field).
@@ -254,7 +264,6 @@ abstract class CommandLine {
 
             try {
                 pumpStream();
-            } catch (IOException ignored) {
             } finally {
                 synchronized (this) {
                     this.finished = true;
@@ -267,8 +276,7 @@ abstract class CommandLine {
          * Called by {@link #run()} to pull the data out of the
          * stream.
          */
-        protected abstract void pumpStream()
-            throws IOException;
+        protected abstract void pumpStream();
 
         /**
          * Tells whether the end of the stream has been reached.
@@ -309,17 +317,28 @@ abstract class CommandLine {
          * Copies data from the input stream to the internal string
          * buffer.
          */
-        protected void pumpStream()
-            throws IOException {
-            String line;
-            while((line = this.reader.readLine()) != null) {
-                if (this.coalesceLines) {
-                    this.sb.append(line);
-                } else {
-                    this.sb.append(line).append(Helper.NEWLINE);
-                }
-            }
-        }
+        protected void pumpStream() {
+			try {
+				String line;
+				while ((line = this.reader.readLine()) != null) {
+					if (this.coalesceLines) {
+						this.sb.append(line);
+					} else {
+						this.sb.append(line).append(Helper.NEWLINE);
+					}
+				}
+			} catch (IOException ex) {
+				System.err
+						.println("Problem occured during fetching the command output: "
+								+ ex.getMessage());
+			} finally {
+				try {
+					reader.close();
+				} catch (IOException e) {
+					// Exception during closing the stream. Just ignore.
+				}
+			}
+		}
 
         public synchronized String toString() {
             return this.sb.toString();
@@ -348,21 +367,31 @@ abstract class CommandLine {
          *
          * Terminates as soon as the input stream is closed or an error occurs.
          */
-        protected void pumpStream()
-            throws IOException {
-            int bytesRead;
-            while ((bytesRead = this.bis.read(this.inputBuffer)) != -1) {
-                this.bytes.write(this.inputBuffer, 0, bytesRead);
-            }
-            this.bytes.flush();
-            this.bytes.close();
-            this.bis.close();
-        }
+        protected void pumpStream() {
+			try {
+				int bytesRead;
+				while ((bytesRead = this.bis.read(this.inputBuffer)) != -1) {
+					this.bytes.write(this.inputBuffer, 0, bytesRead);
+				}
+			} catch (IOException ex) {
+				System.err
+						.println("Problem occured during fetching the command output: "
+								+ ex.getMessage());
+			} finally {
+				try {
+					this.bytes.flush();
+					this.bytes.close();
+					this.bis.close();
+				} catch (IOException e) {
+					// Exception during closing the stream. Just ignore.
+				}
+			}
+		}
     
         /**
-         * @return A byte array contaning the raw bytes read from the
-         * input stream.
-         */
+		 * @return A byte array contaning the raw bytes read from the input
+		 *         stream.
+		 */
         public synchronized byte[] getBytes() {
             return bytes.toByteArray();
         }
