@@ -177,7 +177,7 @@ public class JhlConverter {
 		return messages;
 	}
     
-    static ISVNStatus[] convert(Status[] status) {
+    public static ISVNStatus[] convert(Status[] status) {
         JhlStatus[] jhlStatus = new JhlStatus[status.length];
         for(int i=0; i < status.length; i++) {
             jhlStatus[i] = new JhlStatus(status[i]);

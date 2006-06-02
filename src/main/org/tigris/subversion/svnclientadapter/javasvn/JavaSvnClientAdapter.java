@@ -18,14 +18,19 @@ package org.tigris.subversion.svnclientadapter.javasvn;
 import java.io.File;
 
 import org.tigris.subversion.javahl.ClientException;
+import org.tigris.subversion.javahl.Status;
 import org.tigris.subversion.svnclientadapter.ISVNClientAdapter;
 import org.tigris.subversion.svnclientadapter.ISVNNotifyListener;
 import org.tigris.subversion.svnclientadapter.ISVNPromptUserPassword;
+import org.tigris.subversion.svnclientadapter.ISVNStatus;
+import org.tigris.subversion.svnclientadapter.SVNBaseDir;
 import org.tigris.subversion.svnclientadapter.SVNClientAdapterFactory;
 import org.tigris.subversion.svnclientadapter.SVNClientException;
+import org.tigris.subversion.svnclientadapter.SVNStatusUnversioned;
 import org.tigris.subversion.svnclientadapter.commandline.CmdLineClientAdapterFactory;
 import org.tigris.subversion.svnclientadapter.javahl.AbstractJhlClientAdapter;
 import org.tigris.subversion.svnclientadapter.javahl.JhlClientAdapterFactory;
+import org.tigris.subversion.svnclientadapter.javahl.JhlConverter;
 import org.tigris.subversion.svnclientadapter.javahl.JhlNotificationHandler;
 import org.tmatesoft.svn.core.javahl.SVNClientImpl;
 
@@ -118,6 +123,43 @@ public class JavaSvnClientAdapter extends AbstractJhlClientAdapter {
     
     public boolean canCommitAcrossWC() {
         return true;
+    }
+
+    /**
+     * Returns the status of files and directory recursively
+     *
+     * @param path File to gather status.
+     * @param descend get recursive status information
+     * @param getAll get status information for all files
+     * @param contactServer contact server to get remote changes
+     *  
+     * @return a Status
+     */
+    public ISVNStatus[] getStatus(File path, boolean descend, boolean getAll, boolean contactServer) throws SVNClientException {
+		notificationHandler.setCommand(ISVNNotifyListener.Command.STATUS);
+		String filePathSVN = fileToSVNPath(path, false);
+		notificationHandler.logCommandLine("status " + (contactServer?"-u ":"")+ filePathSVN);
+		notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
+		try {
+			Status[] statuses = 
+                svnClient.status(
+                        filePathSVN,  
+                        descend,            // If descend is true, recurse fully, else do only immediate children.
+                        contactServer,      // If update is set, contact the repository and augment the status structures with information about out-of-dateness     
+    					getAll,getAll);    // retrieve all entries; otherwise, retrieve only "interesting" entries (local mods and/or out-of-date).
+			if (statuses.length == 0)
+				return new ISVNStatus[] {new SVNStatusUnversioned(path)};
+			else
+			return JhlConverter.convert(statuses);
+		} catch (ClientException e) {
+			if (e.getAprError() == SVN_ERR_WC_NOT_DIRECTORY) {
+				// when there is no .svn dir, an exception is thrown ...
+				return new ISVNStatus[] {new SVNStatusUnversioned(path)};
+			} else {
+				notificationHandler.logException(e);
+				throw new SVNClientException(e);
+			}
+		}
     }
 
    
