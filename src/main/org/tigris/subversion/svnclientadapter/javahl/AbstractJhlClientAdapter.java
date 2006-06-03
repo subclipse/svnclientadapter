@@ -1459,7 +1459,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 			Info info = svnClient.info(target);
             if (info == null) {
             	return new SVNInfoUnversioned(path);
-            } else if (info.getUuid() == null)
+            } else if (info.getLastChangedRevision() == Revision.SVN_INVALID_REVNUM)
 			{
 				//Item is not in repository (yet or anymore ?)
                 return new JhlInfo(path, info);

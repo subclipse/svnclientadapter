@@ -228,12 +228,12 @@ public class DeleteTest extends SVNTest {
 	    client.remove(new File[] { new File(thisTest.getWCPath()+"/A/D/G")}, true);
 	    thisTest.getExpectedWC().setItemTextStatus("A/D/G",SVNStatusKind.DELETED);
 	    thisTest.getExpectedWC().setItemTextStatus("A/D/G/rho",SVNStatusKind.DELETED);
-	    thisTest.getExpectedWC().setItemPropStatus("A/D/G/rho", SVNStatusKind.NORMAL);
+	    thisTest.getExpectedWC().setItemPropStatus("A/D/G/rho", SVNStatusKind.NONE);
 	    thisTest.getExpectedWC().setItemTextStatus("A/D/G/pi",SVNStatusKind.DELETED);
 	    thisTest.getExpectedWC().setItemTextStatus("A/D/G/tau",SVNStatusKind.DELETED);
 	    client.remove(new File[] { new File(thisTest.getWCPath()+"/A/B/F")}, true);
 	    thisTest.getExpectedWC().setItemTextStatus("A/B/F",SVNStatusKind.DELETED);
-	    thisTest.getExpectedWC().setItemPropStatus("A/B/F", SVNStatusKind.NORMAL);
+	    thisTest.getExpectedWC().setItemPropStatus("A/B/F", SVNStatusKind.NONE);
 	    client.remove(new File[] { new File(thisTest.getWCPath()+"/A/C")}, true);
 	    thisTest.getExpectedWC().setItemTextStatus("A/C",SVNStatusKind.DELETED);
 	    client.remove(new File[] { new File(thisTest.getWCPath()+"/A/B/X")}, true);

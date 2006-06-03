@@ -102,7 +102,7 @@ class CmdLineStatusPart {
 	public SVNStatusKind getPropStatus() {
 		switch (propStatus) {
 			case ' ' : // no modifications
-				return SVNStatusKind.NORMAL;
+				return SVNStatusKind.NONE;
 			case 'C' :
 				return SVNStatusKind.CONFLICTED;
 			case 'M' :

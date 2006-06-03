@@ -106,14 +106,7 @@ public class JhlStatus implements ISVNStatus {
 	 * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getPropStatus()
 	 */
 	public SVNStatusKind getPropStatus() {
-		SVNStatusKind kind = JhlConverter.convertStatusKind(_s.getPropStatus());
-		if (kind.equals(SVNStatusKind.NONE)) {
-			// javahl returns NONE when there are no properties
-			// we want to have the same behaviour for command line interface and 
-			// javahl, so we return NORMAL 
-			kind =  SVNStatusKind.NORMAL;
-		}
-		return kind;
+		return JhlConverter.convertStatusKind(_s.getPropStatus());
 	}
 
 	/*

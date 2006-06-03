@@ -455,7 +455,7 @@ public class ExpectedWC
         /**
          * the property status of the item.
          */
-        SVNStatusKind propStatus = SVNStatusKind.NORMAL;
+        SVNStatusKind propStatus = SVNStatusKind.NONE;
         /**
          * the expected revision number. INVALID_REVISION means do not check.
          */
