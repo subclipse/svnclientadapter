@@ -203,18 +203,21 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
         boolean recurse)
         throws SVNClientException {
         try {
+        	String url = moduleName.toString();
             notificationHandler.setCommand(ISVNNotifyListener.Command.CHECKOUT);
             notificationHandler.logCommandLine(
                 "checkout" +
                 (recurse?"":" -N") + 
                 " -r "+revision.toString()+
-                " "+moduleName.toString());        
+                " "+url);        
 			notificationHandler.setBaseDir(new File("."));
             svnClient.checkout(
-			    moduleName.toString(),
+			    url,
                 fileToSVNPath(destPath, false),
                 JhlConverter.convert(revision),
-                recurse);
+                JhlConverter.convert(revision),
+                recurse,
+                false);
         } catch (ClientException e) {
             notificationHandler.logException(e);
             throw new SVNClientException(e);

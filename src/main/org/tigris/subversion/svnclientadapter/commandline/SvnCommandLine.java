@@ -215,11 +215,12 @@ public class SvnCommandLine extends CommandLine {
 	String checkout(String url, String destination, String revision, boolean recursive)
 		throws CmdLineException {
         setCommand(ISVNNotifyListener.Command.CHECKOUT, true);
+		String rev = validRev(revision);
 		ArrayList args = new ArrayList();
 		args.add("co");
 		args.add("-r");
-		args.add(validRev(revision));
-		args.add(url);
+		args.add(rev);
+		args.add(url + "@" + rev);
 		args.add(destination);
 		
 		if (!recursive)
