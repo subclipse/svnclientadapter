@@ -8,7 +8,7 @@ It can use one of 3 low-level svn client implementations to provide access to th
 
 - JavaHL (JNI) subversion library (http://svn.collab.net/repos/svn/trunk/subversion/bindings/java/javahl/)
 - JavaSVN (pure Java) (http://tmate.org/svn/)
-- svn(.exe) command line client (experimental)
+- svn(.exe) command line client (some functionality unavailable/unreliable with <1.3 command line clients)
 
 SVNClientAdapter is easier to use than SVNClient class and has more features.
 
@@ -16,7 +16,8 @@ How to use it :
 =============
 You will need to add svnClientAdapter.jar in your classpath. 
 If you wish to use JNI client (recommended), you will need svnjavahl.jar in your classpath.
-If you wish to use pure java implementation of subversion low-level api, you will need javasvn.jar and jsch.jar in your classpath.
+If you wish to use pure java implementation of subversion low-level api, you will need javasvn.jar and ganymed.jar in your classpath.
+If you wish to use command line client, you will need that client be present on your system path.
 
 See the src/samples folder to see how to use it.
 

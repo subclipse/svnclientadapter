@@ -16,6 +16,7 @@
 package org.tigris.subversion.svnclientadapter.commandline;
 
 import java.util.Calendar;
+import java.util.TimeZone;
 
 import junit.framework.TestCase;
 
@@ -25,7 +26,7 @@ public class HelperTest extends TestCase {
 		
 		// before patch from Jennifer Bevan, svnClientAdapter was incorrectly
 		// setting dates at 12:xx PM to 12:xx AM  
-	    Calendar cal = Calendar.getInstance();
+	    Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 	    cal.set(2003, 0, 10,23,21,54);
 		assertEquals(cal.getTime().toString(), Helper.convertXMLDate("2003-01-10T23:21:54.831325Z").toString());
 		cal.set(2003, 0, 11,12,01,06);
