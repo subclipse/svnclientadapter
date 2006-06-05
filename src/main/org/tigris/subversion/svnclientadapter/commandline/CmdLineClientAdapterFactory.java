@@ -26,6 +26,8 @@ import org.tigris.subversion.svnclientadapter.SVNClientException;
 public class CmdLineClientAdapterFactory extends SVNClientAdapterFactory {
     public static final String COMMANDLINE_CLIENT = "commandline";
     
+    private static boolean is13ClientAvailable = false;
+    
     private CmdLineClientAdapterFactory() {
     }
 
@@ -33,7 +35,11 @@ public class CmdLineClientAdapterFactory extends SVNClientAdapterFactory {
 	 * @see org.tigris.subversion.svnclientadapter.SVNClientAdapterFactory#createSVNClientImpl()
 	 */
 	protected ISVNClientAdapter createSVNClientImpl() {
-		return new CmdLineClientAdapter();
+		if (is13ClientAvailable) {
+			return new CmdLineClientAdapter(new CmdLineNotificationHandler());
+		} else {
+			return new CmdLineClientAdapter12(new CmdLineNotificationHandler());
+		}
 	}
 
     /* (non-Javadoc)
@@ -44,9 +50,11 @@ public class CmdLineClientAdapterFactory extends SVNClientAdapterFactory {
     }    
     
     public static void setup() throws SVNClientException {
-        if (!CmdLineClientAdapter.isAvailable()) {
+        if (!CmdLineClientAdapter12.isAvailable()) {
             throw new SVNClientException("Command line client adapter is not available");
         }
+        
+        is13ClientAvailable = CmdLineClientAdapter.isAvailable();
         
         SVNClientAdapterFactory.registerAdapterFactory(new CmdLineClientAdapterFactory());
     }

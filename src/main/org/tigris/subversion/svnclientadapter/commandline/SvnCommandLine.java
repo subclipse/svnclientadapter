@@ -88,9 +88,9 @@ public class SvnCommandLine extends CommandLine {
 	 */
 	String version() throws CmdLineException {
 		setCommand(ISVNNotifyListener.Command.UNDEFINED, false);
-		String result = super.version();
-		return result;
+		return super.version();
 	}
+	
 	/**
 	 * <p>
 	 * Adds an unversioned file into the repository.</p>
@@ -110,7 +110,7 @@ public class SvnCommandLine extends CommandLine {
 		return execString(args,false);
 	}
 
-	private ArrayList addAuthInfo(ArrayList arguments) {
+	protected ArrayList addAuthInfo(ArrayList arguments) {
 		if (user != null && user.length() > 0) {
 			arguments.add("--username");
 			arguments.add(user);
@@ -126,7 +126,7 @@ public class SvnCommandLine extends CommandLine {
 		return arguments;
 	}
 
-    private ArrayList addConfigInfo(ArrayList arguments) {
+    protected ArrayList addConfigInfo(ArrayList arguments) {
     	if (configDir != null) {
     		arguments.add("--config-dir");
             arguments.add(configDir);
@@ -415,6 +415,7 @@ public class SvnCommandLine extends CommandLine {
         setCommand(ISVNNotifyListener.Command.INFO, false);
 		ArrayList args = new ArrayList();
 		args.add("info");
+        addAuthInfo(args);
         addConfigInfo(args);
         for (int i = 0;i < target.length;i++) {
             args.add(target[i]);
@@ -724,7 +725,6 @@ public class SvnCommandLine extends CommandLine {
 		return execString(args,false);		
 	}
 
-
 	/**
 	 * <p>
 	 * Print the status of working copy files and directories.</p>
@@ -733,22 +733,24 @@ public class SvnCommandLine extends CommandLine {
 	 * @param allEntries if false, only interesting entries will be get (local mods and/or out-of-date).
 	 * @param checkUpdates Check for updates on server.
 	 */
-	String status(String path[], boolean descend, boolean allEntries, boolean checkUpdates) throws CmdLineException {
+	byte[] status(String path[], boolean descend, boolean allEntries, boolean checkUpdates) throws CmdLineException {
         if (path.length == 0) {
             // otherwise we would do a "svn status" without args
-            return ""; 
+            return new byte[0]; 
         }
         setCommand(ISVNNotifyListener.Command.STATUS, false);
 		ArrayList args = new ArrayList();
 		args.add("status");
         args.add("-v");
+        args.add("--xml");
         if (!allEntries) {
             args.add("-q");
         }
 		if (!descend) 
             args.add("-N");
-		if (checkUpdates)
-			args.add("-u");
+        if (checkUpdates) {
+            args.add("-u");
+        }
         if (allEntries) {
         	args.add("--no-ignore"); // disregard default and svn:ignore property ignores
         }
@@ -759,7 +761,7 @@ public class SvnCommandLine extends CommandLine {
 		
         addAuthInfo(args);  
         addConfigInfo(args);        
-		return execString(args,false);
+		return execBytes(args, false);
 	}
 
 	/**
@@ -1038,7 +1040,7 @@ public class SvnCommandLine extends CommandLine {
 	 * @param command
 	 * @param ouputIsNotification
 	 */
-	private void setCommand(int command, boolean ouputIsNotification) {
+	protected void setCommand(int command, boolean ouputIsNotification) {
 		this.parseSvnOutput = ouputIsNotification;
 		notificationHandler.setCommand(command);
 	}

@@ -20,8 +20,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.tigris.subversion.svnclientadapter.ISVNStatus;
+import org.tigris.subversion.svnclientadapter.SVNStatusKind;
 import org.tigris.subversion.svnclientadapter.SVNStatusUnversioned;
-import org.tigris.subversion.svnclientadapter.StringUtils;
 
 /**
  * Digests <code>status</code> and <code>info</code> information from
@@ -35,16 +35,8 @@ public class CmdLineStatuses {
     private CmdLineStatusPart[] cmdLineStatusParts;
     private ISVNStatus[] cmdLineStatuses;
 
-    CmdLineStatuses(String infoLines, String statusLines) {
-        if (statusLines.length() == 0) {
-            cmdLineStatusParts = new CmdLineStatusPart[0];
-        } else {
-            String[] parts = StringUtils.split(statusLines,Helper.NEWLINE);
-             cmdLineStatusParts = new CmdLineStatusPart[parts.length];
-             for (int i = 0; i < parts.length;i++) {
-                 cmdLineStatusParts[i] = new CmdLineStatusPart(parts[i]);
-             }
-        }
+    CmdLineStatuses(String infoLines, CmdLineStatusPart[] cmdLineStatusParts) {
+    	this.cmdLineStatusParts = cmdLineStatusParts;
 
         if (infoLines.length() == 0) {
             cmdLineInfoParts = new CmdLineInfoPart[0]; 
@@ -77,13 +69,13 @@ public class CmdLineStatuses {
             if (cmdLineStatusPart == null || !cmdLineStatusPart.isManaged()) {
                 boolean isIgnored = false;
                 if (cmdLineStatusPart != null) {
-                    isIgnored = cmdLineStatusPart.isIgnored();
+                    isIgnored = SVNStatusKind.IGNORED.equals(cmdLineStatusPart.getTextStatus());
                 }
                 statuses.add(new SVNStatusUnversioned(absPath, isIgnored));
             } else {
                 CmdLineInfoPart cmdLineInfoPart =
                     getCorrespondingInfoPart(absPath);
-                statuses.add(new CmdLineStatus(cmdLineStatusPart,
+                statuses.add(new CmdLineStatusComposite(cmdLineStatusPart,
                                                cmdLineInfoPart));
             }
         }
