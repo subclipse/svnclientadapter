@@ -42,7 +42,7 @@ class CmdLineInfoPart implements ISVNInfo {
 	private static final String KEY_PATH = "Path";
 	private static final String KEY_URL = "URL";
 	private static final String KEY_REVISION = "Revision";
-	private static final String KEY_REPOSITORY = "Repository";
+	private static final String KEY_REPOSITORY = "Repository Root";
 	private static final String KEY_NODEKIND = "Node Kind";
 	private static final String KEY_LASTCHANGEDAUTHOR = "Last Changed Author";
 	private static final String KEY_LASTCHANGEDREV = "Last Changed Rev";
@@ -59,7 +59,7 @@ class CmdLineInfoPart implements ISVNInfo {
 
 	//Fields
 	private Map infoMap = new HashMap();
-	private boolean unversioned = false;
+	protected boolean unversioned = false;
 
 	//Constructors
     /** 
@@ -79,9 +79,13 @@ class CmdLineInfoPart implements ISVNInfo {
      * ignored.txt:  (Not a versioned resource)
      */
 	CmdLineInfoPart(String infoString) {
+		this();
 		load(infoString);
 	}
 
+	private CmdLineInfoPart() {
+		super();
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -156,6 +160,8 @@ class CmdLineInfoPart implements ISVNInfo {
             // ### As of Subversion 1.3, this warning message is
             // ### printed to stderr.  Are we ever even going to see
             // ### this text?
+            // <letenay 04/06/2006> - no we're not. For >=1.3 we have to avoid this.
+            // We cannot execute info on non-versioned resources, we have to use status first to check it.
             infoMap.put(KEY_PATH,line.substring(0,line.indexOf(":  (Not a versioned resource)")));
 		} else {
 
@@ -300,5 +306,26 @@ class CmdLineInfoPart implements ISVNInfo {
         String[] infoArray = new String[infoParts.size()];
         infoParts.toArray(infoArray);
         return infoArray;
+    }
+    
+    public static CmdLineInfoPart createUnversioned(String path)
+    {
+    	return new CmdLineInfoPartUnversioned(path);
+	}
+
+    protected static class CmdLineInfoPartUnversioned extends CmdLineInfoPart
+    {
+    	private String path;
+    	
+    	private CmdLineInfoPartUnversioned(String path)
+    	{
+    		super();
+    		this.path = path;
+    		this.unversioned = true;
+    	}
+    	
+    	public String getPath() {
+    		return path;
+    	}
     }
 }

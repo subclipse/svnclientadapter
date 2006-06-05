@@ -87,11 +87,12 @@ public abstract class AbstractClientAdapter implements ISVNClientAdapter {
         if (pd == null)
             return list;
         String patterns = pd.getValue();
-        StringTokenizer st = new StringTokenizer(patterns,"\n");
+        StringTokenizer st = new StringTokenizer(patterns,"\n\r");
         while (st.hasMoreTokens()) {
             String entry = st.nextToken();
-            if (!entry.equals(""))
+            if ((entry != null) && (entry.length() > 0)) {
                 list.add(entry);
+            }
         }
         return list;
     }
@@ -118,12 +119,13 @@ public abstract class AbstractClientAdapter implements ISVNClientAdapter {
     public void setIgnoredPatterns(File path, List patterns) throws SVNClientException {
         if (!path.isDirectory())
             return;
-        String value ="";
+        String separator = System.getProperty("line.separator");
+        StringBuffer value = new StringBuffer();
         for (Iterator it = patterns.iterator(); it.hasNext();) {
             String pattern = (String)it.next();
-            value = value + '\n' + pattern;    
+            value.append(pattern + separator);
         }
-        propertySet(path, ISVNProperty.IGNORE, value, false);       
+        propertySet(path, ISVNProperty.IGNORE, value.toString(), false);
     }    
 
     /* (non-Javadoc)

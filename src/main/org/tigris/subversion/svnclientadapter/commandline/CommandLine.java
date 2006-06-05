@@ -112,9 +112,21 @@ abstract class CommandLine {
      */
 	protected String[] getEnvironmentVariables()
 	{
-		final String path = "PATH=" + CmdLineClientAdapter.getEnvironmentVariable("PATH");
-		final String systemRoot = "SystemRoot=" + CmdLineClientAdapter.getEnvironmentVariable("SystemRoot");
-		return new String[] { "LANG=C", "LC_ALL=C", path, systemRoot };
+		final String path = CmdLineClientAdapter.getEnvironmentVariable("PATH");
+		final String systemRoot = CmdLineClientAdapter.getEnvironmentVariable("SystemRoot");
+		if (path != null) {
+			if (systemRoot != null) {
+				return new String[] { "LANG=C", "LC_ALL=C", "PATH=" + path, "SystemRoot=" + systemRoot };
+			} else {
+				return new String[] { "LANG=C", "LC_ALL=C", "PATH=" + path };
+			}
+		} else {
+			if (systemRoot != null) {
+				return new String[] { "LANG=C", "LC_ALL=C", "SystemRoot=" + systemRoot };
+			} else {
+				return new String[] { "LANG=C", "LC_ALL=C" };
+			}
+		}		
 	}
 	
     /**

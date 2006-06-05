@@ -139,7 +139,43 @@ public class SVNStatusKind {
             return null;
         }
     }
-        
+
+    public static SVNStatusKind fromString(String kind) {
+        if ("none".equals(kind) || "non-svn".equals(kind)) {
+            return NONE;
+        } else if ("normal".equals(kind)) {
+            return NORMAL;
+        } else if ("added".equals(kind)) {
+            return ADDED;
+        } else if ("missing".equals(kind)) {
+            return MISSING;
+        } else if ("deleted".equals(kind)) {
+            return DELETED;
+        } else if ("replaced".equals(kind)) {
+            return REPLACED;
+        } else if ("modified".equals(kind)) {
+            return MODIFIED;
+        } else if ("merged".equals(kind)) {
+            return MERGED;
+        } else if ("conflicted".equals(kind)) {
+            return CONFLICTED;
+        } else if ("ignored".equals(kind)) {
+            return IGNORED;
+        } else if ("incomplete".equals(kind)) {
+            return INCOMPLETE;
+        } else if ("external".equals(kind)) {
+            return EXTERNAL;
+        } else if ("unversioned".equals(kind)) {
+            return UNVERSIONED;
+        } else if ("locked".equals(kind)) {
+            return LOCKED;
+        } else if ("obstructed".equals(kind)) {
+            return OBSTRUCTED;
+        } else {
+            throw new IllegalArgumentException("Unknown status " + kind);
+        }
+    }
+    
     public String toString() {
         switch (kind)
         {
