@@ -197,14 +197,15 @@ public class SVNRevision
     /**
      * get a revision from a string
      * revision can be :
-     * - a date with the following format : MM/DD/YYYY HH:MM AM_PM
+     * - a date with the format according to <code>dateFormat</code>
      * - a revision number
      * - HEAD, BASE, COMMITED or PREV
      * 
      * @param revision
+     * @param dateFormat
      * @return Revision
      */
-    public static SVNRevision getRevision(String revision) throws ParseException {
+    public static SVNRevision getRevision(String revision, SimpleDateFormat aDateFormat) throws ParseException {
 
     	if ((revision == null) || (revision.equals("")))
     		return null;
@@ -231,9 +232,10 @@ public class SVNRevision
         } catch (NumberFormatException e)
         {
         }
-        
+
         // try date
-        DateFormat df = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, Locale.US);
+        SimpleDateFormat df = (aDateFormat != null) ? aDateFormat : new SimpleDateFormat("MM/DD/YYYY HH:MM AM_PM", Locale.US);
+
         try
         {
             Date revisionDate = df.parse(revision);
@@ -242,7 +244,21 @@ public class SVNRevision
         {
         }
         
-        throw new ParseException("Invalid revision. Revision should be a number, a date in MM/DD/YYYY HH:MM AM_PM format or HEAD, BASE, COMMITED or PREV",0);
+        throw new ParseException("Invalid revision. Revision should be a number, a date in " + df.toPattern() + " format or HEAD, BASE, COMMITED or PREV",0);
+    }    
+
+    /**
+     * get a revision from a string
+     * revision can be :
+     * - a date with the following format : MM/DD/YYYY HH:MM AM_PM
+     * - a revision number
+     * - HEAD, BASE, COMMITED or PREV
+     * 
+     * @param revision
+     * @return Revision
+     */
+    public static SVNRevision getRevision(String revision) throws ParseException {
+    	return getRevision(revision, new SimpleDateFormat("MM/DD/YYYY HH:MM AM_PM", Locale.US));
     }    
     
 }

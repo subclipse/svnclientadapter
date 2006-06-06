@@ -99,27 +99,25 @@ public class CatTest extends SVNTest {
         assertTrue("content changed", Arrays.equals(content, testContent));
     }
 
-    //TODO <letenay> enable this when SVNRevision.getRevision(string, formatter) is commited.
-//    public void testDateStringCat() throws Throwable {
-//        // create the working copy
-//        OneTest thisTest = new OneTest("testDateCat", getGreekTestConfig());
-//
-//        // modify A/mu        
-//        modifyAMu(thisTest);
-//        
-//        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);
-////        DateFormat df = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, Locale.US);
-//
-//        // get the content using date
-//        InputStream is = client.getContent(new File(thisTest.getWCPath()
-//                + "/A/mu"), SVNRevision.getRevision(df.format(new Date()), df));
-//        byte[] content = new byte[is.available()];
-//        is.read(content);
-//        byte[] testContent = thisTest.getExpectedWC().getItemContent("A/mu").getBytes();
-//
-//        // the content should be the same
-//        assertTrue("content changed", Arrays.equals(content, testContent));
-//    }
+    public void testDateStringCat() throws Throwable {
+        // create the working copy
+        OneTest thisTest = new OneTest("testDateCat", getGreekTestConfig());
+
+        // modify A/mu        
+        modifyAMu(thisTest);
+        
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);
+
+        // get the content using date
+        InputStream is = client.getContent(new File(thisTest.getWCPath()
+                + "/A/mu"), SVNRevision.getRevision(df.format(new Date()), df));
+        byte[] content = new byte[is.available()];
+        is.read(content);
+        byte[] testContent = thisTest.getExpectedWC().getItemContent("A/mu").getBytes();
+
+        // the content should be the same
+        assertTrue("content changed", Arrays.equals(content, testContent));
+    }
 
     public void testUrlCat() throws Throwable {
         // create the working copy
