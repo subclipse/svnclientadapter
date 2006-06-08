@@ -20,6 +20,8 @@ package org.tigris.subversion.svnclientadapter.basictests;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.tigris.subversion.svnclientadapter.ISVNStatus;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
@@ -88,4 +90,49 @@ public class StatusTest extends SVNTest {
         thisTest.checkStatusesExpectedWC();
     }    
 
+    public void testStatusOnIgnored() throws Throwable
+    {
+        // build the test setup
+        OneTest thisTest = new OneTest("statusOnIgnored",getGreekTestConfig());
+
+        // create dir
+	    File dir = new File(thisTest.getWorkingCopy(), "dir");
+	    dir.mkdir();
+	
+	    // add dir
+	    client.addDirectory(dir, true);
+	    List ignoredPatterns = new ArrayList();
+	    ignoredPatterns.add("ignored");
+	    client.setIgnoredPatterns(dir, ignoredPatterns);
+        client.commit(new File[]{thisTest.getWCPath()}, "log msg", true);
+
+	    // create dir/ignored (should be ignored)
+	    File dirIgn = new File(dir, "ignored");
+	    dirIgn.mkdir();
+	    File fileIgn = new File(dirIgn, "ignoredFile");
+	    new FileOutputStream(fileIgn).close();	
+	    File subdirIgn = new File(dirIgn, "subIgnored");
+	    subdirIgn.mkdir();
+	    File fileIgn2 = new File(subdirIgn, "ignoredFile2");
+	    new FileOutputStream(fileIgn2).close();	
+
+        ISVNStatus[] statuses;
+
+        //Check status of the ignored resource
+        statuses = client.getStatus(dirIgn, true, true, false);       
+        assertEquals("Wrong nuber of statuses returned", 1, statuses.length);
+        assertEquals("Wrong text status", SVNStatusKind.IGNORED, statuses[0].getTextStatus());
+
+        //Check status withing the ignored resource
+        statuses = client.getStatus(fileIgn, true, true, false);       
+        assertEquals("Wrong nuber of statuses returned", 1, statuses.length);
+        assertEquals("Wrong text status", SVNStatusKind.UNVERSIONED, statuses[0].getTextStatus());
+        statuses = client.getStatus(subdirIgn, true, true, false);       
+        assertEquals("Wrong nuber of statuses returned", 1, statuses.length);
+        assertEquals("Wrong text status", SVNStatusKind.UNVERSIONED, statuses[0].getTextStatus());
+        statuses = client.getStatus(fileIgn2, true, true, false);       
+        assertEquals("Wrong nuber of statuses returned", 1, statuses.length);
+        assertEquals("Wrong text status", SVNStatusKind.UNVERSIONED, statuses[0].getTextStatus());
+
+    }
 }
