@@ -33,6 +33,7 @@ import org.tigris.subversion.svnclientadapter.javahl.JhlClientAdapterFactory;
 import org.tigris.subversion.svnclientadapter.javahl.JhlConverter;
 import org.tigris.subversion.svnclientadapter.javahl.JhlNotificationHandler;
 import org.tmatesoft.svn.core.javahl.SVNClientImpl;
+import com.sun.rsasign.r;
 
 /**
  * The JavaSVN Adapter works by providing an implementation of the
@@ -126,7 +127,9 @@ public class JavaSvnClientAdapter extends AbstractJhlClientAdapter {
     }
 
     /**
-     * Returns the status of files and directory recursively
+     * Returns the status of files and directory recursively.
+     * Overrides method from parent class to work around JavaSVN bug when status on resource within ignored folder
+     * does not yield any status. 
      *
      * @param path File to gather status.
      * @param descend get recursive status information
@@ -136,30 +139,28 @@ public class JavaSvnClientAdapter extends AbstractJhlClientAdapter {
      * @return a Status
      */
     public ISVNStatus[] getStatus(File path, boolean descend, boolean getAll, boolean contactServer) throws SVNClientException {
-		notificationHandler.setCommand(ISVNNotifyListener.Command.STATUS);
-		String filePathSVN = fileToSVNPath(path, false);
-		notificationHandler.logCommandLine("status " + (contactServer?"-u ":"")+ filePathSVN);
-		notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
-		try {
-			Status[] statuses = 
-                svnClient.status(
-                        filePathSVN,  
-                        descend,            // If descend is true, recurse fully, else do only immediate children.
-                        contactServer,      // If update is set, contact the repository and augment the status structures with information about out-of-dateness     
-    					getAll,getAll);    // retrieve all entries; otherwise, retrieve only "interesting" entries (local mods and/or out-of-date).
-			if (statuses.length == 0)
-				return new ISVNStatus[] {new SVNStatusUnversioned(path)};
-			else
-			return JhlConverter.convert(statuses);
-		} catch (ClientException e) {
-			if (e.getAprError() == SVN_ERR_WC_NOT_DIRECTORY) {
-				// when there is no .svn dir, an exception is thrown ...
-				return new ISVNStatus[] {new SVNStatusUnversioned(path)};
-			} else {
-				notificationHandler.logException(e);
-				throw new SVNClientException(e);
-			}
-		}
+    	//Call the standard status first.
+    	ISVNStatus[] statuses = super.getStatus(path, descend, getAll, contactServer);
+    	//If status call return empty array it is either correct - the getAll was not specified and there's not
+    	//interesting status in WC, or it is the bug on getting status on unversioned with ignored.
+    	if (statuses.length == 0) {
+    		if (getAll) {
+    			//If the getAll was called and it returned nothing, it is probably the bug case
+    			return new ISVNStatus[] { new SVNStatusUnversioned(path) };    			
+    		} else {
+    			//If the getAll was not called, we have to find out, so let's call it again with getAll set.
+    			ISVNStatus[] reCheckStatuses = getStatus(path, false, true, contactServer);
+    			if (reCheckStatuses.length == 0) {
+        			//If event after getAll the result is empty, we assume it's the bug.
+    				return new ISVNStatus[] { new SVNStatusUnversioned(path) };
+    			} else {
+    				//The result after getAll was not empty, so the very first empty result was OK, there's nothing interesting in WC.
+    				return new ISVNStatus[0];
+    			}
+    		}
+    	} else {
+    		return statuses;
+    	}
     }
 
    
