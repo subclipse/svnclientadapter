@@ -741,10 +741,9 @@ public class SvnCommandLine extends CommandLine {
         setCommand(ISVNNotifyListener.Command.STATUS, false);
 		ArrayList args = new ArrayList();
 		args.add("status");
-        args.add("-v");
         args.add("--xml");
-        if (!allEntries) {
-            args.add("-q");
+        if (allEntries) {
+            args.add("-v");
         }
 		if (!descend) 
             args.add("-N");

@@ -422,9 +422,9 @@ public class CmdLineStatusFromXml extends CmdLineXmlCommand implements ISVNStatu
 
 				Element reposStatusNode = getNextNamedElement(wcStatusNode, "repos-status");
 				if (reposStatusNode != null) {
-					Node reposItemStatusAttr = wcStatusNode.getAttributes().getNamedItem("item");
+					Node reposItemStatusAttr = reposStatusNode.getAttributes().getNamedItem("item");
 	                status.setRepositoryTextStatus(SVNStatusKind.fromString(reposItemStatusAttr.getNodeValue()));
-					Node reposPropStatusAttr = wcStatusNode.getAttributes().getNamedItem("props");
+					Node reposPropStatusAttr = reposStatusNode.getAttributes().getNamedItem("props");
 	                status.setRepositoryPropStatus(SVNStatusKind.fromString(reposPropStatusAttr.getNodeValue()));
 				}				
 
