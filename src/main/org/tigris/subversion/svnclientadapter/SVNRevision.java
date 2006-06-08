@@ -234,7 +234,7 @@ public class SVNRevision
         }
 
         // try date
-        SimpleDateFormat df = (aDateFormat != null) ? aDateFormat : new SimpleDateFormat("MM/DD/YYYY HH:MM AM_PM", Locale.US);
+        SimpleDateFormat df = (aDateFormat != null) ? aDateFormat : new SimpleDateFormat("MM/dd/yyyy hh:mm a", Locale.US);
 
         try
         {
@@ -258,7 +258,7 @@ public class SVNRevision
      * @return Revision
      */
     public static SVNRevision getRevision(String revision) throws ParseException {
-    	return getRevision(revision, new SimpleDateFormat("MM/DD/YYYY HH:MM AM_PM", Locale.US));
+    	return getRevision(revision, new SimpleDateFormat("MM/dd/yyyy hh:mm a", Locale.US));
     }    
     
 }

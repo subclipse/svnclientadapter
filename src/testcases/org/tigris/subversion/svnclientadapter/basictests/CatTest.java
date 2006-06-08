@@ -106,11 +106,11 @@ public class CatTest extends SVNTest {
         // modify A/mu        
         modifyAMu(thisTest);
         
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);
+        SimpleDateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm a", Locale.US);
 
         // get the content using date
         InputStream is = client.getContent(new File(thisTest.getWCPath()
-                + "/A/mu"), SVNRevision.getRevision(df.format(new Date()), df));
+                + "/A/mu"), SVNRevision.getRevision(df.format(new Date())));
         byte[] content = new byte[is.available()];
         is.read(content);
         byte[] testContent = thisTest.getExpectedWC().getItemContent("A/mu").getBytes();
