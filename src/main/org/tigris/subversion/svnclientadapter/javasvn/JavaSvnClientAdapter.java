@@ -18,22 +18,18 @@ package org.tigris.subversion.svnclientadapter.javasvn;
 import java.io.File;
 
 import org.tigris.subversion.javahl.ClientException;
-import org.tigris.subversion.javahl.Status;
 import org.tigris.subversion.svnclientadapter.ISVNClientAdapter;
 import org.tigris.subversion.svnclientadapter.ISVNNotifyListener;
 import org.tigris.subversion.svnclientadapter.ISVNPromptUserPassword;
 import org.tigris.subversion.svnclientadapter.ISVNStatus;
-import org.tigris.subversion.svnclientadapter.SVNBaseDir;
 import org.tigris.subversion.svnclientadapter.SVNClientAdapterFactory;
 import org.tigris.subversion.svnclientadapter.SVNClientException;
 import org.tigris.subversion.svnclientadapter.SVNStatusUnversioned;
 import org.tigris.subversion.svnclientadapter.commandline.CmdLineClientAdapterFactory;
 import org.tigris.subversion.svnclientadapter.javahl.AbstractJhlClientAdapter;
 import org.tigris.subversion.svnclientadapter.javahl.JhlClientAdapterFactory;
-import org.tigris.subversion.svnclientadapter.javahl.JhlConverter;
 import org.tigris.subversion.svnclientadapter.javahl.JhlNotificationHandler;
 import org.tmatesoft.svn.core.javahl.SVNClientImpl;
-import com.sun.rsasign.r;
 
 /**
  * The JavaSVN Adapter works by providing an implementation of the
@@ -149,7 +145,7 @@ public class JavaSvnClientAdapter extends AbstractJhlClientAdapter {
     			return new ISVNStatus[] { new SVNStatusUnversioned(path) };    			
     		} else {
     			//If the getAll was not called, we have to find out, so let's call it again with getAll set.
-    			ISVNStatus[] reCheckStatuses = getStatus(path, false, true, contactServer);
+    			ISVNStatus[] reCheckStatuses = super.getStatus(path, false, true, false);
     			if (reCheckStatuses.length == 0) {
         			//If event after getAll the result is empty, we assume it's the bug.
     				return new ISVNStatus[] { new SVNStatusUnversioned(path) };
