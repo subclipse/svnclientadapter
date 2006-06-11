@@ -50,7 +50,7 @@ public class SvnCommandLine extends CommandLine {
      * @param revision
      * @return "HEAD" if revision is a null or empty string, return revision otherwise
      */
-	private static String validRev(String revision) {
+	protected static String validRev(String revision) {
 		return (revision == null || "".equals(revision)) ? "HEAD" : revision;
 	}	
 	
@@ -815,10 +815,11 @@ public class SvnCommandLine extends CommandLine {
 	 * @return
 	 * @throws CmdLineException
 	 */
-	String annotate(String path,String revisionStart, String revisionEnd) throws CmdLineException {
+	byte[] annotate(String path,String revisionStart, String revisionEnd) throws CmdLineException {
 		setCommand(ISVNNotifyListener.Command.ANNOTATE, false);
 		ArrayList args = new ArrayList();
 		args.add("annotate");
+		args.add("--xml");
 		args.add("-r");
 		if ((revisionStart != null) && (revisionStart.length() > 0))
 		{
@@ -831,7 +832,7 @@ public class SvnCommandLine extends CommandLine {
 		args.add(path);
 		addAuthInfo(args);
         addConfigInfo(args);        
-		return execString(args,false);
+		return execBytes(args,false);
 	}
 
     /**

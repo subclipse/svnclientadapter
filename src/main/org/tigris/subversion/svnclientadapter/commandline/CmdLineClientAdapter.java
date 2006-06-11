@@ -981,7 +981,7 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 		return byteArray;
 	}
 
-	private ISVNAnnotations annotate(String target, SVNRevision revisionStart, SVNRevision revisionEnd) throws SVNClientException {
+	protected ISVNAnnotations annotate(String target, SVNRevision revisionStart, SVNRevision revisionEnd) throws SVNClientException {
         try {
             notificationHandler.setCommand(ISVNNotifyListener.Command.ANNOTATE);
             if(revisionStart == null)
@@ -989,9 +989,9 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
             if(revisionEnd == null)
                 revisionEnd = SVNRevision.HEAD;
 
-            String annotations = _cmd.annotate(target,toString(revisionStart),toString(revisionEnd));
-            
-            return new CmdLineAnnotations(annotations,Helper.NEWLINE);
+            byte[] annotations = _cmd.annotate(target,toString(revisionStart),toString(revisionEnd));
+            InputStream contents = _cmd.cat(target, revisionEnd.toString());
+            return CmdLineAnnotations.createFromXml(annotations, contents);
 		} catch (CmdLineException e) {
 			throw SVNClientException.wrapException(e);
 		}

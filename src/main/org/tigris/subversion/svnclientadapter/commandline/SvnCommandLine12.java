@@ -83,4 +83,32 @@ public class SvnCommandLine12 extends SvnCommandLine {
 		return execString(args,false);
 	}
 
+	/**
+	 * Output the content of specified files or URLs with revision and 
+	 * author information in-line.
+	 * @param path
+	 * @param revisionStart
+	 * @param revisionEnd
+	 * @return
+	 * @throws CmdLineException
+	 */
+	String annotateByStdout(String path,String revisionStart, String revisionEnd) throws CmdLineException {
+		setCommand(ISVNNotifyListener.Command.ANNOTATE, false);
+		ArrayList args = new ArrayList();
+		args.add("annotate");
+		args.add("-r");
+		if ((revisionStart != null) && (revisionStart.length() > 0))
+		{
+			args.add(validRev(revisionStart) + ":" + validRev(revisionEnd));	
+		}
+		else
+		{
+			args.add(validRev(revisionEnd));			
+		}
+		args.add(path);
+		addAuthInfo(args);
+        addConfigInfo(args);        
+		return execString(args,false);
+	}
+
 }

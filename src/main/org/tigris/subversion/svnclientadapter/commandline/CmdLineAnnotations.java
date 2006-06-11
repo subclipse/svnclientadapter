@@ -15,44 +15,111 @@
  */
 package org.tigris.subversion.svnclientadapter.commandline;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Date;
 
-import org.tigris.subversion.svnclientadapter.AnnotateInputStream;
-import org.tigris.subversion.svnclientadapter.ISVNAnnotations;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.tigris.subversion.svnclientadapter.Annotations;
+import org.tigris.subversion.svnclientadapter.SVNRevision;
 import org.tigris.subversion.svnclientadapter.StringUtils;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 
 /**
  * Handles annotations (see svn ann) 
  *
  * @author Cédric Chabanois 
- *         <a href="mailto:cchabanois@ifrance.com">cchabanois@ifrance.com</a>
  */
-public class CmdLineAnnotations implements ISVNAnnotations {
+public class CmdLineAnnotations extends Annotations {
 
-    private String[] lines;
+	private CmdLineAnnotations()
+	{
+		//Use factory methods		
+	}
 
+    public static CmdLineAnnotations createFromXml(byte[] annotations, InputStream contents) throws CmdLineException {
+    	CmdLineAnnotations result = new CmdLineAnnotations();
+    	
+		try {
+			// Create a builder factory
+			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+			factory.setValidating(false);    
+			// Create the builder and parse the file
+			InputSource source = new InputSource(new ByteArrayInputStream(annotations));
+			Document doc = factory.newDocumentBuilder().parse(source);
 
-    public CmdLineAnnotations() {
+//			<!-- For "svn blame" -->
+//			<!ELEMENT blame (target*)>
+//			<!ELEMENT target (entry*)>
+//			<!ATTLIST target path CDATA #REQUIRED>  <!-- path or URL -->
+//			<!-- NOTE: The order of entries in a target element is insignificant. -->
+//			<!ELEMENT entry (commit?)>
+//			<!ATTLIST entry line-number CDATA #REQUIRED>  <!-- line number: integer -->
+//			<!ELEMENT commit (author?, date?)>
+//			<!ATTLIST commit revision CDATA #REQUIRED>  <!-- revision number: integer -->
+//			<!ELEMENT author (#PCDATA)>  <!-- author -->
+//			<!ELEMENT date (#PCDATA)>  <!-- date as "yyyy-mm-ddThh:mm:ss.ssssssZ"-->
+			
+			NodeList nodes = doc.getElementsByTagName("entry");
+			Annotation[] lines = new Annotation[nodes.getLength()];
+			
+			for(int i = 0; i < nodes.getLength(); i++) {
+				Node entry = nodes.item(i);
+
+				SVNRevision.Number revision = SVNRevision.Number.INVALID_REVISION;
+				String author = null;
+				Date date = null;
+				
+				int lineNr = Integer.parseInt(entry.getAttributes().getNamedItem("line-number").getNodeValue());
+				Element commitNode = CmdLineXmlCommand.getFirstNamedElement(entry, "commit");
+				if (commitNode != null) {
+					Node revisionAttribute = commitNode.getAttributes().getNamedItem("revision");
+					revision = Helper.toRevNum(revisionAttribute.getNodeValue());
+					Element authorNode = CmdLineXmlCommand.getFirstNamedElement(commitNode, "author");
+					author = authorNode.getFirstChild().getNodeValue();
+					Element dateNode = CmdLineXmlCommand.getNextNamedElement(authorNode, "date");
+					date = Helper.convertXMLDate(dateNode.getFirstChild().getNodeValue());
+				}
+				
+				lines[lineNr - 1] = (new Annotation(revision.getNumber(), author, date, null));
+			}
+
+			BufferedReader bReader = new BufferedReader(new InputStreamReader(contents)); 
+			String line = bReader.readLine();
+			int i = 0;
+			while (line != null) {
+				lines[i].setLine(line);
+				result.addAnnotation(lines[i]);
+				line = bReader.readLine();
+				i++;
+			}
+			bReader.close();
+			
+		} catch (Exception e) {
+			throw new CmdLineException(e);
+		} 
+    	
+    	return result;
     }
-
-    public CmdLineAnnotations(String annotations, String lineSeparator) {
-    	lines = StringUtils.split(annotations, lineSeparator);
+	
+    public static CmdLineAnnotations createFromStdOut(String annotations, String lineSeparator) {
+    	CmdLineAnnotations result = new CmdLineAnnotations();
+    	String[] lines = StringUtils.split(annotations, lineSeparator);
+    	for (int i = 0; i < lines.length; i++) {
+			Annotation ann = new Annotation(getRevisionFrom(lines[i]), getAuthorFrom(lines[i]), getChangedFrom(lines[i]), getLineFrom(lines[i]));
+			result.addAnnotation(ann);
+		}
+    	return result;
     }
     
-    public CmdLineAnnotations(byte[] annotations, String lineSeparator) {
-        this(new String(annotations), lineSeparator);
-    }
-
-    /* (non-Javadoc)
-     * @see org.tigris.subversion.svnclientadapter.ISVNAnnotations#getRevision(int)
-     */
-    public long getRevision(int lineNumber) {
-        if (lineNumber >= lines.length)
-            return -1;
-        else
-        {
-            String line = lines[lineNumber];
+    private static long getRevisionFrom(String line) {
             String version = line.substring(0,6).trim();
             if (version.equals("-")) {
             	// if we annotate from revision 2 to HEAD, the author and revision 
@@ -61,28 +128,15 @@ public class CmdLineAnnotations implements ISVNAnnotations {
             } else {
                 return Integer.parseInt(version);
             }
-        }
     }
 
-    /* (non-Javadoc)
-     * @see org.tigris.subversion.svnclientadapter.ISVNAnnotations#getChanged(int)
-     */
-    public Date getChanged(int lineNumber) {
+    private static Date getChangedFrom(String line) {
     	//Client adapter does not support verbose output with dates
     	return null;
     }
 
-    /* (non-Javadoc)
-     * @see org.tigris.subversion.svnclientadapter.ISVNAnnotations#getAuthor(int)
-     */
-    public String getAuthor(int lineNumber) {
-        if (lineNumber >= lines.length)
-            return null;
-        else
-        {
-        	String line = lines[lineNumber];
+    private static String getAuthorFrom(String line) {
         	String author = StringUtils.stripStart(line.substring(7,17),null);
-        	
 
             if (author.equals("-")) {
             	// if we annotate from revision 2 to HEAD, the author and revision 
@@ -91,33 +145,9 @@ public class CmdLineAnnotations implements ISVNAnnotations {
             } else {
                 return author;
             }
-        }
     }
 
-    /* (non-Javadoc)
-     * @see org.tigris.subversion.svnclientadapter.ISVNAnnotations#getLine(int)
-     */
-    public String getLine(int lineNumber) {
-        if (lineNumber >= lines.length)
-            return null;
-        else
-        {
-            String line = lines[lineNumber];
+    private static String getLineFrom(String line) {
             return line.substring(18);            
-        }
-    }    
-
-	/* (non-Javadoc)
-	 * @see org.tigris.subversion.svnclientadapter.ISVNAnnotations#getInputStream()
-	 */
-	public InputStream getInputStream() {
-		return new AnnotateInputStream(this);
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.tigris.subversion.svnclientadapter.ISVNAnnotations#size()
-	 */
-	public int size() {
-		return lines.length;
-	}
+    }
 }

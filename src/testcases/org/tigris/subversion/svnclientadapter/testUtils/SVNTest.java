@@ -36,6 +36,9 @@ import org.tigris.subversion.svnclientadapter.javasvn.JavaSvnClientAdapterFactor
 public abstract class SVNTest extends TestCase {
     private static final Logger log = Logger.getLogger(SVNTest.class.getName());
 
+    public static String TEST_USER = "cedric";
+    public static String TEST_USERPASS = "cedricpass";
+    
     protected ISVNClientAdapter client;
 
     protected ISVNClientAdapter clientAdmin;
@@ -104,14 +107,14 @@ public abstract class SVNTest extends TestCase {
         // create and configure the needed subversion objects
         client = SVNClientAdapterFactory
                 .createSVNClient(testsConfig.clientType);
-        client.setUsername("cedric");
-        client.setPassword("cedricpass");
+        client.setUsername(TEST_USER);
+        client.setPassword(TEST_USERPASS);
         //      client.setConfigDirectory(conf.getAbsolutePath());
 
         clientAdmin = SVNClientAdapterFactory
                 .createSVNClient(testsConfig.adminClientType);
-        clientAdmin.setUsername("cedric");
-        clientAdmin.setPassword("cedricpass");
+        clientAdmin.setUsername(TEST_USER);
+        clientAdmin.setPassword(TEST_USERPASS);
 
         startServer();
     }
