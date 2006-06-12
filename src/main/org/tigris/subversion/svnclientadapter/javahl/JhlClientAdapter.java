@@ -178,6 +178,9 @@ public class JhlClientAdapter extends AbstractJhlClientAdapter {
 	            try {
 	                SVNClientInterface svnClient = new SVNClient();
 	                String dirname = svnClient.getAdminDirectoryName();
+               // to remove compiler warning about dirname not being read
+	                if (dirname != null)  
+	                	available = true;
 	            } catch (UnsatisfiedLinkError e) {
 	                available = false;
 	                javaHLErrors.append("Incompatible JavaHL library loaded.  1.3.x or later required.");
