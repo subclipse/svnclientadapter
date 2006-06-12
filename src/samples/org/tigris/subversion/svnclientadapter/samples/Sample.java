@@ -109,9 +109,9 @@ public class Sample {
 		}
 		
 
-		// set username and password if necessary (this is not necessary for this sample)
-		// svnClient.setUsername(username);
-		// svnClient.setPassword(password);
+		// set username and password if necessary
+		svnClient.setUsername("guest");
+		svnClient.setPassword(" ");
 
 		//	add a listener if you wish
 		NotifyListener listener = new Sample.NotifyListener();
@@ -119,7 +119,7 @@ public class Sample {
 
 		try {
 			//	use the svn commands
-			InputStream is = svnClient.getContent(new SVNUrl("http://svn.collab.net/repos/subclipse/trunk/svnClientAdapter/readme.txt"),SVNRevision.HEAD);
+			InputStream is = svnClient.getContent(new SVNUrl("http://subclipse.tigris.org/svn/subclipse/trunk/svnClientAdapter/readme.txt"),SVNRevision.HEAD);
 			
 			System.out.println("The beginning of the file is :");
 			byte[] bytes = new byte[100];
