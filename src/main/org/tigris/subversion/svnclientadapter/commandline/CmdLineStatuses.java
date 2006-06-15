@@ -75,8 +75,10 @@ public class CmdLineStatuses {
             } else {
                 CmdLineInfoPart cmdLineInfoPart =
                     getCorrespondingInfoPart(absPath);
-                statuses.add(new CmdLineStatusComposite(cmdLineStatusPart,
+                if (cmdLineInfoPart != null) {
+                	statuses.add(new CmdLineStatusComposite(cmdLineStatusPart,
                                                cmdLineInfoPart));
+                }
             }
         }
 

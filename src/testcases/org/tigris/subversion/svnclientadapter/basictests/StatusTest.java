@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.tigris.subversion.svnclientadapter.ISVNStatus;
+import org.tigris.subversion.svnclientadapter.SVNNodeKind;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
 import org.tigris.subversion.svnclientadapter.SVNStatusKind;
 import org.tigris.subversion.svnclientadapter.testUtils.OneTest;
@@ -135,4 +136,69 @@ public class StatusTest extends SVNTest {
         assertEquals("Wrong text status", SVNStatusKind.UNVERSIONED, statuses[0].getTextStatus());
 
     }
+    
+    public void testSingleStatus() throws Throwable
+    {
+        // build the test setup
+        OneTest thisTest = new OneTest("singleStatus",getGreekTestConfig());
+
+        File mu = new File(thisTest.getWorkingCopy(), "A/mu");
+        File g = new File(thisTest.getWorkingCopy(), "A/D/G");
+
+        ISVNStatus status;
+
+        status = client.getSingleStatus(mu);       
+        assertEquals("Wrong text status", SVNStatusKind.NORMAL, status.getTextStatus());
+        assertEquals("Wrong prop status", SVNStatusKind.NONE, status.getPropStatus());
+        assertEquals("Wrong revision", SVNRevision.getRevision("1"), status.getRevision());
+        assertEquals("Wrong last changed revision", SVNRevision.getRevision("1"), status.getLastChangedRevision());
+        assertEquals("Wrong nodeKind", SVNNodeKind.FILE, status.getNodeKind());
+        assertEquals("Wrong path", mu, status.getFile());
+
+        status = client.getSingleStatus(g);       
+        assertEquals("Wrong text status", SVNStatusKind.NORMAL, status.getTextStatus());
+        assertEquals("Wrong prop status", SVNStatusKind.NONE, status.getPropStatus());
+        assertEquals("Wrong revision", SVNRevision.getRevision("1"), status.getRevision());
+        assertEquals("Wrong last changed revision", SVNRevision.getRevision("1"), status.getLastChangedRevision());
+        assertEquals("Wrong nodeKind", SVNNodeKind.DIR, status.getNodeKind());
+        assertEquals("Wrong path", g, status.getFile());
+    }
+
+    public void testMulitStatus() throws Throwable
+    {
+        // build the test setup
+        OneTest thisTest = new OneTest("multiStatus",getGreekTestConfig());
+
+        File mu = new File(thisTest.getWorkingCopy(), "A/mu");
+        File g = new File(thisTest.getWorkingCopy(), "A/D/G");
+        File rho = new File(thisTest.getWorkingCopy(), "A/D/G/rho");
+
+        File[] files = new File[] {g ,mu, rho};
+        
+        ISVNStatus[] statuses;
+
+        statuses = client.getStatus(files);       
+
+        assertEquals("Wrong text status", SVNStatusKind.NORMAL, statuses[0].getTextStatus());
+        assertEquals("Wrong prop status", SVNStatusKind.NONE, statuses[0].getPropStatus());
+        assertEquals("Wrong revision", SVNRevision.getRevision("1"), statuses[0].getRevision());
+        assertEquals("Wrong last changed revision", SVNRevision.getRevision("1"), statuses[0].getLastChangedRevision());
+        assertEquals("Wrong nodeKind", SVNNodeKind.DIR, statuses[0].getNodeKind());
+        assertEquals("Wrong path", g, statuses[0].getFile());
+
+        assertEquals("Wrong text status", SVNStatusKind.NORMAL, statuses[1].getTextStatus());
+        assertEquals("Wrong prop status", SVNStatusKind.NONE, statuses[1].getPropStatus());
+        assertEquals("Wrong revision", SVNRevision.getRevision("1"), statuses[1].getRevision());
+        assertEquals("Wrong last changed revision", SVNRevision.getRevision("1"), statuses[1].getLastChangedRevision());
+        assertEquals("Wrong nodeKind", SVNNodeKind.FILE, statuses[1].getNodeKind());
+        assertEquals("Wrong path", mu, statuses[1].getFile());
+
+        assertEquals("Wrong text status", SVNStatusKind.NORMAL, statuses[2].getTextStatus());
+        assertEquals("Wrong prop status", SVNStatusKind.NONE, statuses[2].getPropStatus());
+        assertEquals("Wrong revision", SVNRevision.getRevision("1"), statuses[2].getRevision());
+        assertEquals("Wrong last changed revision", SVNRevision.getRevision("1"), statuses[2].getLastChangedRevision());
+        assertEquals("Wrong nodeKind", SVNNodeKind.FILE, statuses[2].getNodeKind());
+        assertEquals("Wrong path", rho, statuses[2].getFile());
+    }
+
 }

@@ -195,7 +195,7 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
         CmdLineStatuses cmdLineStatuses;
         try {
             String cmdLineInfoStrings = _cmd.info(paths);
-            CmdLineStatusPart[] cmdLineStatusParts = getCmdStatuses(files, false, false, false);
+            CmdLineStatusPart[] cmdLineStatusParts = getCmdStatuses(files, false, true, false);
 
             cmdLineStatuses = new CmdLineStatuses(cmdLineInfoStrings, cmdLineStatusParts);
 		} catch (CmdLineException e) {
