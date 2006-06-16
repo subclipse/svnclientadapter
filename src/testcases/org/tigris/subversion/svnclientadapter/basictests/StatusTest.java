@@ -118,23 +118,33 @@ public class StatusTest extends SVNTest {
 	    new FileOutputStream(fileIgn2).close();	
 
         ISVNStatus[] statuses;
+        ISVNStatus status;
 
         //Check status of the ignored resource
         statuses = client.getStatus(dirIgn, true, true, false);       
         assertEquals("Wrong nuber of statuses returned", 1, statuses.length);
         assertEquals("Wrong text status", SVNStatusKind.IGNORED, statuses[0].getTextStatus());
+        status = client.getSingleStatus(dirIgn);
+        assertEquals("Wrong text status", SVNStatusKind.IGNORED, status.getTextStatus());
 
         //Check status withing the ignored resource
         statuses = client.getStatus(fileIgn, true, true, false);       
         assertEquals("Wrong nuber of statuses returned", 1, statuses.length);
         assertEquals("Wrong text status", SVNStatusKind.UNVERSIONED, statuses[0].getTextStatus());
+        status = client.getSingleStatus(fileIgn);
+        assertEquals("Wrong text status", SVNStatusKind.UNVERSIONED, status.getTextStatus());
+
         statuses = client.getStatus(subdirIgn, true, true, false);       
         assertEquals("Wrong nuber of statuses returned", 1, statuses.length);
         assertEquals("Wrong text status", SVNStatusKind.UNVERSIONED, statuses[0].getTextStatus());
+        status = client.getSingleStatus(subdirIgn);
+        assertEquals("Wrong text status", SVNStatusKind.UNVERSIONED, status.getTextStatus());
+
         statuses = client.getStatus(fileIgn2, true, true, false);       
         assertEquals("Wrong nuber of statuses returned", 1, statuses.length);
         assertEquals("Wrong text status", SVNStatusKind.UNVERSIONED, statuses[0].getTextStatus());
-
+        status = client.getSingleStatus(fileIgn2);
+        assertEquals("Wrong text status", SVNStatusKind.UNVERSIONED, status.getTextStatus());
     }
     
     public void testSingleStatus() throws Throwable
@@ -144,6 +154,14 @@ public class StatusTest extends SVNTest {
 
         File mu = new File(thisTest.getWorkingCopy(), "A/mu");
         File g = new File(thisTest.getWorkingCopy(), "A/D/G");
+
+	    File unversionedDir = new File(thisTest.getWorkingCopy(), "unversionedDir");
+	    unversionedDir.mkdir();
+	    File unversionedFile = new File(unversionedDir, "unversionedFile");
+	    new FileOutputStream(unversionedFile).close();	
+	    File unversionedSubDir = new File(unversionedDir, "unversionedSubDir");
+	    unversionedSubDir.mkdir();
+	    File nonExistentFile = new File(thisTest.getWorkingCopy(), "nonExistentFile");
 
         ISVNStatus status;
 
@@ -162,6 +180,38 @@ public class StatusTest extends SVNTest {
         assertEquals("Wrong last changed revision", SVNRevision.getRevision("1"), status.getLastChangedRevision());
         assertEquals("Wrong nodeKind", SVNNodeKind.DIR, status.getNodeKind());
         assertEquals("Wrong path", g, status.getFile());
+
+        status = client.getSingleStatus(unversionedDir);       
+        assertEquals("Wrong text status", SVNStatusKind.UNVERSIONED, status.getTextStatus());
+        assertEquals("Wrong prop status", SVNStatusKind.NONE, status.getPropStatus());
+        assertEquals("Wrong revision", null, status.getRevision());
+        assertEquals("Wrong path", unversionedDir, status.getFile());
+
+        status = client.getSingleStatus(unversionedFile);       
+        assertEquals("Wrong text status", SVNStatusKind.UNVERSIONED, status.getTextStatus());
+        assertEquals("Wrong prop status", SVNStatusKind.NONE, status.getPropStatus());
+        assertEquals("Wrong revision", null, status.getRevision());
+        assertEquals("Wrong path", unversionedFile, status.getFile());
+        
+        status = client.getSingleStatus(unversionedSubDir);       
+        assertEquals("Wrong text status", SVNStatusKind.UNVERSIONED, status.getTextStatus());
+        assertEquals("Wrong prop status", SVNStatusKind.NONE, status.getPropStatus());
+        assertEquals("Wrong revision", null, status.getRevision());
+        assertEquals("Wrong path", unversionedSubDir, status.getFile());
+        
+        status = client.getSingleStatus(nonExistentFile);       
+        assertEquals("Wrong text status", SVNStatusKind.UNVERSIONED, status.getTextStatus());
+        assertEquals("Wrong prop status", SVNStatusKind.NONE, status.getPropStatus());
+        assertEquals("Wrong revision", null, status.getRevision());
+        assertEquals("Wrong path", nonExistentFile, status.getFile());
+
+        status = client.getSingleStatus(thisTest.getWorkingCopy());       
+        assertEquals("Wrong text status", SVNStatusKind.NORMAL, status.getTextStatus());
+        assertEquals("Wrong prop status", SVNStatusKind.NONE, status.getPropStatus());
+        assertEquals("Wrong revision", SVNRevision.getRevision("1"), status.getRevision());
+        assertEquals("Wrong last changed revision", SVNRevision.getRevision("1"), status.getLastChangedRevision());
+        assertEquals("Wrong nodeKind", SVNNodeKind.DIR, status.getNodeKind());
+        assertEquals("Wrong path", thisTest.getWorkingCopy(), status.getFile());
     }
 
     public void testMulitStatus() throws Throwable

@@ -397,11 +397,13 @@ public class CmdLineStatusFromXml extends CmdLineXmlCommand implements ISVNStatu
 					Node commitRevisionAttribute = commitNode.getAttributes().getNamedItem("revision");
 					status.setLastChangedRevision(Helper.toRevNum(commitRevisionAttribute.getNodeValue()));
 					Element authorNode = getFirstNamedElement(commitNode, "author");
-					if (authorNode == null) throw new Exception("'author' tag expected under 'commit'");
-					status.setLastCommitAuthor(authorNode.getFirstChild().getNodeValue());				
+					if (authorNode != null) {
+						status.setLastCommitAuthor(authorNode.getFirstChild().getNodeValue());
+					}
 					Element dateNode = getNextNamedElement(authorNode, "date");
-					if (dateNode == null) throw new Exception("'date' tag expected under 'commit'");
-					status.setLastChangedDate(Helper.convertXMLDate(dateNode.getFirstChild().getNodeValue()));
+					if (dateNode != null) {
+						status.setLastChangedDate(Helper.convertXMLDate(dateNode.getFirstChild().getNodeValue()));
+					}
 				}
 
 				Element lockNode = getNextNamedElement(commitNode, "lock");

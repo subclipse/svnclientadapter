@@ -158,7 +158,16 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
         notificationHandler.remove(listener);
 	}
 
+    private boolean isManaged(File file) {
+    	if (file.isDirectory()) {
+    		return isManagedDir(file.getParentFile()) || isManagedDir(file);
+    	} else {
+    		return isManagedDir(file.getParentFile());
+    	}    	
+    }
+
     private boolean isManagedDir(File dir) {
+        // all directories that do not have a .svn dir are not versioned
         File entries = new File(dir, getAdminDirectoryName() + "/entries");
         return entries.exists();
     }
@@ -170,19 +179,11 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
         
         ISVNStatus[] statuses = new ISVNStatus[files.length]; 
         
-        // all files that are in nonmanaged dirs are unversioned
-        // all directories that do not have a .svn dir are not versioned
+        // all files (and dirs) that are in nonmanaged dirs are unversioned
         ArrayList pathsList = new ArrayList();
         for (int i = 0; i < files.length;i++) {
             File file = files[i];
-            File dir;
-            if (file.isDirectory()) {
-                dir = file;
-            } else
-            {
-                dir = file.getParentFile();
-            }
-            if (isManagedDir(dir)) {
+            if (isManaged(file)) {
                 pathsList.add(toString(file));
             } else {
                 statuses[i] = new SVNStatusUnversioned(file,false);
@@ -194,8 +195,14 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
         // because otherwise svn will stop after the first "svn: 'resource' is not a working copy" 
         CmdLineStatuses cmdLineStatuses;
         try {
-            String cmdLineInfoStrings = _cmd.info(paths);
-            CmdLineStatusPart[] cmdLineStatusParts = getCmdStatuses(files, false, true, false);
+            CmdLineStatusPart[] cmdLineStatusParts = getCmdStatuses(paths, false, true, false);
+            List targetsInfo = new ArrayList(cmdLineStatusParts.length);
+            for (int i = 0; i < cmdLineStatusParts.length;i++) {
+            	if (cmdLineStatusParts[i].isManaged()) {
+            		targetsInfo.add(cmdLineStatusParts[i].getFile().toString());
+            	}
+            }
+            String cmdLineInfoStrings = _cmd.info((String[]) targetsInfo.toArray(new String[targetsInfo.size()] ));
 
             cmdLineStatuses = new CmdLineStatuses(cmdLineInfoStrings, cmdLineStatusParts);
 		} catch (CmdLineException e) {
@@ -210,6 +217,11 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
                 }
             }
         }
+        for (int i = 0; i < statuses.length; i++) {
+			if (statuses[i] == null) {
+				statuses[i] = new SVNStatusUnversioned(files[i],false);
+			}
+		}        
         
         return statuses;        
 	}
@@ -600,12 +612,20 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 
     protected CmdLineStatusPart[] getCmdStatuses(File[] paths, boolean descend, boolean getAll, boolean contactServer) throws CmdLineException
     {
-		byte[] listXml;
     	String[] pathNames = new String[paths.length];
     	for (int i = 0; i < pathNames.length; i++) {
 			pathNames[i] = toString(paths[i]);
 		}
-		listXml = _cmd.status(pathNames, descend, getAll, contactServer);	
+		return getCmdStatuses(pathNames, descend, getAll, contactServer);
+    }    
+
+    protected CmdLineStatusPart[] getCmdStatuses(String[] paths, boolean descend, boolean getAll, boolean contactServer) throws CmdLineException
+    {
+    	if (paths.length == 0) {
+    		return new CmdLineStatusPart[0];
+    	}
+		byte[] listXml;
+		listXml = _cmd.status(paths, descend, getAll, contactServer);	
 		return CmdLineStatusPart.CmdLineStatusPartFromXml.createStatusParts(listXml);
     }    
 
