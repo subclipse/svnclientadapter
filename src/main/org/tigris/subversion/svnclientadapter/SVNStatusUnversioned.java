@@ -80,7 +80,7 @@ public class SVNStatusUnversioned implements ISVNStatus {
     }
 
 	public SVNRevision.Number getRevision() {
-		return SVNRevision.INVALID_REVISION;
+		return null;
 	}
 
 	public boolean isCopied() {
