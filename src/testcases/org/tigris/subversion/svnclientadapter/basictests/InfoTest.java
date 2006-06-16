@@ -110,5 +110,15 @@ public class InfoTest extends SVNTest {
 	    assertNull("wrong revision from info", info.getLastChangedRevision());
 	    assertNull("wrong schedule kind from info", info.getSchedule());
 	    assertNull("wrong node kind from info", info.getNodeKind());
+	    
+	    //test the wc root directotry info
+	    info = client.getInfoFromWorkingCopy(thisTest.getWorkingCopy());
+	    assertEquals(thisTest.getWorkingCopy(), info.getFile());
+	    assertEquals("wrong revision from info", new SVNRevision.Number(1),
+	            info.getLastChangedRevision());
+	    assertEquals("wrong schedule kind from info", SVNScheduleKind.NORMAL,
+	            info.getSchedule());
+	    assertEquals("wrong node kind from info", SVNNodeKind.DIR,
+	            info.getNodeKind());
 	}
 }

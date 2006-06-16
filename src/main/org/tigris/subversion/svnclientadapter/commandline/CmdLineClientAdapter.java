@@ -1187,7 +1187,7 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
             notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
             
 			// first we get the status of the files to find out whether it is versioned
-            CmdLineStatusPart[] cmdLineStatusParts = getCmdStatuses(new File[] {path}, false, false, false);
+            CmdLineStatusPart[] cmdLineStatusParts = getCmdStatuses(new File[] {path}, false, true, false);
             // if the file is managed, it is safe to call info
             if ((cmdLineStatusParts.length > 0) && (cmdLineStatusParts[0].isManaged())) {
             	String cmdLineInfoStrings = _cmd.info(new String[] { toString(path) });
