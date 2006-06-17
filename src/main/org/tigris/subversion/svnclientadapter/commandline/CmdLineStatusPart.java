@@ -42,8 +42,7 @@ abstract class CmdLineStatusPart {
 	public abstract boolean isCopied();
 
 	/**
-	 * tells if the resource has a remote counter-part
-	 * @return
+	 * @return true if the resource has a remote counter-part 
 	 */
 	public boolean hasRemote() {
 		return (isManaged() && getTextStatus() != SVNStatusKind.ADDED);

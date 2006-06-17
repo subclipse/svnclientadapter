@@ -36,6 +36,7 @@ public class SVNStatusUtils {
     
     /**
      * Returns if is managed by svn (added, normal, modified ...)
+     * @param status
      * 
      * @return if managed by svn
      */    
@@ -49,6 +50,7 @@ public class SVNStatusUtils {
     
     /**
      * Returns if the resource has a remote counter-part
+     * @param status
      * 
      * @return has version in repository
      */
@@ -99,7 +101,7 @@ public class SVNStatusUtils {
     /**
      * Answer whether the status is "outgoing", i.e. whether resource with such status could/should be commited 
      * @param status
-     * @return
+     * @return true when the status represents "outgoing" state
      */
     public static boolean isReadyForCommit(ISVNStatus status) {
  		return isTextModified(status) || isAdded(status) || isDeleted(status)
@@ -111,7 +113,7 @@ public class SVNStatusUtils {
     /**
      * Answer whether the status was "changed", i.e. whether resource with such status could/should be reverted 
      * @param status
-     * @return
+     * @return true when the status represents "changed" state
      */
     public static boolean isReadyForRevert(ISVNStatus status) {
  		return isTextModified(status) || isAdded(status) || isDeleted(status)

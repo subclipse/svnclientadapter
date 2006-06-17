@@ -149,18 +149,4 @@ public class SVNStatusUnversioned implements ISVNStatus {
     public String getLockOwner() {
         return null;
     }
-
-    /**
-     * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getLockToken()
-     */
-    public String getLockToken() {
-        return null;
-    }
-
-    /**
-     * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getReposLock()
-     */
-    public ISVNLock getReposLock() {
-        return null;
-    }
 }

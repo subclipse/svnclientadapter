@@ -81,8 +81,8 @@ public class SVNNodeKind
 
     /**
      * returns the ScheduleKind corresponding to the given string or null
-     * @param scheduleKind
-     * @return
+     * @param nodeKind
+     * @return SVNNodeKind representing the string value
      */
     public static SVNNodeKind fromString(String nodeKind) {
     	if (NONE.toString().equals(nodeKind)) {

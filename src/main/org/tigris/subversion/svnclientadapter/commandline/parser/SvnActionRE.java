@@ -42,7 +42,6 @@ class SvnActionRE {
 	/**
 	 * each parenthesized subexpression in the regular expression can be associated to a notificationProperty
 	 * which is either PATH, CONTENTSTATE, PROPSTATE or REVISION
-	 * @see Notify#Action
 	 * @see SvnOutputParser
 	 * @param re the regular expression to parse the svn line
 	 * @param action the action corresponding to this line
@@ -86,8 +85,7 @@ class SvnActionRE {
 	}
 	
 	/**
-	 * get the action
-	 * @see Notify#Action
+	 * @return the action
 	 */
 	public int getAction() {
 		return action;
@@ -108,7 +106,7 @@ class SvnActionRE {
 	}
 	
 	/**
-	 * get the path on which action happen or null
+	 * @return the path on which action happen or null
 	 */
 	public String getPath() {
 		int index = getIndex(PATH); 
@@ -136,8 +134,7 @@ class SvnActionRE {
 	}
 
 	/**
-	 * get the content state
-	 * @see Notify#Status
+	 * @return the content state
 	 */
 	public int getContentState() {
 		if (contentStatus != CmdLineNotifyStatus.unknown) {
@@ -153,8 +150,7 @@ class SvnActionRE {
 	}
 	
 	/**
-	 * get the prop status
-	 * @see Notify#Status
+	 * @return the prop status
 	 */
 	public int getPropStatus() {
 		if (propStatus != CmdLineNotifyStatus.unknown) {
@@ -170,7 +166,7 @@ class SvnActionRE {
 	}
 
 	/**
-	 * get the revision or null
+	 * @return the revision or null
 	 */
 	public long getRevision() {
 		int index = getIndex(REVISION);

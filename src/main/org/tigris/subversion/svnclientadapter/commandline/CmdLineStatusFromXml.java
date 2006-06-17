@@ -285,7 +285,8 @@ public class CmdLineStatusFromXml extends CmdLineXmlCommand implements ISVNStatu
 	/**
      * creates CmdLineStatus(es) from a xml string (see svn status --xml) 
      * @param cmdLineResults
-     * @return
+     * @return CmdLineStatusFromXml[] array created from the supplied xml
+     * @throws CmdLineException
      */
 	public static CmdLineStatusFromXml[] createStatuses(byte[] cmdLineResults) throws CmdLineException {
 		Collection statuses = new ArrayList();

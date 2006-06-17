@@ -32,13 +32,15 @@ public abstract class SVNNotificationHandler {
         
     /**
      * Add a notification listener
+     * @param listener
      */
     public void add(ISVNNotifyListener listener) {
         notifylisteners.add(listener);
     }
 
     /**
-     * Remove a notification listener 
+     * Remove a notification listener
+     * @param listener 
      */
     public void remove(ISVNNotifyListener listener) {
         notifylisteners.remove(listener);
@@ -93,7 +95,6 @@ public abstract class SVNNotificationHandler {
 	/**
 	 * set the command
 	 * @param command
-	 * @param files
 	 */
     public void setCommand(int command) {
 		this.command = command;        
@@ -118,6 +119,7 @@ public abstract class SVNNotificationHandler {
 
     /**
      * To call when a method of ClientAdapter throw an exception
+     * @param clientException
      */        
     public void logException(Exception clientException) {
         Throwable e = clientException;

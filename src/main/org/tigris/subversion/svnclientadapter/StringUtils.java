@@ -26,7 +26,7 @@ public class StringUtils {
 	 * //TODO Java 1.4 is not aproblem anymore. Isn't it ? 
 	 * @param str
 	 * @param separator
-	 * @return
+	 * @return an array of string segments
 	 */
 	static public String[] split(String str, char separator) {
 		int pos = 0;
@@ -49,7 +49,7 @@ public class StringUtils {
 	 * split using a string separator
 	 * @param str
 	 * @param separator
-	 * @return
+	 * @return an array of string segments
 	 */
 	static public String[] split(String str, String separator) {
 		List list = new ArrayList();

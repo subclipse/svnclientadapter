@@ -26,7 +26,7 @@ public class SVNUrlUtils {
      * get the common root url for given urls
      * @param url1
      * @param url2
-     * @return
+     * @return the common root url for given urls
      */
     public static SVNUrl getCommonRootUrl(SVNUrl url1, SVNUrl url2) {
         if ( (!url1.getProtocol().equals(url2.getProtocol())) ||
@@ -54,7 +54,7 @@ public class SVNUrlUtils {
     /**
      * get the common root url for given urls
      * @param urls
-     * @return
+     * @return the common root url for given urls
      */
     public static SVNUrl getCommonRootUrl(SVNUrl urls[]) {
         SVNUrl commonRoot = urls[0];
@@ -101,7 +101,7 @@ public class SVNUrlUtils {
     
     
     /**
-     * Get url representing the fileName of workink copy.
+     * Get url representing the fileName of working copy.
      * Use the parent's (not necesarily direct parent) WC fileName and SVNUrl to calculate it.
      * E.g.
      * <code>
@@ -115,7 +115,7 @@ public class SVNUrlUtils {
      * @param localFileName name of the file representing working copy of resource
      * @param parentUrl svnUrl of a resource preceeding the localFileName in hierarchy
      * @param parentPathName WC fileName of a resource preceeding the localFileName in hierarchy
-     * @return
+     * @return url representing the fileName of working copy.
      */
     public static SVNUrl getUrlFromLocalFileName(String localFileName, SVNUrl parentUrl, String parentPathName)
     {
@@ -123,7 +123,7 @@ public class SVNUrlUtils {
     }
 
     /**
-     * Get url representing the fileName of workink copy.
+     * Get url representing the fileName of working copy.
      * Use the parent's (not necesarily direct parent) WC fileName and SVNUrl to calculate it.
      * E.g.
      * <code>
@@ -137,7 +137,7 @@ public class SVNUrlUtils {
      * @param localFileName name of the file representing working copy of resource
      * @param parentUrl url string of a resource preceeding the localFileName in hierarchy
      * @param parentPathName WC fileName of a resource preceeding the localFileName in hierarchy
-     * @return
+     * @return url representing the fileName of working copy.
      */
     public static SVNUrl getUrlFromLocalFileName(String localFileName, String parentUrl, String parentPathName)
     {

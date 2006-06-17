@@ -142,8 +142,8 @@ class CmdLineLogMessage extends CmdLineXmlCommand implements ISVNLogMessage {
 		return msg;
 	}
 	
-    /**
-     * @return The value of {@link #getMesssage()}.
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
      */
     public String toString() {
         return getMessage();
@@ -152,7 +152,8 @@ class CmdLineLogMessage extends CmdLineXmlCommand implements ISVNLogMessage {
     /**
      * creates CmdLineLogMessages from a xml string (see svn log --xml -v) 
      * @param cmdLineResults
-     * @return
+     * @return CmdLineLogMessage[] array created from the supplied xml
+     * @throws SVNClientException
      */
 	public static CmdLineLogMessage[] createLogMessages(byte[] cmdLineResults) throws SVNClientException {
 		Collection logMessages = new ArrayList();

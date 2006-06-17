@@ -103,8 +103,7 @@ public class ExpectedWC
     }
 
     /**
-     * get the number of items in WC
-     * @return
+     * @return the number of items in WC
      */
     public int size() {
         return items.size();

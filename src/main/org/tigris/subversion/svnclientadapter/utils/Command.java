@@ -90,6 +90,7 @@ public class Command {
 	 * 
 	 * @return the exit value of the process. By convention, <code>0</code>
 	 *         indicates normal termination.
+	 * @throws InterruptedException
 	 */
 	public int waitFor() throws InterruptedException {
 		return process.waitFor();

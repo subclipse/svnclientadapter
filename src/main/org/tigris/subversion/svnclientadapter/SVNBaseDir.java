@@ -97,6 +97,7 @@ public class SVNBaseDir {
      * get the base directory for the given file
      * 
      * @param file
+     * @return the base directory for the given file or null if there is no base
      */
     static public File getBaseDir(File file) {
         return getBaseDir(new File[] { file });
@@ -107,6 +108,7 @@ public class SVNBaseDir {
      * directory for the set of files
      * 
      * @param files
+     * @return the base directory for the given set of files or null if there is no base
      */
     static public File getBaseDir(File[] files) {
         File rootDir = getRootDir(files);
@@ -150,8 +152,8 @@ public class SVNBaseDir {
      * 
      * @param rootDir
      * @param file
-     * @return @throws
-     *         SVNClientException
+     * @return path of file relative to rootDir
+     * @throws SVNClientException
      */
     static public String getRelativePath(File rootDir, File file)
             throws SVNClientException {

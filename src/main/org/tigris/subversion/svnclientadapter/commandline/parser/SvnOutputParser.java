@@ -126,7 +126,7 @@ public class SvnOutputParser {
 	/**
 	 * return the matching svn action or null if none matches 
 	 * @param line
-	 * @return
+	 * @return the matching svn action or null if none matches
 	 */
 	private SvnActionRE getMatchingSvnActionRE(String line) {
 		SvnActionRE result = null;

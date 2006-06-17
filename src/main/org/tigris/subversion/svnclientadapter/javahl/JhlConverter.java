@@ -155,7 +155,7 @@ public class JhlConverter {
 	/**
 	 * Wrap everything up.
 	 * @param dirEntry
-	 * @return
+	 * @return an JhlDirEntry[] array constructed from the given DirEntry[] 
 	 */
 	static JhlDirEntry[] convert(DirEntry[] dirEntry) {
 		JhlDirEntry[] entries = new JhlDirEntry[dirEntry.length];

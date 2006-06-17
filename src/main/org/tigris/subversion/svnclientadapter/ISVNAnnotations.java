@@ -23,34 +23,33 @@ public interface ISVNAnnotations {
 	/**
 	 * get the date of last change for the given line number
 	 * @param lineNumber
-	 * @return
+	 * @return date of last change
 	 */
 	public abstract Date getChanged(int lineNumber);
 	
 	/**
 	 * get the revision for the given line number
 	 * @param lineNumber
-	 * @return
+	 * @return the revision 
 	 */
 	public abstract long getRevision(int lineNumber);
 
 	/**
 	 * get the author for the given line number or null
 	 * @param lineNumber
-	 * @return
+	 * @return the author 
 	 */
 	public abstract String getAuthor(int lineNumber);
 
 	/**
 	 * get the given line
 	 * @param lineNumber
-	 * @return
+	 * @return the line number
 	 */
 	public abstract String getLine(int lineNumber);
 
 	/**
-	 * get an inputstream of the content of the file
-	 * @return
+	 * @return an inputstream of the content of the file 
 	 */
 	public abstract InputStream getInputStream();
 	

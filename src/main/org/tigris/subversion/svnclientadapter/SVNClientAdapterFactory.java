@@ -66,7 +66,7 @@ public abstract class SVNClientAdapterFactory {
      * tells if the given clientType is available or not
      * 
      * @param clientType
-     * @return
+     * @return true if the given clientType is available 
      */
     public static boolean isSVNClientAvailable(String clientType) {
         return ourFactoriesMap != null && ourFactoriesMap.containsKey(clientType);

@@ -25,26 +25,24 @@ import java.util.Date;
 public interface ISVNStatus {
 
     /**
-     * get the url of the resource on repository
-     * @return
+     * @return the url of the resource on repository
      */
 	SVNUrl getUrl();
 
 	/**
-	 * get the last changed revision or null if resource is not managed 
+	 * @return the last changed revision or null if resource is not managed 
 	 */
 	SVNRevision.Number getLastChangedRevision();
 
     /**
-     * date this resource last changed
-     * @return
+     * @return date this resource last changed
      */
 	Date getLastChangedDate();
 
 	/**
 	 * get the last commit author or null if resource is not versionned
 	 * or if last commit author is unknown
-	 * @return
+	 * @return the last commit author or null 
 	 */
 	String getLastCommitAuthor();
 
@@ -53,15 +51,14 @@ public interface ISVNStatus {
 	SVNStatusKind getRepositoryTextStatus();
 	
 	/**
-     * status of properties
-	 * will return either Kind.NORMAL, Kind.CONFLICTED or Kind.MODIFIED
+     * @return status of properties (either Kind.NORMAL, Kind.CONFLICTED or Kind.MODIFIED)
 	 */
 	SVNStatusKind getPropStatus();
 
 	SVNStatusKind getRepositoryPropStatus();
 
 	/**
-	 * get the revision of the resource or null if not managed 
+	 * @return the revision of the resource or null if not managed 
 	 */
 	SVNRevision.Number getRevision();
 
@@ -83,8 +80,7 @@ public interface ISVNStatus {
 	SVNNodeKind getNodeKind();
 
     /**
-     * 
-     * @return
+     * @return true when the resource was copied
      */
     boolean isCopied();    
     

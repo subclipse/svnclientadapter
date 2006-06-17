@@ -151,6 +151,7 @@ public class TestsConfig {
      * Create the url for the repository to be used for the tests.
      * @param file  the directory of the repository
      * @return the URL for the repository
+     * @throws MalformedURLException
      */
     public SVNUrl makeReposUrl(File file) throws MalformedURLException
     {

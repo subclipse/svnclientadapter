@@ -202,8 +202,9 @@ public class SVNRevision
      * - HEAD, BASE, COMMITED or PREV
      * 
      * @param revision
-     * @param dateFormat
+     * @param aDateFormat
      * @return Revision
+     * @throws ParseException when the revision string cannot be parsed
      */
     public static SVNRevision getRevision(String revision, SimpleDateFormat aDateFormat) throws ParseException {
 
@@ -256,6 +257,7 @@ public class SVNRevision
      * 
      * @param revision
      * @return Revision
+     * @throws ParseException when the revision string cannot be parsed
      */
     public static SVNRevision getRevision(String revision) throws ParseException {
     	return getRevision(revision, new SimpleDateFormat("MM/dd/yyyy hh:mm a", Locale.US));

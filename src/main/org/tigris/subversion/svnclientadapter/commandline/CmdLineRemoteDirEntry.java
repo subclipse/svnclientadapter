@@ -71,7 +71,8 @@ class CmdLineRemoteDirEntry extends CmdLineXmlCommand implements ISVNDirEntry {
 	/**
      * creates CmdLineRemoteDirEntries from a xml string (see svn list --xml) 
      * @param cmdLineResults
-     * @return
+     * @return CmdLineRemoteDirEntry[] array created from the supplied xml
+     * @throws SVNClientException
      */
 	public static CmdLineRemoteDirEntry[] createDirEntries(byte[] cmdLineResults) throws SVNClientException {
 		Collection logMessages = new ArrayList();

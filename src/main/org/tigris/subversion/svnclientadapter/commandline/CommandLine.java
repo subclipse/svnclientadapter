@@ -226,7 +226,7 @@ abstract class CommandLine {
 
     /**
      * runs the command (returns nothing)
-     * @param svnCommand
+     * @param svnArguments
      * @throws CmdLineException
      */
 	protected void execVoid(ArrayList svnArguments) throws CmdLineException {
@@ -301,6 +301,7 @@ abstract class CommandLine {
         /**
          * This method blocks until the stream pumper finishes.
          * @see #isFinished()
+         * @throws InterruptedException
          **/
         public synchronized void waitFor()
             throws InterruptedException {
@@ -368,7 +369,6 @@ abstract class CommandLine {
          * Create a new stream pumper.
          *
          * @param is input stream to read data from
-         * @param coaleasceLines if true, it will coaleasce lines
          */
         public ByteStreamPumper(InputStream is) {
             this.bis = is;

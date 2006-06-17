@@ -404,7 +404,7 @@ public class SvnCommandLine extends CommandLine {
 	 *   -R [--recursive]         : descend recursively
 	 * 
 	 * @param path
-	 * @return
+	 * @return String with the info call result
 	 */
 	String info(String[] target) throws CmdLineException {
         if (target.length == 0) {
@@ -620,7 +620,7 @@ public class SvnCommandLine extends CommandLine {
      * List the properties for the given file or dir
      * 
      * @param target
-     * @return
+     * @return String with the resource properties
      * @throws CmdLineException
      */
     String proplist(String target, boolean recurse) throws CmdLineException {
@@ -709,10 +709,9 @@ public class SvnCommandLine extends CommandLine {
 	 *
 	 * @param paths
 	 * @param recursive
-	 * @return
 	 * @throws CmdLineException
 	 */
-	String resolved(String[] paths, boolean recursive) throws CmdLineException {
+	void resolved(String[] paths, boolean recursive) throws CmdLineException {
 		setCommand(ISVNNotifyListener.Command.RESOLVED, true);
 		ArrayList args = new ArrayList();
 		args.add("resolved");
@@ -722,7 +721,7 @@ public class SvnCommandLine extends CommandLine {
 			args.add(paths[i]);
 		}
         addConfigInfo(args);		
-		return execString(args,false);		
+		execVoid(args);		
 	}
 
 	/**
@@ -812,7 +811,7 @@ public class SvnCommandLine extends CommandLine {
 	 * @param path
 	 * @param revisionStart
 	 * @param revisionEnd
-	 * @return
+	 * @return byte[] array containing the XML representation of annotate data
 	 * @throws CmdLineException
 	 */
 	byte[] annotate(String path,String revisionStart, String revisionEnd) throws CmdLineException {

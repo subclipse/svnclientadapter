@@ -22,9 +22,9 @@ public class CmdLineXmlCommand {
 
 	/**
 	 * Not exactly XPath, but finds a named node
-	 * @param logEntry
+	 * @param parent
 	 * @param elementName
-	 * @return
+	 * @return a node with the given name
 	 */
 	protected static Element getFirstNamedElement(Node parent, String elementName) {
 		if (parent == null) return null;

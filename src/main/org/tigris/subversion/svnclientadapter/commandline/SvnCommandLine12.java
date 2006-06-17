@@ -27,7 +27,7 @@ public class SvnCommandLine12 extends SvnCommandLine {
 	 *   -R [--recursive]         : descend recursively
 	 * 
 	 * @param path
-	 * @return
+	 * @return String with the info call result
 	 */
 	String info(String[] target) throws CmdLineException {
         if (target.length == 0) {
@@ -89,7 +89,7 @@ public class SvnCommandLine12 extends SvnCommandLine {
 	 * @param path
 	 * @param revisionStart
 	 * @param revisionEnd
-	 * @return
+	 * @return String with the annotate data
 	 * @throws CmdLineException
 	 */
 	String annotateByStdout(String path,String revisionStart, String revisionEnd) throws CmdLineException {

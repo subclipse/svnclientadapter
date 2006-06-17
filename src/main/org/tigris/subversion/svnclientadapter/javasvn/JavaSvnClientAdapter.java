@@ -133,6 +133,7 @@ public class JavaSvnClientAdapter extends AbstractJhlClientAdapter {
      * @param contactServer contact server to get remote changes
      *  
      * @return a Status
+     * @throws SVNClientException
      */
     public ISVNStatus[] getStatus(File path, boolean descend, boolean getAll, boolean contactServer) throws SVNClientException {
     	//Call the standard status first.

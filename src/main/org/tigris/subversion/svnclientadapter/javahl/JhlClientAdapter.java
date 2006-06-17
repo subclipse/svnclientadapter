@@ -50,7 +50,7 @@ public class JhlClientAdapter extends AbstractJhlClientAdapter {
 
     /**
      * tells if JhlClientAdapter is usable
-     * @return
+     * @return true if Jhl client adapter is available
      */
     public static boolean isAvailable() {
     	if (!availabilityCached) {
@@ -219,22 +219,6 @@ public class JhlClientAdapter extends AbstractJhlClientAdapter {
 			throw new SVNClientException(e);            
 		}        
 	    
-	}
-
-	/**
-	 * Answer whether running on Windows OS.
-	 * (Actual code extracted from org.apache.commons.lang.SystemUtils.IS_OS_WINDOWS)
-	 * (For such one simple method it does make sense to introduce dependency on whole commons-lang.jar)
-	 * @return
-	 */
-	public static boolean isOsWindows()
-	{
-        try {
-            return System.getProperty("os.name").startsWith("Windows");
-        } catch (SecurityException ex) {
-            // we are not allowed to look at this property
-            return false;
-        }
 	}
 
 	public boolean statusReturnsRemoteInfo() {

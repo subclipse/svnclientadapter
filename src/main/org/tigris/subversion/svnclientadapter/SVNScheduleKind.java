@@ -82,7 +82,7 @@ public class SVNScheduleKind {
     /**
      * returns the ScheduleKind corresponding to the given string or null
      * @param scheduleKind
-     * @return
+     * @return SVNScheduleKind representing the supplied string value 
      */
     public static SVNScheduleKind fromString(String scheduleKind) {
     	if (NORMAL.toString().equals(scheduleKind)) {

@@ -69,7 +69,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 
 	/**
 	 * for users who want to directly use underlying javahl SVNClientInterface
-	 * @return
+	 * @return the SVNClientInterface instance
 	 */
 	public SVNClientInterface getSVNClient() {
 		return svnClient;
@@ -101,29 +101,29 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 		}
     }
 
-    /**
-     * Add a notification listener
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#addNotifyListener(org.tigris.subversion.svnclientadapter.ISVNNotifyListener)
      */
     public void addNotifyListener(ISVNNotifyListener listener) {
         notificationHandler.add(listener);
     }
 
-    /**
-     * Remove a notification listener 
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#removeNotifyListener(org.tigris.subversion.svnclientadapter.ISVNNotifyListener)
      */
     public void removeNotifyListener(ISVNNotifyListener listener) {
         notificationHandler.remove(listener);
     }
 
-    /**
-     * Sets the username.
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#setUsername(java.lang.String)
      */
     public void setUsername(String username) {
         svnClient.username(username);
     }
 
-    /**
-     * Sets the password.
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#setPassword(java.lang.String)
      */
     public void setPassword(String password) {
         notificationHandler.setCommand(ISVNNotifyListener.Command.UNDEFINED);
@@ -132,11 +132,11 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 
     /**
      * Register callback interface to supply username and password on demand
+     * @param prompt
      */
     public void setPromptUserPassword(PromptUserPassword prompt) {
         svnClient.setPrompt(prompt);        
     }
-
 
     protected static String fileToSVNPath(File file, boolean canonical) {
     	// SVN need paths with '/' separators
@@ -151,9 +151,8 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
             return file.getPath().replace('\\', '/');
     }
     
-    /**
-     * Adds a file (or directory) to the repository.
-     * @exception ClientException
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#addFile(java.io.File)
      */
     public void addFile(File file) throws SVNClientException {
         try{
@@ -167,9 +166,8 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
         }        
     }
 
-    /**
-     * Adds a directory to the repository.
-     * @exception ClientException
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#addDirectory(java.io.File, boolean)
      */
     public void addDirectory(File dir, boolean recurse)
         throws SVNClientException {
@@ -187,14 +185,8 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
         }
     }
 
-    /**
-     * Executes a revision checkout.
-     * @param moduleName name of the module to checkout.
-     * @param destPath destination directory for checkout.
-     * @param revision the revision number to checkout. If the number is -1
-     *                 then it will checkout the latest revision.
-     * @param recurse whether you want it to checkout files recursively.
-     * @exception ClientException
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#checkout(org.tigris.subversion.svnclientadapter.SVNUrl, java.io.File, org.tigris.subversion.svnclientadapter.SVNRevision, boolean)
      */
     public void checkout(
         SVNUrl moduleName,
@@ -224,30 +216,16 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
         }
     }
 
-    /**
-     * Commits changes to the repository. This usually requires
-     * authentication, see Auth.
-     * @return Returns a long representing the revision. It returns a
-     *         -1 if the revision number is invalid.
-     * @param path files to commit.
-     * @param message log message.
-     * @param recurse whether the operation should be done recursively.
-     * @exception ClientException
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#commit(java.io.File[], java.lang.String, boolean)
      */
     public long commit(File[] paths, String message, boolean recurse)
         throws SVNClientException {
         return commit(paths, message, recurse, false);
     }
 
-    /**
-     * Commits changes to the repository. This usually requires
-     * authentication, see Auth.
-     * @return Returns a long representing the revision. It returns a
-     *         -1 if the revision number is invalid.
-     * @param path files to commit.
-     * @param message log message.
-     * @param recurse whether the operation should be done recursively.
-     * @exception ClientException
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#commit(java.io.File[], java.lang.String, boolean, boolean)
      */
     public long commit(File[] paths, String message, boolean recurse, boolean keepLocks)
         throws SVNClientException {
@@ -280,13 +258,8 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 
     }
 
-	/**
-	 * List directory entries of a URL
-	 * @param url
-	 * @param revision
-	 * @param recurse
-	 * @return
-	 * @throws ClientException
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getList(org.tigris.subversion.svnclientadapter.SVNUrl, org.tigris.subversion.svnclientadapter.SVNRevision, boolean)
 	 */
 	public ISVNDirEntry[] getList(SVNUrl url, SVNRevision revision, boolean recurse) 
             throws SVNClientException {
@@ -302,13 +275,8 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
         }
 	}
 
-	/**
-	 * List directory entries of a directory
-	 * @param url
-	 * @param revision
-	 * @param recurse
-	 * @return
-	 * @throws ClientException
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getList(java.io.File, org.tigris.subversion.svnclientadapter.SVNRevision, boolean)
 	 */
 	public ISVNDirEntry[] getList(File path, SVNRevision revision, boolean recurse) 
             throws SVNClientException {
@@ -364,19 +332,16 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 		return null; // not found
 	}
 	
-    /**
-     * Returns the status of a single file in the path.
-     *
-     * @param path File to gather status.
-     * @return a Status
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getSingleStatus(java.io.File)
      */
     public ISVNStatus getSingleStatus(File path) 
             throws SVNClientException {
         return getStatus(new File[] {path})[0];
     }
     
-    /**
-     * Returns the status of the given resources
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getStatus(java.io.File[])
      */
     public ISVNStatus[] getStatus(File[] path) 
             throws SVNClientException {
@@ -413,11 +378,8 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
         return statuses;
     }
 
-    /**
-     * Returns the status of files and directory recursively
-     *
-     * @param path File to gather status.
-     * @return a Status
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getStatus(java.io.File, boolean, boolean)
      */
     public ISVNStatus[] getStatus(File path, boolean descend, boolean getAll)
 		throws SVNClientException {
@@ -425,15 +387,8 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 	}
 	
 
-    /**
-     * Returns the status of files and directory recursively
-     *
-     * @param path File to gather status.
-     * @param descend get recursive status information
-     * @param getAll get status information for all files
-     * @param contactServer contact server to get remote changes
-     *  
-     * @return a Status
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getStatus(java.io.File, boolean, boolean, boolean)
      */
     public ISVNStatus[] getStatus(File path, boolean descend, boolean getAll, boolean contactServer) throws SVNClientException {
 		notificationHandler.setCommand(ISVNNotifyListener.Command.STATUS);
@@ -458,12 +413,9 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 		}
     }
 
-    /**
-     * copy and schedule for addition (with history)
-     * @param srcPath
-     * @param destPath
-     * @throws ClientException
-     */ 
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#copy(java.io.File, java.io.File)
+	 */
 	public void copy(File srcPath, File destPath) throws SVNClientException {
 		try {
 			notificationHandler.setCommand(ISVNNotifyListener.Command.COPY);
@@ -480,11 +432,8 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 		}
 	}
 
-	/**
-	 * immediately commit a copy of WC to URL
-	 * @param srcPath
-	 * @param destUrl
-	 * @throws ClientException
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#copy(java.io.File, org.tigris.subversion.svnclientadapter.SVNUrl, java.lang.String)
 	 */
 	public void copy(File srcPath, SVNUrl destUrl, String message)
 		throws SVNClientException {
@@ -504,11 +453,8 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 		}
 	}
 
-	/**
-	 * check out URL into WC, schedule for addition
-	 * @param srcUrl
-	 * @param destPath
-	 * @throws ClientException
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#copy(org.tigris.subversion.svnclientadapter.SVNUrl, java.io.File, org.tigris.subversion.svnclientadapter.SVNRevision)
 	 */
 	public void copy(SVNUrl srcUrl, File destPath, SVNRevision revision)
 		throws SVNClientException {
@@ -525,11 +471,8 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 		}
 	}
 	
-	/**
-	 * complete server-side copy;  used to branch & tag
-	 * @param srcUrl
-	 * @param destUrl
-	 * @throws ClientException
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#copy(org.tigris.subversion.svnclientadapter.SVNUrl, org.tigris.subversion.svnclientadapter.SVNUrl, java.lang.String, org.tigris.subversion.svnclientadapter.SVNRevision)
 	 */
 	public void copy(
 		SVNUrl srcUrl,
@@ -552,11 +495,8 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 		}
 	}
 
-	/**
-	 * item is deleted from the repository via an immediate commit.
-	 * @param url
-	 * @param message
-	 * @throws ClientException
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#remove(org.tigris.subversion.svnclientadapter.SVNUrl[], java.lang.String)
 	 */
 	public void remove(SVNUrl url[], String message) throws SVNClientException {
         try {
@@ -581,15 +521,8 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
         }           
 	}
 
-	/**
-	 * the item is scheduled for deletion upon the next commit.  
-	 * Files, and directories that have not been committed, are immediately 
-	 * removed from the working copy.  The command will not remove TARGETs 
-	 * that are, or contain, unversioned or modified items; 
-	 * use the force option to override this behaviour.
-	 * @param file
-	 * @param force
-	 * @throws ClientException
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#remove(java.io.File[], boolean)
 	 */
 	public void remove(File file[], boolean force) throws SVNClientException {
         try {
@@ -613,13 +546,8 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
         }           
 	}
 
-	/**
-	 * Exports a clean directory tree from the repository specified by
-	 * srcUrl, at revision revision 
-	 * @param srcUrl
-	 * @param destPath
-	 * @param revision
-	 * @throws ClientException
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#doExport(org.tigris.subversion.svnclientadapter.SVNUrl, java.io.File, org.tigris.subversion.svnclientadapter.SVNRevision, boolean)
 	 */
 	public void doExport(
 		SVNUrl srcUrl,
@@ -641,13 +569,8 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 		}
 	}
 	
-	/**
-	 * Exports a clean directory tree from the working copy specified by
-	 * PATH1 into PATH2.  all local changes will be preserved, but files
-	 * not under revision control will not be copied.
-	 * @param srcPath
-	 * @param destPath
-	 * @throws ClientException
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#doExport(java.io.File, java.io.File, boolean)
 	 */
 	public void doExport(File srcPath, File destPath, boolean force)
 		throws SVNClientException {
@@ -665,15 +588,8 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 		}
 	}
 	
-	/**
-	 * Import file or directory PATH into repository directory URL at head
-	 * @param path
-	 * @param url
-	 * @param newEntry new directory in which the contents of <i>path</i> are imported.
-	 * 		  if null, copy top-level contents of PATH into URL directly
-	 * @param message
-	 * @param recurse
-	 * @throws ClientException
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#doImport(java.io.File, org.tigris.subversion.svnclientadapter.SVNUrl, java.lang.String, boolean)
 	 */
 	public void doImport(
 		File path,
@@ -704,11 +620,8 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 		}
 	}
 
-	/**
-	 * Creates a directory directly in a repository
-	 * @param url
-	 * @param message
-	 * @throws ClientException
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#mkdir(org.tigris.subversion.svnclientadapter.SVNUrl, java.lang.String)
 	 */
 	public void mkdir(SVNUrl url, String message) throws SVNClientException {
         try {
@@ -726,10 +639,8 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
         }                   	
 	}
 	
-	/**
-	 * creates a directory on disk and schedules it for addition.
-	 * @param file
-	 * @throws ClientException
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#mkdir(java.io.File)
 	 */
 	public void mkdir(File file) throws SVNClientException {
         try {
@@ -745,12 +656,9 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
         }           	
 	}
 
-	/**
-	 * Moves or renames a file.
-	 * @param srcPath
-	 * @param destPath
-	 * @throws ClientException
-	 */	
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#move(java.io.File, java.io.File, boolean)
+	 */
 	public void move(File srcPath, File destPath, boolean force) throws SVNClientException {
         // use force when you want to move file even if there are local modifications
         try {
@@ -767,12 +675,9 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
         }                   	
 	}
 
-	/**
-	 * Moves or renames a file.
-	 * @param srcPath
-	 * @param destPath
-	 * @throws ClientException
-	 */	
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#move(org.tigris.subversion.svnclientadapter.SVNUrl, org.tigris.subversion.svnclientadapter.SVNUrl, java.lang.String, org.tigris.subversion.svnclientadapter.SVNRevision)
+	 */
 	public void move(
 		SVNUrl srcUrl,
 		SVNUrl destUrl,
@@ -802,12 +707,8 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 		}
 	}	
 
-	/**
-	 * Update a file or a directory
-	 * @param path
-	 * @param revision
-	 * @param recurse
-	 * @throws ClientException
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#update(java.io.File, org.tigris.subversion.svnclientadapter.SVNRevision, boolean)
 	 */
 	public long update(File path, SVNRevision revision, boolean recurse)
 		throws SVNClientException {
@@ -861,11 +762,8 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 		}    	
 	}
 	
-    /**
-     * Restore pristine working copy file (undo all local edits)
-     * @param path
-     * @param recurse
-     * @throws ClientException
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#revert(java.io.File, boolean)
      */
     public void revert(File path, boolean recurse) throws SVNClientException {
         try {
@@ -883,14 +781,9 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
         }         
     } 
 	
-	/**
-     * Get the log messages for a set of revision(s) 
-     * @param url
-     * @param revisionStart
-     * @param revisionEnd
-	 * @param fetchChangePath
-     * @return
-     */
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getLogMessages(org.tigris.subversion.svnclientadapter.SVNUrl, org.tigris.subversion.svnclientadapter.SVNRevision, org.tigris.subversion.svnclientadapter.SVNRevision, boolean)
+	 */
 	public ISVNLogMessage[] getLogMessages(
 		SVNUrl url,
 		SVNRevision revisionStart,
@@ -902,13 +795,9 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
         return this.getLogMessages(target, revisionStart, revisionEnd, false, fetchChangePath, 0);
 	} 
     
-    /**
-     * Get the log messages for a set of revision(s)
-     * @param path
-     * @param revisionStart
-     * @param revisionEnd
-     * @return
-     */
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getLogMessages(java.io.File, org.tigris.subversion.svnclientadapter.SVNRevision, org.tigris.subversion.svnclientadapter.SVNRevision, boolean)
+	 */
 	public ISVNLogMessage[] getLogMessages(
 		File path,
 		SVNRevision revisionStart,
@@ -920,21 +809,17 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 	    return this.getLogMessages(target, revisionStart, revisionEnd, false, fetchChangePath, 0);
 	}    
 
-
 	/**
-	 * enables logging
 	 * @param logLevel
 	 * @param filePath
-	 */	
+	 */
 	public static void enableLogging(int logLevel,File filePath) {
 		SVNClient.enableLogging(logLevel,fileToSVNPath(filePath, false));	
 	}
 
-    /**
-     * get the content of a file
-     * @param url
-     * @param revision
-     */
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getContent(org.tigris.subversion.svnclientadapter.SVNUrl, org.tigris.subversion.svnclientadapter.SVNRevision)
+	 */
 	public InputStream getContent(SVNUrl url, SVNRevision revision)
 		throws SVNClientException {
 		try {
@@ -991,11 +876,8 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 	}
 
 
-	/**
-	 * returns the svn properties for the given file or directory
-	 * @param path
-	 * @return
-	 * @throws SVNClientException
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getProperties(java.io.File)
 	 */
 	public ISVNProperty[] getProperties(File path) throws SVNClientException {
 		try {
@@ -1020,11 +902,8 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 		}		
 	}
 
-	/**
-	 * returns the svn properties for the given url
-	 * @param url
-	 * @return
-	 * @throws SVNClientException
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getProperties(org.tigris.subversion.svnclientadapter.SVNUrl)
 	 */
 	public ISVNProperty[] getProperties(SVNUrl url) throws SVNClientException {
 		try {
@@ -1049,14 +928,9 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 		}		
 	}
 
-    /**
-     * set a property
-     * @param path
-     * @param propertyName
-     * @param propertyValue
-     * @param recurse
-     * @throws ClientException
-     */
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#propertySet(java.io.File, java.lang.String, java.lang.String, boolean)
+	 */
 	public void propertySet(
 		File path,
 		String propertyName,
@@ -1091,9 +965,9 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 		}
 	}
     
-    /**
-     * set a property using the content of a file 
-     */
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#propertySet(java.io.File, java.lang.String, java.io.File, boolean)
+	 */
 	public void propertySet(
 		File path,
 		String propertyName,
@@ -1149,14 +1023,9 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 		}
 	}
     
-    /**
-     * get a property
-     * @param path
-     * @param propertyName
-     * @param propertyValue
-     * @return the property or null if property was not found
-     * @throws ClientException
-     */
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#propertyGet(java.io.File, java.lang.String)
+	 */
 	public ISVNProperty propertyGet(File path, String propertyName)
 		throws SVNClientException {
 		try {
@@ -1178,14 +1047,9 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 
 	}
 
-	/**
-     * get a property
-     * @param url
-     * @param propertyName
-     * @param propertyValue
-     * @return the property or null if property was not found
-     * @throws ClientException
-     */
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#propertyGet(org.tigris.subversion.svnclientadapter.SVNUrl, java.lang.String)
+	 */
 	public ISVNProperty propertyGet(SVNUrl url, String propertyName)
 		throws SVNClientException {
 		try {
@@ -1207,12 +1071,8 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 
 	}
 
-    /**
-     * delete a property
-     * @param path
-     * @param propertyName
-     * @param recurse
-     * @throws ClientException
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#propertyDel(java.io.File, java.lang.String, boolean)
      */
     public void propertyDel(File path, String propertyName,boolean recurse) throws SVNClientException {
         try {
@@ -1243,8 +1103,8 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
         }        
     }
     
-    /**
-     * display the differences between two paths. 
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#diff(java.io.File, org.tigris.subversion.svnclientadapter.SVNRevision, java.io.File, org.tigris.subversion.svnclientadapter.SVNRevision, java.io.File, boolean)
      */
     public void diff(File oldPath, SVNRevision oldPathRevision,
                      File newPath, SVNRevision newPathRevision,
@@ -1291,15 +1151,15 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
         }
     }
 
-    /**
-     * diff between path and head revision
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#diff(java.io.File, java.io.File, boolean)
      */
     public void diff(File path, File outFile, boolean recurse) throws SVNClientException {
         diff(path, null,null,null,outFile,recurse);
     }
 
-    /**
-     * display the differences between two urls. 
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#diff(org.tigris.subversion.svnclientadapter.SVNUrl, org.tigris.subversion.svnclientadapter.SVNRevision, org.tigris.subversion.svnclientadapter.SVNUrl, org.tigris.subversion.svnclientadapter.SVNRevision, java.io.File, boolean)
      */
     public void diff(SVNUrl oldUrl, SVNRevision oldUrlRevision,
                      SVNUrl newUrl, SVNRevision newUrlRevision,
@@ -1338,6 +1198,9 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
         }
     }
 
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#diff(org.tigris.subversion.svnclientadapter.SVNUrl, org.tigris.subversion.svnclientadapter.SVNRevision, org.tigris.subversion.svnclientadapter.SVNRevision, java.io.File, boolean)
+     */
     public void diff(SVNUrl url, SVNRevision oldUrlRevision, SVNRevision newUrlRevision,
                      File outFile, boolean recurse) throws SVNClientException {
         diff(url,oldUrlRevision,url,newUrlRevision,outFile,recurse);                     
@@ -1368,9 +1231,8 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 
 	}
     
-    /**
-     * Output the content of specified url with revision and 
-     * author information in-line. 
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#annotate(org.tigris.subversion.svnclientadapter.SVNUrl, org.tigris.subversion.svnclientadapter.SVNRevision, org.tigris.subversion.svnclientadapter.SVNRevision)
      */
     public ISVNAnnotations annotate(SVNUrl url, SVNRevision revisionStart, SVNRevision revisionEnd)
         throws SVNClientException
@@ -1378,9 +1240,8 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
     	return annotate(url.toString(), revisionStart, revisionEnd);
     }
 
-    /**
-     * Output the content of specified file with revision and 
-     * author information in-line. 
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#annotate(java.io.File, org.tigris.subversion.svnclientadapter.SVNRevision, org.tigris.subversion.svnclientadapter.SVNRevision)
      */
     public ISVNAnnotations annotate(File file, SVNRevision revisionStart, SVNRevision revisionEnd)
         throws SVNClientException
@@ -1389,11 +1250,9 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
     }    
     
     
-    /**
-     * Remove 'conflicted' state on working copy files or directories
-     * @param path
-     * @throws SVNClientException
-     */    
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#resolved(java.io.File)
+     */
     public void resolved(File path) 
     	throws SVNClientException
     {
@@ -1505,6 +1364,9 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 		}        
 	}
 
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getRepositoryRoot(org.tigris.subversion.svnclientadapter.SVNUrl)
+     */
     public SVNUrl getRepositoryRoot(SVNUrl url) {
         return null;
         
@@ -1651,16 +1513,17 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 	        this.setPromptUserPassword(prompt);
         }
     }
-    /**
-     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#lock(SVNUrl[], java.lang.String, boolean)
+    
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#lock(org.tigris.subversion.svnclientadapter.SVNUrl[], java.lang.String, boolean)
      */
     public void lock(SVNUrl[] uris, String comment, boolean force)
             throws SVNClientException {
         notImplementedYet();
     }
 
-    /**
-     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#unlock(SVNUrl[], boolean)
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#unlock(org.tigris.subversion.svnclientadapter.SVNUrl[], boolean)
      */
     public void unlock(SVNUrl[] uris, boolean force)
         throws SVNClientException {
@@ -1697,8 +1560,9 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
         }
 
     }
+    
     /* (non-Javadoc)
-     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#unlock(java.lang.String[], boolean)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#unlock(java.io.File[], boolean)
      */
     public void unlock(File[] paths, boolean force) throws SVNClientException {
         try {
@@ -1726,6 +1590,9 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
     
     }
 
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#setRevProperty(org.tigris.subversion.svnclientadapter.SVNUrl, org.tigris.subversion.svnclientadapter.SVNRevision.Number, java.lang.String, java.lang.String, boolean)
+	 */
 	public void setRevProperty(SVNUrl url, SVNRevision.Number revisionNo, String propName, String propertyData, boolean force) throws SVNClientException {
 		try {
 			notificationHandler.setCommand(ISVNNotifyListener.Command.PROPSET);
@@ -1747,13 +1614,20 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 		}		
 	}
 
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getAdminDirectoryName()
+	 */
 	public String getAdminDirectoryName() {
 		return svnClient.getAdminDirectoryName();
 	}
 
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#isAdminDirectory(java.lang.String)
+	 */
 	public boolean isAdminDirectory(String name) {
 		return svnClient.isAdminDirectory(name);
 	}
+	
     private ISVNLogMessage[] getLogMessages(String target,
             SVNRevision revisionStart, SVNRevision revisionEnd,
             boolean stopOnCopy, boolean fetchChangePath, long limit)
@@ -1788,6 +1662,9 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 		}
     }
     
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getLogMessages(java.io.File, org.tigris.subversion.svnclientadapter.SVNRevision, org.tigris.subversion.svnclientadapter.SVNRevision, boolean, boolean, long)
+     */
     public ISVNLogMessage[] getLogMessages(File path,
             SVNRevision revisionStart, SVNRevision revisionEnd,
             boolean stopOnCopy, boolean fetchChangePath, long limit)
@@ -1797,6 +1674,9 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 	        return this.getLogMessages(target, revisionStart, revisionEnd, stopOnCopy, fetchChangePath, limit);
     }
     
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getLogMessages(org.tigris.subversion.svnclientadapter.SVNUrl, org.tigris.subversion.svnclientadapter.SVNRevision, org.tigris.subversion.svnclientadapter.SVNRevision, org.tigris.subversion.svnclientadapter.SVNRevision, boolean, boolean, long)
+     */
     public ISVNLogMessage[] getLogMessages(SVNUrl url, SVNRevision pegRevision,
             SVNRevision revisionStart, SVNRevision revisionEnd,
             boolean stopOnCopy, boolean fetchChangePath, long limit)
@@ -1806,6 +1686,9 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 	        return this.getLogMessages(target, revisionStart, revisionEnd, stopOnCopy, fetchChangePath, limit);
     }
     
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getLogMessages(java.io.File, org.tigris.subversion.svnclientadapter.SVNRevision, org.tigris.subversion.svnclientadapter.SVNRevision, boolean, boolean)
+     */
     public ISVNLogMessage[] getLogMessages(File path,
             SVNRevision revisionStart, SVNRevision revisionEnd,
             boolean stopOnCopy, boolean fetchChangePath)
@@ -1815,6 +1698,9 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
         return this.getLogMessages(target, revisionStart, revisionEnd, stopOnCopy, fetchChangePath, 0);
     }
     
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#relocate(java.lang.String, java.lang.String, java.lang.String, boolean)
+     */
     public void relocate(String from, String to, String path, boolean recurse)
             throws SVNClientException {
 		try {

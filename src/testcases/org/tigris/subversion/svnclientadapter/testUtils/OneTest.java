@@ -62,6 +62,8 @@ public class OneTest {
 	/**
 	 * build a new test setup with a new repository, a new working and a new
 	 * expected working layout
+	 * @param testName
+	 * @param config
 	 * 
 	 * @throws Exception
 	 */

@@ -164,7 +164,7 @@ public class SVNUrl {
     
     /**
      * Get the url as String. The url returned never ends with "/"
-     * @return
+     * @return String representation of this url instance
      */
     private String get() {
     	//Be sofisticated and compute the StringBuffer size up-front. 
@@ -226,7 +226,7 @@ public class SVNUrl {
     
     /**
      * get the path of the url. 
-     * @return
+     * @return an arrray of url path segments
      */
     public String[] getPathSegments() {
     	return segments;

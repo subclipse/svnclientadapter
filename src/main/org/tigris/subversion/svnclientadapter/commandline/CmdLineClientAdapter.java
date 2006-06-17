@@ -82,23 +82,6 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 		this._cmdMulti = multiCmd;
 		this.svnAdminCmd = adminCmd;
 	}
-
-	/**
-	 * Answer whether running on Windows OS.
-	 * (Actual code extracted from org.apache.commons.lang.SystemUtils.IS_OS_WINDOWS)
-	 * (For such one simple method it does make sense to introduce dependency on whole commons-lang.jar)
-	 * @return
-	 */
-	public static boolean isOsWindows()
-	{
-        try {
-            return System.getProperty("os.name").startsWith("Windows");
-        } catch (SecurityException ex) {
-            // we are not allowed to look at this property
-            return false;
-        }
-	}
-
     
 	//Methods
 	public static boolean isAvailable() {
@@ -126,6 +109,7 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
     
     /**
      * @return something like "svn, version 0.35.1 (r8050)"
+     * @throws SVNClientException
      */
     public String getVersion() throws SVNClientException {
         if (version != null)

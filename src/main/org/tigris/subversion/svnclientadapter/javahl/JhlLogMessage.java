@@ -31,9 +31,6 @@ public class JhlLogMessage implements ISVNLogMessage {
 
 	private LogMessage _m;
 
-	/**
-	 * 
-	 */
 	public JhlLogMessage(LogMessage msg) {
 		super();
 		_m = msg;
@@ -72,8 +69,8 @@ public class JhlLogMessage implements ISVNLogMessage {
 		return _m.getMessage();
 	}
 
-    /**
-     * @return The value of {@link #getMesssage()}.
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
      */
     public String toString() {
         return getMessage();

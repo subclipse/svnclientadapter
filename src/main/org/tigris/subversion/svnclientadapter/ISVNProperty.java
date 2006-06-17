@@ -47,23 +47,24 @@ public interface ISVNProperty {
 	public static final String REV_ORIGINAL_DATE = "svn:original-date";
 
 	/**
-	 * get the name of the property
+	 * @return the name of the property
 	 */
 	public abstract String getName();
 	
 	/**
 	 * get the value of the property as a string
 	 * note that if value is a binary, this string will be invalid
+	 * @return the value of the property as a string
 	 */
 	public abstract String getValue();
 	
 	/**
-	 * get the file this property belongs to 
+	 * @return the file this property belongs to 
 	 */
 	public abstract File getFile();
 	
 	/**
-	 * get the value of the property as an array of bytes 
+	 * @return the value of the property as an array of bytes 
 	 */
 	public abstract byte[] getData();
 }

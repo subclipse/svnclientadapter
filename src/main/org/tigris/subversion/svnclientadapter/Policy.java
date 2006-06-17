@@ -34,6 +34,9 @@ public class Policy {
 	/**
 	 * Lookup the message with the given ID in this catalog and bind its
 	 * substitution locations with the given string.
+	 * @param id
+	 * @param binding
+	 * @return the message with substitutions applied
 	 */
 	public static String bind(String id, String binding) {
 		return bind(id, new String[] { binding });
@@ -42,6 +45,10 @@ public class Policy {
 	/**
 	 * Lookup the message with the given ID in this catalog and bind its
 	 * substitution locations with the given strings.
+	 * @param id
+	 * @param binding1
+	 * @param binding2
+	 * @return the message with substitutions applied
 	 */
 	public static String bind(String id, String binding1, String binding2) {
 		return bind(id, new String[] { binding1, binding2 });
@@ -49,7 +56,8 @@ public class Policy {
 	
 	/**
 	 * Gets a string from the resource bundle. We don't want to crash because of a missing String.
-	 * Returns the key if not found.
+	 * @param key
+	 * @return string from the resource bundle or the key if not found.
 	 */
 	public static String bind(String key) {
 		try {
@@ -64,6 +72,9 @@ public class Policy {
 	/**
 	 * Gets a string from the resource bundle and binds it with the given arguments. If the key is 
 	 * not found, return the key.
+	 * @param key
+	 * @param args
+	 * @return string with substitutions from the resource bundle or the key if not found.
 	 */
 	public static String bind(String key, Object[] args) {
 		try {
