@@ -909,6 +909,17 @@ public interface ISVNClientAdapter {
 	 */
 	public ISVNInfo getInfo(SVNUrl url) throws SVNClientException;
 
+	/**
+	 * Get information about an URL.
+	 * Uses info2() call which contacts the repository
+	 * @param url
+	 * @param revision
+	 * @param peg
+	 * @return information about an URL.
+	 * @throws SVNClientException
+	 */
+	public ISVNInfo getInfo(SVNUrl url, SVNRevision revision, SVNRevision peg) throws SVNClientException;
+
     /**
      * Url representing repository root
      * @param url

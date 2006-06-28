@@ -406,7 +406,7 @@ public class SvnCommandLine extends CommandLine {
 	 * @param path
 	 * @return String with the info call result
 	 */
-	String info(String[] target) throws CmdLineException {
+	String info(String[] target, String revision, String peg) throws CmdLineException {
         if (target.length == 0) {
             // otherwise we would do a "svn info" without args
             return ""; 
@@ -417,8 +417,15 @@ public class SvnCommandLine extends CommandLine {
 		args.add("info");
         addAuthInfo(args);
         addConfigInfo(args);
+        if (revision != null) {
+        	args.add("-r");
+        	args.add(revision);
+        }
         for (int i = 0;i < target.length;i++) {
-            args.add(target[i]);
+        	if (peg == null)
+        		args.add(target[i]);
+        	else
+        		args.add(target[i] + "@" + peg);
         }
 
 		return execString(args,false);

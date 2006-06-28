@@ -217,4 +217,8 @@ public abstract class AbstractClientAdapter implements ISVNClientAdapter {
             return false;
         }
 	}
+
+	public ISVNInfo getInfo(SVNUrl url) throws SVNClientException {
+		return getInfo(url, SVNRevision.HEAD, SVNRevision.HEAD);
+	}
 }

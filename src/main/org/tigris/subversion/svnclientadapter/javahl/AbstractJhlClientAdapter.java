@@ -1343,15 +1343,14 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getInfo(org.tigris.subversion.svnclientadapter.SVNUrl)
 	 */
-	public ISVNInfo getInfo(SVNUrl url) throws SVNClientException {
+	public ISVNInfo getInfo(SVNUrl url, SVNRevision revision, SVNRevision peg) throws SVNClientException {
 		try {
 			notificationHandler.setCommand(ISVNNotifyListener.Command.INFO);
-            
 			String target = url.toString();
 			notificationHandler.logCommandLine("info "+target);
 //			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(url));
 			
-            Info2[] info = svnClient.info2(target, Revision.HEAD, Revision.HEAD, false);
+            Info2[] info = svnClient.info2(target, JhlConverter.convert(revision), JhlConverter.convert(peg), false);
             if (info == null || info.length == 0) {
             	return new SVNInfoUnversioned(null);
             } else {

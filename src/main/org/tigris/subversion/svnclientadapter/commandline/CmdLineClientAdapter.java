@@ -186,7 +186,7 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
             		targetsInfo.add(cmdLineStatusParts[i].getFile().toString());
             	}
             }
-            String cmdLineInfoStrings = _cmd.info((String[]) targetsInfo.toArray(new String[targetsInfo.size()] ));
+            String cmdLineInfoStrings = _cmd.info((String[]) targetsInfo.toArray(new String[targetsInfo.size()] ), null, null);
 
             cmdLineStatuses = new CmdLineStatuses(cmdLineInfoStrings, cmdLineStatusParts);
 		} catch (CmdLineException e) {
@@ -1119,7 +1119,7 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
             }
 
             // this is not enough, so we get info from the files
-            String infoLinesString = _cmd.info((String[]) targetsInfo.toArray(new String[targetsInfo.size()] ));
+            String infoLinesString = _cmd.info((String[]) targetsInfo.toArray(new String[targetsInfo.size()] ), null, null);
                  
             String[] parts = CmdLineInfoPart.parseInfoParts(infoLinesString);
             CmdLineInfoPart[] cmdLineInfoParts = new CmdLineInfoPart[parts.length];
@@ -1174,7 +1174,7 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
             CmdLineStatusPart[] cmdLineStatusParts = getCmdStatuses(new File[] {path}, false, true, false);
             // if the file is managed, it is safe to call info
             if ((cmdLineStatusParts.length > 0) && (cmdLineStatusParts[0].isManaged())) {
-            	String cmdLineInfoStrings = _cmd.info(new String[] { toString(path) });
+            	String cmdLineInfoStrings = _cmd.info(new String[] { toString(path) }, null, null);
             	return new CmdLineInfoPart(cmdLineInfoStrings);
             } else {
             	return CmdLineInfoPart.createUnversioned(path.getPath());
@@ -1192,27 +1192,31 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getInfo(org.tigris.subversion.svnclientadapter.SVNUrl)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getInfo(org.tigris.subversion.svnclientadapter.SVNUrl, org.tigris.subversion.svnclientadapter.SVNRevision, org.tigris.subversion.svnclientadapter.SVNRevision)
 	 */
-	public ISVNInfo getInfo(SVNUrl url) throws SVNClientException {
-		return getInfo(new SVNUrl[] { url });
+	public ISVNInfo getInfo(SVNUrl url, SVNRevision revision, SVNRevision peg) throws SVNClientException {
+		return getInfo(new SVNUrl[] { url }, revision, peg);
 	}
-
-	/* (non-Javadoc)
-	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getInfo(org.tigris.subversion.svnclientadapter.SVNUrl[])
-	 */
-	public ISVNInfo getInfo(SVNUrl[] urls) throws SVNClientException {
+	
+	private ISVNInfo getInfo(SVNUrl[] urls, SVNRevision revision, SVNRevision peg) throws SVNClientException {
         try {
     		String[] urlStrings = new String[urls.length];
     		for (int i = 0; i < urls.length; i++) {
     			urlStrings[i] = toString(urls[i]);
     		}
 			//notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(urls));
-            String cmdLineInfoStrings = _cmd.info(urlStrings);
+            String cmdLineInfoStrings = _cmd.info(urlStrings, toString(revision), toString(peg));
             return new CmdLineInfoPart(cmdLineInfoStrings);
         } catch (CmdLineException e) {
             throw SVNClientException.wrapException(e);
         }        
+	}
+
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getInfo(org.tigris.subversion.svnclientadapter.SVNUrl[])
+	 */
+	public ISVNInfo getInfo(SVNUrl[] urls) throws SVNClientException {
+		return getInfo(urls, null, null);
 	}
 
 	/* (non-Javadoc)
