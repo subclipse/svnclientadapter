@@ -15,33 +15,12 @@
  */
 package org.tigris.subversion.svnclientadapter;
 
-import org.tigris.subversion.javahl.ChangePath;
-
 /**
- * This class has been copied from javahl and modified a bit.
- * We cannot use original ChangePath because constructor visibility is package
+ * A generic implementation of the {@link ISVNLogMessageChangePath} interface.
+ * 
  */
 public class SVNLogMessageChangePath implements ISVNLogMessageChangePath
 {
-    public SVNLogMessageChangePath(ChangePath changePath)
-    {
-        this.path = changePath.getPath();
-        this.copySrcPath = changePath.getCopySrcPath();
-        this.action = changePath.getAction();
-        this.copySrcRevision = null;
-        if (changePath.getCopySrcRevision() != -1) {
-            this.copySrcRevision = new SVNRevision.Number(changePath.getCopySrcRevision());	
-        }
-    }
-
-	public SVNLogMessageChangePath(String path, SVNRevision.Number copySrcRevision, String copySrcPath, char action)
-    {
-        this.path = path;
-        this.copySrcRevision = copySrcRevision;
-        this.copySrcPath = copySrcPath;
-        this.action = action;
-    }
-
     /** Path of commited item */
     private String path;
 
@@ -55,35 +34,46 @@ public class SVNLogMessageChangePath implements ISVNLogMessageChangePath
     private char action;
 
     /**
-     * Retrieve the path to the commited item
-     * @return  the path to the commited item
+     * Constructor
+     * @param path
+     * @param copySrcRevision
+     * @param copySrcPath
+     * @param action
+     */
+	public SVNLogMessageChangePath(String path, SVNRevision.Number copySrcRevision, String copySrcPath, char action)
+    {
+        this.path = path;
+        this.copySrcRevision = copySrcRevision;
+        this.copySrcPath = copySrcPath;
+        this.action = action;
+    }
+
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNLogMessageChangePath#getPath()
      */
     public String getPath()
     {
         return path;
     }
 
-    /**
-     * Retrieve the copy source revision (if any)
-     * @return  the copy source revision (if any)
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNLogMessageChangePath#getCopySrcRevision()
      */
     public SVNRevision.Number getCopySrcRevision()
     {
     	return copySrcRevision;    
     }
 
-    /**
-     * Retrieve the copy source path (if any)
-     * @return  the copy source path (if any)
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNLogMessageChangePath#getCopySrcPath()
      */
     public String getCopySrcPath()
     {
         return copySrcPath;
     }
 
-    /**
-     * Retrieve action performed
-     * @return  action performed
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNLogMessageChangePath#getAction()
      */
     public char getAction()
     {

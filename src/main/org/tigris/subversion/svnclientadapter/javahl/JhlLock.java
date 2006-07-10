@@ -21,7 +21,8 @@ import org.tigris.subversion.javahl.Lock;
 import org.tigris.subversion.svnclientadapter.ISVNLock;
 
 /**
- * adapter : convert from Lock to ISVNLock
+ * A JavaHL based implementation of {@link ISVNLock}.
+ * Actually just an adapter from {@link org.tigris.subversion.javahl.Lock}
  *  
  * @author Mark Phippard
  */
@@ -29,6 +30,10 @@ public class JhlLock implements ISVNLock {
     
     private Lock _l;
 
+    /**
+     * Constructor
+     * @param lock
+     */
 	public JhlLock(Lock lock) {
         super();
 		_l = lock;

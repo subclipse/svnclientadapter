@@ -18,44 +18,69 @@ package org.tigris.subversion.svnclientadapter;
 import java.io.File;
 
 /**
- * describes a property (see svn command propget)
+ * An interface describing a subversion property (e.g. as return by svn propget)
  *
  * @author Cédric Chabanois 
  *         <a href="mailto:cchabanois@ifrance.com">cchabanois@ifrance.com</a>
  */
 public interface ISVNProperty {
-	public static final String MIME_TYPE = "svn:mime-type";
-
-	public static final String IGNORE = "svn:ignore";
-
-	public static final String EOL_STYLE = "svn:eol-style";
-
-	public static final String KEYWORDS = "svn:keywords";
-
-	public static final String EXECUTABLE = "svn:executable";
-
-	public static final String EXECUTABLE_VALUE = "*";
-
-	public static final String EXTERNALS = "svn:externals";
-
-	public static final String REV_AUTHOR = "svn:author";
-
-	public static final String REV_LOG = "svn:log";
-
-	public static final String REV_DATE = "svn:date";
-
-	public static final String REV_ORIGINAL_DATE = "svn:original-date";
+	
+    /**
+     * mime type of the entry, used to flag binary files
+     */
+    public static final String MIME_TYPE = "svn:mime-type";
+    /**
+     * list of filenames with wildcards which should be ignored by add and
+     * status
+     */
+    public static final String IGNORE = "svn:ignore";
+    /**
+     * how the end of line code should be treated during retrieval
+     */
+    public static final String EOL_STYLE = "svn:eol-style";
+    /**
+     * list of keywords to be expanded during retrieval
+     */
+    public static final String KEYWORDS = "svn:keywords";
+    /**
+     * flag if the file should be made excutable during retrieval
+     */
+    public static final String EXECUTABLE = "svn:executable";
+    /**
+     * value for svn:executable
+     */
+    public static final String EXECUTABLE_VALUE = "*";
+    /**
+     * list of directory managed outside of this working copy
+     */
+    public static final String EXTERNALS = "svn:externals";
+    /**
+     * the author of the revision
+     */
+    public static final String REV_AUTHOR = "svn:author";
+    /**
+     * the log message of the revision
+     */
+    public static final String REV_LOG = "svn:log";
+    /**
+     * the date of the revision
+     */
+    public static final String REV_DATE = "svn:date";
+    /**
+     * the original date of the revision
+     */
+    public static final String REV_ORIGINAL_DATE = "svn:original-date";
 
 	/**
 	 * @return the name of the property
 	 */
 	public abstract String getName();
 	
-	/**
-	 * get the value of the property as a string
-	 * note that if value is a binary, this string will be invalid
-	 * @return the value of the property as a string
-	 */
+    /**
+     * Returns the string value of the property.
+     * There is no protocol if a property is a string or a binary value
+     * @return the string value
+     */
 	public abstract String getValue();
 	
 	/**
@@ -63,8 +88,10 @@ public interface ISVNProperty {
 	 */
 	public abstract File getFile();
 	
-	/**
-	 * @return the value of the property as an array of bytes 
-	 */
+    /**
+     * Returns the byte array value of the property
+     * There is no protocol if a property is a string or a binary value
+     * @return the byte array value
+     */
 	public abstract byte[] getData();
 }

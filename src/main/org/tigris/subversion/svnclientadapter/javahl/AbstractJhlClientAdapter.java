@@ -40,7 +40,6 @@ import org.tigris.subversion.svnclientadapter.ISVNNotifyListener;
 import org.tigris.subversion.svnclientadapter.ISVNPromptUserPassword;
 import org.tigris.subversion.svnclientadapter.ISVNProperty;
 import org.tigris.subversion.svnclientadapter.ISVNStatus;
-import org.tigris.subversion.svnclientadapter.Policy;
 import org.tigris.subversion.svnclientadapter.SVNBaseDir;
 import org.tigris.subversion.svnclientadapter.SVNClientException;
 import org.tigris.subversion.svnclientadapter.SVNInfoUnversioned;
@@ -48,6 +47,7 @@ import org.tigris.subversion.svnclientadapter.SVNRevision;
 import org.tigris.subversion.svnclientadapter.SVNStatusKind;
 import org.tigris.subversion.svnclientadapter.SVNStatusUnversioned;
 import org.tigris.subversion.svnclientadapter.SVNUrl;
+import org.tigris.subversion.svnclientadapter.utils.Messages;
 
 /**
  * This is a base class for the JavaHL Adapter.  It allows the JavaHL
@@ -613,7 +613,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 					+ dest);
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
 			svnClient.doImport(src, dest, message, recurse);
-			notificationHandler.logCompleted(Policy.bind("notify.import.complete"));
+			notificationHandler.logCompleted(Messages.bind("notify.import.complete"));
 		} catch (ClientException e) {
 			notificationHandler.logException(e);
 			throw new SVNClientException(e);

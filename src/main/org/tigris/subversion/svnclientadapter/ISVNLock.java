@@ -18,7 +18,8 @@ package org.tigris.subversion.svnclientadapter;
 import java.util.Date;
 
 /**
- * Interface to describe a lock. It is return by the lock operation
+ * An interface describing a lock as return by the lock operation.
+ * 
  */
 public interface ISVNLock {
 

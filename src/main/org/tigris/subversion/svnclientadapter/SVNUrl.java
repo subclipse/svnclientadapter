@@ -17,9 +17,10 @@ package org.tigris.subversion.svnclientadapter;
 
 import java.net.MalformedURLException;
 
+import org.tigris.subversion.svnclientadapter.utils.StringUtils;
+
 /**
- *
- * we could have used URL, using custom protocols (svn, svn+ssl) 
+ * We could have used URL, using custom protocols (svn, svn+ssl) 
  * (@see http://developer.java.sun.com/developer/onlineTraining/protocolhandlers/)
  * but this is not really necessary as we don't want to open a connection 
  * directly with this class.
@@ -34,6 +35,12 @@ import java.net.MalformedURLException;
  */
 public class SVNUrl {
 	
+	private static final String SVN_PROTOCOL = "svn";
+	private static final String SVNSSH_PROTOCOL = "svn+";
+	private static final String HTTP_PROTOCOL = "http";
+	private static final String HTTPS_PROTOCOL = "https";
+	private static final String FILE_PROTOCOL = "file";
+	
 	protected static final char SEGMENT_SEPARATOR = '/'; 
 	
     private String protocol; // http, file, svn or svn+ssh
@@ -41,6 +48,11 @@ public class SVNUrl {
     private String host;
     private int port;
 
+    /**
+     * Constructor
+     * @param svnUrl a string to parse url from
+     * @throws MalformedURLException when parsing failed
+     */
     public SVNUrl(String svnUrl) throws MalformedURLException {
         if(svnUrl == null)
             throw new MalformedURLException("Svn url cannot be null. Is this a versioned resource?");
@@ -94,11 +106,11 @@ public class SVNUrl {
         if (i == -1)
             throw new MalformedURLException("Invalid svn url :"+svnUrl);
         protocol = parsed.substring(0,i).toLowerCase();
-        if ((!protocol.equalsIgnoreCase("http")) &&
-            (!protocol.equalsIgnoreCase("https")) &&
-            (!protocol.equalsIgnoreCase("file")) &&
-            (!protocol.equalsIgnoreCase("svn")) &&
-            (!protocol.startsWith("svn+")) ) {
+        if ((!protocol.equalsIgnoreCase(HTTP_PROTOCOL)) &&
+            (!protocol.equalsIgnoreCase(HTTPS_PROTOCOL)) &&
+            (!protocol.equalsIgnoreCase(FILE_PROTOCOL)) &&
+            (!protocol.equalsIgnoreCase(SVN_PROTOCOL)) &&
+            (!protocol.startsWith(SVNSSH_PROTOCOL)) ) {
             throw new MalformedURLException("Invalid svn url :"+svnUrl);
         }
         parsed = parsed.substring(i+3);
@@ -111,7 +123,7 @@ public class SVNUrl {
         if (i == -1) {
             i = parsed.length();
         }
-        if (!protocol.equalsIgnoreCase("file")) {
+        if (!protocol.equalsIgnoreCase(FILE_PROTOCOL)) {
 	        String hostPort = parsed.substring(0,i).toLowerCase();
 	        String[] hostportArray = StringUtils.split(hostPort,':');
 	        if (hostportArray.length == 2) {
@@ -150,13 +162,13 @@ public class SVNUrl {
      */
     public static int getDefaultPort(String protocol) {
         int port = -1;
-        if ("svn".equals(protocol)) {
+        if (SVN_PROTOCOL.equals(protocol)) {
             port = 3690;
-        } else if ("http".equals(protocol)) {
+        } else if (HTTP_PROTOCOL.equals(protocol)) {
             port = 80;
-        } else if ("https".equals(protocol)) {
+        } else if (HTTPS_PROTOCOL.equals(protocol)) {
             port = 443;
-        } else if (protocol != null && protocol.startsWith("svn+")) {
+        } else if (protocol != null && protocol.startsWith(SVNSSH_PROTOCOL)) {
             port = 22;
         }
         return port;
@@ -220,9 +232,6 @@ public class SVNUrl {
     public int getPort() {
         return port;
     }
-    public String toString() {
-        return get();
-    }
     
     /**
      * get the path of the url. 
@@ -232,6 +241,9 @@ public class SVNUrl {
     	return segments;
     }
     
+    /**
+     * @return the "file" name, i.e. the element after last /
+     */
     public String getLastPathSegment() {
         if (segments.length == 0)
             return "";
@@ -274,4 +286,11 @@ public class SVNUrl {
 	{
 		return get().hashCode();
 	}
+	
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    public String toString() {
+        return get();
+    }
 }

@@ -49,6 +49,11 @@ public class JhlConverter {
 		//non-instantiable
 	}
 	
+	/**
+	 * Convert clientAdapter's {@link SVNRevision} into JavaHL's {@link Revision}
+	 * @param svnRevision
+	 * @return a {@link Revision} representing suppplied SVNRevision
+	 */
     public static Revision convert(SVNRevision svnRevision) {
         switch(svnRevision.getKind()) {
             case SVNRevision.Kind.base : return Revision.BASE;
@@ -66,7 +71,12 @@ public class JhlConverter {
         }
     }
 
-	static SVNRevision convert(Revision rev) {
+	/**
+	 * Convert JavaHL's {@link Revision} into clientAdapter's {@link SVNRevision} 
+	 * @param rev
+	 * @return a {@link SVNRevision} representing suppplied Revision
+	 */
+	public static SVNRevision convert(Revision rev) {
 		switch (rev.getKind()) {
 			case RevisionKind.base :
 				return SVNRevision.BASE;
@@ -190,7 +200,7 @@ public class JhlConverter {
             return new SVNLogMessageChangePath[0];
         SVNLogMessageChangePath[] jhlChangePaths = new SVNLogMessageChangePath[changePaths.length];
         for(int i=0; i < changePaths.length; i++) {
-        	jhlChangePaths[i] = new SVNLogMessageChangePath(changePaths[i]);
+        	jhlChangePaths[i] = new JhlLogMessageChangePath(changePaths[i]);
         }
         return jhlChangePaths;
     }

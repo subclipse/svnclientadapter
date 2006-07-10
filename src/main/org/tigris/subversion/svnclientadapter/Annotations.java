@@ -15,29 +15,40 @@
  */
 package org.tigris.subversion.svnclientadapter;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * Generic implementation of {@link ISVNAnnotations} interface.
+ * It's expected to be filled with annotation data by 
+ * {@link #addAnnotation(Annotations.Annotation)} method.
+ *  
+ */
 public class Annotations implements ISVNAnnotations {
+	
+	/** list of annotation records (lines) */
 	private List annotations = new ArrayList();
 
 	protected Annotation getAnnotation(int i) {
-		if (i >= annotations.size()) {
+		if (i >= this.annotations.size()) {
 			return null;
 		}
-		return (Annotation) annotations.get(i);
+		return (Annotation) this.annotations.get(i);
 	}
 
-	protected void addAnnotation(Annotation ann)
+	/**
+	 * Append the given annotation record the list of annotation
+	 * @param annotation
+	 */
+	public void addAnnotation(Annotation annotation)
 	{
-		this.annotations.add(ann);
+		this.annotations.add(annotation);
 	}
 	
-	/*
-	 * (non-Javadoc)
-	 * 
+	/* (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNAnnotations#getRevision(int)
 	 */
 	public long getRevision(int lineNumber) {
@@ -49,9 +60,7 @@ public class Annotations implements ISVNAnnotations {
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
+	/* (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNAnnotations#getAuthor(int)
 	 */
 	public String getAuthor(int lineNumber) {
@@ -63,6 +72,9 @@ public class Annotations implements ISVNAnnotations {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNAnnotations#getChanged(int)
+	 */
 	public Date getChanged(int lineNumber) {
 		Annotation annotation = getAnnotation(lineNumber);
 		if (annotation == null) {
@@ -72,9 +84,7 @@ public class Annotations implements ISVNAnnotations {
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
+	/* (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNAnnotations#getLine(int)
 	 */
 	public String getLine(int lineNumber) {
@@ -86,29 +96,32 @@ public class Annotations implements ISVNAnnotations {
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
+	/* (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNAnnotations#getInputStream()
 	 */
 	public InputStream getInputStream() {
 		return new AnnotateInputStream(this);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.tigris.subversion.svnclientadapter.ISVNAnnotations#size()
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNAnnotations#numberOfLines()
 	 */
-	public int size() {
-		return annotations.size();
+	public int numberOfLines() {
+		return this.annotations.size();
 	}
 
+	/**
+	 * Class represeting one line of the annotations, i.e. an annotation record
+	 * 
+	 */
 	public static class Annotation {
-		
+
 		private long revision;
+
 		private String author;
+
 		private Date changed;
+
 		private String line;
 
 		/**
@@ -162,13 +175,85 @@ public class Annotations implements ISVNAnnotations {
 		public long getRevision() {
 			return revision;
 		}
-		
+
 		/* (non-Javadoc)
 		 * @see java.lang.Object#toString()
 		 */
-		public String toString()
-		{
+		public String toString() {
 			return getRevision() + ":" + getAuthor() + ":" + getLine();
+		}
+	}
+	
+	protected static class AnnotateInputStream extends InputStream {
+	    private ISVNAnnotations annotations;
+		private int currentLineNumber;
+	    private int currentPos;
+	    private String currentLine;
+	    private int available;
+	    
+	    /**
+	     * Constructor
+	     * @param annotations
+	     */
+	    public AnnotateInputStream(ISVNAnnotations annotations) {
+			this.annotations = annotations;
+			initialize();
+	    }
+	    
+	    private void initialize() {
+	    	currentLine = annotations.getLine(0);
+	        currentLineNumber = 0;
+	        currentPos = 0;
+	        
+	        available = 0;
+	        int annotationsSize = annotations.numberOfLines();
+	        for (int i = 0; i < annotationsSize;i++) {
+	        	available += annotations.getLine(i).length(); 
+	        	if (i != annotationsSize-1) {
+	        		available++; // +1 for \n
+	        	}
+	        }
+	    }
+
+	    private void getNextLine() {
+	        currentLineNumber++;
+	        currentPos = 0;
+	        currentLine = annotations.getLine(currentLineNumber);
+	    }
+
+	    /* (non-Javadoc)
+	     * @see java.io.InputStream#read()
+	     */
+	    public int read() throws IOException {
+	        if (currentLineNumber >= annotations.numberOfLines())
+	            return -1; // end of stream
+	        if (currentPos > currentLine.length()) {
+	            getNextLine();
+	            if (currentLineNumber >= annotations.numberOfLines())
+	                return -1; // end of stream                
+	        }
+	        int character;
+	        if (currentPos == currentLine.length())
+	        	character = '\n';
+	        else
+	        	character = currentLine.charAt(currentPos);
+	        currentPos++;
+	        available--;
+	        return character;
+	    }
+	    
+	    /* (non-Javadoc)
+	     * @see java.io.InputStream#available()
+	     */
+	    public int available() throws IOException {
+	        return available;
+	    }
+		
+		/* (non-Javadoc)
+		 * @see java.io.InputStream#reset()
+		 */
+		public synchronized void reset() throws IOException {
+			initialize();
 		}
 	}
 }

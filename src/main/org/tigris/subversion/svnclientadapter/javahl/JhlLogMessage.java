@@ -23,51 +23,58 @@ import org.tigris.subversion.svnclientadapter.ISVNLogMessageChangePath;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
 
 /**
- * adapter : convert from LogMessage to ISVNLogMessage
- * 
+ * A JavaHL based implementation of {@link ISVNLogMessage}.
+ * Actually just an adapter from {@link org.tigris.subversion.javahl.LogMessage}
+ *  
  * @author philip schatz
  */
 public class JhlLogMessage implements ISVNLogMessage {
 
 	private LogMessage _m;
 
+	/**
+	 * Constructor
+	 * @param msg
+	 */
 	public JhlLogMessage(LogMessage msg) {
 		super();
 		_m = msg;
 	}
 
-
-    /*
-     * (non-Javadoc)
-     * @see org.tigris.subversion.svnclientadapter.ISVNLogMessage#getRevision()
-     */
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNLogMessage#getRevision()
+	 */
 	public SVNRevision.Number getRevision() {
 		return (SVNRevision.Number)JhlConverter.convert(_m.getRevision());
 	}
 
-    /*
-     *  (non-Javadoc)
-     * @see org.tigris.subversion.svnclientadapter.ISVNLogMessage#getAuthor()
-     */
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNLogMessage#getAuthor()
+	 */
 	public String getAuthor() {
 		return _m.getAuthor();
 	}
 
-    /*
-     * (non-Javadoc)
-     * @see org.tigris.subversion.svnclientadapter.ISVNLogMessage#getDate()
-     */
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNLogMessage#getDate()
+	 */
 	public Date getDate() {
 		return _m.getDate();
 	}
 
-	/*
-     * (non-Javadoc)
+	/* (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNLogMessage#getMessage()
 	 */
 	public String getMessage() {
 		return _m.getMessage();
 	}
+
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNLogMessage#getChangedPaths()
+     */
+    public ISVNLogMessageChangePath[] getChangedPaths() {
+    	return JhlConverter.convert(_m.getChangedPaths());
+    }
 
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
@@ -76,12 +83,4 @@ public class JhlLogMessage implements ISVNLogMessage {
         return getMessage();
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.tigris.subversion.svnclientadapter.ISVNLogMessage#getChangedPaths()
-     */
-    public ISVNLogMessageChangePath[] getChangedPaths() {
-    	return JhlConverter.convert(_m.getChangedPaths());
-    }
-    
 }

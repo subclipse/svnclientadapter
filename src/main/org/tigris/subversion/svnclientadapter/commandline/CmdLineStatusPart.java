@@ -18,7 +18,7 @@ package org.tigris.subversion.svnclientadapter.commandline;
 import java.io.File;
 
 import org.tigris.subversion.svnclientadapter.SVNStatusKind;
-import org.tigris.subversion.svnclientadapter.SVNStatusUtils;
+import org.tigris.subversion.svnclientadapter.utils.SVNStatusUtils;
 
 abstract class CmdLineStatusPart {
 

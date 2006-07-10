@@ -53,14 +53,7 @@ public interface ISVNClientAdapter {
 	 * Add a callback for prompting for username, password SSL etc...
 	 * @param callback
 	 */
-	public abstract void addPasswordCallback(ISVNPromptUserPassword callback);
-	
-    
-    /**
-	 * Register callback interface to supply username and password on demand
-	 */
-//	public abstract void setPromptUserPassword(PromptUserPassword prompt);
-    
+	public abstract void addPasswordCallback(ISVNPromptUserPassword callback);   
     
 	/**
 	 * Adds a file (or directory) to the repository.

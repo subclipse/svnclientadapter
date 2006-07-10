@@ -27,28 +27,41 @@ public class SVNNodeKind
     private static final int dir = 2;
     private static final int unknown = 3;
     
-    /* absent */
+    /** Node kind absent */
     public static final SVNNodeKind NONE = new SVNNodeKind(none);
 
-    /* regular file */
+    /** Node kind regular file */
     public static final SVNNodeKind FILE = new SVNNodeKind(file);
 
-    /* directory */
+    /** Node kind Directory */
     public static final SVNNodeKind DIR = new SVNNodeKind(dir);
 
-    /* something's here, but we don't know what */
+    /** Node kind unknwon - something's here, but we don't know what */
     public static final SVNNodeKind UNKNOWN = new SVNNodeKind(unknown);
  
+    /**
+     * Private costructor.
+     * @param kind
+     */
     private SVNNodeKind(int kind) {
          this.kind = kind;
     }
 
+    /**
+     * @return an integer value representation of the nodeKind
+     */
     public int toInt() {
     	return kind;
     }
     
-    public static SVNNodeKind fromInt(int kind) {
-        switch(kind) 
+    /**
+     * Returns the SVNNodeKind corresponding to the given int representation.
+     * (As returned by {@link SVNNodeKind#toInt()} method)
+     * @param nodeKind
+     * @return SVNNodeKind representing the int value
+     */
+    public static SVNNodeKind fromInt(int nodeKind) {
+        switch(nodeKind) 
         {
             case none: 
                 return NONE;
@@ -63,6 +76,33 @@ public class SVNNodeKind
         }    	
     }
     
+    /**
+     * Returns the SVNNodeKind corresponding to the given string or null
+     * @param nodeKind
+     * @return SVNNodeKind representing the string value
+     */
+    public static SVNNodeKind fromString(String nodeKind) {
+    	if (NONE.toString().equals(nodeKind)) {
+    		return NONE;
+    	} else
+        if (FILE.toString().equals(nodeKind)) {
+        	return FILE;
+        } else    		
+        if (DIR.toString().equals(nodeKind)) {
+        	return DIR;
+        } else
+       	if ("dir".equals(nodeKind)) {
+       		return DIR;
+       	} else
+        if (UNKNOWN.toString().equals(nodeKind)) {
+        	return UNKNOWN;  
+        } else
+        	return null;
+    }    
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
     public String toString() {
         switch(kind) 
         {
@@ -78,28 +118,7 @@ public class SVNNodeKind
                 return "";
         }
     }
-
-    /**
-     * returns the ScheduleKind corresponding to the given string or null
-     * @param nodeKind
-     * @return SVNNodeKind representing the string value
-     */
-    public static SVNNodeKind fromString(String nodeKind) {
-    	if (NONE.toString().equals(nodeKind)) {
-    		return NONE;
-    	} else
-        if (FILE.toString().equals(nodeKind)) {
-        	return FILE;
-        } else    		
-        if (DIR.toString().equals(nodeKind)) {
-        	return DIR;
-        } else
-        if (UNKNOWN.toString().equals(nodeKind)) {
-        	return UNKNOWN;  
-        } else
-        	return null;
-    }    
-
+    
     /* (non-Javadoc)
      * @see java.lang.Object#equals(java.lang.Object)
      */

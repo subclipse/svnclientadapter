@@ -17,10 +17,11 @@ package org.tigris.subversion.svnclientadapter;
 
 
 /**
- * change path for a log message
+ * An interface defining a change path for a log message
  *
  */
 public interface ISVNLogMessageChangePath {
+	
 	/**
 	 * Retrieve the path to the commited item
 	 * @return  the path to the commited item
@@ -40,7 +41,9 @@ public interface ISVNLogMessageChangePath {
 	public abstract String getCopySrcPath();
 
 	/**
-	 * Retrieve action performed
+	 * Retrieve action performed.
+	 * I.e. 'A'dd, 'D'elete, 'R'eplace, 'M'odify
+	 * 
 	 * @return  action performed
 	 */
 	public abstract char getAction();

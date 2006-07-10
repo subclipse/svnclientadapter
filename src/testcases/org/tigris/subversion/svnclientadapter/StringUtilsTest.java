@@ -17,6 +17,8 @@ package org.tigris.subversion.svnclientadapter;
 
 import junit.framework.TestCase;
 
+import org.tigris.subversion.svnclientadapter.utils.StringUtils;
+
 /**
  * tests StringUtils 
  */

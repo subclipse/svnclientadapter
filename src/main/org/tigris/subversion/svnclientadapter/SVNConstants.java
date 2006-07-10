@@ -15,8 +15,18 @@
  */
 package org.tigris.subversion.svnclientadapter;
 
+/**
+ * Subversion related global constants
+ *
+ */
 public class SVNConstants {
+	
+	/** a "entries" workingCopy metadata directory name */
     public static final String SVN_ENTRIES = "entries";
+    
+	/** a "dir-props" workingCopy metadata directory name */
     public static final String SVN_DIRPROPS = "dir-props";
+    
+	/** a "props" workingCopy metadata directory name */
     public static final String SVN_PROPS = "props";
 }

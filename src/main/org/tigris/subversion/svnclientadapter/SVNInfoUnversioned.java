@@ -21,14 +21,17 @@ import java.util.Date;
 import org.tigris.subversion.svnclientadapter.SVNRevision.Number;
 
 /**
- * <p>
- * A special info class that is used if a File/Folder is not versioned.</p>
+ * A special {@link ISVNInfo} implementation that is used if a File/Folder is not versioned.
  * 
  * @author Cédric Chabanois (cchabanois at no-log.org)
  */
 public class SVNInfoUnversioned implements ISVNInfo {
 	private File file;
     
+	/**
+	 * Constructor
+	 * @param file
+	 */
     public SVNInfoUnversioned(File file) {
     	this.file = file;
     }

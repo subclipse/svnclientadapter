@@ -15,19 +15,19 @@
  */
 package org.tigris.subversion.svnclientadapter;
 
+/**
+ * An interface describing a callback used during authentification.
+ *
+ */
 public interface ISVNPromptUserPassword {
-	/**
-	 * reject the connection to the server
-	 */
+	
+	/** reject the connection to the server */
 	public static final int Reject = 0;
-	/**
-	 * accept the connection to the server one time.
-	 */
+	/** accept the connection to the server one time. */
 	public static final int AcceptTemporary = 1;
-	 /**
-	 * accept the connection to the server forever
-	 */
+	 /** accept the connection to the server forever */
 	public static final int AcceptPermanently = 2;
+	
 	/**
 	 * ask the user a yes/no question
 	 * @param realm         for which server realm this information is requested.
@@ -36,16 +36,19 @@ public interface ISVNPromptUserPassword {
 	 * @return              the answer
 	 */
 	public boolean askYesNo(String realm, String question, boolean yesIsDefault);
+	
 	/**
 	 * retrieve the username entered during the prompt call
 	 * @return the username
 	 */
 	public String getUsername();
+	
 	/**
 	 * retrieve the password entered during the prompt call
 	 * @return the password
 	 */
 	public String getPassword();
+	
    /**
 	* If there are problems with the certifcate of the SSL-server, this
 	* callback will be used to deside if the connection will be used.
@@ -54,6 +57,7 @@ public interface ISVNPromptUserPassword {
 	* @return                  one of Reject/AcceptTemporary/AcceptPermanently
 	*/
 	public int askTrustSSLServer(String info, boolean allowPermanently);
+	
 	/**
 	 * Request the password to be used from the user.
 	 * the save data check box status will be queried by userAllowedSave
@@ -63,6 +67,7 @@ public interface ISVNPromptUserPassword {
 	 * @return          password as entered or null if canceled.
 	 */
 	public boolean prompt(String realm, String username, boolean maySave);
+	
 	/**
 	 *  Ask the user a question about authentification
 	 * the save data check box status will be queried by userAllowedSave
@@ -73,6 +78,7 @@ public interface ISVNPromptUserPassword {
 	 * @return              answer as entered or null if canceled
 	 */
 	public String askQuestion(String realm, String question, boolean showAnswer, boolean maySave);
+	
 	/**
 	 * query if the user allowed the saving of the data of the last call
 	 * @return      was the save data check box checked
@@ -123,13 +129,11 @@ public interface ISVNPromptUserPassword {
 	 * @return the password
 	 */
     public String getSSLClientCertPassword();
-
     
 	/**
 	 * retrieve the SSL certificate entered during the prompt call
 	 * @return the certificate
 	 */
     public String getSSLClientCertPath();
-
 
 }

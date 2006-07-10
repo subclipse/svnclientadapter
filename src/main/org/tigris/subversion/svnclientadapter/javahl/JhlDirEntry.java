@@ -23,7 +23,8 @@ import org.tigris.subversion.svnclientadapter.SVNNodeKind;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
 
 /**
- * adapter : convert from DirEntry to ISVNDirEntry 
+ * A JavaHL based implementation of {@link ISVNDirEntry}.
+ * Actually just an adapter from {@link org.tigris.subversion.javahl.DirEntry}
  *  
  * @author philip schatz
  */
@@ -31,41 +32,61 @@ public class JhlDirEntry implements ISVNDirEntry {
 
 	private DirEntry _d;
 
+	/**
+	 * Constructor
+	 * @param d
+	 */
 	public JhlDirEntry(DirEntry d) {
 		super();
 		_d = d;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNDirEntry#getNodeKind()
+	 */
 	public SVNNodeKind getNodeKind() {
         return JhlConverter.convertNodeKind(_d.getNodeKind());
 	}
 
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNDirEntry#getHasProps()
+	 */
 	public boolean getHasProps() {
 		return _d.getHasProps();
 	}
 
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNDirEntry#getLastChangedRevision()
+	 */
 	public SVNRevision.Number getLastChangedRevision() {
 		return (SVNRevision.Number)JhlConverter.convert(_d.getLastChangedRevision());
 	}
 
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNDirEntry#getLastChangedDate()
+	 */
 	public Date getLastChangedDate() {
 		return _d.getLastChanged();
 	}
 
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNDirEntry#getLastCommitAuthor()
+	 */
 	public String getLastCommitAuthor() {
 		return _d.getLastAuthor();
 	}
 
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNDirEntry#getPath()
+	 */
 	public String getPath() {
 		return _d.getPath();
 	}
 
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNDirEntry#getSize()
+     */
     public long getSize() {
         return _d.getSize();
     }
-
-    public Date getLastChanged() {
-        return _d.getLastChanged();
-    }
-
 }

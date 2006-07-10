@@ -19,6 +19,8 @@ import java.io.File;
 import java.util.Date;
 
 /**
+ * An interface defining the status of one subversion item (file or directory) in
+ * the working copy or repository.
  * 
  * @author philip schatz
  */
@@ -46,8 +48,14 @@ public interface ISVNStatus {
 	 */
 	String getLastCommitAuthor();
 
+    /**
+     * @return the file or directory status
+     */
 	SVNStatusKind getTextStatus();
 
+    /**
+     * @return the file or directory status of base
+     */
 	SVNStatusKind getRepositoryTextStatus();
 	
 	/**
@@ -55,6 +63,9 @@ public interface ISVNStatus {
 	 */
 	SVNStatusKind getPropStatus();
 
+    /**
+     * @return the status of the properties base (either Kind.NORMAL, Kind.CONFLICTED or Kind.MODIFIED)
+     */
 	SVNStatusKind getRepositoryPropStatus();
 
 	/**
@@ -84,6 +95,9 @@ public interface ISVNStatus {
      */
     boolean isCopied();    
     
+    /**
+     * @return the url of the copy source if copied, null otherwise
+     */
 	SVNUrl getUrlCopiedFrom();
 
     /**

@@ -19,13 +19,17 @@ import java.io.File;
 
 
 /**
+ * A callback interface used for receiving notifications of a progress of
+ * a subversion command invocation.
  * 
- * @author Cédric Chabanois 
- *         <a href="mailto:cchabanois@ifrance.com">cchabanois@ifrance.com</a>
+ * @author Cédric Chabanois <a
+ *         href="mailto:cchabanois@ifrance.com">cchabanois@ifrance.com</a>
  */
 public interface ISVNNotifyListener {
     
-    
+	/**
+	 * An enumeration class representing the supported subversion commands/actions.
+	 */
     public static final class Command {
         public static final int UNDEFINED = 0;
         public static final int ADD = 1;
@@ -60,6 +64,10 @@ public interface ISVNNotifyListener {
         public static final int RELOCATE = 30;
     }    
 
+    /**
+     * Tell the callback the command to be executed
+     * @param command one of {@link Command}.* constants
+     */
     public void setCommand(int command);
 
     /**

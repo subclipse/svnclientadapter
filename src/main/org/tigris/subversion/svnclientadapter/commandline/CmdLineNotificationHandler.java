@@ -22,12 +22,16 @@ import org.tigris.subversion.svnclientadapter.ISVNNotifyListener;
 import org.tigris.subversion.svnclientadapter.SVNNotificationHandler;
 
 /**
- * sends notifications to all listeners
+ * Command line specific extension to generic notification handler
  * 
  * @author Cédric Chabanois (cchabanois@ifrance.com)
  */
 public class CmdLineNotificationHandler extends SVNNotificationHandler {
 
+	/**
+	 * Log the supplied command line exception as Error
+	 * @param e an exception to log
+	 */
     public void logException(CmdLineException e) {
         StringTokenizer st = new StringTokenizer(e.getMessage(), Helper.NEWLINE);
         while (st.hasMoreTokens()) {

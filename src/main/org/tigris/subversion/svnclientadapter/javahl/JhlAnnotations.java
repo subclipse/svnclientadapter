@@ -21,21 +21,18 @@ import org.tigris.subversion.javahl.BlameCallback;
 import org.tigris.subversion.svnclientadapter.Annotations;
 
 /**
- * A BlameCallback implementation class for JavaHL blame() method.  
+ * JavaHL specific subclass of {@link Annotations}.
+ * It implements a {@link org.tigris.subversion.javahl.BlameCallback}
+ * as means of constructing the annotation records.  
  * 
  */
 public class JhlAnnotations extends Annotations implements BlameCallback {
 	
-    /**
-     * the method will be called for every line in a file.
-     * @param changed   the date of the last change.
-     * @param revision  the revision of the last change.
-     * @param author    the author of the last change.
-     * @param line      the line in the file
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.javahl.BlameCallback#singleLine(java.util.Date, long, java.lang.String, java.lang.String)
      */
     public void singleLine(Date changed, long revision, String author,
                            String line) {
-    	Annotation annotation = new Annotation(revision, author, changed, line);
-    	addAnnotation(annotation);
+    	addAnnotation(new Annotation(revision, author, changed, line));
     }
 }

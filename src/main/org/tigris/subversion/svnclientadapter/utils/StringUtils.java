@@ -13,12 +13,15 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.tigris.subversion.svnclientadapter;
+package org.tigris.subversion.svnclientadapter.utils;
 
 import java.util.ArrayList;
 import java.util.List;
 
-
+/**
+ * A helper class for various string operations
+ * 
+ */
 public class StringUtils {
 
 	/**

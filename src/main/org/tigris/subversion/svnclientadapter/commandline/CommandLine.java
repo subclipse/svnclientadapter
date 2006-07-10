@@ -145,6 +145,7 @@ abstract class CommandLine {
             outPumper.waitFor();
             errPumper.waitFor();
         } catch (InterruptedException ignored) {
+        	notificationHandler.logError("Command output processing interrupted !");
         }
     }
 
@@ -263,6 +264,15 @@ abstract class CommandLine {
     private static abstract class StreamPumper implements Runnable {
         private boolean finished;
 
+        /**
+         * Constructor
+         *
+         */
+        protected StreamPumper()
+        {
+        	super();
+        }
+        
         /**
          * Copies data from the input stream to the internal buffer.
          * Terminates as soon as the input stream is closed, or an

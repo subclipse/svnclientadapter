@@ -27,7 +27,8 @@ import org.tigris.subversion.svnclientadapter.SVNRevision;
 import org.tigris.subversion.svnclientadapter.SVNUrl;
 
 /**
- * adapter : convert from Status to ISVNStatus
+ * A JavaHL based implementation of {@link ISVNStatus}.
+ * Actually just an adapter from {@link org.tigris.subversion.javahl.Status}
  *  
  * @author philip schatz
  */
@@ -35,14 +36,17 @@ public class JhlStatus implements ISVNStatus {
 
 	private Status _s;
 
+	/**
+	 * Constructor
+	 * @param status
+	 */
 	public JhlStatus(Status status) {
 		// note that status.textStatus must be different than 0 (the resource must exist)
         super();
 		_s = status;
 	}
 
-	/*
-	 * (non-Javadoc)
+	/* (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getUrl()
 	 */
 	public SVNUrl getUrl() {
@@ -55,8 +59,7 @@ public class JhlStatus implements ISVNStatus {
         }
 	}
 
-	/*
-	 * (non-Javadoc)
+	/* (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getLastChangedRevision()
 	 */
 	public SVNRevision.Number getLastChangedRevision() {

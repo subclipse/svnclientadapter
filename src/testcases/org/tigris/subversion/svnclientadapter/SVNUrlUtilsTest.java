@@ -15,6 +15,8 @@
  */
 package org.tigris.subversion.svnclientadapter;
 
+import org.tigris.subversion.svnclientadapter.utils.SVNUrlUtils;
+
 import junit.framework.TestCase;
 
 /**

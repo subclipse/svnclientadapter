@@ -17,9 +17,8 @@ package org.tigris.subversion.svnclientadapter;
 
 
 /**
- * <p>
  * Base class for enumerating the possible types for a <code>Status</code>.
- * </p>
+ * 
  */
 public class SVNStatusKind {
     private final int kind;
@@ -98,10 +97,19 @@ public class SVNStatusKind {
         this.kind = kind;
     }
     
+    /**
+     * @return an integer value representation of the statusKind
+     */
     public int toInt() {
     	return kind;
     }
     
+    /**
+     * Returns the SVNStatusKind corresponding to the given int representation.
+     * (As returned by {@link SVNStatusKind#toInt()} method)
+     * @param kind
+     * @return SVNStatusKind representing the int value
+     */
     public static SVNStatusKind fromInt(int kind) {
         switch (kind)
         {
@@ -140,6 +148,11 @@ public class SVNStatusKind {
         }
     }
 
+    /**
+     * returns the SVNStatusKind corresponding to the given string or null
+     * @param kind
+     * @return SVNStatusKind representing the supplied string value 
+     */
     public static SVNStatusKind fromString(String kind) {
         if ("none".equals(kind) || "non-svn".equals(kind)) {
             return NONE;
@@ -176,6 +189,9 @@ public class SVNStatusKind {
         }
     }
     
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
     public String toString() {
         switch (kind)
         {

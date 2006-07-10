@@ -18,41 +18,56 @@ package org.tigris.subversion.svnclientadapter;
 import java.io.InputStream;
 import java.util.Date;
 
+/**
+ * An interface defining the result of a call to svn blame/annotate. For each
+ * line in the file, last modification data are returned.
+ * 
+ */
 public interface ISVNAnnotations {
-	
+
 	/**
-	 * get the date of last change for the given line number
+	 * Get the date of the last change for the given <code>lineNumber</code>
+	 * 
 	 * @param lineNumber
 	 * @return date of last change
 	 */
 	public abstract Date getChanged(int lineNumber);
-	
+
 	/**
-	 * get the revision for the given line number
+	 * Get the revision of the last change for the given <code>lineNumber</code>
+	 * 
 	 * @param lineNumber
-	 * @return the revision 
+	 * @return the revision of last change
 	 */
 	public abstract long getRevision(int lineNumber);
 
 	/**
-	 * get the author for the given line number or null
+	 * Get the author of the last change for the given <code>lineNumber</code>
+	 * 
 	 * @param lineNumber
-	 * @return the author 
+	 * @return the author of last change or null
 	 */
 	public abstract String getAuthor(int lineNumber);
 
 	/**
-	 * get the given line
+	 * Get the content (line itself) of the given <code>lineNumber</code>
+	 * 
 	 * @param lineNumber
-	 * @return the line number
+	 * @return the line content
 	 */
 	public abstract String getLine(int lineNumber);
 
 	/**
-	 * @return an inputstream of the content of the file 
+	 * Get an input stream providing the content of the file being annotated.
+	 * 
+	 * @return an inputstream of the content of the file
 	 */
 	public abstract InputStream getInputStream();
-	
-	
-	public abstract int size();
+
+	/**
+	 * Get the number of annotated lines
+	 * 
+	 * @return number of lines of file being annotated
+	 */
+	public abstract int numberOfLines();
 }

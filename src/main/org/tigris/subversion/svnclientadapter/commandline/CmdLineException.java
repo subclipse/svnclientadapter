@@ -18,8 +18,7 @@ package org.tigris.subversion.svnclientadapter.commandline;
 import java.lang.reflect.InvocationTargetException;
 
 /**
- * <p>
- * An exception that wraps the "svn" error message.</p>
+ * An exception that wraps the "svn" error message.
  * 
  * @author Philip Schatz (schatz at tigris)
  */
@@ -29,6 +28,7 @@ class CmdLineException extends Exception {
 
 	//Constructors
 	CmdLineException() {
+		super();
 	}
 
 	CmdLineException(String message) {

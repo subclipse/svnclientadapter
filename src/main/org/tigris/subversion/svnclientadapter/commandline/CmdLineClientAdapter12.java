@@ -23,7 +23,7 @@ import org.tigris.subversion.svnclientadapter.ISVNNotifyListener;
 import org.tigris.subversion.svnclientadapter.ISVNStatus;
 import org.tigris.subversion.svnclientadapter.SVNClientException;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
-import org.tigris.subversion.svnclientadapter.StringUtils;
+import org.tigris.subversion.svnclientadapter.utils.StringUtils;
 
 /**
  * Implements functions compatible with svn client version 1.2 or earlier
@@ -34,6 +34,10 @@ public class CmdLineClientAdapter12 extends CmdLineClientAdapter {
     private static boolean availabilityCached = false;
     private static boolean available;
 
+    /**
+     * Constructor
+     * @param notificationHandler
+     */
     public CmdLineClientAdapter12(CmdLineNotificationHandler notificationHandler)
     {
     	super(notificationHandler,

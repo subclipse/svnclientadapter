@@ -22,11 +22,12 @@ import org.tigris.subversion.javahl.ClientException;
 import org.tigris.subversion.javahl.SVNAdmin;
 import org.tigris.subversion.javahl.SVNClient;
 import org.tigris.subversion.javahl.SVNClientInterface;
+import org.tigris.subversion.svnclientadapter.ISVNClientAdapter;
 import org.tigris.subversion.svnclientadapter.ISVNNotifyListener;
 import org.tigris.subversion.svnclientadapter.SVNClientException;
 
 /**
- * An adapter for SVNClient. Easier and safer to use than SVNClient
+ * A JavaHL base implementation of {@link ISVNClientAdapter}.
  *
  * @author C�dric Chabanois (cchabanois at no-log.org)
  * @author Panagiotis Korros (pkorros at bigfoot.com) 
@@ -40,6 +41,9 @@ public class JhlClientAdapter extends AbstractJhlClientAdapter {
     private static boolean available;
 	private static StringBuffer javaHLErrors = new StringBuffer("Failed to load JavaHL Library.\nThese are the errors that were encountered:\n");
 
+	/**
+	 * Default constructor
+	 */
     public JhlClientAdapter() {
         svnClient = new SVNClient();
         svnAdmin = new SVNAdmin();
@@ -191,6 +195,9 @@ public class JhlClientAdapter extends AbstractJhlClientAdapter {
     	return available;
     }
     
+    /**
+     * @return an error string describing problems during loading platform native libraries (if any)
+     */
     public static String getLibraryLoadErrors() {
         if (isAvailable())
             return "";
@@ -221,6 +228,7 @@ public class JhlClientAdapter extends AbstractJhlClientAdapter {
 	    
 	}
 
+	//TODO since 1.3 I think JavaHL does return that info ...
 	public boolean statusReturnsRemoteInfo() {
 		return true;
 	}

@@ -1,5 +1,4 @@
 /*
- *  Copyright(c) 2003-2004 by the authors indicated in the @author tags.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -215,12 +214,11 @@ public class SvnCommandLine extends CommandLine {
 	String checkout(String url, String destination, String revision, boolean recursive)
 		throws CmdLineException {
         setCommand(ISVNNotifyListener.Command.CHECKOUT, true);
-		String rev = validRev(revision);
 		ArrayList args = new ArrayList();
 		args.add("co");
 		args.add("-r");
-		args.add(rev);
-		args.add(url + "@" + rev);
+		args.add(validRev(revision));
+		args.add(url + "@" + validRev(revision));
 		args.add(destination);
 		
 		if (!recursive)

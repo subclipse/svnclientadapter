@@ -21,7 +21,8 @@ import org.tigris.subversion.javahl.PropertyData;
 import org.tigris.subversion.svnclientadapter.ISVNProperty;
 
 /**
- * adapter : convert from PropertyData to ISVNProperty
+ * A JavaHL based implementation of {@link ISVNProperty}.
+ * Actually just an adapter from {@link org.tigris.subversion.javahl.PropertyData}
  * 
  * @author philip schatz
  */
@@ -29,41 +30,40 @@ public class JhlPropertyData implements ISVNProperty
 {
     private PropertyData _propertyData;
     
-    
-    JhlPropertyData(PropertyData propertyData)
+    /**
+     * Constructor
+     * @param propertyData
+     */
+    public JhlPropertyData(PropertyData propertyData)
     {
         _propertyData = propertyData;
     }
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.tigris.subversion.svnclientadapter.ISVNProperty#getName()
-	 */
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNProperty#getName()
+     */
     public String getName()
     {
         return _propertyData.getName();
     }
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.tigris.subversion.svnclientadapter.ISVNProperty#getValue()
-	 */
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNProperty#getValue()
+     */
     public String getValue()
     {
         return _propertyData.getValue();
     }
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.tigris.subversion.svnclientadapter.ISVNProperty#getFile()
-	 */
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNProperty#getFile()
+     */
     public File getFile()
     {
         return new File(_propertyData.getPath()).getAbsoluteFile();
     }
     
-    /*
-     * (non-Javadoc)
+    /* (non-Javadoc)
      * @see org.tigris.subversion.svnclientadapter.ISVNProperty#getData()
      */
     public byte[] getData()

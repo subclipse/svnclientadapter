@@ -19,8 +19,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.tigris.subversion.javahl.Info;
 import org.tigris.subversion.svnclientadapter.ISVNInfo;
@@ -30,16 +28,21 @@ import org.tigris.subversion.svnclientadapter.SVNUrl;
 import org.tigris.subversion.svnclientadapter.SVNRevision.Number;
 
 /**
- * adapter : convert from Info to ISVNInfo
+ * A JavaHL based implementation of {@link ISVNInfo}.
+ * Actually just an adapter from {@link org.tigris.subversion.javahl.Info}
  *  
  * @author Cédric Chabanois
  */
 public class JhlInfo implements ISVNInfo {
-	private static final Logger log = Logger.getLogger(JhlInfo.class.getName());
 	
 	private Info info;
 	private File file;
 
+	/**
+	 * Constructor
+	 * @param file
+	 * @param info
+	 */
 	public JhlInfo(File file, Info info) {
         super();
         this.file = file;
@@ -64,7 +67,7 @@ public class JhlInfo implements ISVNInfo {
 		try {
 			return new SVNUrl(info.getUrl());
 		} catch (MalformedURLException e) {
-			log.log(Level.SEVERE, e.getMessage(), e);
+            //should never happen.
 			return null;
 		}
 	}
@@ -83,7 +86,7 @@ public class JhlInfo implements ISVNInfo {
 		try {
 			return new SVNUrl(info.getRepository());
 		} catch (MalformedURLException e) {
-			log.log(Level.SEVERE, e.getMessage(), e);
+            //should never happen.
 			return null;
 		}
 	}
@@ -165,7 +168,7 @@ public class JhlInfo implements ISVNInfo {
 		try {
 			return new SVNUrl(info.getCopyUrl());
 		} catch (MalformedURLException e) {
-			log.log(Level.SEVERE, e.getMessage(), e);
+            //should never happen.
 			return null;
 		}
 	}

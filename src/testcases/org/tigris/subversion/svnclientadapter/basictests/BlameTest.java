@@ -60,7 +60,7 @@ public class BlameTest extends SVNTest {
         //blame from 1->HEAD
         ISVNAnnotations annotations = client.annotate(mu, null, null);        
         // the size should match
-        assertEquals("invalid number of annotation lines", 4, annotations.size());
+        assertEquals("invalid number of annotation lines", 4, annotations.numberOfLines());
         //check revisions
         assertEquals("blamed revision does not match", 3 ,annotations.getRevision(0));
         assertEquals("blamed revision does not match", 2 ,annotations.getRevision(1));
@@ -86,7 +86,7 @@ public class BlameTest extends SVNTest {
         //blame from 3->HEAD
         ISVNAnnotations annotations = client.annotate(mu, SVNRevision.getRevision("3"), null);        
         // the size should match
-        assertEquals("invalid number of annotation lines", 4, annotations.size());
+        assertEquals("invalid number of annotation lines", 4, annotations.numberOfLines());
         //check revisions
         assertEquals("blamed revision does not match", 3 ,annotations.getRevision(0));
         assertEquals("blamed revision does not match", -1 ,annotations.getRevision(1));

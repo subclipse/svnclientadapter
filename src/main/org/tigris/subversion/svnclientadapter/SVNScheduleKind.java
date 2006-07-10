@@ -16,7 +16,7 @@
 package org.tigris.subversion.svnclientadapter;
 
 /**
- * kind of a schedule
+ * Schedule kind an entry can be in.
  * @see ISVNInfo#getSchedule()
  */
 public class SVNScheduleKind {
@@ -43,10 +43,19 @@ public class SVNScheduleKind {
          this.kind = kind;
     }
 
+    /**
+     * @return an integer value representation of the scheduleKind
+     */
     public int toInt() {
     	return kind;
     }
     
+    /**
+     * Returns the SVNScheduleKind corresponding to the given int representation.
+     * (As returned by {@link SVNScheduleKind#toInt()} method)
+     * @param scheduleKind
+     * @return SVNScheduleKind representing the int value
+     */
     public SVNScheduleKind fromInt(int scheduleKind) {
         switch(scheduleKind) 
         {
@@ -60,22 +69,6 @@ public class SVNScheduleKind {
                 return REPLACE;
             default:
                 return null;
-        }
-    }
-    
-    public String toString() {
-        switch(kind) 
-        {
-            case normal: 
-                return "normal";
-            case add: 
-                return "add";
-            case delete: 
-                return "delete";
-            case replace: 
-                return "replace";
-            default:
-                return "";
         }
     }
     
@@ -100,6 +93,25 @@ public class SVNScheduleKind {
         	return null;
     }
 
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    public String toString() {
+        switch(kind) 
+        {
+            case normal: 
+                return "normal";
+            case add: 
+                return "add";
+            case delete: 
+                return "delete";
+            case replace: 
+                return "replace";
+            default:
+                return "";
+        }
+    }
+    
     /* (non-Javadoc)
      * @see java.lang.Object#equals(java.lang.Object)
      */

@@ -18,6 +18,8 @@ package org.tigris.subversion.svnclientadapter;
 import java.io.File;
 import java.io.IOException;
 
+import org.tigris.subversion.svnclientadapter.utils.StringUtils;
+
 /**
  * During notification (both with svn command line and javahl), the files and
  * directories are sometimes relative (with svn commit for ex). However it is
@@ -43,7 +45,7 @@ public class SVNBaseDir {
      * @param file1
      * @param file2
      */
-    static File getCommonPart(File file1, File file2) {
+    protected static File getCommonPart(File file1, File file2) {
     		if (file1 == null)
     			return null;
     		if (file2 == null)
