@@ -11,7 +11,6 @@
 package org.tigris.subversion.svnclientadapter.javahl;
 
 import org.tigris.subversion.javahl.ChangePath;
-import org.tigris.subversion.svnclientadapter.ISVNLogMessageChangePath;
 import org.tigris.subversion.svnclientadapter.SVNLogMessageChangePath;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
 
