@@ -103,25 +103,40 @@ abstract class CommandLine {
      * Includes <code>LANG</code> and <code>LC_ALL</code> so Subversion's output is not localized.
      * <code>Systemroot</code> is required on windows platform. 
      * Without this variable present, the windows' DNS resolver does not work.
+     * <code>APR_ICONV_PATH</code> is required on windows platform for UTF-8 translation.
      * The <code>PATH</code> is there, well, just to be sure ;-)
      */
 	protected String[] getEnvironmentVariables()
 	{
 		final String path = CmdLineClientAdapter.getEnvironmentVariable("PATH");
 		final String systemRoot = CmdLineClientAdapter.getEnvironmentVariable("SystemRoot");
+		final String aprIconv = CmdLineClientAdapter.getEnvironmentVariable("APR_ICONV_PATH");
+		int i = 2;
+		if (path != null)
+			i++;
+		if (systemRoot != null)
+			i++;
+		if (aprIconv != null)
+			i++;
+		String[] env = new String[i];
+		i = 0;
+		env[i] = "LANG=C";
+		i++;
+		env[i] = "LC_ALL=C";
+		i++;
 		if (path != null) {
-			if (systemRoot != null) {
-				return new String[] { "LANG=C", "LC_ALL=C", "PATH=" + path, "SystemRoot=" + systemRoot };
-			} else {
-				return new String[] { "LANG=C", "LC_ALL=C", "PATH=" + path };
-			}
-		} else {
-			if (systemRoot != null) {
-				return new String[] { "LANG=C", "LC_ALL=C", "SystemRoot=" + systemRoot };
-			} else {
-				return new String[] { "LANG=C", "LC_ALL=C" };
-			}
-		}		
+			env[i] = "PATH=" + path;
+			i++;
+		}
+		if (systemRoot != null) {
+			env[i] = "SystemRoot=" + systemRoot;
+			i++;
+		}
+		if (aprIconv != null) {
+			env[i] = "APR_ICONV_PATH=" + aprIconv;
+			i++;
+		}
+		return env;
 	}
 	
     /**
