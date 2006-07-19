@@ -13,6 +13,7 @@ package org.tigris.subversion.svnclientadapter.commandline;
 import java.io.File;
 
 import org.tigris.subversion.svnclientadapter.ISVNProperty;
+import org.tigris.subversion.svnclientadapter.SVNUrl;
 
 /**
  * 
@@ -22,12 +23,22 @@ class CmdLineProperty implements ISVNProperty {
 	private String propName;
 	private String propValue;
 	private File file;
+	private SVNUrl url;
 	private byte[] data;
 
 	CmdLineProperty(String name, String value, File file, byte[] data) {
 		this.propName = name;
 		this.propValue = value;
+		this.url = null;
 		this.file = file.getAbsoluteFile();
+		this.data = data;
+	}
+
+	CmdLineProperty(String name, String value, SVNUrl url, byte[] data) {
+		this.propName = name;
+		this.propValue = value;
+		this.url = url;
+		this.file = null;
 		this.data = data;
 	}
 
@@ -52,6 +63,13 @@ class CmdLineProperty implements ISVNProperty {
 		return file;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNProperty#getUrl()
+	 */
+	public SVNUrl getUrl() {
+		return url;
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNProperty#getData()
 	 */

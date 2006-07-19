@@ -11,9 +11,11 @@
 package org.tigris.subversion.svnclientadapter.javahl;
 
 import java.io.File;
+import java.net.MalformedURLException;
 
 import org.tigris.subversion.javahl.PropertyData;
 import org.tigris.subversion.svnclientadapter.ISVNProperty;
+import org.tigris.subversion.svnclientadapter.SVNUrl;
 
 /**
  * A JavaHL based implementation of {@link ISVNProperty}.
@@ -24,14 +26,36 @@ import org.tigris.subversion.svnclientadapter.ISVNProperty;
 public class JhlPropertyData implements ISVNProperty
 {
     private PropertyData _propertyData;
+    private boolean isForUrl;
     
+    /**
+     * Factory method for properties on local resource (file or dir)
+     * @param propertyData
+     * @return a JhlPropertyData constructed from supplied propertyData
+     */
+    public static JhlPropertyData newForFile(PropertyData propertyData)
+    {
+    	return new JhlPropertyData(propertyData, false);
+    }
+
+    /**
+     * Factory method for properties on remote resource (url)
+     * @param propertyData
+     * @return a JhlPropertyData constructed from supplied propertyData
+     */
+    public static JhlPropertyData newForUrl(PropertyData propertyData)
+    {
+    	return new JhlPropertyData(propertyData, true);
+    }
+
     /**
      * Constructor
      * @param propertyData
      */
-    public JhlPropertyData(PropertyData propertyData)
+    private JhlPropertyData(PropertyData propertyData, boolean isForUrl)
     {
-        _propertyData = propertyData;
+        this._propertyData = propertyData;
+        this.isForUrl = isForUrl;
     }
 
     /* (non-Javadoc)
@@ -55,7 +79,20 @@ public class JhlPropertyData implements ISVNProperty
      */
     public File getFile()
     {
-        return new File(_propertyData.getPath()).getAbsoluteFile();
+    	return isForUrl ? null : new File(_propertyData.getPath()).getAbsoluteFile();
+    }
+    
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNProperty#getUrl()
+     */
+    public SVNUrl getUrl()
+    {
+		try {
+	    	return isForUrl ? new SVNUrl(_propertyData.getPath()) : null;
+        } catch (MalformedURLException e) {
+            //should never happen.
+            return null;
+        }
     }
     
     /* (non-Javadoc)

@@ -729,7 +729,7 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
                 return null; // the property does not exist
             }
             
-			return new CmdLineProperty(propertyName, new String(bytes), null, bytes);
+			return new CmdLineProperty(propertyName, new String(bytes), url, bytes);
 		} catch (CmdLineException e) {
 			throw SVNClientException.wrapException(e);
 		} catch (IOException e) {

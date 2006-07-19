@@ -51,12 +51,21 @@ public class PropertiesTest extends SVNTest {
         // get property using propertyGet on file
         prop = client.propertyGet(file, "myProp");
         assertNotNull(prop);
+        assertEquals("myProp", prop.getName());
         assertEquals("my value", prop.getValue());
+        assertEquals(file, prop.getFile());
+        assertNull(prop.getUrl());
 
+        //commit the wc so we can test the properties on URL
+        client.commit(new File[] {dir}, "Commited properties", true);
+        
         // get property using propertyGet on url
         prop = client.propertyGet(fileUrl, "myProp");
         assertNotNull(prop);
+        assertEquals("myProp", prop.getName());
         assertEquals("my value", prop.getValue());
+        assertEquals(fileUrl, prop.getUrl());
+        assertNull(prop.getFile());
         
         // delete property
         client.propertyDel(dir,"myProp2",true);

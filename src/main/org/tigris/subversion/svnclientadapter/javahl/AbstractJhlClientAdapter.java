@@ -888,7 +888,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 			}
 			JhlPropertyData[] svnProperties = new JhlPropertyData[propertiesData.length];
 			for (int i = 0; i < propertiesData.length;i++) {
-				svnProperties[i] = new JhlPropertyData(propertiesData[i]);  
+				svnProperties[i] = JhlPropertyData.newForFile(propertiesData[i]);  
 			}
 			return svnProperties;
 		} catch (ClientException e) {
@@ -914,7 +914,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 			}
 			JhlPropertyData[] svnProperties = new JhlPropertyData[propertiesData.length];
 			for (int i = 0; i < propertiesData.length;i++) {
-				svnProperties[i] = new JhlPropertyData(propertiesData[i]);  
+				svnProperties[i] = JhlPropertyData.newForUrl(propertiesData[i]);  
 			}
 			return svnProperties;
 		} catch (ClientException e) {
@@ -1034,7 +1034,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
             if (propData == null)
                 return null;
             else
-			    return new JhlPropertyData(propData);
+			    return JhlPropertyData.newForFile(propData);
 		} catch (ClientException e) {
 			notificationHandler.logException(e);
 			throw new SVNClientException(e);
@@ -1058,7 +1058,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
             if (propData == null)
                 return null;
             else
-			    return new JhlPropertyData(propData);
+			    return JhlPropertyData.newForUrl(propData);
 		} catch (ClientException e) {
 			notificationHandler.logException(e);
 			throw new SVNClientException(e);

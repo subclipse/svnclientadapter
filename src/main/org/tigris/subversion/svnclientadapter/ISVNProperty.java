@@ -69,24 +69,29 @@ public interface ISVNProperty {
 	/**
 	 * @return the name of the property
 	 */
-	public abstract String getName();
+	String getName();
 	
     /**
      * Returns the string value of the property.
      * There is no protocol if a property is a string or a binary value
      * @return the string value
      */
-	public abstract String getValue();
+	String getValue();
 	
 	/**
-	 * @return the file this property belongs to 
+	 * @return the file this property belongs to (or null if on remote resource)
 	 */
-	public abstract File getFile();
+	File getFile();
 	
+    /**
+     * @return the url this property belongs to
+     */
+	SVNUrl getUrl();
+
     /**
      * Returns the byte array value of the property
      * There is no protocol if a property is a string or a binary value
      * @return the byte array value
      */
-	public abstract byte[] getData();
+	byte[] getData();
 }
