@@ -16,6 +16,7 @@ import java.util.Map;
 
 import org.tigris.subversion.svnclientadapter.ISVNProperty;
 import org.tigris.subversion.svnclientadapter.SVNKeywords;
+import org.tigris.subversion.svnclientadapter.SVNUrl;
 import org.tigris.subversion.svnclientadapter.testUtils.OneTest;
 import org.tigris.subversion.svnclientadapter.testUtils.SVNTest;
 
@@ -28,6 +29,7 @@ public class PropertiesTest extends SVNTest {
 
         File dir = new File(thisTest.getWorkingCopy() + "/A");
         File file = new File(thisTest.getWorkingCopy() + "/A/mu");
+        SVNUrl fileUrl = new SVNUrl(thisTest.getUrl()+ "/A/mu");
 
         client.propertySet(file, "myProp", "my value", false);
         client.propertySet(dir, "myProp2", "my value 2", true);
@@ -46,8 +48,13 @@ public class PropertiesTest extends SVNTest {
         assertNotNull(prop);
         assertEquals("my value 2", prop.getValue());
         
-        // get property using propertyGet
+        // get property using propertyGet on file
         prop = client.propertyGet(file, "myProp");
+        assertNotNull(prop);
+        assertEquals("my value", prop.getValue());
+
+        // get property using propertyGet on url
+        prop = client.propertyGet(fileUrl, "myProp");
         assertNotNull(prop);
         assertEquals("my value", prop.getValue());
         

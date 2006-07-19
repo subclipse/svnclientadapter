@@ -48,8 +48,10 @@ public abstract class SVNBasicTestsSuite extends TestSuite {
 
     protected static void addTestsToSuite(TestSuite testSuite) {
         testSuite.addTestSuite(AddTest.class);
+        testSuite.addTestSuite(BlameTest.class);
         testSuite.addTestSuite(CatTest.class);
         testSuite.addTestSuite(CheckOutTest.class);
+        testSuite.addTestSuite(CleanupTest.class);
         testSuite.addTestSuite(CommitTest.class);
         testSuite.addTestSuite(CopyTest.class);	//
         testSuite.addTestSuite(DeleteTest.class);
@@ -60,6 +62,7 @@ public abstract class SVNBasicTestsSuite extends TestSuite {
         testSuite.addTestSuite(LsTest.class);
         testSuite.addTestSuite(MkdirTest.class);
         testSuite.addTestSuite(MoveTest.class);	//
+        testSuite.addTestSuite(PropertiesTest.class);
         testSuite.addTestSuite(ResolveTest.class);
         testSuite.addTestSuite(RevertTest.class);
         testSuite.addTestSuite(StatusTest.class);
