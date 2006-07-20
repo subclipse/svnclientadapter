@@ -1228,7 +1228,7 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 	public void switchToUrl(File path, SVNUrl url, SVNRevision revision, boolean recurse) throws SVNClientException {
 		try {
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
-            _cmd.switchUrl(toString(path), toString(url), toString(revision));
+            _cmd.switchUrl(toString(path), toString(url), toString(revision), recurse);
         } catch (CmdLineException e) {
         	throw SVNClientException.wrapException(e);
         }

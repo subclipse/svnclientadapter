@@ -838,12 +838,14 @@ public class SvnCommandLine extends CommandLine {
     /**
      * Update the working copy to mirror a new URL within the repository.
      */
-    String switchUrl(String path, String url, String revision) throws CmdLineException {
+    String switchUrl(String path, String url, String revision, boolean recurse) throws CmdLineException {
         setCommand(ISVNNotifyListener.Command.SWITCH, true);
         ArrayList args = new ArrayList();
         args.add("sw");
         args.add(url);
         args.add(path);
+        if (!recurse)
+            args.add("-N");                
         args.add("-r");
         args.add(validRev(revision));
         addAuthInfo(args);
