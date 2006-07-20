@@ -134,6 +134,14 @@ public class SVNStatusUnversioned implements ISVNStatus {
 	}
 
 	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNStatus#isWcLocked()
+	 */
+	public boolean isWcLocked() {
+		return false;
+	}
+
+	/* (non-Javadoc)
+	 * @see
 	 * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getNodeKind()
 	 */
 	public SVNNodeKind getNodeKind() {

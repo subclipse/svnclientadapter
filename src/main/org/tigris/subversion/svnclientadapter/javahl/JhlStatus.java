@@ -122,6 +122,13 @@ public class JhlStatus implements ISVNStatus {
 	public boolean isCopied() {
 		return _s.isCopied();
 	}
+	
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNStatus#isWcLocked()
+	 */
+	public boolean isWcLocked() {
+		return _s.isLocked();
+	}
 
 	/*
 	 * (non-Javadoc)

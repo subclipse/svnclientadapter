@@ -91,6 +91,11 @@ public interface ISVNStatus {
     boolean isCopied();    
     
     /**
+     * @return true when the working copy directory is locked. 
+     */
+    boolean isWcLocked();
+    
+    /**
      * @return the url of the copy source if copied, null otherwise
      */
 	SVNUrl getUrlCopiedFrom();

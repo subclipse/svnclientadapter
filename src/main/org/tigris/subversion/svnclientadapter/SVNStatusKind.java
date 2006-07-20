@@ -32,7 +32,6 @@ public class SVNStatusKind {
     private static final int ignored = 11;
     private static final int incomplete = 12;
     private static final int external = 13;
-    private static final int locked = 14;
     
     /** does not exist */
     public static final SVNStatusKind NONE = new SVNStatusKind(none);
@@ -75,9 +74,6 @@ public class SVNStatusKind {
     
     /** is not a versioned thing in this wc */
     public static final SVNStatusKind UNVERSIONED = new SVNStatusKind(unversioned);
-    
-    /** a resource marked as locked */
-    public static final SVNStatusKind LOCKED = new SVNStatusKind(locked);
     
     //Constructors
     /**
@@ -134,8 +130,6 @@ public class SVNStatusKind {
             return EXTERNAL;
         case unversioned:
             return UNVERSIONED;
-        case locked:
-            return LOCKED;
         case obstructed:
             return OBSTRUCTED;
         default:
@@ -175,8 +169,6 @@ public class SVNStatusKind {
             return EXTERNAL;
         } else if ("unversioned".equals(kind)) {
             return UNVERSIONED;
-        } else if ("locked".equals(kind)) {
-            return LOCKED;
         } else if ("obstructed".equals(kind)) {
             return OBSTRUCTED;
         } else {
@@ -214,8 +206,6 @@ public class SVNStatusKind {
             return "incomplete";
         case external:
             return "external";
-        case locked:
-            return "locked";
         case obstructed:
             return "obstructed";
         case unversioned:

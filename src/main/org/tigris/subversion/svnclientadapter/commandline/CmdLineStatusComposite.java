@@ -169,9 +169,18 @@ class CmdLineStatusComposite  implements ISVNStatus {
         return statusPart.isCopied();
     }
 
-    /* (non-Javadoc)
-     * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getLockCreationDate()
-     */
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNStatus#isWcLocked()
+	 */
+	public boolean isWcLocked() {
+		return statusPart.isWcLocked();
+	}
+
+    /*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getLockCreationDate()
+	 */
     public Date getLockCreationDate() {
         return infoPart.getLockCreationDate();
     }
@@ -189,4 +198,12 @@ class CmdLineStatusComposite  implements ISVNStatus {
     public String getLockComment() {
         return infoPart.getLockComment();
     }
+    
+    /* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	public String toString() {
+		return statusPart.getPath() + "  T: " + statusPart.getTextStatus()
+				+ " P: " + statusPart.getPropStatus();
+	}
 }

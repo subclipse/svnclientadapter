@@ -43,6 +43,7 @@ public class CmdLineStatusFromXml extends CmdLineXmlCommand implements ISVNStatu
 	private String path;
 	private SVNNodeKind nodeKind;
 	private boolean copied;
+	private boolean wcLocked;
 	private SVNUrl urlCopiedFrom;
 	private File conflictNew;
 	private File conflictOld;
@@ -80,6 +81,12 @@ public class CmdLineStatusFromXml extends CmdLineXmlCommand implements ISVNStatu
 	 */
 	public boolean isCopied() {
 		return copied;
+	}
+	/**
+	 * @return Returns the wcLocked.
+	 */
+	public boolean isWcLocked() {
+		return wcLocked;
 	}
 	/**
 	 * @return Returns the file.
@@ -201,6 +208,12 @@ public class CmdLineStatusFromXml extends CmdLineXmlCommand implements ISVNStatu
 	 */
 	protected void setCopied(boolean copied) {
 		this.copied = copied;
+	}
+	/**
+	 * @param wcLocked The wcLocked to set.
+	 */
+	protected void setWcLocked(boolean wcLocked) {
+		this.wcLocked = wcLocked;
 	}
 	/**
 	 * @param lastCommitAuthor The lastCommitAuthor to set.
@@ -395,8 +408,8 @@ public class CmdLineStatusFromXml extends CmdLineXmlCommand implements ISVNStatu
 				if (wcRevisionAttribute != null) {
 					status.setRevision(Helper.toRevNum(wcRevisionAttribute.getNodeValue()));
 				}
-//				Node wcLockedAttr = wcStatusNode.getAttributes().getNamedItem("wc-locked");
-//                boolean wcLocked = (wcLockedAttr != null) && "true".equals(wcLockedAttr.getNodeValue());
+				Node wcLockedAttr = wcStatusNode.getAttributes().getNamedItem("wc-locked");
+                status.setWcLocked((wcLockedAttr != null) && "true".equals(wcLockedAttr.getNodeValue()));
 				Node copiedAttr = wcStatusNode.getAttributes().getNamedItem("copied");
                 status.setCopied((copiedAttr != null) && "true".equals(copiedAttr.getNodeValue()));
 //				Node switchedAttr = wcStatusNode.getAttributes().getNamedItem("switched");                 

@@ -37,6 +37,11 @@ abstract class CmdLineStatusPart {
 	public abstract boolean isCopied();
 
 	/**
+	 * @return Whether this item's wc directory is locked.
+	 */
+	public abstract boolean isWcLocked();
+
+	/**
 	 * @return true if the resource has a remote counter-part 
 	 */
 	public boolean hasRemote() {
@@ -73,6 +78,7 @@ abstract class CmdLineStatusPart {
 		protected String path;
 		protected File file;
 		protected char history;
+		protected boolean wcLocked;
 
 		/**
 	     * here are some statusLine samples :
@@ -82,6 +88,7 @@ abstract class CmdLineStatusPart {
 	     */    
 		CmdLineStatusPartFromStdout(String statusLine) {
 			super(getTextStatus(statusLine.charAt(0)), getPropStatus(statusLine.charAt(1)));
+			wcLocked = getWcLockStatus(statusLine.charAt(2));
 			history = statusLine.charAt(3);
 			path =  statusLine.substring(STATUS_FILE_WIDTH).trim();	                
 	        file = new File(path);
@@ -92,6 +99,13 @@ abstract class CmdLineStatusPart {
 		 */
 		public boolean isCopied() {
 			return (history == '+');
+		}
+
+ 		/**
+		 * @return Whether this item's wc directory is locked.
+		 */
+		public boolean isWcLocked() {
+			return wcLocked;
 		}
 
 		/**
@@ -123,8 +137,6 @@ abstract class CmdLineStatusPart {
 		            return SVNStatusKind.EXTERNAL;
 				case '?' :
 					return SVNStatusKind.UNVERSIONED;
-		        case 'L' :
-		            return SVNStatusKind.LOCKED;
 				default :
 					return SVNStatusKind.NONE;
 			}
@@ -142,6 +154,17 @@ abstract class CmdLineStatusPart {
 					return SVNStatusKind.NORMAL;
 			}		
 		}
+
+		private static boolean getWcLockStatus(char statusChar) {
+			switch (statusChar) {
+				case ' ': // no lock
+					return false;
+				case 'L':
+					return true;
+				default:
+					return false;
+			}
+		}			
 
 		/**
 		 * @return The absolute path to this item.
@@ -191,6 +214,10 @@ abstract class CmdLineStatusPart {
 
 		public boolean isCopied() {
 			return status.isCopied();
+		}
+
+		public boolean isWcLocked() {
+			return status.isWcLocked();
 		}
 
 	    public SVNStatusKind getRepositoryTextStatus()
