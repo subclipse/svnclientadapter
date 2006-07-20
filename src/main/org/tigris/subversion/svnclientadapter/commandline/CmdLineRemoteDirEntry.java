@@ -127,12 +127,16 @@ class CmdLineRemoteDirEntry extends CmdLineXmlCommand implements ISVNDirEntry {
                 SVNRevision.Number rev = Helper.toRevNum(revisionAttribute.getNodeValue());
 
 				Element authorNode = getFirstNamedElement(commitNode, "author");
-				if (authorNode == null) throw new Exception("'author' tag expected under 'commit'");
-				String author = authorNode.getFirstChild().getNodeValue();
+				String author = null;
+				if (authorNode != null) {
+					author = authorNode.getFirstChild().getNodeValue();
+				}	
 				
 				Element dateNode = getNextNamedElement(authorNode, "date");
-				if (dateNode == null) throw new Exception("'date' tag expected under 'commit'");
-				Date date = Helper.convertXMLDate(dateNode.getFirstChild().getNodeValue());
+				Date date = null;
+                if (dateNode != null) {
+                	date = Helper.convertXMLDate(dateNode.getFirstChild().getNodeValue());
+                }
 
 				SVNNodeKind kind = SVNNodeKind.UNKNOWN;
 				if ("file".equals(kindName))

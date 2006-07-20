@@ -13,6 +13,7 @@ package org.tigris.subversion.svnclientadapter.basictests;
 import java.io.File;
 
 import org.tigris.subversion.svnclientadapter.ISVNDirEntry;
+import org.tigris.subversion.svnclientadapter.SVNNodeKind;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
 import org.tigris.subversion.svnclientadapter.SVNUrl;
 import org.tigris.subversion.svnclientadapter.testUtils.OneTest;
@@ -65,10 +66,19 @@ public class LsTest extends SVNTest {
         // get the dirEntry of a directory first
         ISVNDirEntry entry = client.getDirEntry(new SVNUrl(thisTest.getUrl()+"/A"), SVNRevision.HEAD);
         assertNotNull(entry);
+        assertEquals(SVNNodeKind.DIR, entry.getNodeKind());
+        assertEquals(0, entry.getSize());
+        assertEquals("A", entry.getPath());
+        assertEquals(TEST_USER, entry.getLastCommitAuthor());
+        assertNotNull(entry.getLastChangedDate());
         
         // then of a file
         entry = client.getDirEntry(new SVNUrl(thisTest.getUrl()+"/A/mu"), SVNRevision.HEAD);
         assertNotNull(entry);
+        assertEquals(SVNNodeKind.FILE, entry.getNodeKind());
+        assertEquals("mu", entry.getPath());
+        assertEquals(TEST_USER, entry.getLastCommitAuthor());
+        assertNotNull(entry.getLastChangedDate());
     }
     
     public void testGetDirEntryFile() throws Throwable {
@@ -80,9 +90,19 @@ public class LsTest extends SVNTest {
         // directory
         entry = client.getDirEntry(new File(thisTest.getWCPath()+"/A"), SVNRevision.HEAD);
         assertNotNull(entry);
+        assertEquals(SVNNodeKind.DIR, entry.getNodeKind());
+        assertEquals(0, entry.getSize());
+        assertEquals("A", entry.getPath());
+        assertEquals(TEST_USER, entry.getLastCommitAuthor());
+        assertNotNull(entry.getLastChangedDate());
         
         // file
         entry = client.getDirEntry(new File(thisTest.getWCPath()+"/A/mu"), SVNRevision.HEAD);
         assertNotNull(entry);
+        assertEquals(SVNNodeKind.FILE, entry.getNodeKind());
+        assertEquals(new File(thisTest.getWCPath()+"/A/mu").length(), entry.getSize());
+        assertEquals("mu", entry.getPath());
+        assertEquals(TEST_USER, entry.getLastCommitAuthor());
+        assertNotNull(entry.getLastChangedDate());
     }
 }
