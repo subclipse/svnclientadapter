@@ -22,7 +22,6 @@ import org.tigris.subversion.svnclientadapter.testUtils.OneTest;
 import org.tigris.subversion.svnclientadapter.testUtils.SVNTest;
 
 public class BlameTest extends SVNTest {
-	private static final String ANOTHER_USER = "Mr.Spock";
 
     private void prepareTestFile(File mu, OneTest thisTest) throws FileNotFoundException, SVNClientException {
         PrintWriter pw = new PrintWriter(new FileOutputStream(mu, true));
@@ -37,7 +36,7 @@ public class BlameTest extends SVNTest {
         pw.println("some new text in line3");
         pw.close();
         client.commit(new File[] {mu}, "log msg3", true);
-        client.setUsername(ANOTHER_USER);
+        client.setUsername(ANOTHER_TEST_USER);
         pw = new PrintWriter(new FileOutputStream(mu, true));
         pw.println("some new line4");
         pw.close();
@@ -65,7 +64,7 @@ public class BlameTest extends SVNTest {
         assertEquals("blamed author does not match", TEST_USER ,annotations.getAuthor(0));
         assertEquals("blamed author does not match", TEST_USER ,annotations.getAuthor(1));
         assertEquals("blamed author does not match", TEST_USER ,annotations.getAuthor(2));
-        assertEquals("blamed author does not match", ANOTHER_USER ,annotations.getAuthor(3));
+        assertEquals("blamed author does not match", ANOTHER_TEST_USER ,annotations.getAuthor(3));
         //check text
         assertEquals("blamed text does not match", "some new text in line1" ,annotations.getLine(0).trim());
         assertEquals("blamed text does not match", "some text in line2" ,annotations.getLine(1).trim());
@@ -91,7 +90,7 @@ public class BlameTest extends SVNTest {
         assertEquals("blamed author does not match", TEST_USER ,annotations.getAuthor(0));
         assertEquals("blamed author does not match", null ,annotations.getAuthor(1));
         assertEquals("blamed author does not match", TEST_USER ,annotations.getAuthor(2));
-        assertEquals("blamed author does not match", ANOTHER_USER ,annotations.getAuthor(3));
+        assertEquals("blamed author does not match", ANOTHER_TEST_USER ,annotations.getAuthor(3));
         //check text
         assertEquals("blamed text does not match", "some new text in line1" ,annotations.getLine(0).trim());
         assertEquals("blamed text does not match", "some text in line2" ,annotations.getLine(1).trim());

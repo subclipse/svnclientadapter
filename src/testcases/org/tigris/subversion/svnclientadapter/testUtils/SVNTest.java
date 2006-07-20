@@ -29,8 +29,10 @@ import org.tigris.subversion.svnclientadapter.javasvn.JavaSvnClientAdapterFactor
 public abstract class SVNTest extends TestCase {
     private static final Logger log = Logger.getLogger(SVNTest.class.getName());
 
+    //Don't forget to put these credentials into ./test/passwd file
     public static String TEST_USER = "cedric";
     public static String TEST_USERPASS = "cedricpass";
+	public static final String ANOTHER_TEST_USER = "Mr.Spock";
     
     protected ISVNClientAdapter client;
 
