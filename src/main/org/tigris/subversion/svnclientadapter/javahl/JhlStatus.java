@@ -130,6 +130,13 @@ public class JhlStatus implements ISVNStatus {
 		return _s.isLocked();
 	}
 
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNStatus#isSwitched()
+	 */
+	public boolean isSwitched() {
+		return _s.isSwitched();
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getPath()

@@ -176,6 +176,13 @@ class CmdLineStatusComposite  implements ISVNStatus {
 		return statusPart.isWcLocked();
 	}
 
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNStatus#isSwitched()
+	 */
+	public boolean isSwitched() {
+		return statusPart.isSwitched();
+	}
+
     /*
 	 * (non-Javadoc)
 	 * 

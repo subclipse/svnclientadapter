@@ -96,6 +96,11 @@ public interface ISVNStatus {
     boolean isWcLocked();
     
     /**
+     * @return true when the resource was switched relative to its parent.
+     */
+    boolean isSwitched();
+    
+    /**
      * @return the url of the copy source if copied, null otherwise
      */
 	SVNUrl getUrlCopiedFrom();

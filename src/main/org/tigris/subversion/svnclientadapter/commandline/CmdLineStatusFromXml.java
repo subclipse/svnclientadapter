@@ -44,6 +44,7 @@ public class CmdLineStatusFromXml extends CmdLineXmlCommand implements ISVNStatu
 	private SVNNodeKind nodeKind;
 	private boolean copied;
 	private boolean wcLocked;
+	private boolean switched;
 	private SVNUrl urlCopiedFrom;
 	private File conflictNew;
 	private File conflictOld;
@@ -87,6 +88,12 @@ public class CmdLineStatusFromXml extends CmdLineXmlCommand implements ISVNStatu
 	 */
 	public boolean isWcLocked() {
 		return wcLocked;
+	}
+	/**
+	 * @return Returns the switched.
+	 */
+	public boolean isSwitched() {
+		return switched;
 	}
 	/**
 	 * @return Returns the file.
@@ -214,6 +221,12 @@ public class CmdLineStatusFromXml extends CmdLineXmlCommand implements ISVNStatu
 	 */
 	protected void setWcLocked(boolean wcLocked) {
 		this.wcLocked = wcLocked;
+	}
+	/**
+	 * @param switched The switched to set.
+	 */
+	protected void setSwitched(boolean switched) {
+		this.switched = switched;
 	}
 	/**
 	 * @param lastCommitAuthor The lastCommitAuthor to set.
@@ -412,9 +425,8 @@ public class CmdLineStatusFromXml extends CmdLineXmlCommand implements ISVNStatu
                 status.setWcLocked((wcLockedAttr != null) && "true".equals(wcLockedAttr.getNodeValue()));
 				Node copiedAttr = wcStatusNode.getAttributes().getNamedItem("copied");
                 status.setCopied((copiedAttr != null) && "true".equals(copiedAttr.getNodeValue()));
-//				Node switchedAttr = wcStatusNode.getAttributes().getNamedItem("switched");                 
-//                boolean switched = (switchedAttr != null) && "true".equals(switchedAttr.getNodeValue());
-
+				Node switchedAttr = wcStatusNode.getAttributes().getNamedItem("switched");                 
+                status.setSwitched((switchedAttr != null) && "true".equals(switchedAttr.getNodeValue()));
 				
 				Element commitNode = getFirstNamedElement(wcStatusNode, "commit");
 				if (commitNode != null) {

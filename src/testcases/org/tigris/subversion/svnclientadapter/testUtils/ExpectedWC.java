@@ -371,8 +371,8 @@ public class ExpectedWC
                         item.workingCopyRev, tested[i].getRevision());
             Assert.assertEquals("lock status wrong for "+path,
                     item.isLocked, tested[i].isWcLocked());
-//            Assert.assertEquals("switch status wrong",
-//                    item.isSwitched, tested[i].isSwitched());
+            Assert.assertEquals("switch status wrong",
+                    item.isSwitched, tested[i].isSwitched());
             Assert.assertEquals("copied status wrong for "+path,
                     item.isCopied, tested[i].isCopied());
             Assert.assertEquals("wrong prop status in working copy for "+path,

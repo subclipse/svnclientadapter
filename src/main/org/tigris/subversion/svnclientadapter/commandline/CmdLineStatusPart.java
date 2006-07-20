@@ -42,6 +42,11 @@ abstract class CmdLineStatusPart {
 	public abstract boolean isWcLocked();
 
 	/**
+	 * @return Whether this item was switched.
+	 */
+	public abstract boolean isSwitched();
+
+	/**
 	 * @return true if the resource has a remote counter-part 
 	 */
 	public boolean hasRemote() {
@@ -79,6 +84,7 @@ abstract class CmdLineStatusPart {
 		protected File file;
 		protected char history;
 		protected boolean wcLocked;
+		protected boolean switched;
 
 		/**
 	     * here are some statusLine samples :
@@ -90,7 +96,8 @@ abstract class CmdLineStatusPart {
 			super(getTextStatus(statusLine.charAt(0)), getPropStatus(statusLine.charAt(1)));
 			wcLocked = getWcLockStatus(statusLine.charAt(2));
 			history = statusLine.charAt(3);
-			path =  statusLine.substring(STATUS_FILE_WIDTH).trim();	                
+			switched = getSwitchedStatus(statusLine.charAt(4));
+			path = statusLine.substring(STATUS_FILE_WIDTH).trim();	                
 	        file = new File(path);
 		}
 
@@ -106,6 +113,13 @@ abstract class CmdLineStatusPart {
 		 */
 		public boolean isWcLocked() {
 			return wcLocked;
+		}
+
+ 		/**
+		 * @return Whether this item was switched relative to its parent
+		 */
+		public boolean isSwitched() {
+			return switched;
 		}
 
 		/**
@@ -166,6 +180,17 @@ abstract class CmdLineStatusPart {
 			}
 		}			
 
+		private static boolean getSwitchedStatus(char statusChar) {
+			switch (statusChar) {
+				case ' ': // no switch
+					return false;
+				case 'S':
+					return true;
+				default:
+					return false;
+			}
+		}			
+
 		/**
 		 * @return The absolute path to this item.
 		 */
@@ -218,6 +243,10 @@ abstract class CmdLineStatusPart {
 
 		public boolean isWcLocked() {
 			return status.isWcLocked();
+		}
+
+		public boolean isSwitched() {
+			return status.isSwitched();
 		}
 
 	    public SVNStatusKind getRepositoryTextStatus()

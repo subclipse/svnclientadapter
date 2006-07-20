@@ -141,6 +141,13 @@ public class SVNStatusUnversioned implements ISVNStatus {
 	}
 
 	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNStatus#isSwitched()
+	 */
+	public boolean isSwitched() {
+		return false;
+	}
+
+	/* (non-Javadoc)
 	 * @see
 	 * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getNodeKind()
 	 */
