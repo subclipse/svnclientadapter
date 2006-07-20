@@ -16,6 +16,7 @@ import java.io.PrintWriter;
 
 import org.tigris.subversion.svnclientadapter.ISVNDirEntry;
 import org.tigris.subversion.svnclientadapter.SVNClientException;
+import org.tigris.subversion.svnclientadapter.SVNNodeKind;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
 import org.tigris.subversion.svnclientadapter.SVNStatusKind;
 import org.tigris.subversion.svnclientadapter.SVNUrl;
@@ -56,18 +57,14 @@ public class DeleteTest extends SVNTest {
 	    pw.print("unversioned sigma");
 	    pw.close();
 	    thisTest.getExpectedWC().addItem("A/C/sigma", "unversioned sigma");
-	    thisTest.getExpectedWC().setItemTextStatus("A/C/sigma", SVNStatusKind.UNVERSIONED);
-	    
-        // TODO : temporary removed so that test pass with javasvn
-	    // thisTest.getWc().setItemNodeKind("A/C/sigma", SVNNodeKind.UNKNOWN);
+	    thisTest.getExpectedWC().setItemTextStatus("A/C/sigma", SVNStatusKind.UNVERSIONED);	    
+	    thisTest.getExpectedWC().setItemNodeKind("A/C/sigma", SVNNodeKind.UNKNOWN);
 	
 	    // create unversioned directory A/C/Q
 	    file = new File(thisTest.getWCPath(), "A/C/Q");
 	    file.mkdir();
-	    thisTest.getExpectedWC().addItem("A/C/Q", null);
-	    
-        // TODO : temporary removed so that test pass with javasvn
-        // thisTest.getWc().setItemNodeKind("A/C/Q", SVNNodeKind.UNKNOWN);
+	    thisTest.getExpectedWC().addItem("A/C/Q", null);	    
+        thisTest.getExpectedWC().setItemNodeKind("A/C/Q", SVNNodeKind.UNKNOWN);
 	    
         thisTest.getExpectedWC().setItemTextStatus("A/C/Q", SVNStatusKind.UNVERSIONED);
 	

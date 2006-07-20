@@ -13,6 +13,7 @@ package org.tigris.subversion.svnclientadapter.basictests;
 import java.io.File;
 import java.io.FileOutputStream;
 
+import org.tigris.subversion.svnclientadapter.SVNNodeKind;
 import org.tigris.subversion.svnclientadapter.SVNStatusKind;
 import org.tigris.subversion.svnclientadapter.testUtils.OneTest;
 import org.tigris.subversion.svnclientadapter.testUtils.SVNTest;
@@ -50,10 +51,8 @@ public class AddTest extends SVNTest {
 	    thisTest.getExpectedWC().addItem("dir/foo.c", "");
 	    thisTest.getExpectedWC().setItemTextStatus("dir/foo.c",SVNStatusKind.ADDED);
 	    thisTest.getExpectedWC().addItem("dir/foo.o", "");
-	    thisTest.getExpectedWC().setItemTextStatus("dir/foo.o",SVNStatusKind.IGNORED);
-	
-        // disabled so that javasvn tests pass 
-//        thisTest.getWc().setItemNodeKind("dir/foo.o", SVNNodeKind.UNKNOWN);
+	    thisTest.getExpectedWC().setItemTextStatus("dir/foo.o",SVNStatusKind.IGNORED);	
+        thisTest.getExpectedWC().setItemNodeKind("dir/foo.o", SVNNodeKind.UNKNOWN);
 	
 	    // test the working copy status
 	    thisTest.checkStatusesExpectedWC();

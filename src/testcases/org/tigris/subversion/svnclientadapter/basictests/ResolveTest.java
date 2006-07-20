@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
 
+import org.tigris.subversion.svnclientadapter.SVNNodeKind;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
 import org.tigris.subversion.svnclientadapter.SVNStatusKind;
 import org.tigris.subversion.svnclientadapter.testUtils.OneTest;
@@ -76,15 +77,15 @@ public class ResolveTest extends SVNTest {
         backupTest.getExpectedWC().setItemContent("A/mu", muContent);
         backupTest.getExpectedWC().setItemTextStatus("A/mu", SVNStatusKind.CONFLICTED);
         backupTest.getExpectedWC().addItem("A/mu.r1", "");
-//        backupTest.getWc().setItemNodeKind("A/mu.r1", SVNNodeKind.UNKNOWN);
+        backupTest.getExpectedWC().setItemNodeKind("A/mu.r1", SVNNodeKind.UNKNOWN);
         backupTest.getExpectedWC().setItemTextStatus("A/mu.r1",
                 SVNStatusKind.UNVERSIONED);
         backupTest.getExpectedWC().addItem("A/mu.r2", "");
-//        backupTest.getWc().setItemNodeKind("A/mu.r2", SVNNodeKind.UNKNOWN);
+        backupTest.getExpectedWC().setItemNodeKind("A/mu.r2", SVNNodeKind.UNKNOWN);
         backupTest.getExpectedWC().setItemTextStatus("A/mu.r2",
                 SVNStatusKind.UNVERSIONED);
         backupTest.getExpectedWC().addItem("A/mu.mine", "");
-//        backupTest.getWc().setItemNodeKind("A/mu.mine", SVNNodeKind.UNKNOWN);
+        backupTest.getExpectedWC().setItemNodeKind("A/mu.mine", SVNNodeKind.UNKNOWN);
         backupTest.getExpectedWC().setItemTextStatus("A/mu.mine",
                 SVNStatusKind.UNVERSIONED);
 
@@ -102,17 +103,16 @@ public class ResolveTest extends SVNTest {
         backupTest.getExpectedWC().setItemTextStatus("A/D/G/rho",
                 SVNStatusKind.CONFLICTED);
         backupTest.getExpectedWC().addItem("A/D/G/rho.r1", "");
-//        backupTest.getWc().setItemNodeKind("A/D/G/rho.r1", SVNNodeKind.UNKNOWN);
+        backupTest.getExpectedWC().setItemNodeKind("A/D/G/rho.r1", SVNNodeKind.UNKNOWN);
         backupTest.getExpectedWC().setItemTextStatus("A/D/G/rho.r1",
                 SVNStatusKind.UNVERSIONED);
         backupTest.getExpectedWC().addItem("A/D/G/rho.r2", "");
-//        backupTest.getWc().setItemNodeKind("A/D/G/rho.r2", SVNNodeKind.UNKNOWN);
+        backupTest.getExpectedWC().setItemNodeKind("A/D/G/rho.r2", SVNNodeKind.UNKNOWN);
         backupTest.getExpectedWC().setItemTextStatus("A/D/G/rho.r2",
                 SVNStatusKind.UNVERSIONED);
         backupTest.getExpectedWC().addItem("A/D/G/rho.mine", "");
 
-        // commented so that svn test pass
-        //        backupTest.getWc().setItemNodeKind("A/D/G/rho.mine", SVNNodeKind.UNKNOWN);
+        backupTest.getExpectedWC().setItemNodeKind("A/D/G/rho.mine", SVNNodeKind.UNKNOWN);
         backupTest.getExpectedWC().setItemTextStatus("A/D/G/rho.mine",
                 SVNStatusKind.UNVERSIONED);
 

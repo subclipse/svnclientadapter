@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
 
+import org.tigris.subversion.svnclientadapter.SVNNodeKind;
 import org.tigris.subversion.svnclientadapter.SVNStatusKind;
 import org.tigris.subversion.svnclientadapter.testUtils.FileUtils;
 import org.tigris.subversion.svnclientadapter.testUtils.OneTest;
@@ -74,7 +75,7 @@ public class RevertTest extends SVNTest {
 	    client.revert(new File(thisTest.getWCPath()+"/A/D/H/zeta"), false);
 	    thisTest.getExpectedWC().setItemTextStatus("A/D/H/zeta",
 	            SVNStatusKind.UNVERSIONED);
-//	    thisTest.getWc().setItemNodeKind("A/D/H/zeta", SVNNodeKind.UNKNOWN);
+	    thisTest.getExpectedWC().setItemNodeKind("A/D/H/zeta", SVNNodeKind.UNKNOWN);
 	
 	    // test the status of the working copy
 	    thisTest.checkStatusesExpectedWC();

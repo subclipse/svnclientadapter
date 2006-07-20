@@ -29,20 +29,16 @@ public class SwitchTest extends SVNTest {
 	    // create the test working copy
 	    OneTest thisTest = new OneTest("basicSwitch",getGreekTestConfig());
 
-        /*
-         * disabled so that test pass with javasvn
-         * 
 	    // switch iota to A/D/gamma
 	    File iotaPath = new File(thisTest.getWCPath() + "/iota");
 	    SVNUrl gammaUrl = new SVNUrl(thisTest.getUrl() + "/A/D/gamma");
-	    thisTest.getWc().setItemContent("iota",
-	            getGreekWC().getItemContent("A/D/gamma"));
-	    thisTest.getWc().setItemIsSwitched("iota", true);
+	    thisTest.getExpectedWC().setItemContent("iota",
+	    		thisTest.getExpectedWC().getItemContent("A/D/gamma"));
+	    thisTest.getExpectedWC().setItemIsSwitched("iota", true);
 	    client.switchToUrl(iotaPath, gammaUrl, SVNRevision.HEAD, true);
 	
 	    // check the status of the working copy
-	    thisTest.checkStatus();
-	*/
+	    thisTest.checkStatusesExpectedWC();
     
 	    // switch A/D/H to /A/D/G
 	    File adhPath = new File(thisTest.getWCPath() + "/A/D/H");
