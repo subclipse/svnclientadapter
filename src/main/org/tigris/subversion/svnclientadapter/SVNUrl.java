@@ -121,7 +121,9 @@ public class SVNUrl {
         if (!protocol.equalsIgnoreCase(FILE_PROTOCOL)) {
 	        String hostPort = parsed.substring(0,i).toLowerCase();
 	        String[] hostportArray = StringUtils.split(hostPort,':');
-	        if (hostportArray.length == 2) {
+	        if (hostportArray.length == 0) {
+	        	throw new MalformedURLException("Invalid svn url :"+svnUrl);                    
+	        } else if (hostportArray.length == 2) {
 	            this.host = hostportArray[0];
 	            try {
 	                this.port = Integer.parseInt(hostportArray[1]);

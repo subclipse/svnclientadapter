@@ -35,7 +35,20 @@ public class SVNUrlTest extends TestCase
 
         }
     }
-    
+
+   public void testNullSegmentsThrowsInvalidURLException() throws Exception
+   {
+        try
+        {
+            new SVNUrl("http:///");
+            fail("should have thrown malformed url exeption.");
+        }
+        catch (MalformedURLException e)
+        {
+
+        }
+    }
+
     public void testHostPortUrl() throws Exception {
         SVNUrl svnurl= new SVNUrl("https://svn.collab.net");
         assertEquals("https://svn.collab.net",svnurl.toString());
