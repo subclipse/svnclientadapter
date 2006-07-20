@@ -22,7 +22,44 @@ import org.tigris.subversion.svnclientadapter.testUtils.OneTest;
 import org.tigris.subversion.svnclientadapter.testUtils.SVNTest;
 
 public class CmdLineBugRegressionTest extends SVNTest {
-	
+
+	/**
+	 * Test the issue 135
+	 * @throws Exception
+	 * @see <a href="http://subclipse.tigris.org/issues/show_bug.cgi?id=135">Issue 135</a>
+	 */
+	public void testIssue135() throws Exception
+	{
+        client = SVNClientAdapterFactory.createSVNClient(CmdLineClientAdapterFactory.COMMANDLINE_CLIENT);
+        client.setUsername("Cédric");
+        client.setPassword("cédricPass");
+
+		String theLogMessage = "A log message";
+		
+        // build the test setup
+        OneTest thisTest = new OneTest("testUTF8", getGreekTestConfig());
+
+        // modify file A/mu
+        File mu = new File(thisTest.getWorkingCopy(), "A/mu");
+        PrintWriter muPW = new PrintWriter(new FileOutputStream(mu, true));
+        muPW.print("appended mu text");
+        muPW.close();
+        thisTest.getExpectedWC().setItemWorkingCopyRevision("A/mu", 2);
+        thisTest.getExpectedWC().setItemContent("A/mu",
+                thisTest.getExpectedWC().getItemContent("A/mu") + "appended mu text");
+
+        // commit the changes
+        assertEquals("wrong revision number from commit",2,
+                client.commit(new File[]{thisTest.getWCPath()}, theLogMessage,
+                        true));
+
+	}
+
+	/**
+	 * Test the issue 137
+	 * @throws Exception
+	 * @see <a href="http://subclipse.tigris.org/issues/show_bug.cgi?id=137">Issue 137</a>
+	 */
 	public void testIssue137() throws Exception
 	{
         client = SVNClientAdapterFactory.createSVNClient(CmdLineClientAdapterFactory.COMMANDLINE_CLIENT);
