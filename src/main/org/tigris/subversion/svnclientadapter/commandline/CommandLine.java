@@ -152,6 +152,14 @@ abstract class CommandLine {
 	
 	private String[] getLocaleVariables()
 	{
+		String LC_ALL = CmdLineClientAdapter.getEnvironmentVariable("LC_ALL");
+		if ((LC_ALL == null) || (LC_ALL.length() == 0)) {
+			LC_ALL = CmdLineClientAdapter.getEnvironmentVariable("LANG");
+			if (LC_ALL == null) {
+				LC_ALL="";
+			}
+		}
+		
 		final String[] lcVarNames = new String[] {			
 				"LC_CTYPE", 
 				"LC_NUMERIC",
@@ -167,9 +175,7 @@ abstract class CommandLine {
 		List variables = new ArrayList(lcVarNames.length);
 		for (int i = 0; i < lcVarNames.length; i++) {
 			String varValue = CmdLineClientAdapter.getEnvironmentVariable(lcVarNames[i]);
-			if (varValue != null) {
-				variables.add(lcVarNames[i] + "=" + varValue);
-			}
+			variables.add(lcVarNames[i] + "=" + ((varValue != null) ? varValue : LC_ALL));
 		}
 		return (String[]) variables.toArray(new String[variables.size()]);
 	}
