@@ -20,21 +20,37 @@ import org.tigris.subversion.svnclientadapter.SVNRevision;
 import org.tigris.subversion.svnclientadapter.commandline.CmdLineClientAdapterFactory;
 import org.tigris.subversion.svnclientadapter.testUtils.OneTest;
 import org.tigris.subversion.svnclientadapter.testUtils.SVNTest;
+import org.tigris.subversion.svnclientadapter.testUtils.TestsConfig;
 
 public class CmdLineBugRegressionTest extends SVNTest {
 
+    protected void setUp() throws Exception {
+        TestsConfig.getTestsConfig().clientType = "commandline";
+        TestsConfig.getTestsConfig().adminClientType = "commandline";
+        super.setUp();
+    }
+    
 	/**
 	 * Test the issue 135
 	 * @throws Exception
 	 * @see <a href="http://subclipse.tigris.org/issues/show_bug.cgi?id=135">Issue 135</a>
 	 */
 	public void testIssue135() throws Exception
-	{
+	{		
+		final byte[] cedricInUTF8bytes = new byte[] {67, -61, -87, 100, 114, 105, 99};
+		final String cedricIn8859_1 = "Cédric";  //ISO 8859-1
+		final String userName = new String(cedricInUTF8bytes, "UTF-8");
+		final String passwd = "cedricPass";
+		
+		assertEquals(cedricIn8859_1, userName);
+		
         client = SVNClientAdapterFactory.createSVNClient(CmdLineClientAdapterFactory.COMMANDLINE_CLIENT);
-        client.setUsername("Cédric");
-        client.setPassword("cédricPass");
+        client.setUsername(userName);
+        client.setPassword(passwd);
 
-		String theLogMessage = "A log message";
+        final byte[] utf8Message = new byte[] {65, 110, 32, 85, 84, 70, 45, 56, 32, 108, 111, 103, 32, 109, 101, 115, 115, 97, 103, 101, 58, 32, 39, -60, -66, 39, 32, 45, 32, 39, -48, -106, 39, 32, 45, 32, 39, -38, -80, 39, 32};
+        //String theLogMessage = new String(utf8Message, 0, utf8Message.length, "UTF-8");       
+        String theLogMessage = "Log message";
 		
         // build the test setup
         OneTest thisTest = new OneTest("testUTF8", getGreekTestConfig());
@@ -53,6 +69,9 @@ public class CmdLineBugRegressionTest extends SVNTest {
                 client.commit(new File[]{thisTest.getWCPath()}, theLogMessage,
                         true));
 
+        ISVNLogMessage logMmsg = client.getLogMessages(mu, SVNRevision.getRevision("HEAD"), SVNRevision.getRevision("HEAD"))[0];
+        assertEquals(userName, logMmsg.getAuthor());
+        assertEquals(theLogMessage, logMmsg.getMessage());
 	}
 
 	/**

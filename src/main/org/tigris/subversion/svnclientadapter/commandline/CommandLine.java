@@ -17,6 +17,7 @@ import java.io.InputStreamReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
 
 /**
@@ -111,18 +112,23 @@ abstract class CommandLine {
 		final String path = CmdLineClientAdapter.getEnvironmentVariable("PATH");
 		final String systemRoot = CmdLineClientAdapter.getEnvironmentVariable("SystemRoot");
 		final String aprIconv = CmdLineClientAdapter.getEnvironmentVariable("APR_ICONV_PATH");
-		int i = 2;
+		int i = 3;
 		if (path != null)
 			i++;
 		if (systemRoot != null)
 			i++;
 		if (aprIconv != null)
 			i++;
-		String[] env = new String[i];
+		String[] lcVars = getLocaleVariables();
+		String[] env = new String[i + lcVars.length];
 		i = 0;
-		env[i] = "LANG=C";
+		//Clear the LC_ALL, we're going to override the LC_MESSAGES and LC_TIME
+		env[i] = "LC_ALL=";
 		i++;
-		env[i] = "LC_ALL=C";
+		//Set the LC_MESSAGES to "C" to avoid translated svn output. (We're parsing the english one)
+		env[i] = "LC_MESSAGES=C";
+		i++;
+		env[i] = "LC_TIME=C";
 		i++;
 		if (path != null) {
 			env[i] = "PATH=" + path;
@@ -136,7 +142,36 @@ abstract class CommandLine {
 			env[i] = "APR_ICONV_PATH=" + aprIconv;
 			i++;
 		}
+		//Add the remaining LC vars
+		for (int j = 0; j < lcVars.length; j++) {
+			env[i] = lcVars[j];
+			i++;
+		}
 		return env;
+	}
+	
+	private String[] getLocaleVariables()
+	{
+		final String[] lcVarNames = new String[] {			
+				"LC_CTYPE", 
+				"LC_NUMERIC",
+				"LC_COLLATE",
+				"LC_MONETARY",
+				"LC_PAPER",
+				"LC_NAME",
+				"LC_ADDRESS",
+				"LC_TELEPHONE",
+				"LC_MEASUREMENT",
+				"LC_IDENTIFICATION" };
+		
+		List variables = new ArrayList(lcVarNames.length);
+		for (int i = 0; i < lcVarNames.length; i++) {
+			String varValue = CmdLineClientAdapter.getEnvironmentVariable(lcVarNames[i]);
+			if (varValue != null) {
+				variables.add(lcVarNames[i] + "=" + varValue);
+			}
+		}
+		return (String[]) variables.toArray(new String[variables.size()]);
 	}
 	
     /**
