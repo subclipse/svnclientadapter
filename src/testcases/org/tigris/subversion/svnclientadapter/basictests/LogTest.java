@@ -81,4 +81,40 @@ public class LogTest extends SVNTest {
         assertEquals("wrong number of chang pathes", 1, cp.length);
     }
 
+    //TODO enable this test when ISVNClientAdapter#getLogMessages(SVNUrl, java.lang.String[], SVNRevision, SVNRevision, boolean, boolean) will be implemented
+//    public void testBasicLogUrlMultiPathMessage() throws Exception {
+//        // create the working copy
+//        OneTest thisTest = new OneTest("basicLogUrlMultiPathMessages",
+//                getGreekTestConfig());
+//
+//        // modify file iota
+//        File iota = new File(thisTest.getWorkingCopy(), "iota");
+//        PrintWriter iotaPW = new PrintWriter(new FileOutputStream(iota, true));
+//        iotaPW.print("new appended text for iota");
+//        iotaPW.close();
+//
+//        assertEquals("wrong revision number from commit", 2, client.commit(
+//                new File[] { thisTest.getWCPath() }, "iota modified", true));
+//
+//        // modify file mu
+//        File mu = new File(thisTest.getWorkingCopy(), "A/mu");
+//        PrintWriter muPW = new PrintWriter(new FileOutputStream(mu, true));
+//        muPW.print("new appended text for mu");
+//        muPW.close();
+//
+//        assertEquals("wrong revision number from commit", 3, client.commit(
+//                new File[] { thisTest.getWCPath() }, "mu modified", true));
+//
+//        ISVNLogMessage lm[] = client.getLogMessages(thisTest.getUrl(),
+//                new String[] { "iota", "A/mu" }, new SVNRevision.Number(1), SVNRevision.HEAD, false, true);
+//        assertEquals("wrong number of objects", 3, lm.length);
+//        assertEquals("wrong message", "Log Message", lm[0].getMessage());
+//        assertEquals("wrong message", "iota modified", lm[1].getMessage());
+//        assertEquals("wrong message", "mu modified", lm[2].getMessage());
+//        ISVNLogMessageChangePath cp[] = lm[1].getChangedPaths();
+//        assertEquals("wrong number of chang pathes", 1, cp.length);
+//        cp = lm[2].getChangedPaths();
+//        assertEquals("wrong number of chang pathes", 1, cp.length);
+//    }
+
 }

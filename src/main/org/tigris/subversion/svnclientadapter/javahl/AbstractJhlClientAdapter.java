@@ -776,34 +776,6 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
         }         
     } 
 	
-	/* (non-Javadoc)
-	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getLogMessages(org.tigris.subversion.svnclientadapter.SVNUrl, org.tigris.subversion.svnclientadapter.SVNRevision, org.tigris.subversion.svnclientadapter.SVNRevision, boolean)
-	 */
-	public ISVNLogMessage[] getLogMessages(
-		SVNUrl url,
-		SVNRevision revisionStart,
-		SVNRevision revisionEnd,
-		boolean fetchChangePath)
-		throws SVNClientException {
-		String target = url.toString();;
-		notificationHandler.setBaseDir();
-        return this.getLogMessages(target, revisionStart, revisionEnd, false, fetchChangePath, 0);
-	} 
-    
-	/* (non-Javadoc)
-	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getLogMessages(java.io.File, org.tigris.subversion.svnclientadapter.SVNRevision, org.tigris.subversion.svnclientadapter.SVNRevision, boolean)
-	 */
-	public ISVNLogMessage[] getLogMessages(
-		File path,
-		SVNRevision revisionStart,
-		SVNRevision revisionEnd,
-		boolean fetchChangePath)
-		throws SVNClientException {
-		String target = fileToSVNPath(path, false);
-		notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
-	    return this.getLogMessages(target, revisionStart, revisionEnd, false, fetchChangePath, 0);
-	}    
-
 	/**
 	 * @param logLevel
 	 * @param filePath
@@ -1621,7 +1593,77 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 	public boolean isAdminDirectory(String name) {
 		return svnClient.isAdminDirectory(name);
 	}
-	
+
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getLogMessages(java.io.File, org.tigris.subversion.svnclientadapter.SVNRevision, org.tigris.subversion.svnclientadapter.SVNRevision, boolean)
+	 */
+	public ISVNLogMessage[] getLogMessages(File path,
+			SVNRevision revisionStart, SVNRevision revisionEnd,
+			boolean fetchChangePath) throws SVNClientException {
+		return this.getLogMessages(path, revisionStart, revisionEnd, false,
+				fetchChangePath);
+	}    
+
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getLogMessages(java.io.File, org.tigris.subversion.svnclientadapter.SVNRevision, org.tigris.subversion.svnclientadapter.SVNRevision, boolean, boolean)
+     */
+    public ISVNLogMessage[] getLogMessages(File path,
+			SVNRevision revisionStart, SVNRevision revisionEnd,
+			boolean stopOnCopy, boolean fetchChangePath)
+			throws SVNClientException {
+		return this.getLogMessages(path, revisionStart, revisionEnd,
+				stopOnCopy, fetchChangePath, 0);
+	}
+
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getLogMessages(java.io.File, org.tigris.subversion.svnclientadapter.SVNRevision, org.tigris.subversion.svnclientadapter.SVNRevision, boolean, boolean, long)
+     */
+    public ISVNLogMessage[] getLogMessages(File path,
+			SVNRevision revisionStart, SVNRevision revisionEnd,
+			boolean stopOnCopy, boolean fetchChangePath, long limit)
+			throws SVNClientException {
+		String target = fileToSVNPath(path, false);
+		notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
+		return this.getLogMessages(target, revisionStart, revisionEnd,
+				stopOnCopy, fetchChangePath, limit);
+	}
+           
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getLogMessages(org.tigris.subversion.svnclientadapter.SVNUrl, org.tigris.subversion.svnclientadapter.SVNRevision, org.tigris.subversion.svnclientadapter.SVNRevision, boolean)
+	 */
+	public ISVNLogMessage[] getLogMessages(SVNUrl url,
+			SVNRevision revisionStart, SVNRevision revisionEnd,
+			boolean fetchChangePath) throws SVNClientException {
+		String target = url.toString();
+		notificationHandler.setBaseDir();
+		return this.getLogMessages(target, revisionStart, revisionEnd, false,
+				fetchChangePath, 0);
+	} 
+
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getLogMessages(org.tigris.subversion.svnclientadapter.SVNUrl, org.tigris.subversion.svnclientadapter.SVNRevision, org.tigris.subversion.svnclientadapter.SVNRevision, org.tigris.subversion.svnclientadapter.SVNRevision, boolean, boolean, long)
+     */
+    public ISVNLogMessage[] getLogMessages(SVNUrl url, SVNRevision pegRevision,
+            SVNRevision revisionStart, SVNRevision revisionEnd,
+            boolean stopOnCopy, boolean fetchChangePath, long limit)
+            throws SVNClientException {
+    	//TODO pegRevision is ignored !
+			String target = url.toString();
+			notificationHandler.setBaseDir();
+	        return this.getLogMessages(target, revisionStart, revisionEnd, stopOnCopy, fetchChangePath, limit);
+    }
+
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getLogMessages(org.tigris.subversion.svnclientadapter.SVNUrl, java.lang.String[], org.tigris.subversion.svnclientadapter.SVNRevision, org.tigris.subversion.svnclientadapter.SVNRevision, boolean, boolean)
+	 */
+	public ISVNLogMessage[] getLogMessages(final SVNUrl url,
+			final String[] paths, SVNRevision revStart, SVNRevision revEnd,
+			boolean stopOnCopy, boolean fetchChangePath)
+			throws SVNClientException {
+		notImplementedYet();
+		return null;
+	}
+
     private ISVNLogMessage[] getLogMessages(String target,
             SVNRevision revisionStart, SVNRevision revisionEnd,
             boolean stopOnCopy, boolean fetchChangePath, long limit)
@@ -1655,42 +1697,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 			throw new SVNClientException(e);
 		}
     }
-    
-    /* (non-Javadoc)
-     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getLogMessages(java.io.File, org.tigris.subversion.svnclientadapter.SVNRevision, org.tigris.subversion.svnclientadapter.SVNRevision, boolean, boolean, long)
-     */
-    public ISVNLogMessage[] getLogMessages(File path,
-            SVNRevision revisionStart, SVNRevision revisionEnd,
-            boolean stopOnCopy, boolean fetchChangePath, long limit)
-            throws SVNClientException {
-			String target = fileToSVNPath(path, false);
-			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
-	        return this.getLogMessages(target, revisionStart, revisionEnd, stopOnCopy, fetchChangePath, limit);
-    }
-    
-    /* (non-Javadoc)
-     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getLogMessages(org.tigris.subversion.svnclientadapter.SVNUrl, org.tigris.subversion.svnclientadapter.SVNRevision, org.tigris.subversion.svnclientadapter.SVNRevision, org.tigris.subversion.svnclientadapter.SVNRevision, boolean, boolean, long)
-     */
-    public ISVNLogMessage[] getLogMessages(SVNUrl url, SVNRevision pegRevision,
-            SVNRevision revisionStart, SVNRevision revisionEnd,
-            boolean stopOnCopy, boolean fetchChangePath, long limit)
-            throws SVNClientException {
-			String target = url.toString();;
-			notificationHandler.setBaseDir();
-	        return this.getLogMessages(target, revisionStart, revisionEnd, stopOnCopy, fetchChangePath, limit);
-    }
-    
-    /* (non-Javadoc)
-     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getLogMessages(java.io.File, org.tigris.subversion.svnclientadapter.SVNRevision, org.tigris.subversion.svnclientadapter.SVNRevision, boolean, boolean)
-     */
-    public ISVNLogMessage[] getLogMessages(File path,
-            SVNRevision revisionStart, SVNRevision revisionEnd,
-            boolean stopOnCopy, boolean fetchChangePath)
-            throws SVNClientException {
-		String target = fileToSVNPath(path, false);
-		notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
-        return this.getLogMessages(target, revisionStart, revisionEnd, stopOnCopy, fetchChangePath, 0);
-    }
+
     
     /* (non-Javadoc)
      * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#relocate(java.lang.String, java.lang.String, java.lang.String, boolean)

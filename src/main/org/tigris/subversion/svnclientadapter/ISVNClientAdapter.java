@@ -462,6 +462,22 @@ public interface ISVNClientAdapter {
 		throws SVNClientException;
 	
 	/**
+	 * Get the log messages for a set paths and revision(s)
+	 * @param url
+	 * @param paths
+	 * @param revStart
+	 * @param revEnd
+	 * @param stopOnCopy
+	 * @param fetchChangePath
+	 * @return The list of log messages.
+	 * @throws SVNClientException
+	 */
+	public ISVNLogMessage[] getLogMessages(final SVNUrl url, final String [] paths,
+			SVNRevision revStart, SVNRevision revEnd,
+			boolean stopOnCopy, boolean fetchChangePath)
+	throws SVNClientException;
+    
+	/**
 	 * Get the log messages for a set of revision(s)
 	 * @param path
 	 * @param revisionStart

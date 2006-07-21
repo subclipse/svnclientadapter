@@ -483,25 +483,31 @@ public class SvnCommandLine extends CommandLine {
 	 * <p> The difference to the methode log is the parameter -v
 	 * 
 	 * @param target Local path or URL.
+         * @param paths list of paths relative to target, may be null 
 	 * @param revision Optional revision range to get log
 	 *   messages from.
 	 */
-	byte[] logVerbose(String target, String revision, boolean stopOnCopy, long limit ) throws CmdLineException {
+	byte[] logVerbose(String target, String [] paths, String revision, boolean stopOnCopy, long limit ) throws CmdLineException {
         setCommand(ISVNNotifyListener.Command.LOG, false);		
-		ArrayList args = new ArrayList();
-		args.add("log");
-		args.add("-r");
-		args.add(validRev(revision));
-		args.add(target);
-		args.add("--xml");
-		args.add("-v");
-		if (stopOnCopy)
-		    args.add("--stop-on-copy");
-		if (limit > 0) {
-		    args.add("--limit");
-		    args.add(Long.toString(limit));
-		}
-		addAuthInfo(args);
+        ArrayList args = new ArrayList();
+        args.add("log");
+        args.add("-r");
+        args.add(validRev(revision));
+        args.add(target);
+        if (paths != null) {
+            for (int i = 0; i < paths.length; i++) {
+                args.add(paths[i]);
+            }
+        }
+        args.add("--xml");
+        args.add("-v");
+        if (stopOnCopy)
+            args.add("--stop-on-copy");
+        if (limit > 0) {
+            args.add("--limit");
+            args.add(Long.toString(limit));
+        }
+        addAuthInfo(args);
         addConfigInfo(args);
         return execBytes(args, true);
 	}
