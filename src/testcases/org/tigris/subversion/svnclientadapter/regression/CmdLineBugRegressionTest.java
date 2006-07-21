@@ -38,17 +38,18 @@ public class CmdLineBugRegressionTest extends SVNTest {
 	public void testIssue135() throws Exception
 	{		
 		final byte[] cedricInUTF8bytes = new byte[] {67, -61, -87, 100, 114, 105, 99};
-		final String cedricIn8859_1 = "Cédric";  //ISO 8859-1
 		final String userName = new String(cedricInUTF8bytes, "UTF-8");
 		final String passwd = "cedricPass";
 		
-		assertEquals(cedricIn8859_1, userName);
+		//Just check that String(, charset) creates proper local string (windows only)
+		//final String cedricIn8859_1 = "Cédric";  //ISO 8859-1
+		//assertEquals(cedricIn8859_1, userName);
 		
         client = SVNClientAdapterFactory.createSVNClient(CmdLineClientAdapterFactory.COMMANDLINE_CLIENT);
         client.setUsername(userName);
         client.setPassword(passwd);
 
-        final byte[] utf8Message = new byte[] {65, 110, 32, 85, 84, 70, 45, 56, 32, 108, 111, 103, 32, 109, 101, 115, 115, 97, 103, 101, 58, 32, 39, -60, -66, 39, 32, 45, 32, 39, -48, -106, 39, 32, 45, 32, 39, -38, -80, 39, 32};
+        //final byte[] utf8Message = new byte[] {65, 110, 32, 85, 84, 70, 45, 56, 32, 108, 111, 103, 32, 109, 101, 115, 115, 97, 103, 101, 58, 32, 39, -60, -66, 39, 32, 45, 32, 39, -48, -106, 39, 32, 45, 32, 39, -38, -80, 39, 32};
         //String theLogMessage = new String(utf8Message, 0, utf8Message.length, "UTF-8");       
         String theLogMessage = "Log message";
 		
