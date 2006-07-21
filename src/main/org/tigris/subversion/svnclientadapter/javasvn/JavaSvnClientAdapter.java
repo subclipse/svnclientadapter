@@ -13,17 +13,15 @@ package org.tigris.subversion.svnclientadapter.javasvn;
 import java.io.File;
 
 import org.tigris.subversion.javahl.ClientException;
-import org.tigris.subversion.svnclientadapter.ISVNClientAdapter;
 import org.tigris.subversion.svnclientadapter.ISVNNotifyListener;
 import org.tigris.subversion.svnclientadapter.ISVNPromptUserPassword;
 import org.tigris.subversion.svnclientadapter.ISVNStatus;
-import org.tigris.subversion.svnclientadapter.SVNClientAdapterFactory;
 import org.tigris.subversion.svnclientadapter.SVNClientException;
 import org.tigris.subversion.svnclientadapter.SVNStatusUnversioned;
-import org.tigris.subversion.svnclientadapter.commandline.CmdLineClientAdapterFactory;
 import org.tigris.subversion.svnclientadapter.javahl.AbstractJhlClientAdapter;
-import org.tigris.subversion.svnclientadapter.javahl.JhlClientAdapterFactory;
 import org.tigris.subversion.svnclientadapter.javahl.JhlNotificationHandler;
+import org.tmatesoft.svn.core.SVNException;
+import org.tmatesoft.svn.core.io.SVNRepositoryFactory;
 import org.tmatesoft.svn.core.javahl.SVNClientImpl;
 
 /**
@@ -35,8 +33,6 @@ import org.tmatesoft.svn.core.javahl.SVNClientImpl;
  */
 public class JavaSvnClientAdapter extends AbstractJhlClientAdapter {
 
-    private ISVNClientAdapter svnAdmin;
-    
     public JavaSvnClientAdapter() {
         svnClient = SVNClientImpl.newInstance();
         notificationHandler = new JhlNotificationHandler();
@@ -46,38 +42,23 @@ public class JavaSvnClientAdapter extends AbstractJhlClientAdapter {
 
     public void createRepository(File path, String repositoryType)
             throws SVNClientException {
-        getSvnAdmin();
-        if (svnAdmin == null)
-            throw new SVNClientException("Create repository method not implemented.");
-        else {
-            svnAdmin.createRepository(path, repositoryType);
-        }
-
-    }
+    	if ("bdb".equalsIgnoreCase(repositoryType))
+    		throw new SVNClientException("JavaSVN only supports fsfs repository type.");
+    	try {
+    		boolean force = false;
+    		boolean enableRevisionProperties = true;
+			SVNRepositoryFactory.createLocalRepository(path, enableRevisionProperties, force);
+		} catch (SVNException e) {
+            notificationHandler.logException(e);
+            throw new SVNClientException(e);
+		}
+     }
     
-    private void getSvnAdmin () {
-        if (svnAdmin == null) {
-	        try {
-	            JhlClientAdapterFactory.setup();
-	        } catch (SVNClientException e) {
-	        }
-	        svnAdmin = SVNClientAdapterFactory.createSVNClient(JhlClientAdapterFactory.JAVAHL_CLIENT);
-	        if (svnAdmin == null) {
-		        try {
-		            CmdLineClientAdapterFactory.setup();
-		        } catch (SVNClientException ex) {
-		        }
-	            svnAdmin = SVNClientAdapterFactory.createSVNClient(CmdLineClientAdapterFactory.COMMANDLINE_CLIENT);
-	        }
-        }
-        
-    }
+ 
     public void addPasswordCallback(ISVNPromptUserPassword callback) {
         if (callback != null) {
 	        JavaSvnPromptUserPassword prompt = new JavaSvnPromptUserPassword(callback);
 	        this.setPromptUserPassword(prompt);
-	        if (svnAdmin != null)
-	            svnAdmin.addPasswordCallback(callback);
         }
     }
     public boolean statusReturnsRemoteInfo() {
