@@ -52,6 +52,10 @@ class CmdLineInfoPart implements ISVNInfo {
 	private static final String KEY_LOCKCREATIONDATE = "Lock Created";
 	private static final String KEY_LOCKCOMMENT = "Lock Comment";
 
+	private static final String KEY_CONFLICTING_PREV_BASE = "Conflict Previous Base File";
+	private static final String KEY_CONFLICTING_PREV_WORKING = "Conflict Previous Working File";
+	private static final String KEY_CONFLICTING_CURRENT_BASE = "Conflict Current Base File";
+	
 	//Fields
 	private Map infoMap = new HashMap();
 	protected boolean unversioned = false;
@@ -68,6 +72,9 @@ class CmdLineInfoPart implements ISVNInfo {
      * Revision: 0
      * Node Kind: file
      * Schedule: add
+	 * Conflict Previous Base File: rho.r1
+	 * Conflict Previous Working File: rho
+	 * Conflict Current Base File: rho.r2
      *  
      * sample 2 :
      * ===========
@@ -78,7 +85,7 @@ class CmdLineInfoPart implements ISVNInfo {
 		load(infoString);
 	}
 
-	private CmdLineInfoPart() {
+	protected CmdLineInfoPart() {
 		super();
 	}
 
@@ -110,6 +117,9 @@ class CmdLineInfoPart implements ISVNInfo {
 		return (unversioned) ? null : SVNNodeKind.fromString(get(KEY_NODEKIND));
 	}
 
+	/**
+	 * @return path to this item
+	 */
 	public String getPath() {
 		return get(KEY_PATH);
 	}
@@ -186,6 +196,9 @@ class CmdLineInfoPart implements ISVNInfo {
 		}
 	}
     
+	/**
+	 * @return true when the info is versioned.
+	 */
     public boolean isVersioned() {
         return !unversioned;
     }
@@ -273,6 +286,33 @@ class CmdLineInfoPart implements ISVNInfo {
 		return (unversioned) ? null : get(KEY_LOCKCOMMENT);
     }
     
+	/**
+	 * @return Returns the conflictNew.
+	 */
+    public File getConflictNew() {
+    	if (unversioned) return null;
+		String path = get(KEY_CONFLICTING_CURRENT_BASE);
+		return (path != null)? new File(getFile().getParent(), path).getAbsoluteFile() : null;
+    }
+
+	/**
+	 * @return Returns the conflictOld.
+	 */
+    public File getConflictOld() {
+    	if (unversioned) return null;
+		String path = get(KEY_CONFLICTING_PREV_BASE);
+		return (path != null)? new File(getFile().getParent(), path).getAbsoluteFile() : null;
+    }
+
+	/**
+	 * @return Returns the conflictWorking.
+	 */
+    public File getConflictWorking() {
+    	if (unversioned) return null;
+		String path = get(KEY_CONFLICTING_PREV_WORKING);
+		return (path != null)? new File(getFile().getParent(), path).getAbsoluteFile() : null;
+    }
+
     /**
      * @param infoLines The text output by <code>svn info</code>.
      * @return The lines contained by <code>infoLines</code> as an
@@ -303,6 +343,11 @@ class CmdLineInfoPart implements ISVNInfo {
         return infoArray;
     }
     
+    /**
+     * Factory method. Constructs unersioned info part for the give path 
+     * @param path
+     * @return a new instance of CmdLineInfoPartUnversioned.
+     */
     public static CmdLineInfoPart createUnversioned(String path)
     {
     	return new CmdLineInfoPartUnversioned(path);
@@ -312,7 +357,7 @@ class CmdLineInfoPart implements ISVNInfo {
     {
     	private String path;
     	
-    	private CmdLineInfoPartUnversioned(String path)
+    	protected CmdLineInfoPartUnversioned(String path)
     	{
     		super();
     		this.path = path;

@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
 
+import org.tigris.subversion.svnclientadapter.ISVNStatus;
 import org.tigris.subversion.svnclientadapter.SVNNodeKind;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
 import org.tigris.subversion.svnclientadapter.SVNStatusKind;
@@ -122,6 +123,12 @@ public class ResolveTest extends SVNTest {
 
         // check the status of the backup working copy
         backupTest.checkStatusesExpectedWC();
+        
+        //check the conflicting* fields of status
+        ISVNStatus rhoStatus = client.getSingleStatus(rho);
+        assertEquals(new File(backupTest.getWorkingCopy() + "/A/D/G/rho.mine"), rhoStatus.getConflictWorking());
+        assertEquals(new File(backupTest.getWorkingCopy() + "/A/D/G/rho.r1"), rhoStatus.getConflictOld());
+        assertEquals(new File(backupTest.getWorkingCopy() + "/A/D/G/rho.r2"), rhoStatus.getConflictNew());
 
         // flag A/mu as resolved
         client.resolved(new File(backupTest.getWCPath()+"/A/mu"));

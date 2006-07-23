@@ -142,24 +142,21 @@ class CmdLineStatusComposite  implements ISVNStatus {
      * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getConflictNew()
      */
     public File getConflictNew() {
-        // TODO Auto-generated method stub
-        return null;
+        return infoPart.getConflictNew();
     }
 
     /* (non-Javadoc)
      * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getConflictOld()
      */
     public File getConflictOld() {
-        // TODO Auto-generated method stub
-        return null;
+        return infoPart.getConflictOld();
     }
 
     /* (non-Javadoc)
      * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getConflictWorking()
      */
     public File getConflictWorking() {
-        // TODO Auto-generated method stub
-        return null;
+        return infoPart.getConflictWorking();
     }
 
     /* (non-Javadoc)
