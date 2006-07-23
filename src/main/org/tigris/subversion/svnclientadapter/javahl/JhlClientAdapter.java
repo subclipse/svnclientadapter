@@ -222,7 +222,6 @@ public class JhlClientAdapter extends AbstractJhlClientAdapter {
 	    
 	}
 
-	//TODO since 1.3 I think JavaHL does return that info ...
 	public boolean statusReturnsRemoteInfo() {
 		return true;
 	}

@@ -1195,14 +1195,6 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getRepositoryRoot(org.tigris.subversion.svnclientadapter.SVNUrl, org.tigris.subversion.svnclientadapter.SVNRevision)
-	 */
-	public SVNUrl getRepositoryRoot(SVNUrl url) throws SVNClientException {
-        notImplementedYet();
-        return null;
-	}
-
-	/* (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#switchUrl(org.tigris.subversion.svnclientadapter.SVNUrl, java.io.File, org.tigris.subversion.svnclientadapter.SVNRevision, boolean)
 	 */
 	public void switchToUrl(File path, SVNUrl url, SVNRevision revision, boolean recurse) throws SVNClientException {
@@ -1348,10 +1340,7 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
     }
     
 	public boolean isAdminDirectory(String name) {
-		if (getAdminDirectoryName().equals(name) || ".svn".equals(name))
-			return true;
-		else
-			return false;
+		return getAdminDirectoryName().equals(name);
 	}
 	
     public static String getEnvironmentVariable(String var) {

@@ -172,6 +172,7 @@ public class JhlInfo implements ISVNInfo {
      * @see org.tigris.subversion.svnclientadapter.ISVNInfo#getLockCreationDate()
      */
     public Date getLockCreationDate() {
+    	//Not available in info(1)
         return null;
     }
 
@@ -179,6 +180,7 @@ public class JhlInfo implements ISVNInfo {
      * @see org.tigris.subversion.svnclientadapter.ISVNInfo#getLockOwner()
      */
     public String getLockOwner() {
+    	//Not available in info(1)
         return null;
     }
     
@@ -186,6 +188,7 @@ public class JhlInfo implements ISVNInfo {
      * @see org.tigris.subversion.svnclientadapter.ISVNInfo#getLockComment()
      */
     public String getLockComment() {
+    	//Not available in info(1)
         return null;
     }
 }

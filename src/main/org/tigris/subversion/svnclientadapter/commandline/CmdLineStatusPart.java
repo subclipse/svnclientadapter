@@ -204,11 +204,13 @@ abstract class CmdLineStatusPart {
 
 	    public SVNStatusKind getRepositoryTextStatus()
 	    {
+	    	//Not available from cmdLine's stdout
 	    	return null;
 	    }
 
 	    public SVNStatusKind getRepositoryPropStatus()
 	    {
+	    	//Not available from cmdLine's stdout
 	    	return null;
 	    }
 

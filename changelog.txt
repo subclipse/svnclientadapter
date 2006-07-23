@@ -1,10 +1,16 @@
 
+- added ISVNStatus#isWcLocked() and ISVNStatus#isSwitched()
+- removed the getRepositoryRoot() method from adapter interface
+- added logMessage(url, paths[], ...)
+- fixed the local->UTF-8 log message conversion problems
+
 * July 12, 2006
 - relicense under EPL
 
 * 0.9.35
 - removed dependency on jakarta-regexp
 - commandline now executed with locale explicitely set
+- SVNRevision.getRevision() now takes as argument also a date format
 
 * 0.9.34
 - removed dependency on commons-lang

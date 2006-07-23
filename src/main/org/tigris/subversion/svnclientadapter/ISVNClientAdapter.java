@@ -923,14 +923,6 @@ public interface ISVNClientAdapter {
 	 * @throws SVNClientException
 	 */
 	public ISVNInfo getInfo(SVNUrl url, SVNRevision revision, SVNRevision peg) throws SVNClientException;
-
-    /**
-     * Url representing repository root
-     * @param url
-     * @return repository root url
-     * @throws SVNClientException
-     */
-    public SVNUrl getRepositoryRoot(SVNUrl url) throws SVNClientException;
     
     /**
      * Update the working copy to mirror a new URL within the repository.
