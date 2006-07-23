@@ -112,6 +112,15 @@
   </target>
 
   <!-- ================================================================= -->
+  <!-- Define custom tasks for the unit tests (e.g. code coverage)       -->
+  <!-- ================================================================= -->
+  <path id="emma.lib" >
+    <pathelement location="${test.lib.dir}/emma.jar" />
+    <pathelement location="${test.lib.dir}/emma_ant.jar" />
+  </path>
+  <taskdef resource="emma_ant.properties" classpathref="emma.lib" />
+	
+  <!-- ================================================================= -->
   <!-- run junit tests                                                   -->
   <!-- ================================================================= -->
   <target name="runTests" depends="svnClientAdapter.jar, compileTests"
@@ -119,24 +128,32 @@
     <echo message="Please wait, tests can take a long time to execute...."
       level="info"/>
     <echo message="Running client adapters tests ..." level="info"/>
-    <junit printsummary="yes" haltonfailure="true">
+  	<junit printsummary="yes" haltonfailure="false" failureproperty="testFailed" fork="yes">
       <classpath>
-        <pathelement location="${build.testClasses.dir}"/>
+      	<pathelement location="${emma.instrClasses.dir}" />
         <pathelement location="${build.classes.dir}"/>
+      	<pathelement location="${build.testClasses.dir}"/>
         <path refid="project.classpath"/>	
+        <path refid="emma.lib" />
       </classpath>
+      <jvmarg value="-Demma.coverage.out.file=${coverage.dir}/coverage.emma" />
+      <jvmarg value="-Demma.coverage.out.merge=true" />
       <formatter type="brief" usefile="false"/>
-      <test name="org.tigris.subversion.svnclientadapter.basictests.SVNJavahlTests" fork="true"/>
-      <test name="org.tigris.subversion.svnclientadapter.basictests.SVNJavaSVNTests" fork="true"/>
-      <test name="org.tigris.subversion.svnclientadapter.basictests.SVNCmdLineTests" fork="true"/>
+      <test name="org.tigris.subversion.svnclientadapter.basictests.SVNJavahlTests" fork="yes"/>
+      <test name="org.tigris.subversion.svnclientadapter.basictests.SVNJavaSVNTests" fork="yes"/>
+      <test name="org.tigris.subversion.svnclientadapter.basictests.SVNCmdLineTests" fork="yes"/>
     </junit>
     <echo message="Running misc tests ..." level="info"/>
-    <junit printsummary="yes" haltonfailure="true">
+    <junit printsummary="yes" haltonfailure="false" failureproperty="testFailed" fork="yes">
       <classpath>
-        <pathelement location="${build.testClasses.dir}"/>
+      	<pathelement location="${emma.instrClasses.dir}" />
         <pathelement location="${build.classes.dir}"/>
+        <pathelement location="${build.testClasses.dir}"/>
         <path refid="project.classpath"/>	
+        <path refid="emma.lib" />
       </classpath>
+      <jvmarg value="-Demma.coverage.out.file=${coverage.dir}/coverage.emma" />
+      <jvmarg value="-Demma.coverage.out.merge=true" />
       <formatter type="brief" usefile="false"/>
   	  <batchtest fork="yes">
    	    <fileset dir="${build.testClasses.dir}">
@@ -147,6 +164,15 @@
    	    </fileset>
    	  </batchtest>
     </junit>
+    <emma enabled="${emma.enabled}" >
+      <report sourcepath="${src.main.dir}" >
+        <fileset dir="${coverage.dir}" >
+          <include name="*.emma" />
+        </fileset>
+        <html outfile="${coverage.dir}/coverage.html" />
+      </report>
+    </emma>
+  	<fail message="Some Junit test failed !" if="testFailed"/>
   </target>
 
   <!-- ================================================================= -->
@@ -163,6 +189,16 @@
 			<path refid="project.classpath"/>	
 		</classpath>
     </javac>
+  	<!-- run the EMMA instrumentation -->
+    <delete dir="${emma.instrClasses.dir}"/>
+    <mkdir dir="${emma.instrClasses.dir}" />
+    <emma enabled="${emma.enabled}" >
+      <instr instrpath="${build.classes.dir}"
+             destdir="${emma.instrClasses.dir}"
+             metadatafile="${coverage.dir}/metadata.emma"
+             merge="true"
+      />
+    </emma>
   </target>
 
 </project>
