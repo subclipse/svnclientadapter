@@ -14,10 +14,17 @@ import org.tigris.subversion.svnclientadapter.ISVNPromptUserPassword;
 import org.tmatesoft.svn.core.javahl.PromptUserPasswordSSH;
 import org.tmatesoft.svn.core.javahl.PromptUserPasswordSSL;
 
+/**
+ * A JavaSVN's PromptUserPassword3 implementation.
+ */
 public class JavaSvnPromptUserPassword implements PromptUserPasswordSSH, PromptUserPasswordSSL {
 
     private ISVNPromptUserPassword worker;
     
+    /**
+     * Constructor
+     * @param arg0
+     */
     public JavaSvnPromptUserPassword(ISVNPromptUserPassword arg0) {
         super();
         this.worker = arg0;

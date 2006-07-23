@@ -33,7 +33,7 @@ import org.tmatesoft.svn.core.javahl.SVNClientImpl;
  */
 public class JavaSvnClientAdapter extends AbstractJhlClientAdapter {
 
-    public JavaSvnClientAdapter() {
+    protected JavaSvnClientAdapter() {
         svnClient = SVNClientImpl.newInstance();
         notificationHandler = new JhlNotificationHandler();
         svnClient.notification2(notificationHandler);        
@@ -42,7 +42,7 @@ public class JavaSvnClientAdapter extends AbstractJhlClientAdapter {
 
     public void createRepository(File path, String repositoryType)
             throws SVNClientException {
-    	if ("bdb".equalsIgnoreCase(repositoryType))
+    	if (REPOSITORY_FSTYPE_BDB.equalsIgnoreCase(repositoryType))
     		throw new SVNClientException("JavaSVN only supports fsfs repository type.");
     	try {
     		boolean force = false;
@@ -61,18 +61,18 @@ public class JavaSvnClientAdapter extends AbstractJhlClientAdapter {
 	        this.setPromptUserPassword(prompt);
         }
     }
+    
     public boolean statusReturnsRemoteInfo() {
         return true;
     }
+    
     public long[] commitAcrossWC(File[] paths, String message, boolean recurse,
             boolean keepLocks, boolean atomic) throws SVNClientException {
         try {
-            if (message == null) {
-            	message = "";
-            }
+        	String messageString = (message == null) ? "" : message;
             notificationHandler.setCommand(ISVNNotifyListener.Command.COMMIT);
             String[] files = new String[paths.length];
-            String commandLine = "commit -m \""+message+"\"";
+            String commandLine = "commit -m \""+messageString+"\"";
             if (!recurse)
                 commandLine+=" -N";
             if (keepLocks)
@@ -85,7 +85,7 @@ public class JavaSvnClientAdapter extends AbstractJhlClientAdapter {
             notificationHandler.logCommandLine(commandLine);
 			notificationHandler.setBaseDir();
 
-            long[] newRev = ((SVNClientImpl)svnClient).commit(files, message, recurse, keepLocks, atomic);
+            long[] newRev = ((SVNClientImpl)svnClient).commit(files, messageString, recurse, keepLocks, atomic);
             return newRev;
         } catch (ClientException e) {
             notificationHandler.logException(e);
@@ -135,6 +135,5 @@ public class JavaSvnClientAdapter extends AbstractJhlClientAdapter {
     		return statuses;
     	}
     }
-
    
 }

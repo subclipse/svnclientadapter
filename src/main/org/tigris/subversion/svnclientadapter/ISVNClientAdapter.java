@@ -15,10 +15,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
+/**
+ * High level API for Subversion
+ * 
+ */
 public interface ISVNClientAdapter {
 
-    public final static String REPOSITORY_BDB = "bdb";
-    public final static String REPOSITORY_FSFS = "fsfs";
+	/** constant identifying the "bdb"  repository type */
+    public final static String REPOSITORY_FSTYPE_BDB = "bdb";
+	/** constant identifying the "fsfs"  repository type */
+    public final static String REPOSITORY_FSTYPE_FSFS = "fsfs";
 	
 	/**
 	 * Add a notification listener
@@ -873,8 +879,8 @@ public interface ISVNClientAdapter {
 	 * Create a new, empty repository at path 
 	 * 
 	 * @param path
-	 * @param repositoryType either {@link ISVNClientAdapter#REPOSITORY_BDB} or
-	 *        {@link ISVNClientAdapter#REPOSITORY_FSFS} or null (will use svnadmin default)
+	 * @param repositoryType either {@link ISVNClientAdapter#REPOSITORY_FSTYPE_BDB} or
+	 *        {@link ISVNClientAdapter#REPOSITORY_FSTYPE_FSFS} or null (will use svnadmin default)
 	 * @throws SVNClientException
 	 */
 	public abstract void createRepository(File path, String repositoryType) throws SVNClientException;

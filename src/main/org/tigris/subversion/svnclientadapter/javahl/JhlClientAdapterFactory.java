@@ -20,17 +20,24 @@ import org.tigris.subversion.svnclientadapter.SVNClientException;
  */
 public class JhlClientAdapterFactory extends SVNClientAdapterFactory {
 	
+	/** Client adapter implementation identifier */
     public static final String JAVAHL_CLIENT = "javahl";
-    
+
+	/**
+	 * Private constructor.
+	 * Clients are expected the use {@link #createSVNClientImpl()}, res.
+	 * ask the {@link SVNClientAdapterFactory}
+	 */
+    private JhlClientAdapterFactory() {
+    	super();
+    }
+
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.SVNClientAdapterFactory#createSVNClientImpl()
 	 */
 	protected ISVNClientAdapter createSVNClientImpl() {
 		return new JhlClientAdapter();
 	}
-
-    private JhlClientAdapterFactory() {
-    }
 
     /* (non-Javadoc)
      * @see org.tigris.subversion.svnclientadapter.SVNClientAdapterFactory#getClientType()
@@ -39,6 +46,10 @@ public class JhlClientAdapterFactory extends SVNClientAdapterFactory {
         return JAVAHL_CLIENT;
     }
     
+    /**
+     * Setup the client adapter implementation and register it in the adapters factory
+     * @throws SVNClientException
+     */
     public static void setup() throws SVNClientException {
         if (!JhlClientAdapter.isAvailable()) {
         	throw new SVNClientException("Javahl client adapter is not available");

@@ -154,7 +154,7 @@ public abstract class SVNTest extends TestCase {
             File greekRepos = new File(localTmp, "repos");
             log.fine("Creating repository :" + greekRepos.toString());
             clientAdmin.createRepository(greekRepos,
-                    ISVNClientAdapter.REPOSITORY_FSFS);
+                    ISVNClientAdapter.REPOSITORY_FSTYPE_FSFS);
             FileUtils.copyFile(new File("test/svnserve.conf"), new File(
                     greekRepos, "conf/svnserve.conf"));
             FileUtils.copyFile(new File("test/passwd"), new File(greekRepos,

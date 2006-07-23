@@ -20,17 +20,24 @@ import org.tigris.subversion.svnclientadapter.SVNClientException;
  */
 public class JavaSvnClientAdapterFactory extends SVNClientAdapterFactory {
 	
+	/** Client adapter implementation identifier */
     public static final String JAVASVN_CLIENT = "javasvn";
     
-	/* (non-Javadoc)
+	/**
+	 * Private constructor.
+	 * Clients are expected the use {@link #createSVNClientImpl()}, res.
+	 * ask the {@link SVNClientAdapterFactory}
+	 */
+    private JavaSvnClientAdapterFactory() {
+    	super();
+    }
+
+    /* (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.SVNClientAdapterFactory#createSVNClientImpl()
 	 */
 	protected ISVNClientAdapter createSVNClientImpl() {
 		return new JavaSvnClientAdapter();
 	}
-
-    private JavaSvnClientAdapterFactory() {
-    }
 
     /* (non-Javadoc)
      * @see org.tigris.subversion.svnclientadapter.SVNClientAdapterFactory#getClientType()
@@ -39,6 +46,10 @@ public class JavaSvnClientAdapterFactory extends SVNClientAdapterFactory {
         return JAVASVN_CLIENT;
     }
     
+    /**
+     * Setup the client adapter implementation and register it in the adapters factory
+     * @throws SVNClientException
+     */
     public static void setup() throws SVNClientException {
     	SVNClientAdapterFactory.registerAdapterFactory(new JavaSvnClientAdapterFactory());
     }

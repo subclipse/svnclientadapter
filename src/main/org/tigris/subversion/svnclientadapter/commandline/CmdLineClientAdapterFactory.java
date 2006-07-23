@@ -19,11 +19,19 @@ import org.tigris.subversion.svnclientadapter.SVNClientException;
  * To register this factory, just call {@link CmdLineClientAdapterFactory#setup()} 
  */
 public class CmdLineClientAdapterFactory extends SVNClientAdapterFactory {
+	
+	/** Client adapter implementation identifier */
     public static final String COMMANDLINE_CLIENT = "commandline";
     
     private static boolean is13ClientAvailable = false;
     
+	/**
+	 * Private constructor.
+	 * Clients are expected the use {@link #createSVNClientImpl()}, res.
+	 * ask the {@link SVNClientAdapterFactory}
+	 */
     private CmdLineClientAdapterFactory() {
+    	super();
     }
 
 	/* (non-Javadoc)
@@ -44,6 +52,10 @@ public class CmdLineClientAdapterFactory extends SVNClientAdapterFactory {
         return COMMANDLINE_CLIENT;
     }    
     
+    /**
+     * Setup the client adapter implementation and register it in the adapters factory
+     * @throws SVNClientException
+     */
     public static void setup() throws SVNClientException {
         if (!CmdLineClientAdapter12.isAvailable()) {
             throw new SVNClientException("Command line client adapter is not available");

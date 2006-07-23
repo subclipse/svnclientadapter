@@ -203,18 +203,16 @@ public class JhlClientAdapter extends AbstractJhlClientAdapter {
 	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#createRepository(java.io.File)
 	 */
 	public void createRepository(File path, String repositoryType) throws SVNClientException {
-		try {		
-			if (repositoryType == null) {
-				repositoryType = REPOSITORY_BDB;
-			}
+		try {
+			String fsType = (repositoryType == null) ? REPOSITORY_FSTYPE_FSFS : repositoryType; 
 		    notificationHandler.setCommand(ISVNNotifyListener.Command.CREATE_REPOSITORY);
 		     
 		    String target = fileToSVNPath(path,false);
 		    notificationHandler.logCommandLine(
 		    		MessageFormat.format(
 		    				"create --fstype {0} {1}", 
-							new String[] { repositoryType, target }));
-		    svnAdmin.create(target, false, false, null, repositoryType);
+							new String[] { fsType, target }));
+		    svnAdmin.create(target, false, false, null, fsType);
 		} catch (ClientException e) {
 			notificationHandler.logException(e);
 			throw new SVNClientException(e);            
