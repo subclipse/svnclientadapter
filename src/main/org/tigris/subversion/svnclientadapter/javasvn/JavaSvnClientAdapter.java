@@ -46,7 +46,7 @@ public class JavaSvnClientAdapter extends AbstractJhlClientAdapter {
     		throw new SVNClientException("JavaSVN only supports fsfs repository type.");
     	try {
     		boolean force = false;
-    		boolean enableRevisionProperties = true;
+    		boolean enableRevisionProperties = false;
 			SVNRepositoryFactory.createLocalRepository(path, enableRevisionProperties, force);
 		} catch (SVNException e) {
             notificationHandler.logException(e);
