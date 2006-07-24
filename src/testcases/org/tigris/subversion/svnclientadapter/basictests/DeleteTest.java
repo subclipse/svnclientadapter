@@ -273,7 +273,6 @@ public class DeleteTest extends SVNTest {
 	    pw.close();
 	    client.remove(new File[] {file}, true);
 	    assertFalse("failed to remove unversioned file foo", file.exists());
-	    client.remove(new File[] {file}, true);
 	
 	    // delete file iota in the repository
 	    client.remove(new SVNUrl[] { new SVNUrl(thisTest.getUrl()+"/iota")},
