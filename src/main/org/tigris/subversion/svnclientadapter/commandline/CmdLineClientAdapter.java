@@ -320,6 +320,7 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 			//then take the vector and fill a byteArray.
 			byte[] byteArray;
 			byteArray = streamToByteArray(content);
+			content.close();
 			return new ByteArrayInputStream(byteArray);
 		} catch (IOException e) {
 			throw SVNClientException.wrapException(e);
@@ -342,6 +343,7 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 			//then take the vector and fill a byteArray.
 			byte[] byteArray;
 			byteArray = streamToByteArray(content);
+			content.close();
 			return new ByteArrayInputStream(byteArray);
 		} catch (IOException e) {
 			throw SVNClientException.wrapException(e);
@@ -624,6 +626,7 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 					recurse);
 
 			streamToFile(is, outFile);
+			is.close();
 		} catch (IOException e) {
 			//this should never happen
 		} catch (CmdLineException e) {
@@ -700,6 +703,7 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 			InputStream valueAndData = _cmd.propget(toString(path), propertyName);
             
 			byte[] bytes = streamToByteArray(valueAndData);
+			valueAndData.close();
             if (bytes.length == 0) {
                 return null; // the property does not exist
             }
@@ -717,6 +721,7 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 			InputStream valueAndData = _cmd.propget(url.toString(), propertyName);
             
 			byte[] bytes = streamToByteArray(valueAndData);
+			valueAndData.close();
             if (bytes.length == 0) {
                 return null; // the property does not exist
             }
@@ -970,7 +975,14 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 
             byte[] annotations = _cmd.annotate(target,toString(revisionStart),toString(revisionEnd));
             InputStream contents = _cmd.cat(target, revisionEnd.toString());
-            return CmdLineAnnotations.createFromXml(annotations, contents);
+            CmdLineAnnotations result = CmdLineAnnotations.createFromXml(annotations, contents);
+            try {
+				contents.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+            return result;
 		} catch (CmdLineException e) {
 			throw SVNClientException.wrapException(e);
 		}

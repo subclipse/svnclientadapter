@@ -50,7 +50,7 @@ abstract class CommandLine {
      *
      * @param svnArguments The command-line arguments to execute.
      */
-	protected Process execProcess(ArrayList svnArguments)
+	private Process execProcess(ArrayList svnArguments)
         throws CmdLineException {
 		// We add "svn" or "svnadmin" to the arguments (as
 		// appropriate), and convert it to an array of strings.
@@ -184,10 +184,11 @@ abstract class CommandLine {
      * Pumps the output from both provided streams, blocking until
      * complete.
      *
+     * @param process 
      * @param outPumper The process output stream.
      * @param outPumper The process error stream.
      */
-    private void pumpProcessStreams(StreamPumper outPumper,
+    private void pumpProcessStreams(Process process, StreamPumper outPumper,
                                     StreamPumper errPumper) {
         new Thread(outPumper).start();
         new Thread(errPumper).start();
@@ -197,6 +198,14 @@ abstract class CommandLine {
             errPumper.waitFor();
         } catch (InterruptedException ignored) {
         	notificationHandler.logError("Command output processing interrupted !");
+        } finally {
+        	try {
+        		process.getInputStream().close();
+        		process.getOutputStream().close();
+        		process.getErrorStream().close();
+        	} catch (IOException ioex) {
+        		//Just ignore. Exception when closing the stream.
+        	}
         }
     }
 
@@ -214,7 +223,7 @@ abstract class CommandLine {
             new CharacterStreamPumper(proc.getInputStream(), coalesceLines);
         StreamPumper errPumper =
             new CharacterStreamPumper(proc.getErrorStream(), false);
-        pumpProcessStreams(outPumper, errPumper);
+        pumpProcessStreams(proc, outPumper, errPumper);
 
 		try {
             String errMessage = errPumper.toString();
@@ -246,7 +255,7 @@ abstract class CommandLine {
             new ByteStreamPumper(proc.getInputStream());
         StreamPumper errPumper =
             new CharacterStreamPumper(proc.getErrorStream(), false);
-        pumpProcessStreams(outPumper, errPumper);
+        pumpProcessStreams(proc, outPumper, errPumper);
         
 		try {
             String errMessage = errPumper.toString();
@@ -285,6 +294,27 @@ abstract class CommandLine {
 		execString(svnArguments,false);
 	}
 
+	//TODO check the deprecation
+    /**
+	 * Runs the process and returns the results.
+	 * @param svnArguments The arguments to pass to the command-line
+	 * binary.
+	 * @return the InputStream on commads result. Caller has to close it explicitelly().
+	 * @deprecated this does not sound as a good idea. Check if we're able to live without it.
+     */
+	protected InputStream execInputStream(ArrayList svnArguments)
+        throws CmdLineException {
+		Process proc = execProcess(svnArguments);
+		try {
+			proc.getOutputStream().close();
+			proc.getErrorStream().close();
+			//InputStream has to be closed by caller !
+		} catch (IOException ioex) {
+    		//Just ignore. Exception when closing the stream.
+		}		
+		return proc.getInputStream();
+	}
+	
 	/**
 	 * notify the listeners from the output. This is the default implementation
      *

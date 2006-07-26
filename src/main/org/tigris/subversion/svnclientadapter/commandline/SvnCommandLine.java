@@ -146,8 +146,7 @@ public class SvnCommandLine extends CommandLine {
 		args.add(url);
 		addAuthInfo(args);
         addConfigInfo(args);
-		Process proc = execProcess(args);
-		return proc.getInputStream();
+		return execInputStream(args);
 	}
 
 	/**
@@ -338,8 +337,7 @@ public class SvnCommandLine extends CommandLine {
 		args.add("--new");
 		args.add(newPath);
         addConfigInfo(args);		        
-		Process proc = execProcess(args);
-  		return proc.getInputStream();
+		return execInputStream(args);
 	}
 
 	/**
@@ -597,8 +595,7 @@ public class SvnCommandLine extends CommandLine {
 		args.add(path);
         addAuthInfo(args);
         addConfigInfo(args);        
-        Process proc = execProcess(args);
-		return proc.getInputStream();
+		return execInputStream(args);
 	}
 
 	/**
