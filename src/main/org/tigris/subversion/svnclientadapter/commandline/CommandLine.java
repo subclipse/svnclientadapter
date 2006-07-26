@@ -184,11 +184,11 @@ abstract class CommandLine {
      * Pumps the output from both provided streams, blocking until
      * complete.
      *
-     * @param process 
+     * @param proc 
      * @param outPumper The process output stream.
      * @param outPumper The process error stream.
      */
-    private void pumpProcessStreams(Process process, StreamPumper outPumper,
+    private void pumpProcessStreams(Process proc, StreamPumper outPumper,
                                     StreamPumper errPumper) {
         new Thread(outPumper).start();
         new Thread(errPumper).start();
@@ -200,9 +200,9 @@ abstract class CommandLine {
         	notificationHandler.logError("Command output processing interrupted !");
         } finally {
         	try {
-        		process.getInputStream().close();
-        		process.getOutputStream().close();
-        		process.getErrorStream().close();
+        		proc.getInputStream().close();
+        		proc.getOutputStream().close();
+        		proc.getErrorStream().close();
         	} catch (IOException ioex) {
         		//Just ignore. Exception when closing the stream.
         	}
@@ -335,6 +335,13 @@ abstract class CommandLine {
     	
 
     protected void stopProcess() {
+    	try {
+    		process.getInputStream().close();
+    		process.getOutputStream().close();
+    		process.getErrorStream().close();
+    	} catch (IOException ioex) {
+    		//Just ignore. Closing streams.
+    	}
         process.destroy();
     }
 

@@ -40,8 +40,10 @@ public class ReaderThread extends Thread {
         } catch (IOException e) {
         } finally {
             try {
+            	myInputStream.close();
                 myOutputStream.flush();
             } catch (IOException e) {
+            	//Just ignore. Stream closing.
             }
         }
     }

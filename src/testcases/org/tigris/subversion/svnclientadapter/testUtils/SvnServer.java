@@ -114,7 +114,11 @@ public class SvnServer {
 					whichProc.getInputStream()));
 
 			try {
-				return reader.readLine();
+				String line = reader.readLine();
+				whichProc.getInputStream().close();
+				whichProc.getOutputStream().close();
+				whichProc.getErrorStream().close();
+				return line;
 			} catch (IOException e) {
 				throw new RuntimeException("Cannot locate svnserve command !",
 						e);

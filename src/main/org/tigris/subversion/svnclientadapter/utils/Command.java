@@ -23,7 +23,6 @@ public class Command {
     private String[] parameters = new String[] {}; 
 
 	private OutputStream out = System.out;
-
 	private OutputStream err = System.err;
 
 	public Command(String command) {
@@ -75,6 +74,7 @@ public class Command {
 		if (process != null) {
 			new ReaderThread(process.getInputStream(), out).start();
 			new ReaderThread(process.getErrorStream(), err).start();
+			process.getOutputStream().close();
 		}
 	}
 

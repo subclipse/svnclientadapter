@@ -1393,6 +1393,9 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 				String value = line.substring( idx+1 );
 				envVars.setProperty( key, value );
 	        }
+	        p.getInputStream().close();
+	        p.getOutputStream().close();
+	        p.getErrorStream().close();
         }
         return envVars;
 	}
