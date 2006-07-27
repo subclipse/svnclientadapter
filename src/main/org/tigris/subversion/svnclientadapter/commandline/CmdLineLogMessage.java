@@ -189,29 +189,26 @@ class CmdLineLogMessage extends CmdLineXmlCommand implements ISVNLogMessage {
 				Node logEntry = nodes.item(i);
 				
 				Element authorNode = getFirstNamedElement(logEntry, "author");
-				if (authorNode == null) throw new Exception("'author' tag expected under 'logentry'");
-				
-				Element dateNode = getNextNamedElement(authorNode, "date");
+
+				Element dateNode;				
+				if (authorNode == null) {
+					dateNode = getFirstNamedElement(logEntry, "date");
+				} else {
+					dateNode = getNextNamedElement(authorNode, "date");	
+				}							
 				if (dateNode == null) throw new Exception("'date' tag expected under 'logentry'");
 
 				Element pathsNode = getNextNamedElement(dateNode, "paths");
-
 				Element msgNode = getNextNamedElement(pathsNode != null ? pathsNode : dateNode, "msg");
-
 				Node revisionAttribute = logEntry.getAttributes().getNamedItem("revision");
 
-                SVNRevision.Number rev = Helper.toRevNum(revisionAttribute.getNodeValue());
-				String author = authorNode.getFirstChild().getNodeValue();
+                SVNRevision.Number rev = (revisionAttribute != null) ? Helper.toRevNum(revisionAttribute.getNodeValue()) : null;
+				String author = (authorNode != null) ? authorNode.getFirstChild().getNodeValue() : "";
 				Date date = Helper.convertXMLDate(dateNode.getFirstChild().getNodeValue());
-
 				Node msgTextNode = msgNode.getFirstChild();
-                String msg;
-				if(msgTextNode != null)
-					msg = msgTextNode.getNodeValue();
-				else
-					msg = "";
+                String msg = (msgTextNode != null) ? msgTextNode.getNodeValue() : "";
 
-				List paths = new ArrayList();
+                List paths = new ArrayList();
 				Element pathNode = getFirstNamedElement(pathsNode, "path");
 				while (pathNode != null) {
                 	String path = pathNode.getFirstChild().getNodeValue();
