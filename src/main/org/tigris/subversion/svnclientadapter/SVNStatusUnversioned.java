@@ -65,6 +65,14 @@ public class SVNStatusUnversioned implements ISVNStatus {
 	}
 
 	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getUrlString()
+	 */
+	public String getUrlString()
+	{
+		return null;
+	}
+	
+	/* (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getLastChangedRevision()
 	 */
 	public SVNRevision.Number getLastChangedRevision() {

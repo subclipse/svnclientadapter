@@ -55,6 +55,14 @@ public class JhlStatus implements ISVNStatus {
 	}
 
 	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getUrlString()
+	 */
+	public String getUrlString()
+	{
+		return _s.getUrl();
+	}
+	
+	/* (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getLastChangedRevision()
 	 */
 	public SVNRevision.Number getLastChangedRevision() {

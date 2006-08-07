@@ -122,6 +122,14 @@ class CmdLineStatusComposite  implements ISVNStatus {
 		return infoPart.getUrl();
 	}
 
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getUrlString()
+	 */
+	public String getUrlString()
+	{
+		return infoPart.getUrlString();
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getRepositoryTextStatus()

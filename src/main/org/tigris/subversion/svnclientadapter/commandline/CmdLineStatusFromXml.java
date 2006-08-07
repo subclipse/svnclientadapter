@@ -18,7 +18,6 @@ import java.util.Date;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.tigris.subversion.svnclientadapter.ISVNStatus;
 import org.tigris.subversion.svnclientadapter.SVNNodeKind;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
 import org.tigris.subversion.svnclientadapter.SVNStatusKind;
@@ -29,9 +28,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
-public class CmdLineStatusFromXml extends CmdLineXmlCommand implements ISVNStatus {
+public class CmdLineStatusFromXml extends CmdLineXmlCommand {
 	
-	private SVNUrl url;
 	private SVNRevision.Number lastChangedRevision;
 	private Date lastChangedDate;
 	private String lastCommitAuthor;
@@ -45,7 +43,6 @@ public class CmdLineStatusFromXml extends CmdLineXmlCommand implements ISVNStatu
 	private boolean copied;
 	private boolean wcLocked;
 	private boolean switched;
-	private SVNUrl urlCopiedFrom;
 	private File conflictNew;
 	private File conflictOld;
 	private File conflictWorking;
@@ -180,19 +177,6 @@ public class CmdLineStatusFromXml extends CmdLineXmlCommand implements ISVNStatu
 		return textStatus;
 	}
 	/**
-	 * @return Returns the url.
-	 */
-	public SVNUrl getUrl() {
-		return url;
-	}
-	/**
-	 * @return Returns the urlCopiedFrom.
-	 */
-	public SVNUrl getUrlCopiedFrom() {
-		return urlCopiedFrom;
-	}
-
-	/**
 	 * @param conflictNew The conflictNew to set.
 	 */
 	protected void setConflictNew(File conflictNew) {
@@ -305,18 +289,6 @@ public class CmdLineStatusFromXml extends CmdLineXmlCommand implements ISVNStatu
 	 */
 	protected void setTextStatus(SVNStatusKind textStatus) {
 		this.textStatus = textStatus;
-	}
-	/**
-	 * @param url The url to set.
-	 */
-	protected void setUrl(SVNUrl url) {
-		this.url = url;
-	}
-	/**
-	 * @param urlCopiedFrom The urlCopiedFrom to set.
-	 */
-	protected void setUrlCopiedFrom(SVNUrl urlCopiedFrom) {
-		this.urlCopiedFrom = urlCopiedFrom;
 	}
 	/**
      * creates CmdLineStatus(es) from a xml string (see svn status --xml) 

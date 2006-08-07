@@ -148,6 +148,10 @@ class CmdLineInfoPart implements ISVNInfo {
 		return (unversioned) ? null : Helper.toSVNUrl(get(KEY_URL));
 	}
 
+	public String getUrlString() {
+		return (unversioned) ? null : get(KEY_URL);
+	}
+
 	private String get(String key) {
 		Object value = infoMap.get(key);
 		return (value == null) ? null : value.toString();

@@ -22,9 +22,14 @@ import java.util.Date;
 public interface ISVNStatus {
 
     /**
-     * @return the url of the resource on repository
+     * @return the SVNUrl instance of url of the resource on repository
      */
 	SVNUrl getUrl();
+	
+	/**
+	 * @return the url (String) of the resource in repository
+	 */
+	String getUrlString();
 
 	/**
 	 * @return the last changed revision or null if resource is not managed 

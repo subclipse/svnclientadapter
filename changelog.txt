@@ -3,6 +3,7 @@
 - removed the getRepositoryRoot() method from adapter interface
 - added logMessage(url, paths[], ...)
 - fixed the local->UTF-8 log message conversion problems
+- added ISVNStatus#getUrlString()
 
 * July 12, 2006
 - relicense under EPL
