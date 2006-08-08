@@ -10,8 +10,6 @@
  ******************************************************************************/
 package org.tigris.subversion.svnclientadapter.commandline;
 
-import java.util.ArrayList;
-
 import org.tigris.subversion.svnclientadapter.ISVNNotifyListener;
 
 /**
@@ -46,9 +44,9 @@ public class SvnCommandLine12 extends SvnCommandLine {
         }
         
         setCommand(ISVNNotifyListener.Command.INFO, false);
-		ArrayList args = new ArrayList();
+        CmdArguments args = new CmdArguments();
 		args.add("info");
-        addConfigInfo(args);
+        args.addConfigInfo(this.configDir);
         for (int i = 0;i < target.length;i++) {
             args.add(target[i]);
         }
@@ -70,7 +68,7 @@ public class SvnCommandLine12 extends SvnCommandLine {
             return ""; 
         }
         setCommand(ISVNNotifyListener.Command.STATUS, false);
-		ArrayList args = new ArrayList();
+        CmdArguments args = new CmdArguments();
 		args.add("status");
         args.add("-v");
         if (!allEntries) {
@@ -88,8 +86,8 @@ public class SvnCommandLine12 extends SvnCommandLine {
             args.add(path[i]);
         }
 		
-        addAuthInfo(args);  
-        addConfigInfo(args);        
+		args.addAuthInfo(this.user, this.pass);
+        args.addConfigInfo(this.configDir);
 		return execString(args,false);
 	}
 
@@ -104,7 +102,7 @@ public class SvnCommandLine12 extends SvnCommandLine {
 	 */
 	String annotateByStdout(String path,String revisionStart, String revisionEnd) throws CmdLineException {
 		setCommand(ISVNNotifyListener.Command.ANNOTATE, false);
-		ArrayList args = new ArrayList();
+		CmdArguments args = new CmdArguments();
 		args.add("annotate");
 		args.add("-r");
 		if ((revisionStart != null) && (revisionStart.length() > 0))
@@ -116,8 +114,8 @@ public class SvnCommandLine12 extends SvnCommandLine {
 			args.add(validRev(revisionEnd));			
 		}
 		args.add(path);
-		addAuthInfo(args);
-        addConfigInfo(args);        
+		args.addAuthInfo(this.user, this.pass);
+        args.addConfigInfo(this.configDir);
 		return execString(args,false);
 	}
 

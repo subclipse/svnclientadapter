@@ -39,7 +39,7 @@ abstract class CommandLine {
 	}
 
 	String version() throws CmdLineException {
-		ArrayList args = new ArrayList();
+		CmdArguments args = new CmdArguments();
 		args.add("--version");
 		return execString(args,false);
 	}
@@ -50,7 +50,7 @@ abstract class CommandLine {
      *
      * @param svnArguments The command-line arguments to execute.
      */
-	private Process execProcess(ArrayList svnArguments)
+	private Process execProcess(CmdArguments svnArguments)
         throws CmdLineException {
 		// We add "svn" or "svnadmin" to the arguments (as
 		// appropriate), and convert it to an array of strings.
@@ -216,7 +216,7 @@ abstract class CommandLine {
      * @param coalesceLines
 	 * @return Any output returned from execution of the command-line.
 	 */
-	protected String execString(ArrayList svnArguments, boolean coalesceLines)
+	protected String execString(CmdArguments svnArguments, boolean coalesceLines)
         throws CmdLineException {
 		Process proc = execProcess(svnArguments);
         StreamPumper outPumper =
@@ -248,7 +248,7 @@ abstract class CommandLine {
      * treated as UTF-8 (as opposed to the JVM's default encoding).
 	 * @return String
 	 */
-	protected byte[] execBytes(ArrayList svnArguments, boolean assumeUTF8)
+	protected byte[] execBytes(CmdArguments svnArguments, boolean assumeUTF8)
         throws CmdLineException {
 		Process proc = execProcess(svnArguments);
         ByteStreamPumper outPumper =
@@ -290,7 +290,7 @@ abstract class CommandLine {
      * @param svnArguments
      * @throws CmdLineException
      */
-	protected void execVoid(ArrayList svnArguments) throws CmdLineException {
+	protected void execVoid(CmdArguments svnArguments) throws CmdLineException {
 		execString(svnArguments,false);
 	}
 
@@ -302,7 +302,7 @@ abstract class CommandLine {
 	 * @return the InputStream on commads result. Caller has to close it explicitelly().
 	 * @deprecated this does not sound as a good idea. Check if we're able to live without it.
      */
-	protected InputStream execInputStream(ArrayList svnArguments)
+	protected InputStream execInputStream(CmdArguments svnArguments)
         throws CmdLineException {
 		Process proc = execProcess(svnArguments);
 		try {
@@ -505,5 +505,52 @@ abstract class CommandLine {
         public synchronized byte[] getBytes() {
             return bytes.toByteArray();
         }
+    }
+    
+    protected static class CmdArguments
+    {
+    	private List args = new ArrayList();
+    	
+    	protected void add(Object arg)
+    	{
+    		this.args.add(arg);
+    	}
+
+    	protected void addAuthInfo(String user, String pass) {
+    		if (user != null && user.length() > 0) {
+    			add("--username");
+    			add(user);
+            }
+
+            if (pass != null && pass.length() > 0) {
+    			add("--password");
+    			add(pass);
+    		}
+
+    		add("--non-interactive");
+    	}
+
+        protected void addConfigInfo(String configDir) {
+        	if (configDir != null) {
+        		add("--config-dir");
+                add(configDir);
+            }
+        }
+
+        protected void addLogMessage(String message) {
+			add("--force-log");
+       		add("-m");
+            add((message != null) ? message : "");
+        }
+
+    	private int size()
+    	{
+    		return this.args.size();
+    	}
+    	
+    	private Object get(int index)
+    	{
+    		return this.args.get(index);
+    	}
     }
 }

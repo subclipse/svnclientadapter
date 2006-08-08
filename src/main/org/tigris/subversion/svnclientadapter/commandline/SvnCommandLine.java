@@ -11,7 +11,6 @@
 package org.tigris.subversion.svnclientadapter.commandline;
 
 import java.io.InputStream;
-import java.util.ArrayList;
 
 import org.tigris.subversion.svnclientadapter.ISVNNotifyListener;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
@@ -27,12 +26,12 @@ import org.tigris.subversion.svnclientadapter.commandline.parser.SvnOutputParser
  * @author John M Flinchbaugh (john at hjsoft.com)
  */
 public class SvnCommandLine extends CommandLine {
-	private String user;
-	private String pass;	
+	protected String user;
+	protected String pass;	
     protected SvnOutputParser svnOutputParser = new SvnOutputParser();
     protected long rev = SVNRevision.SVN_INVALID_REVNUM;
     protected boolean parseSvnOutput = false;
-    private String configDir = null;
+    protected String configDir = null;
     
     
 	//Constructors
@@ -97,7 +96,7 @@ public class SvnCommandLine extends CommandLine {
 	 */
 	String add(String path, boolean recursive) throws CmdLineException {
 		setCommand(ISVNNotifyListener.Command.ADD, true);
-		ArrayList args = new ArrayList();
+		CmdArguments args = new CmdArguments();
 		args.add("add");
 		if (!recursive)
 			args.add("-N");
@@ -105,30 +104,6 @@ public class SvnCommandLine extends CommandLine {
 		return execString(args,false);
 	}
 
-	protected ArrayList addAuthInfo(ArrayList arguments) {
-		if (user != null && user.length() > 0) {
-			arguments.add("--username");
-			arguments.add(user);
-        }
-
-        if (pass != null && pass.length() > 0) {
-			arguments.add("--password");
-			arguments.add(pass);
-		}
-
-		arguments.add("--non-interactive");
-
-		return arguments;
-	}
-
-    protected ArrayList addConfigInfo(ArrayList arguments) {
-    	if (configDir != null) {
-    		arguments.add("--config-dir");
-            arguments.add(configDir);
-        }
-        return arguments;
-    }
-    
 	/**
 	 * <p>
 	 * Output the content of specified file or URL.</p>
@@ -139,13 +114,13 @@ public class SvnCommandLine extends CommandLine {
 	 */
 	InputStream cat(String url, String revision) throws CmdLineException {
         setCommand(ISVNNotifyListener.Command.CAT, false);
-		ArrayList args = new ArrayList();
+		CmdArguments args = new CmdArguments();
 		args.add("cat");
 		args.add("-r");
 		args.add(validRev(revision));
 		args.add(url);
-		addAuthInfo(args);
-        addConfigInfo(args);
+		args.addAuthInfo(this.user, this.pass);
+        args.addConfigInfo(this.configDir);
 		return execInputStream(args);
 	}
 
@@ -162,15 +137,13 @@ public class SvnCommandLine extends CommandLine {
 	 */
 	String checkin(String[] path, String message, boolean keepLocks) throws CmdLineException {
         setCommand(ISVNNotifyListener.Command.COMMIT, true);
-		ArrayList args = new ArrayList();
+		CmdArguments args = new CmdArguments();
 		args.add("ci");
 		if (keepLocks)
 		    args.add("--no-unlock");
-		args.add("--force-log");
-		args.add("-m");
-		args.add(message);
-		addAuthInfo(args);
-        addConfigInfo(args);
+		args.addLogMessage(message);
+		args.addAuthInfo(this.user, this.pass);
+        args.addConfigInfo(this.configDir);
 		        
         for (int i = 0; i < path.length;i++) {
         	args.add(path[i]);
@@ -188,10 +161,10 @@ public class SvnCommandLine extends CommandLine {
 	 */
 	void cleanup(String path) throws CmdLineException {
         setCommand(ISVNNotifyListener.Command.CLEANUP, true);
-		ArrayList args = new ArrayList();
+		CmdArguments args = new CmdArguments();
 		args.add("cleanup");
 		args.add(path);
-        addConfigInfo(args);        
+        args.addConfigInfo(this.configDir);        
 		execVoid(args);
 	}
 
@@ -209,7 +182,7 @@ public class SvnCommandLine extends CommandLine {
 	String checkout(String url, String destination, String revision, boolean recursive)
 		throws CmdLineException {
         setCommand(ISVNNotifyListener.Command.CHECKOUT, true);
-		ArrayList args = new ArrayList();
+		CmdArguments args = new CmdArguments();
 		args.add("co");
 		args.add("-r");
 		args.add(validRev(revision));
@@ -218,8 +191,8 @@ public class SvnCommandLine extends CommandLine {
 		
 		if (!recursive)
 			args.add("-N");
-		addAuthInfo(args);
-        addConfigInfo(args);
+		args.addAuthInfo(this.user, this.pass);
+        args.addConfigInfo(this.configDir);
 		return execString(args,false);
 	}
 
@@ -251,19 +224,17 @@ public class SvnCommandLine extends CommandLine {
 	 */
 	void copy(String src, String dest, String message, String revision) throws CmdLineException {
         setCommand(ISVNNotifyListener.Command.COPY, true);        
-		ArrayList args = new ArrayList();
+		CmdArguments args = new CmdArguments();
 		args.add("cp");
 		if (revision != null) {
 			args.add("-r");
 			args.add(validRev(revision));
 		}
-		args.add("--force-log");
-		args.add("-m");
-		args.add(message);
+		args.addLogMessage(message);
 		args.add(src);
 		args.add(dest);
-		addAuthInfo(args);
-        addConfigInfo(args);		
+		args.addAuthInfo(this.user, this.pass);
+        args.addConfigInfo(this.configDir);		
 		execVoid(args);
 	}
 
@@ -277,12 +248,12 @@ public class SvnCommandLine extends CommandLine {
 	 */
 	void copy(String src, String dest) throws CmdLineException {
         setCommand(ISVNNotifyListener.Command.COPY, true);
-		ArrayList args = new ArrayList();
+		CmdArguments args = new CmdArguments();
 		args.add("cp");
 		args.add(src);
 		args.add(dest);
-		addAuthInfo(args);
-        addConfigInfo(args);        
+		args.addAuthInfo(this.user, this.pass);
+        args.addConfigInfo(this.configDir);        
 		execVoid(args);
 	}
 
@@ -296,12 +267,10 @@ public class SvnCommandLine extends CommandLine {
 	 */
 	String delete(String[] target, String message, boolean force) throws CmdLineException {
         setCommand(ISVNNotifyListener.Command.REMOVE, true);
-		ArrayList args = new ArrayList();
+		CmdArguments args = new CmdArguments();
 		args.add("rm");
 		if (message != null) {
-			args.add("--force-log");
-			args.add("-m");
-			args.add(message);
+			args.addLogMessage(message);
 		}
         if (force) {
         	args.add("--force");
@@ -309,8 +278,8 @@ public class SvnCommandLine extends CommandLine {
 		for (int i = 0;i < target.length;i++) {
 			args.add(target[i]);
 		}
-        addAuthInfo(args);
-        addConfigInfo(args);        
+        args.addAuthInfo(this.user, this.pass);
+        args.addConfigInfo(this.configDir);        
 		return execString(args,false);
 	}
 
@@ -322,7 +291,7 @@ public class SvnCommandLine extends CommandLine {
 	InputStream diff(String oldPath, String oldRev, String newPath, String newRev, boolean recurse)
 		throws CmdLineException {
         setCommand(ISVNNotifyListener.Command.DIFF, false);
-		ArrayList args = new ArrayList();
+		CmdArguments args = new CmdArguments();
 		args.add("diff");
 		if (newRev != null) {
 			args.add("-r");
@@ -336,7 +305,7 @@ public class SvnCommandLine extends CommandLine {
 		args.add(oldPath);
 		args.add("--new");
 		args.add(newPath);
-        addConfigInfo(args);		        
+        args.addConfigInfo(this.configDir);		        
 		return execInputStream(args);
 	}
 
@@ -347,7 +316,7 @@ public class SvnCommandLine extends CommandLine {
 	 */
 	void export(String url, String path, String revision, boolean force) throws CmdLineException {
         setCommand(ISVNNotifyListener.Command.EXPORT, true);        
-		ArrayList args = new ArrayList();
+		CmdArguments args = new CmdArguments();
 		args.add("export");
 		args.add("-r");
 		args.add(validRev(revision));
@@ -355,7 +324,7 @@ public class SvnCommandLine extends CommandLine {
 		args.add(path);
 		if (force)
 			args.add("--force");
-        addConfigInfo(args);			
+        args.addConfigInfo(this.configDir);			
 		execVoid(args);
 	}
 
@@ -370,18 +339,16 @@ public class SvnCommandLine extends CommandLine {
 	String importFiles(String path, String url, String message, boolean recursive)
 		throws CmdLineException {
         setCommand(ISVNNotifyListener.Command.IMPORT, true);
-		ArrayList args = new ArrayList();
+		CmdArguments args = new CmdArguments();
 		args.add("import");
 		args.add(path);
         args.add(url);
         if (!recursive) {
         	args.add("-N");
         }
-		args.add("--force-log");
-		args.add("-m");
-		args.add(message);
-		addAuthInfo(args);
-        addConfigInfo(args);        
+		args.addLogMessage(message);
+		args.addAuthInfo(this.user, this.pass);
+        args.addConfigInfo(this.configDir);        
 		return execString(args,false);
 	}
 
@@ -405,10 +372,10 @@ public class SvnCommandLine extends CommandLine {
         }
         
         setCommand(ISVNNotifyListener.Command.INFO, false);
-		ArrayList args = new ArrayList();
+		CmdArguments args = new CmdArguments();
 		args.add("info");
-        addAuthInfo(args);
-        addConfigInfo(args);
+        args.addAuthInfo(this.user, this.pass);
+        args.addConfigInfo(this.configDir);
         if (revision != null) {
         	args.add("-r");
         	args.add(revision);
@@ -434,7 +401,7 @@ public class SvnCommandLine extends CommandLine {
 	 */
 	byte[] list(String url, String revision, boolean recursive) throws CmdLineException {
         setCommand(ISVNNotifyListener.Command.LS, false);
-		ArrayList args = new ArrayList();
+		CmdArguments args = new CmdArguments();
 		args.add("list");
 		if (recursive) {
 			args.add("-R");
@@ -443,8 +410,8 @@ public class SvnCommandLine extends CommandLine {
 		args.add("-r");
 		args.add(revision);
 		args.add(url);
-		addAuthInfo(args);
-        addConfigInfo(args);		
+		args.addAuthInfo(this.user, this.pass);
+        args.addConfigInfo(this.configDir);		
 		return execBytes(args,false);
 	}
 
@@ -458,7 +425,7 @@ public class SvnCommandLine extends CommandLine {
 	 */
 	byte[] log(String target, String revision, boolean stopOnCopy, long limit ) throws CmdLineException {
         setCommand(ISVNNotifyListener.Command.LOG, false);		
-		ArrayList args = new ArrayList();
+		CmdArguments args = new CmdArguments();
 		args.add("log");
 		args.add("-r");
 		args.add(validRev(revision));
@@ -470,8 +437,8 @@ public class SvnCommandLine extends CommandLine {
 		    args.add("--limit");
 		    args.add(Long.toString(limit));
 		}
-		addAuthInfo(args);
-        addConfigInfo(args);
+		args.addAuthInfo(this.user, this.pass);
+        args.addConfigInfo(this.configDir);
         return execBytes(args, true);
 	}
 	
@@ -487,7 +454,7 @@ public class SvnCommandLine extends CommandLine {
 	 */
 	byte[] logVerbose(String target, String [] paths, String revision, boolean stopOnCopy, long limit ) throws CmdLineException {
         setCommand(ISVNNotifyListener.Command.LOG, false);		
-        ArrayList args = new ArrayList();
+        CmdArguments args = new CmdArguments();
         args.add("log");
         args.add("-r");
         args.add(validRev(revision));
@@ -505,8 +472,8 @@ public class SvnCommandLine extends CommandLine {
             args.add("--limit");
             args.add(Long.toString(limit));
         }
-        addAuthInfo(args);
-        addConfigInfo(args);
+        args.addAuthInfo(this.user, this.pass);
+        args.addConfigInfo(this.configDir);
         return execBytes(args, true);
 	}
 
@@ -520,23 +487,21 @@ public class SvnCommandLine extends CommandLine {
 	 */
 	void mkdir(String url, String message) throws CmdLineException {
         setCommand(ISVNNotifyListener.Command.MKDIR, true);
-		ArrayList args = new ArrayList();
+		CmdArguments args = new CmdArguments();
 		args.add("mkdir");
-		args.add("--force-log");
-		args.add("-m");
-		args.add(message);
+		args.addLogMessage(message);
 		args.add(url);
-		addAuthInfo(args);
-        addConfigInfo(args);        
+		args.addAuthInfo(this.user, this.pass);
+        args.addConfigInfo(this.configDir);        
 		execVoid(args);
 	}
     
 	void mkdir(String localPath) throws CmdLineException {
         setCommand(ISVNNotifyListener.Command.MKDIR, true);
-		ArrayList args = new ArrayList();
+		CmdArguments args = new CmdArguments();
 		args.add("mkdir");
 		args.add(localPath);
-        addConfigInfo(args);        
+        args.addConfigInfo(this.configDir);        
 		execVoid(args);
 	}
 
@@ -560,22 +525,20 @@ public class SvnCommandLine extends CommandLine {
 	String move(String source, String dest, String message, String revision, boolean force)
 		throws CmdLineException {
         setCommand(ISVNNotifyListener.Command.MOVE, true);            
-		ArrayList args = new ArrayList();
+		CmdArguments args = new CmdArguments();
 		args.add("mv");
 		args.add("-r");
 		args.add(validRev(revision));
 		args.add(source);
 		args.add(dest);
 		if (message != null) {
-			args.add("--force-log");
-			args.add("-m");
-			args.add(message);
+			args.addLogMessage(message);
 		}
 		if (force) {
 			args.add("--force");
 		}
-		addAuthInfo(args);				
-        addConfigInfo(args);
+		args.addAuthInfo(this.user, this.pass);				
+        args.addConfigInfo(this.configDir);
 		return execString(args,false);
 	}
 
@@ -588,13 +551,13 @@ public class SvnCommandLine extends CommandLine {
 	 */
 	InputStream propget(String path, String propName) throws CmdLineException {
         setCommand(ISVNNotifyListener.Command.PROPGET, false);
-		ArrayList args = new ArrayList();
+		CmdArguments args = new CmdArguments();
 		args.add("propget");
 		args.add("--strict");
 		args.add(propName);
 		args.add(path);
-        addAuthInfo(args);
-        addConfigInfo(args);        
+        args.addAuthInfo(this.user, this.pass);
+        args.addConfigInfo(this.configDir);        
 		return execInputStream(args);
 	}
 
@@ -609,15 +572,15 @@ public class SvnCommandLine extends CommandLine {
 	void propset(String propName, String propValue, String target, boolean recurse)
 		throws CmdLineException {
         setCommand(ISVNNotifyListener.Command.PROPSET, false);
-		ArrayList args = new ArrayList();
+		CmdArguments args = new CmdArguments();
 		args.add("propset");
 		if (recurse)
 			args.add("-R");
 		args.add(propName);
 		args.add(propValue);
 		args.add(target);
-        addAuthInfo(args);
-        addConfigInfo(args);        
+        args.addAuthInfo(this.user, this.pass);
+        args.addConfigInfo(this.configDir);        
 		execVoid(args);
 	}
     /**
@@ -629,13 +592,13 @@ public class SvnCommandLine extends CommandLine {
      */
     String proplist(String target, boolean recurse) throws CmdLineException {
 		setCommand(ISVNNotifyListener.Command.PROPLIST, false);
-		ArrayList args = new ArrayList();
+		CmdArguments args = new CmdArguments();
 		args.add("proplist");
 		if (recurse)
 			args.add("-R");
 		args.add(target);
-        addAuthInfo(args);
-        addConfigInfo(args);        
+        args.addAuthInfo(this.user, this.pass);
+        args.addConfigInfo(this.configDir);        
         
 		return execString(args,false);
     }
@@ -650,14 +613,14 @@ public class SvnCommandLine extends CommandLine {
      */
     void propdel(String propName, String target, boolean recurse) throws CmdLineException {
         setCommand(ISVNNotifyListener.Command.PROPDEL, true);
-		ArrayList args = new ArrayList();
+		CmdArguments args = new CmdArguments();
 		args.add("propdel");
 		if (recurse)
 			args.add("-R");
 		args.add(propName);
 		args.add(target);	
-        addAuthInfo(args);
-        addConfigInfo(args);        
+        args.addAuthInfo(this.user, this.pass);
+        args.addConfigInfo(this.configDir);        
         
         execVoid(args);
     }
@@ -673,7 +636,7 @@ public class SvnCommandLine extends CommandLine {
 	void propsetFile(String propName, String propFile, String target, boolean recurse)
 		throws CmdLineException {
         setCommand(ISVNNotifyListener.Command.PROPSET, false);
-		ArrayList args = new ArrayList();
+		CmdArguments args = new CmdArguments();
 		args.add("propset");
 		if (recurse)
 			args.add("-R");
@@ -681,8 +644,8 @@ public class SvnCommandLine extends CommandLine {
 		args.add("-F");
 		args.add(propFile);
 		args.add(target);	
-        addAuthInfo(args);
-        addConfigInfo(args);        
+        args.addAuthInfo(this.user, this.pass);
+        args.addConfigInfo(this.configDir);        
         
 		execVoid(args);
 	}
@@ -696,14 +659,14 @@ public class SvnCommandLine extends CommandLine {
 	 */
 	String revert(String[] paths, boolean recursive) throws CmdLineException {
         setCommand(ISVNNotifyListener.Command.REVERT, true);
-		ArrayList args = new ArrayList();
+		CmdArguments args = new CmdArguments();
 		args.add("revert");
 		if (recursive)
 			args.add("-R");
 		for (int i = 0; i < paths.length;i++) {
 			args.add(paths[i]);
 		}
-        addConfigInfo(args);        
+        args.addConfigInfo(this.configDir);        
 		
 		return execString(args,false);
 	}
@@ -717,14 +680,14 @@ public class SvnCommandLine extends CommandLine {
 	 */
 	void resolved(String[] paths, boolean recursive) throws CmdLineException {
 		setCommand(ISVNNotifyListener.Command.RESOLVED, true);
-		ArrayList args = new ArrayList();
+		CmdArguments args = new CmdArguments();
 		args.add("resolved");
 		if (recursive)
 			args.add("-R");
 		for (int i = 0; i < paths.length;i++) {
 			args.add(paths[i]);
 		}
-        addConfigInfo(args);		
+        args.addConfigInfo(this.configDir);		
 		execVoid(args);		
 	}
 
@@ -742,7 +705,7 @@ public class SvnCommandLine extends CommandLine {
             return new byte[0]; 
         }
         setCommand(ISVNNotifyListener.Command.STATUS, false);
-		ArrayList args = new ArrayList();
+		CmdArguments args = new CmdArguments();
 		args.add("status");
         args.add("--xml");
         if (allEntries) {
@@ -761,8 +724,8 @@ public class SvnCommandLine extends CommandLine {
             args.add(path[i]);
         }
 		
-        addAuthInfo(args);  
-        addConfigInfo(args);        
+        args.addAuthInfo(this.user, this.pass);  
+        args.addConfigInfo(this.configDir);        
 		return execBytes(args, false);
 	}
 
@@ -775,13 +738,13 @@ public class SvnCommandLine extends CommandLine {
 	 */
 	String update(String path, String revision) throws CmdLineException {
         setCommand(ISVNNotifyListener.Command.UPDATE, true);
-		ArrayList args = new ArrayList();
+		CmdArguments args = new CmdArguments();
 		args.add("up");
 		args.add("-r");
 		args.add(validRev(revision));
 		args.add(path);
-		addAuthInfo(args);
-        addConfigInfo(args);        
+		args.addAuthInfo(this.user, this.pass);
+        args.addConfigInfo(this.configDir);        
 		return execString(args,false);
 	}
 
@@ -799,13 +762,13 @@ public class SvnCommandLine extends CommandLine {
 			pathsArg.append(" ");
 		}
         setCommand(ISVNNotifyListener.Command.UPDATE, true);
-		ArrayList args = new ArrayList();
+		CmdArguments args = new CmdArguments();
 		args.add("up");
 		args.add("-r");
 		args.add(validRev(revision));
 		args.add(pathsArg.toString());
-		addAuthInfo(args);
-        addConfigInfo(args);        
+		args.addAuthInfo(this.user, this.pass);
+        args.addConfigInfo(this.configDir);        
 		return execString(args,false);
 	}
 
@@ -820,7 +783,7 @@ public class SvnCommandLine extends CommandLine {
 	 */
 	byte[] annotate(String path,String revisionStart, String revisionEnd) throws CmdLineException {
 		setCommand(ISVNNotifyListener.Command.ANNOTATE, false);
-		ArrayList args = new ArrayList();
+		CmdArguments args = new CmdArguments();
 		args.add("annotate");
 		args.add("--xml");
 		args.add("-r");
@@ -833,8 +796,8 @@ public class SvnCommandLine extends CommandLine {
 			args.add(validRev(revisionEnd));			
 		}
 		args.add(path);
-		addAuthInfo(args);
-        addConfigInfo(args);        
+		args.addAuthInfo(this.user, this.pass);
+        args.addConfigInfo(this.configDir);        
 		return execBytes(args,false);
 	}
 
@@ -843,7 +806,7 @@ public class SvnCommandLine extends CommandLine {
      */
     String switchUrl(String path, String url, String revision, boolean recurse) throws CmdLineException {
         setCommand(ISVNNotifyListener.Command.SWITCH, true);
-        ArrayList args = new ArrayList();
+        CmdArguments args = new CmdArguments();
         args.add("sw");
         args.add(url);
         args.add(path);
@@ -851,8 +814,8 @@ public class SvnCommandLine extends CommandLine {
             args.add("-N");                
         args.add("-r");
         args.add(validRev(revision));
-        addAuthInfo(args);
-        addConfigInfo(args);        
+        args.addAuthInfo(this.user, this.pass);
+        args.addConfigInfo(this.configDir);        
         return execString(args,false);
     }
 
@@ -861,7 +824,7 @@ public class SvnCommandLine extends CommandLine {
      */
     String relocate(String from, String to, String path, boolean recurse) throws CmdLineException {
         setCommand(ISVNNotifyListener.Command.RELOCATE, false);
-        ArrayList args = new ArrayList();
+        CmdArguments args = new CmdArguments();
         args.add("sw");
         args.add("--relocate");
         if (!recurse)
@@ -869,8 +832,8 @@ public class SvnCommandLine extends CommandLine {
         args.add(from);
         args.add(to);
         args.add(path);
-        addAuthInfo(args);
-        addConfigInfo(args);        
+        args.addAuthInfo(this.user, this.pass);
+        args.addConfigInfo(this.configDir);        
         return execString(args,false);
     }
     
@@ -879,7 +842,7 @@ public class SvnCommandLine extends CommandLine {
      */
     String merge(String path1, String revision1, String path2, String revision2, String localPath, boolean force, boolean recurse, boolean dryRun) throws CmdLineException {
         setCommand(ISVNNotifyListener.Command.MERGE, true);
-        ArrayList args = new ArrayList();
+        CmdArguments args = new CmdArguments();
         args.add("merge");
         if (!recurse)
         	args.add("-N");
@@ -896,8 +859,8 @@ public class SvnCommandLine extends CommandLine {
         	args.add(path2 + "@" + validRev(revision2));
         }
         args.add(localPath);
-        addAuthInfo(args);
-        addConfigInfo(args);        
+        args.addAuthInfo(this.user, this.pass);
+        args.addConfigInfo(this.configDir);        
         return execString(args,false);
     }
     
@@ -913,7 +876,7 @@ public class SvnCommandLine extends CommandLine {
 	void revpropset(String propName, String propValue, String target, String revision, boolean force)
 		throws CmdLineException {
         setCommand(ISVNNotifyListener.Command.PROPSET, false);
-		ArrayList args = new ArrayList();
+		CmdArguments args = new CmdArguments();
 		args.add("propset");
 		args.add(propName);
 		
@@ -927,8 +890,8 @@ public class SvnCommandLine extends CommandLine {
 
 		if (force)
 			args.add("--force");
-        addAuthInfo(args);
-        addConfigInfo(args);        
+        args.addAuthInfo(this.user, this.pass);
+        args.addConfigInfo(this.configDir);        
 		execVoid(args);
 	}
 
@@ -941,7 +904,7 @@ public class SvnCommandLine extends CommandLine {
     String lock(Object[] paths, String comment, boolean force)
         throws CmdLineException {
         setCommand(ISVNNotifyListener.Command.LOCK, true);
-		ArrayList args = new ArrayList();
+		CmdArguments args = new CmdArguments();
 		args.add("lock");
 		if (force)
 		    args.add("--force");
@@ -949,8 +912,8 @@ public class SvnCommandLine extends CommandLine {
 		    args.add("-m");
 		    args.add(comment);
 		}
-		addAuthInfo(args);
-        addConfigInfo(args);
+		args.addAuthInfo(this.user, this.pass);
+        args.addConfigInfo(this.configDir);
 		        
         for (int i = 0; i < paths.length; i++) {
         	args.add(paths[i]);
@@ -967,12 +930,12 @@ public class SvnCommandLine extends CommandLine {
      */
     String unlock(Object[] paths, boolean force) throws CmdLineException {
         setCommand(ISVNNotifyListener.Command.UNLOCK, true);
-		ArrayList args = new ArrayList();
+		CmdArguments args = new CmdArguments();
 		args.add("unlock");
 		if (force)
 		    args.add("--force");
-		addAuthInfo(args);
-        addConfigInfo(args);
+		args.addAuthInfo(this.user, this.pass);
+        args.addConfigInfo(this.configDir);
 		        
         for (int i = 0; i < paths.length;i++) {
         	args.add(paths[i]);

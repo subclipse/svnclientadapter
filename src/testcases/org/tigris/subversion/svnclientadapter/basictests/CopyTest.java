@@ -76,14 +76,14 @@ public class CopyTest extends SVNTest {
         thisTest.checkStatusesExpectedWC();
     }
 
-    public void testCopyUrl2Url() throws Throwable {
+    public void testCopyUrl2UrlWithoutMsg() throws Throwable {
         // create working copy
         OneTest thisTest = new OneTest("basicCopyUrl2Url",
                 getGreekTestConfig());
 
         client.copy(new SVNUrl(thisTest.getUrl() + "/A/B"), new SVNUrl(thisTest
                 .getUrl()
-                + "/B"), "log msg", SVNRevision.HEAD);
+                + "/B"), null, SVNRevision.HEAD);
         
         // update the working copy
         client.update(thisTest.getWCPath(), SVNRevision.HEAD, true);        

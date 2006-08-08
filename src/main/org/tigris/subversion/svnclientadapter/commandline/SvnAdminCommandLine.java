@@ -32,7 +32,7 @@ public class SvnAdminCommandLine extends CommandLine {
 	 */
 	void create(String path, String repositoryType) throws CmdLineException {
 		notificationHandler.setCommand(ISVNNotifyListener.Command.CREATE_REPOSITORY);
-		ArrayList args = new ArrayList();
+		CmdArguments args = new CmdArguments();
 		args.add("create");
 		if (repositoryType != null) {
 			// repository type is for svnadmin >= 1.1
