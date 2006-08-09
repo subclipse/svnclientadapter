@@ -72,13 +72,13 @@ public class CmdLineClientAdapter12 extends CmdLineClientAdapter {
     	return super.getStatus(path, descend, getAll, false);
 	}
 
-    protected CmdLineStatusPart[] getCmdStatuses(String[] paths, boolean descend, boolean getAll, boolean contactServer) throws CmdLineException
+    protected CmdLineStatusPart[] getCmdStatuses(String[] paths, boolean descend, boolean getAll, boolean contactServer, boolean ignoreExternals) throws CmdLineException
     {
     	//Beware! the contactServer parameter is ignored, always treated as false.
     	if (paths.length == 0) {
     		return new CmdLineStatusPart[0];
     	}
-    	String statusLinesString = ((SvnCommandLine12) _cmd).statusByStdout(paths, descend, getAll, false);
+    	String statusLinesString = ((SvnCommandLine12) _cmd).statusByStdout(paths, descend, getAll, false, ignoreExternals);
         String[] parts = StringUtils.split(statusLinesString,Helper.NEWLINE);
         CmdLineStatusPart[] cmdLineStatusParts = new CmdLineStatusPart[parts.length];
         for (int i = 0; i < parts.length;i++) {

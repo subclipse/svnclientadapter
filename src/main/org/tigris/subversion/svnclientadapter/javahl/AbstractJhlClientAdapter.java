@@ -380,12 +380,18 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 		throws SVNClientException {
 		return getStatus(path, descend,getAll,false); 
 	}
-	
 
     /* (non-Javadoc)
      * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getStatus(java.io.File, boolean, boolean, boolean)
      */
     public ISVNStatus[] getStatus(File path, boolean descend, boolean getAll, boolean contactServer) throws SVNClientException {
+    	return getStatus(path, descend, getAll, contactServer, false);
+    }
+
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getStatus(java.io.File, boolean, boolean, boolean, boolean)
+     */
+    public ISVNStatus[] getStatus(File path, boolean descend, boolean getAll, boolean contactServer, boolean ignoreExternals) throws SVNClientException {
 		notificationHandler.setCommand(ISVNNotifyListener.Command.STATUS);
 		String filePathSVN = fileToSVNPath(path, false);
 		notificationHandler.logCommandLine("status " + (contactServer?"-u ":"")+ filePathSVN);
@@ -396,7 +402,8 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
                     filePathSVN,  
                     descend,            // If descend is true, recurse fully, else do only immediate children.
                     contactServer,      // If update is set, contact the repository and augment the status structures with information about out-of-dateness     
-					getAll,getAll));    // retrieve all entries; otherwise, retrieve only "interesting" entries (local mods and/or out-of-date).
+					getAll,getAll,		// retrieve all entries; otherwise, retrieve only "interesting" entries (local mods and/or out-of-date).
+					ignoreExternals));  // if yes the svn:externals will be ignored
 		} catch (ClientException e) {
 			if (e.getAprError() == SVN_ERR_WC_NOT_DIRECTORY) {
 				// when there is no .svn dir, an exception is thrown ...

@@ -235,6 +235,24 @@ public interface ISVNClientAdapter {
 	throws SVNClientException;
 
 	/**
+	 * Returns the status of path and its children.
+     * If descend is true, recurse fully, else do only immediate children.
+     * If getAll is set, retrieve all entries; otherwise, retrieve only 
+     * "interesting" entries (local mods and/or out-of-date). Use the
+     * contactServer option to get server change information.
+     *
+	 * @param path File to gather status.
+     * @param descend get recursive status information
+     * @param getAll get status information for all files
+     * @param contactServer contact server to get remote changes
+     * @param ignoreExternals if externals are ignored during status
+	 * @return a Status
+     * @throws SVNClientException
+	 */
+	public abstract ISVNStatus[] getStatus(File path, boolean descend, boolean getAll, boolean contactServer, boolean ignoreExternals)
+	throws SVNClientException;
+
+	/**
 	 * copy and schedule for addition (with history)
 	 * @param srcPath
 	 * @param destPath

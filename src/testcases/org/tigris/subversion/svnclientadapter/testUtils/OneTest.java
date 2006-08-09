@@ -16,7 +16,9 @@ import java.util.logging.Logger;
 import org.tigris.subversion.svnclientadapter.ISVNDirEntry;
 import org.tigris.subversion.svnclientadapter.ISVNStatus;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
+import org.tigris.subversion.svnclientadapter.SVNStatusKind;
 import org.tigris.subversion.svnclientadapter.SVNUrl;
+import org.tigris.subversion.svnclientadapter.testUtils.ExpectedWC.Item;
 
 /**
  * this internal class represent the repository and the working copy for one
@@ -65,9 +67,24 @@ public class OneTest {
         this.config = config;
 		this.expectedWC = config.getExpectedWC().copy();
         this.expectedRepository = config.getExpectedRepository().copy();
-		repository = createStartRepository(testName);
+		repository = createStartRepository(testName, config);
 		url = testsConfig.makeReposUrl(repository);
 		workingCopy = createStartWorkingCopy(repository, testName);
+	}
+
+	/**
+	 * build a new test setup with a new repository, a new working and a new
+	 * expected working layout
+	 * @param testName
+	 * @param config
+	 * @param externalConfig (config to be hooked via svn:external)
+	 * 
+	 * @throws Exception
+	 */
+	public OneTest(String testName, TestConfig config, TestConfig externalConfig) throws Exception {
+		this(testName, config);
+		File externalRepository = createStartRepository(testName + ".external", externalConfig);
+		createSvnExternal(repository, externalRepository, testName);
 	}
 
 	/**
@@ -180,12 +197,12 @@ public class OneTest {
 	 * @return the repository directory
 	 * @throws Exception
 	 */
-	protected File createStartRepository(String aTestName) throws Exception {
+	protected File createStartRepository(String aTestName, TestConfig aConfig) throws Exception {
         // build a clean repository directory
 		File repos = new File(testsConfig.repositories, aTestName);
         log.fine("Creating repository for test "+aTestName+" at "+repos.toString());        
 		FileUtils.removeDirectoryWithContent(repos);
-		FileUtils.copyFiles(config.getReposDirectory(), repos);
+		FileUtils.copyFiles(aConfig.getReposDirectory(), repos);
 
 		return repos;
 	}
@@ -216,16 +233,45 @@ public class OneTest {
 		return workingCopy;
 	}
 
+	protected File createSvnExternal(File repos, File externalRepository, String aTestName)
+	throws Exception {
+//		build a clean working directory
+		SVNUrl anUrl = testsConfig.makeReposUrl(externalRepository);
+		config.getClient().propertySet(workingCopy, "svn:externals", "A/E	" + anUrl, false);
+		config.getClient().commit(new File[] {workingCopy} , "Exetrnals prop set", false);
+		config.getClient().update(workingCopy, SVNRevision.HEAD, true);
+		Item item = expectedWC.getItem("");
+		item.propStatus = SVNStatusKind.NORMAL;
+		expectedWC.addItem("A/E", null);
+		item = expectedWC.getItem("A/E");
+		item.textStatus = SVNStatusKind.EXTERNAL;
+		item.propStatus = SVNStatusKind.NONE;
+//		sanity check the working with its expected status
+		checkStatusesExpectedWCIgnoreExternals();
+		checkEntriesExpectedRepository();
+		return workingCopy;
+	}
+
 	/**
 	 * Check if the working copy has the expected status
 	 * 
 	 * @throws Exception
 	 */
 	public void checkStatusesExpectedWC() throws Exception {
-		ISVNStatus[] states = config.getClient().getStatus(workingCopy, true, true);
+		ISVNStatus[] states = config.getClient().getStatus(workingCopy, true, true, false, false);
 		expectedWC.check(states, workingCopy.getAbsolutePath());
 	}
-    
+
+	/**
+	 * Check if the working copy has the expected status
+	 * 
+	 * @throws Exception
+	 */
+	public void checkStatusesExpectedWCIgnoreExternals() throws Exception {
+		ISVNStatus[] states = config.getClient().getStatus(workingCopy, true, true, false, true);
+		expectedWC.check(states, workingCopy.getAbsolutePath());
+	}
+
     /**
      * Check if repository has expected entries
      * @throws Exception

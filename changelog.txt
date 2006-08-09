@@ -4,6 +4,7 @@
 - added logMessage(url, paths[], ...)
 - fixed the local->UTF-8 log message conversion problems
 - added ISVNStatus#getUrlString()
+- added ISVNClientAdapter#getStatus with ignoreExternals parameter
 
 * July 12, 2006
 - relicense under EPL

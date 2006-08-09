@@ -699,7 +699,7 @@ public class SvnCommandLine extends CommandLine {
 	 * @param allEntries if false, only interesting entries will be get (local mods and/or out-of-date).
 	 * @param checkUpdates Check for updates on server.
 	 */
-	byte[] status(String path[], boolean descend, boolean allEntries, boolean checkUpdates) throws CmdLineException {
+	byte[] status(String path[], boolean descend, boolean allEntries, boolean checkUpdates, boolean ignoreExternals) throws CmdLineException {
         if (path.length == 0) {
             // otherwise we would do a "svn status" without args
             return new byte[0]; 
@@ -718,6 +718,9 @@ public class SvnCommandLine extends CommandLine {
         }
         if (allEntries) {
         	args.add("--no-ignore"); // disregard default and svn:ignore property ignores
+        }
+        if (ignoreExternals) {
+        	args.add("--ignore-externals");
         }
 		
         for (int i = 0; i < path.length;i++) { 

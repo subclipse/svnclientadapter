@@ -107,13 +107,14 @@ public class JavaSvnClientAdapter extends AbstractJhlClientAdapter {
      * @param descend get recursive status information
      * @param getAll get status information for all files
      * @param contactServer contact server to get remote changes
+     * @param ignoreExternals
      *  
      * @return a Status
      * @throws SVNClientException
      */
-    public ISVNStatus[] getStatus(File path, boolean descend, boolean getAll, boolean contactServer) throws SVNClientException {
+    public ISVNStatus[] getStatus(File path, boolean descend, boolean getAll, boolean contactServer, boolean ignoreExternals) throws SVNClientException {
     	//Call the standard status first.
-    	ISVNStatus[] statuses = super.getStatus(path, descend, getAll, contactServer);
+    	ISVNStatus[] statuses = super.getStatus(path, descend, getAll, contactServer, ignoreExternals);
     	//If status call return empty array it is either correct - the getAll was not specified and there's not
     	//interesting status in WC, or it is the bug on getting status on unversioned with ignored.
     	if (statuses.length == 0) {
@@ -122,7 +123,7 @@ public class JavaSvnClientAdapter extends AbstractJhlClientAdapter {
     			return new ISVNStatus[] { new SVNStatusUnversioned(path) };    			
     		} else {
     			//If the getAll was not called, we have to find out, so let's call it again with getAll set.
-    			ISVNStatus[] reCheckStatuses = super.getStatus(path, false, true, false);
+    			ISVNStatus[] reCheckStatuses = super.getStatus(path, false, true, false, true);
     			if (reCheckStatuses.length == 0) {
         			//If event after getAll the result is empty, we assume it's the bug.
     				return new ISVNStatus[] { new SVNStatusUnversioned(path) };

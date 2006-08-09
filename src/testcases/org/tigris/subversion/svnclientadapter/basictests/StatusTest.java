@@ -244,4 +244,23 @@ public class StatusTest extends SVNTest {
         assertEquals("Wrong path", rho, statuses[2].getFile());
     }
 
+    public void testStatusWithExternals() throws Throwable
+    {
+        // build the test setup
+        OneTest thisTest = new OneTest("statusWithExternals",getGreekTestConfig(), getNumericTestConfig());
+
+        // check the status of the working copy
+        thisTest.checkStatusesExpectedWCIgnoreExternals();
+
+        //Test with the ignoreExternals flag on first
+        //Check that url is always present. Used to be missing on the external resource itself
+		ISVNStatus[] states = client.getStatus(thisTest.getWorkingCopy(), true, true, false, true);
+		for (int i = 0; i < states.length; i++) {
+			assertNotNull(states[i].getUrlString());
+		}
+
+        //Test with the ignoreExternals flag off now
+
+    }    
+
 }

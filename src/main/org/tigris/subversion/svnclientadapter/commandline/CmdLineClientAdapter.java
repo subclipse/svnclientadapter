@@ -174,7 +174,7 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
         // because otherwise svn will stop after the first "svn: 'resource' is not a working copy" 
         CmdLineStatuses cmdLineStatuses;
         try {
-            CmdLineStatusPart[] cmdLineStatusParts = getCmdStatuses(paths, false, true, false);
+            CmdLineStatusPart[] cmdLineStatusParts = getCmdStatuses(paths, false, true, false, false);
             List targetsInfo = new ArrayList(cmdLineStatusParts.length);
             for (int i = 0; i < cmdLineStatusParts.length;i++) {
             	if (cmdLineStatusParts[i].isManaged()) {
@@ -583,22 +583,22 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
     	return getStatus(path, descend, getAll, false);
 	}
 
-    protected CmdLineStatusPart[] getCmdStatuses(File[] paths, boolean descend, boolean getAll, boolean contactServer) throws CmdLineException
+    protected CmdLineStatusPart[] getCmdStatuses(File[] paths, boolean descend, boolean getAll, boolean contactServer, boolean ignoreExternals) throws CmdLineException
     {
     	String[] pathNames = new String[paths.length];
     	for (int i = 0; i < pathNames.length; i++) {
 			pathNames[i] = toString(paths[i]);
 		}
-		return getCmdStatuses(pathNames, descend, getAll, contactServer);
+		return getCmdStatuses(pathNames, descend, getAll, contactServer, ignoreExternals);
     }    
 
-    protected CmdLineStatusPart[] getCmdStatuses(String[] paths, boolean descend, boolean getAll, boolean contactServer) throws CmdLineException
+    protected CmdLineStatusPart[] getCmdStatuses(String[] paths, boolean descend, boolean getAll, boolean contactServer, boolean ignoreExternals) throws CmdLineException
     {
     	if (paths.length == 0) {
     		return new CmdLineStatusPart[0];
     	}
 		byte[] listXml;
-		listXml = _cmd.status(paths, descend, getAll, contactServer);	
+		listXml = _cmd.status(paths, descend, getAll, contactServer, ignoreExternals);	
 		return CmdLineStatusPart.CmdLineStatusPartFromXml.createStatusParts(listXml);
     }    
 
@@ -1092,9 +1092,16 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
      * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getStatus(java.io.File, boolean, boolean, boolean)
      */
     public ISVNStatus[] getStatus(File path, boolean descend, boolean getAll, boolean contactServer) throws SVNClientException {
+    	return getStatus(path, descend, getAll, contactServer, false);
+    }
+
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getStatus(java.io.File, boolean, boolean, boolean, boolean)
+     */
+    public ISVNStatus[] getStatus(File path, boolean descend, boolean getAll, boolean contactServer, boolean ignoreExternals) throws SVNClientException {
 		try {
 			// first we get the status of the files
-            CmdLineStatusPart[] cmdLineStatusParts = getCmdStatuses(new File[] {path},descend, getAll, contactServer);
+            CmdLineStatusPart[] cmdLineStatusParts = getCmdStatuses(new File[] {path},descend, getAll, contactServer, ignoreExternals);
             List targetsInfo = new ArrayList(cmdLineStatusParts.length);
             List nonManagedParts = new ArrayList();
             for (int i = 0; i < cmdLineStatusParts.length;i++) {
@@ -1158,7 +1165,7 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
             notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
             
 			// first we get the status of the files to find out whether it is versioned
-            CmdLineStatusPart[] cmdLineStatusParts = getCmdStatuses(new File[] {path}, false, true, false);
+            CmdLineStatusPart[] cmdLineStatusParts = getCmdStatuses(new File[] {path}, false, true, false, false);
             // if the file is managed, it is safe to call info
             if ((cmdLineStatusParts.length > 0) && (cmdLineStatusParts[0].isManaged())) {
             	String cmdLineInfoStrings = _cmd.info(new String[] { toString(path) }, null, null);

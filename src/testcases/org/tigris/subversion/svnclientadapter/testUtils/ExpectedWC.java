@@ -31,7 +31,7 @@ import org.tigris.subversion.svnclientadapter.SVNStatusKind;
 /**
  * This class describe the expected state of the working copy
  */
-public class ExpectedWC
+public class ExpectedWC implements ExpectedStructure
 {
     /**
      * the map of the items of the working copy. The relative path is the key
@@ -77,11 +77,10 @@ public class ExpectedWC
      * @param path      the path of the item
      * @param content   the content of the item. A null content signifies a
      *                  directory
-     * @return          the new Item object
      */
-    public Item addItem(String path, String content)
+    public void addItem(String path, String content)
     {
-        return new Item(path, content);
+        new Item(path, content);
     }
 
     /**

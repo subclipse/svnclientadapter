@@ -56,6 +56,7 @@ public abstract class SVNTest extends TestCase {
     protected String logMessage = "Log Message";
 
     private TestConfig greekTestConfig = null;
+    private TestConfig numericTestConfig = null;
 
     private TestsConfig testsConfig;
 
@@ -139,36 +140,66 @@ public abstract class SVNTest extends TestCase {
         }
     }
 
-    public TestConfig getGreekTestConfig() throws IOException,
-            SVNClientException {
-        if (greekTestConfig == null) {
-            // build the sample repository that will be imported
-            File greekFiles = new File(localTmp, "greek_files");
-            greekFiles.mkdir();
-            ExpectedWC greekWC = ExpectedGreekRepositoryFactory.getGreekWC();
-            greekWC.materialize(greekFiles);
-            
-            ExpectedRepository greekRepository = ExpectedGreekRepositoryFactory.getGreekRepository();
-            
-            // create the repository
-            File greekRepos = new File(localTmp, "repos");
-            log.fine("Creating repository :" + greekRepos.toString());
-            clientAdmin.createRepository(greekRepos,
-                    ISVNClientAdapter.REPOSITORY_FSTYPE_FSFS);
-            FileUtils.copyFile(new File("test/svnserve.conf"), new File(
-                    greekRepos, "conf/svnserve.conf"));
-            FileUtils.copyFile(new File("test/passwd"), new File(greekRepos,
-                    "conf/passwd"));
-            log.fine("Importing from : " + greekFiles.toString()
-                    + " to repository :" + greekRepos.toString());
-            clientAdmin.doImport(greekFiles, testsConfig
-                    .makeReposUrl(greekRepos), logMessage, true);
+    public TestConfig getGreekTestConfig() throws IOException, SVNClientException {
+    	if (greekTestConfig == null) {
+    		// build the sample repository that will be imported
+    		File greekFiles = new File(localTmp, "greek_files");
+    		greekFiles.mkdir();
+    		ExpectedWC greekWC = ExpectedGreekRepositoryFactory.getGreekWC();
+    		greekWC.materialize(greekFiles);
 
-            greekTestConfig = new TestConfig(client, greekRepos, greekWC, greekRepository);
-        }
-        return greekTestConfig;
+    		ExpectedRepository greekRepository = ExpectedGreekRepositoryFactory.getGreekRepository();
+
+    		// create the repository
+    		File greekRepos = new File(localTmp, "repos");
+    		log.fine("Creating repository :" + greekRepos.toString());
+    		clientAdmin.createRepository(greekRepos,
+    				ISVNClientAdapter.REPOSITORY_FSTYPE_FSFS);
+    		FileUtils.copyFile(new File("test/svnserve.conf"), new File(
+    				greekRepos, "conf/svnserve.conf"));
+    		FileUtils.copyFile(new File("test/passwd"), new File(greekRepos,
+    		"conf/passwd"));
+    		log.fine("Importing from : " + greekFiles.toString()
+    				+ " to repository :" + greekRepos.toString());
+    		clientAdmin.doImport(greekFiles, testsConfig
+    				.makeReposUrl(greekRepos), logMessage, true);
+
+    		greekTestConfig = new TestConfig(client, greekRepos, greekWC, greekRepository);
+    	}
+    	return greekTestConfig;
     }
 
+    public TestConfig getNumericTestConfig() throws IOException,
+            SVNClientException {
+        if (numericTestConfig == null) {
+            // build the sample repository that will be imported
+            File numericFiles = new File(localTmp, "numeric_files");
+            numericFiles.mkdir();
+            ExpectedWC numericWC = ExpectedGreekRepositoryFactory.getNumericWC();
+            numericWC.materialize(numericFiles);
+            
+            ExpectedRepository numericRepository = ExpectedGreekRepositoryFactory.getNumericRepository();
+            
+            // create the repository
+            File numericRepos = new File(localTmp, "repos2");
+            log.fine("Creating repository :" + numericRepos.toString());
+            clientAdmin.createRepository(numericRepos,
+                    ISVNClientAdapter.REPOSITORY_FSTYPE_FSFS);
+            FileUtils.copyFile(new File("test/svnserve.conf"), new File(
+                    numericRepos, "conf/svnserve.conf"));
+            FileUtils.copyFile(new File("test/passwd"), new File(numericRepos,
+                    "conf/passwd"));
+            log.fine("Importing from : " + numericFiles.toString()
+                    + " to repository :" + numericRepos.toString());
+            clientAdmin.doImport(numericFiles, testsConfig
+                    .makeReposUrl(numericRepos), logMessage, true);
+
+            numericTestConfig = new TestConfig(client, numericRepos, numericWC, numericRepository);
+        }
+        return numericTestConfig;
+    }
+
+    
     /**
      * cleanup after one test
      * 
