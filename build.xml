@@ -36,6 +36,11 @@
            includes="**"
 		   classpathref="project.classpath">
     </javac>
+    <copy todir="${build.classes.dir}">
+      <fileset dir="${src.main.dir}">
+        <exclude name="**/*.java"/>
+      </fileset>
+    </copy>  
   </target>
 
   <!-- ================================================================= -->
@@ -60,7 +65,7 @@
     <mkdir dir="${build.lib.dir}" />
     <jar jarfile="${build.lib.dir}/svnClientAdapter.jar"
          basedir="${build.classes.dir}"
-         includes="**/*.class"
+         includes="**/*"
          excludes="**/*Test*.class">
    	  <manifest>
    	    <section name="org.tigris.subversion.svnclientadapter">
