@@ -18,10 +18,8 @@ import java.util.Date;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.tigris.subversion.svnclientadapter.SVNNodeKind;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
 import org.tigris.subversion.svnclientadapter.SVNStatusKind;
-import org.tigris.subversion.svnclientadapter.SVNUrl;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -39,7 +37,6 @@ public class CmdLineStatusFromXml extends CmdLineXmlCommand {
 	private SVNStatusKind repositoryPropStatus;
 	private SVNRevision.Number revision;
 	private String path;
-	private SVNNodeKind nodeKind;
 	private boolean copied;
 	private boolean wcLocked;
 	private boolean switched;
@@ -133,12 +130,6 @@ public class CmdLineStatusFromXml extends CmdLineXmlCommand {
 	 */
 	public String getLockOwner() {
 		return lockOwner;
-	}
-	/**
-	 * @return Returns the nodeKind.
-	 */
-	public SVNNodeKind getNodeKind() {
-		return nodeKind;
 	}
 	/**
 	 * @return Returns the path.
@@ -247,12 +238,6 @@ public class CmdLineStatusFromXml extends CmdLineXmlCommand {
 	 */
 	protected void setLockOwner(String lockOwner) {
 		this.lockOwner = lockOwner;
-	}
-	/**
-	 * @param nodeKind The nodeKind to set.
-	 */
-	protected void setNodeKind(SVNNodeKind nodeKind) {
-		this.nodeKind = nodeKind;
 	}
 	/**
 	 * @param path The path to set.

@@ -260,7 +260,9 @@ public class StatusTest extends SVNTest {
 		}
 
         //Test with the ignoreExternals flag off now
-
+		thisTest.getExpectedWC().addExternalPartWC(getNumericTestConfig().getExpectedWC(), "A/E");
+		thisTest.getExpectedWC().setItemTextStatus("A/E", SVNStatusKind.EXTERNAL);
+        thisTest.checkStatusesExpectedWC();
     }    
 
 }

@@ -229,6 +229,17 @@ public class ExpectedWC implements ExpectedStructure
         return c;
     }
 
+    public ExpectedWC addExternalPartWC(ExpectedWC externalWC, String externalRootPath)
+    {
+    	for (Iterator iter = externalWC.items.values().iterator(); iter.hasNext();) {
+			Item item = (Item) iter.next();
+			if (!"".equals(item.myPath)) {
+				addItem(externalRootPath + "/" + item.myPath, item.myContent);
+			}
+		}
+    	return this;
+    }
+    
     /**
      * Check the result of a single file SVNClient.list call
      * @param tested            the result array

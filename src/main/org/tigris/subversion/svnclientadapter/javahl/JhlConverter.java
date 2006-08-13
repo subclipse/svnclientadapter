@@ -22,9 +22,7 @@ import org.tigris.subversion.javahl.RevisionKind;
 import org.tigris.subversion.javahl.ScheduleKind;
 import org.tigris.subversion.javahl.Status;
 import org.tigris.subversion.javahl.StatusKind;
-import org.tigris.subversion.svnclientadapter.ISVNLogMessage;
 import org.tigris.subversion.svnclientadapter.ISVNLogMessageChangePath;
-import org.tigris.subversion.svnclientadapter.ISVNStatus;
 import org.tigris.subversion.svnclientadapter.SVNLogMessageChangePath;
 import org.tigris.subversion.svnclientadapter.SVNNodeKind;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
@@ -174,7 +172,7 @@ public class JhlConverter {
 		return new JhlDirEntry(dirEntry);
 	}
 
-	static ISVNLogMessage[] convert(LogMessage[] msg) {
+	static JhlLogMessage[] convert(LogMessage[] msg) {
 		JhlLogMessage[] messages = new JhlLogMessage[msg.length];
 		for(int i=0; i < msg.length; i++) {
 			messages[i] = new JhlLogMessage(msg[i]);
@@ -182,7 +180,7 @@ public class JhlConverter {
 		return messages;
 	}
     
-    public static ISVNStatus[] convert(Status[] status) {
+    public static JhlStatus[] convert(Status[] status) {
         JhlStatus[] jhlStatus = new JhlStatus[status.length];
         for(int i=0; i < status.length; i++) {
             jhlStatus[i] = new JhlStatus(status[i]);

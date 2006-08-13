@@ -61,6 +61,11 @@ abstract class CmdLineStatusPart {
 		return textStatus;
 	}
 	
+	/* package */ void setTextStatus(SVNStatusKind textSt)
+	{
+		this.textStatus = textSt;
+	}
+	
 	public SVNStatusKind getPropStatus()
 	{
 		return propStatus;

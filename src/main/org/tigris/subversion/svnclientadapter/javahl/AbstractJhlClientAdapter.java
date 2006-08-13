@@ -15,6 +15,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import org.tigris.subversion.javahl.ClientException;
 import org.tigris.subversion.javahl.Info;
@@ -397,13 +402,13 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 		notificationHandler.logCommandLine("status " + (contactServer?"-u ":"")+ filePathSVN);
 		notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
 		try {
-			return JhlConverter.convert(
+			return processExternalStatuses(JhlConverter.convert(
                 svnClient.status(
                     filePathSVN,  
                     descend,            // If descend is true, recurse fully, else do only immediate children.
                     contactServer,      // If update is set, contact the repository and augment the status structures with information about out-of-dateness     
 					getAll,getAll,		// retrieve all entries; otherwise, retrieve only "interesting" entries (local mods and/or out-of-date).
-					ignoreExternals));  // if yes the svn:externals will be ignored
+					ignoreExternals)));  // if yes the svn:externals will be ignored
 		} catch (ClientException e) {
 			if (e.getAprError() == SVN_ERR_WC_NOT_DIRECTORY) {
 				// when there is no .svn dir, an exception is thrown ...
@@ -415,6 +420,58 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 		}
     }
 
+    /**
+     * Post-process svn:externals statuses.
+     * JavaHL answer two sort of statuses on externals:
+     * - when ignoreExternals is set to true during call to status(),
+     *  the returned status has textStatus set to EXTERNAL, but the url is null.<br>
+     * - when ignoreExternals is set to false during call to status(),
+     *  besides the "external + null" status, the second status with url and all fields is returned too, 
+     *  but this one has textStatus NORMAL.
+     *  
+     *  This methods unifies both statuses to be complete and has textStatus external.
+     *  In case the first sort (when ignoreExternals true), the url is retrieved by call the info()
+     */
+    protected ISVNStatus[] processExternalStatuses(JhlStatus[] statuses) throws SVNClientException
+    {
+    	//Collect indexes of external statuses
+    	List externalStatusesIndexes = new ArrayList();
+    	for (int i = 0; i < statuses.length; i++) {
+    		if (SVNStatusKind.EXTERNAL.equals(statuses[i].getTextStatus())) {
+    			externalStatusesIndexes.add(new Integer(i));
+    		}
+		}
+    	
+    	if (externalStatusesIndexes.isEmpty()) {
+    		return statuses;
+    	}
+    	
+    	//Wrap the "second" externals so their textStatus is actually external
+    	for (Iterator iter = externalStatusesIndexes.iterator(); iter.hasNext();) {
+    		int index = ((Integer) iter.next()).intValue();
+			JhlStatus jhlStatus = statuses[index];
+			for (int i = 0; i < statuses.length; i++) {
+				if ((statuses[i].getPath() != null) && (statuses[i].getPath().equals(jhlStatus.getPath()))) {
+					statuses[i] = new JhlStatus.JhlStatusExternal(statuses[i]);
+					statuses[index] = statuses[i];
+				}
+			}
+		}
+    	
+    	//Fill the missing urls
+    	for (Iterator iter = externalStatusesIndexes.iterator(); iter.hasNext();) {
+    		int index = ((Integer) iter.next()).intValue();
+			JhlStatus jhlStatus = statuses[index];
+			if ((jhlStatus.getUrlString() == null) || (jhlStatus.getUrlString().length() == 0)) {
+				ISVNInfo info = getInfoFromWorkingCopy(jhlStatus.getFile());
+				if (info != null) {
+					statuses[index] = new JhlStatus.JhlStatusExternal(jhlStatus, info.getUrlString());
+				}
+			}
+		}
+    	return statuses;
+    }
+    
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#copy(java.io.File, java.io.File)
 	 */

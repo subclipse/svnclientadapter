@@ -11,10 +11,14 @@
 package org.tigris.subversion.svnclientadapter.commandline;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.tigris.subversion.svnclientadapter.ISVNInfo;
 import org.tigris.subversion.svnclientadapter.ISVNStatus;
+import org.tigris.subversion.svnclientadapter.SVNClientException;
 import org.tigris.subversion.svnclientadapter.SVNStatusKind;
 import org.tigris.subversion.svnclientadapter.SVNStatusUnversioned;
 
@@ -57,6 +61,7 @@ public class CmdLineStatuses {
      * instance field.
      */
     private ISVNStatus[] buildStatuses() {
+    	processExternalStatuses(cmdLineStatusParts);
         List statuses = new LinkedList();
         for (int i = 0; i < cmdLineStatusParts.length; i++) {
             CmdLineStatusPart cmdLineStatusPart = cmdLineStatusParts[i];
@@ -94,6 +99,46 @@ public class CmdLineStatuses {
             }
         }
         return null;
+    }
+
+    /**
+     * Post-process svn:externals statuses.
+     * commandline answer two sort of statuses on externals:
+     * - when ignoreExternals is set to true during call to status(),
+     *  the returned status has textStatus set to EXTERNAL, but the url is null.<br>
+     * - when ignoreExternals is set to false during call to status(),
+     *  besides the "external + null" status, the second status with url and all fields is returned too, 
+     *  but this one has textStatus NORMAL.
+     *  
+     *  This methods unifies both statuses to be complete and has textStatus external.
+     *  In case the first sort (when ignoreExternals true), the url is retrieved by call the info()
+     */
+    protected CmdLineStatusPart[] processExternalStatuses(CmdLineStatusPart[] statuses)
+    {
+    	//Collect indexes of external statuses
+    	List externalStatusesIndexes = new ArrayList();
+    	for (int i = 0; i < statuses.length; i++) {
+    		if (SVNStatusKind.EXTERNAL.equals(statuses[i].getTextStatus())) {
+    			externalStatusesIndexes.add(new Integer(i));
+    		}
+		}
+    	
+    	if (externalStatusesIndexes.isEmpty()) {
+    		return statuses;
+    	}
+    	
+    	//Check the "second" externals so their textStatus is actually external
+    	for (Iterator iter = externalStatusesIndexes.iterator(); iter.hasNext();) {
+    		int index = ((Integer) iter.next()).intValue();
+    		CmdLineStatusPart aStatus = statuses[index];
+			for (int i = 0; i < statuses.length; i++) {
+				if ((statuses[i].getPath() != null) && (statuses[i].getPath().equals(aStatus.getPath()))) {
+					statuses[i].setTextStatus(SVNStatusKind.EXTERNAL);
+				}
+			}
+		}
+    	
+    	return statuses;
     }
 
     public ISVNStatus get(int i) {

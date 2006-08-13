@@ -29,7 +29,7 @@ import org.tigris.subversion.svnclientadapter.SVNUrl;
  */
 public class JhlStatus implements ISVNStatus {
 
-	private Status _s;
+	protected Status _s;
 
 	/**
 	 * Constructor
@@ -46,8 +46,8 @@ public class JhlStatus implements ISVNStatus {
 	 */
 	public SVNUrl getUrl() {
 		try {
-            String url = _s.getUrl();
-            return (url != null) ? new SVNUrl(url) : null;
+            String urlString = getUrlString();
+            return (urlString != null) ? new SVNUrl(urlString) : null;
         } catch (MalformedURLException e) {
             //should never happen.
             return null;
@@ -261,5 +261,46 @@ public class JhlStatus implements ISVNStatus {
      */
     public String getLockComment() {
         return _s.getLockComment();
+    }
+    
+    /**
+     * A special JhlStatus subclass representing svn:external resource.
+     * (JavaHL answer two sort of statuses on externals:
+     * - when ignoreExternals is set to true during call to status(),
+     *  the return status has textStatus set to EXTERNAL, but the url is null.<br>
+     * - when ignoreExternals is set to false during call to status(),
+     *  besides the "external" status, second status with url and all fields is returned too, 
+     *  but this one has textStatus NORMAL)
+     */
+    public static class JhlStatusExternal extends JhlStatus
+    {
+    	private String url;
+
+    	/**
+    	 * Constructor
+    	 * @param status
+    	 */
+    	public JhlStatusExternal(JhlStatus status) {
+            this(status, null);
+    	}
+
+    	/**
+    	 * Constructor
+    	 * @param status
+    	 * @param url
+    	 */
+    	public JhlStatusExternal(JhlStatus status, String url) {
+            super(status._s);
+            this.url = url;
+    	}
+
+    	public SVNStatusKind getTextStatus() {
+            return SVNStatusKind.EXTERNAL;
+    	}    	
+    	
+    	public String getUrlString()
+    	{
+    		return (url != null) ? url : super.getUrlString();
+    	}
     }
 }
