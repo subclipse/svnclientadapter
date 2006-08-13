@@ -33,6 +33,12 @@ public interface ISVNInfo
     public SVNUrl getUrl();
 
     /**
+     * Retrieves the url (string) of the item
+     * @return url of the item
+     */
+    public String getUrlString();
+
+    /**
      * Retrieves the uuid of the repository
      * @return  uuid of the repository
      */

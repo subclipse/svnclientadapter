@@ -47,6 +47,13 @@ public class SVNInfoUnversioned implements ISVNInfo {
 	}
 
 	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNInfo#getUrlString()
+	 */
+	public String getUrlString() {
+		return null;
+	}
+
+	/* (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNInfo#getUuid()
 	 */
 	public String getUuid() {

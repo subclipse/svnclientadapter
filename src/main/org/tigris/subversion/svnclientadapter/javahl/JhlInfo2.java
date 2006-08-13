@@ -68,6 +68,13 @@ public class JhlInfo2 implements ISVNInfo {
 	}
 
 	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNInfo#getUrlString()
+	 */
+	public String getUrlString() {
+		return info.getUrl();
+	}
+
+	/* (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNInfo#getUuid()
 	 */
 	public String getUuid() {
