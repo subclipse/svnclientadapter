@@ -60,6 +60,8 @@ public class JhlClientAdapter extends AbstractJhlClientAdapter {
     		    // because of a problem in one of these libraries the proper behavior
     		    // will still occur -- meaning JavaHL adapter is disabled.
 				if(isOsWindows()) {
+					StringBuffer bdbErrors = new StringBuffer();
+					boolean bdbLoaded = false;
 					try {
 						System.loadLibrary("libapr");
 			        } catch (Exception e) {
@@ -82,11 +84,23 @@ public class JhlClientAdapter extends AbstractJhlClientAdapter {
 		               	javaHLErrors.append(e.getMessage()).append("\n");
 			        }
 					try {
-						System.loadLibrary("libdb43");
+						System.loadLibrary("libdb44");
+						bdbLoaded = true;
 			        } catch (Exception e) {
-		               	javaHLErrors.append(e.getMessage()).append("\n");
+			        	bdbErrors.append(e.getMessage()).append("\n");
 			        } catch (UnsatisfiedLinkError e) {
-		               	javaHLErrors.append(e.getMessage()).append("\n");
+		               	bdbErrors.append(e.getMessage()).append("\n");
+			        }
+					try {
+						System.loadLibrary("libdb43");
+						bdbLoaded = true;
+			        } catch (Exception e) {
+			        	bdbErrors.append(e.getMessage()).append("\n");
+			        } catch (UnsatisfiedLinkError e) {
+		               	bdbErrors.append(e.getMessage()).append("\n");
+			        }
+			        if (!bdbLoaded) {
+			        	javaHLErrors.append(bdbErrors.toString());
 			        }
 					try {
 						System.loadLibrary("ssleay32");
