@@ -15,6 +15,7 @@ import java.net.MalformedURLException;
 import java.util.Date;
 
 import org.tigris.subversion.javahl.Status;
+import org.tigris.subversion.svnclientadapter.ISVNInfo;
 import org.tigris.subversion.svnclientadapter.ISVNStatus;
 import org.tigris.subversion.svnclientadapter.SVNStatusKind;
 import org.tigris.subversion.svnclientadapter.SVNNodeKind;
@@ -30,6 +31,9 @@ import org.tigris.subversion.svnclientadapter.SVNUrl;
 public class JhlStatus implements ISVNStatus {
 
 	protected Status _s;
+	private SVNRevision.Number lastChangedRevision;
+	private String lastChangedAuthor;
+	private Date lastChangedDate;
 
 	/**
 	 * Constructor
@@ -69,6 +73,8 @@ public class JhlStatus implements ISVNStatus {
         // we don't use 
         // return (SVNRevision.Number)JhlConverter.convert(_s.getLastChangedRevision());
         // as _s.getLastChangedRevision() is currently broken if revision is -1 
+		if (lastChangedRevision != null)
+			return lastChangedRevision;
 		if (_s.getReposLastCmtAuthor() == null)
 			return JhlConverter.convertRevisionNumber(_s.getLastChangedRevisionNumber());
 		else
@@ -76,12 +82,18 @@ public class JhlStatus implements ISVNStatus {
 				return null;
 			return JhlConverter.convertRevisionNumber(_s.getReposLastCmtRevisionNumber());
 	}
+	
+	public SVNRevision.Number getReposLastChangedRevision() {
+		return JhlConverter.convertRevisionNumber(_s.getReposLastCmtRevisionNumber());
+	}
 
 	/*
 	 * (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getLastChangedDate()
 	 */
 	public Date getLastChangedDate() {
+		if (lastChangedDate != null)
+			return lastChangedDate;
 		if (_s.getReposLastCmtAuthor() == null)
 			return _s.getLastChangedDate();
 		else
@@ -93,6 +105,8 @@ public class JhlStatus implements ISVNStatus {
 	 * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getLastCommitAuthor()
 	 */
 	public String getLastCommitAuthor() {
+		if (lastChangedAuthor != null)
+			return lastChangedAuthor;
 		if (_s.getReposLastCmtAuthor() == null)
 			return _s.getLastCommitAuthor();
 		else
@@ -261,6 +275,12 @@ public class JhlStatus implements ISVNStatus {
      */
     public String getLockComment() {
         return _s.getLockComment();
+    }
+    
+    public void updateFromInfo(ISVNInfo info) {
+    	lastChangedRevision = info.getLastChangedRevision();
+    	lastChangedAuthor = info.getLastCommitAuthor();
+    	lastChangedDate = info.getLastChangedDate();
     }
     
     /**

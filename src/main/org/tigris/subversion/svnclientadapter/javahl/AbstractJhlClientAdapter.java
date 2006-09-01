@@ -16,10 +16,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import org.tigris.subversion.javahl.ClientException;
 import org.tigris.subversion.javahl.Info;
@@ -43,6 +41,7 @@ import org.tigris.subversion.svnclientadapter.ISVNStatus;
 import org.tigris.subversion.svnclientadapter.SVNBaseDir;
 import org.tigris.subversion.svnclientadapter.SVNClientException;
 import org.tigris.subversion.svnclientadapter.SVNInfoUnversioned;
+import org.tigris.subversion.svnclientadapter.SVNNodeKind;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
 import org.tigris.subversion.svnclientadapter.SVNStatusKind;
 import org.tigris.subversion.svnclientadapter.SVNStatusUnversioned;
@@ -402,13 +401,13 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 		notificationHandler.logCommandLine("status " + (contactServer?"-u ":"")+ filePathSVN);
 		notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
 		try {
-			return processExternalStatuses(JhlConverter.convert(
+			return processFolderStatuses(processExternalStatuses(JhlConverter.convert(
                 svnClient.status(
                     filePathSVN,  
                     descend,            // If descend is true, recurse fully, else do only immediate children.
                     contactServer,      // If update is set, contact the repository and augment the status structures with information about out-of-dateness     
 					getAll,getAll,		// retrieve all entries; otherwise, retrieve only "interesting" entries (local mods and/or out-of-date).
-					ignoreExternals)));  // if yes the svn:externals will be ignored
+					ignoreExternals))), getAll, contactServer);  // if yes the svn:externals will be ignored
 		} catch (ClientException e) {
 			if (e.getAprError() == SVN_ERR_WC_NOT_DIRECTORY) {
 				// when there is no .svn dir, an exception is thrown ...
@@ -432,7 +431,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
      *  This methods unifies both statuses to be complete and has textStatus external.
      *  In case the first sort (when ignoreExternals true), the url is retrieved by call the info()
      */
-    protected ISVNStatus[] processExternalStatuses(JhlStatus[] statuses) throws SVNClientException
+    protected JhlStatus[] processExternalStatuses(JhlStatus[] statuses) throws SVNClientException
     {
     	//Collect indexes of external statuses
     	List externalStatusesIndexes = new ArrayList();
@@ -466,6 +465,33 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 				ISVNInfo info = getInfoFromWorkingCopy(jhlStatus.getFile());
 				if (info != null) {
 					statuses[index] = new JhlStatus.JhlStatusExternal(jhlStatus, info.getUrlString());
+				}
+			}
+		}
+    	return statuses;
+    }
+    /**
+     * Post-process statuses.
+     * Folders do not return proper lastChangedRevision information.
+     * this allows it to be populated via the svn info command
+     */
+    protected ISVNStatus[] processFolderStatuses(JhlStatus[] statuses, boolean getAll, boolean contactServer) throws SVNClientException
+    {
+    	if (!getAll || !contactServer)
+    		return statuses;
+     	
+    	//Fill the missing urls
+    	for (int i = 0; i < statuses.length; i++) {
+			JhlStatus jhlStatus = statuses[i];
+			if (SVNNodeKind.DIR == jhlStatus.getNodeKind() && jhlStatus.getReposLastChangedRevision() == null) {
+				if (jhlStatus.getUrlString() != null) {
+					try {
+						ISVNInfo info = getInfo(jhlStatus.getUrl());
+						if (info != null) {
+							statuses[i].updateFromInfo(info);
+						}
+					} catch (Exception e) {
+					}
 				}
 			}
 		}
