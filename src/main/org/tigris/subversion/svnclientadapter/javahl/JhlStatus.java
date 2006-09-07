@@ -283,6 +283,12 @@ public class JhlStatus implements ISVNStatus {
     	lastChangedDate = info.getLastChangedDate();
     }
     
+    public void updateFromStatus(JhlStatus info) {
+    	lastChangedRevision = info.getLastChangedRevision();
+    	lastChangedAuthor = info.getLastCommitAuthor();
+    	lastChangedDate = info.getLastChangedDate();
+    }
+    
     /**
      * A special JhlStatus subclass representing svn:external resource.
      * (JavaHL answer two sort of statuses on externals:

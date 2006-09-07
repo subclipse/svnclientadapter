@@ -487,23 +487,28 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
     {
     	if (!getAll || !contactServer)
     		return statuses;
-     	notificationHandler.disableLog();
-    	//Fill the missing urls
+    	//Fill the missing last changed info on folders from the file info in the array
+     	List folders = new ArrayList();
     	for (int i = 0; i < statuses.length; i++) {
 			JhlStatus jhlStatus = statuses[i];
 			if (SVNNodeKind.DIR == jhlStatus.getNodeKind() && jhlStatus.getReposLastChangedRevision() == null) {
-				if (jhlStatus.getUrlString() != null && jhlStatus.getRepositoryTextStatus() == SVNStatusKind.NONE) {
-					try {
-						ISVNInfo info = getInfo(jhlStatus.getUrl());
-						if (info != null) {
-							statuses[i].updateFromInfo(info);
+				folders.add(jhlStatus);
+			}
+		}
+    	for (int i = 0; i < statuses.length; i++) {
+			JhlStatus jhlStatus = statuses[i];
+			if (jhlStatus.getReposLastChangedRevision() != null) {
+				for (Iterator iter = folders.iterator(); iter.hasNext();) {
+					JhlStatus folder = (JhlStatus) iter.next();
+					if (jhlStatus.getUrlString().startsWith(folder.getUrlString())) {
+						if (folder.getLastChangedRevision() == null ||
+								folder.getLastChangedRevision().getNumber() < jhlStatus.getReposLastChangedRevision().getNumber()) {
+							folder.updateFromStatus(jhlStatus);
 						}
-					} catch (Exception e) {
 					}
 				}
 			}
 		}
-    	notificationHandler.enableLog();
     	return statuses;
     }
     
