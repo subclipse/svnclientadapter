@@ -41,13 +41,15 @@ public abstract class SVNNotificationHandler {
         notifylisteners.remove(listener);
     }
     
+    /**
+     * restore logging 
+     */
     public void enableLog() {
         logEnabled = true;
     }
     
     /**
-     * disable logging. calls to logMessage, logCompleted, logCommandLine do nothing 
-     * Note that errors and exceptions are not disabled
+     * disable all logging 
      */
     public void disableLog() {
         logEnabled = false;
@@ -63,10 +65,12 @@ public abstract class SVNNotificationHandler {
     }
 
     public void logError(String message) {
-        for(Iterator it=notifylisteners.iterator(); it.hasNext();) {
-            ISVNNotifyListener listener = (ISVNNotifyListener)it.next();
-            listener.logError(message);
-        }                        
+        if (logEnabled) {
+	        for(Iterator it=notifylisteners.iterator(); it.hasNext();) {
+	            ISVNNotifyListener listener = (ISVNNotifyListener)it.next();
+	            listener.logError(message);
+	        }
+        }
     }
 
     public void logRevision(long revision, String path) {
@@ -117,10 +121,12 @@ public abstract class SVNNotificationHandler {
      * @param clientException
      */        
     public void logException(Exception clientException) {
-        Throwable e = clientException;
-        while (e != null) {
-            logError(e.getMessage());
-            e = e.getCause();                
+        if (logEnabled) {
+	        Throwable e = clientException;
+	        while (e != null) {
+	            logError(e.getMessage());
+	            e = e.getCause();                
+	        }
         }
     }
     

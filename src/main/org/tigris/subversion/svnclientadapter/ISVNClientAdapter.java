@@ -37,6 +37,11 @@ public interface ISVNClientAdapter {
 	 * @param listener 
 	 */
 	public abstract void removeNotifyListener(ISVNNotifyListener listener);
+
+	/**
+	 * Get the notification handler
+	 */
+	public abstract SVNNotificationHandler getNotificationHandler();
 	
 	/**
 	 * Sets the username.

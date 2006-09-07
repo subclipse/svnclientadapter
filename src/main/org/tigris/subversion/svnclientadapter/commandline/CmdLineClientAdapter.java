@@ -36,6 +36,7 @@ import org.tigris.subversion.svnclientadapter.ISVNProperty;
 import org.tigris.subversion.svnclientadapter.ISVNStatus;
 import org.tigris.subversion.svnclientadapter.SVNBaseDir;
 import org.tigris.subversion.svnclientadapter.SVNClientException;
+import org.tigris.subversion.svnclientadapter.SVNNotificationHandler;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
 import org.tigris.subversion.svnclientadapter.SVNStatusUnversioned;
 import org.tigris.subversion.svnclientadapter.SVNUrl;
@@ -137,7 +138,14 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
         notificationHandler.remove(listener);
 	}
 
-    private boolean isManaged(File file) {
+    /* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getNotificationHandler()
+	 */
+	public SVNNotificationHandler getNotificationHandler() {
+		return notificationHandler;
+	}
+
+	private boolean isManaged(File file) {
     	if (file.isDirectory()) {
     		return isManagedDir(file.getParentFile()) || isManagedDir(file);
     	} else {

@@ -42,6 +42,7 @@ import org.tigris.subversion.svnclientadapter.SVNBaseDir;
 import org.tigris.subversion.svnclientadapter.SVNClientException;
 import org.tigris.subversion.svnclientadapter.SVNInfoUnversioned;
 import org.tigris.subversion.svnclientadapter.SVNNodeKind;
+import org.tigris.subversion.svnclientadapter.SVNNotificationHandler;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
 import org.tigris.subversion.svnclientadapter.SVNStatusKind;
 import org.tigris.subversion.svnclientadapter.SVNStatusUnversioned;
@@ -115,6 +116,13 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
     }
 
     /* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getNotificationHandler()
+	 */
+	public SVNNotificationHandler getNotificationHandler() {
+		return notificationHandler;
+	}
+
+	/* (non-Javadoc)
      * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#setUsername(java.lang.String)
      */
     public void setUsername(String username) {
@@ -479,12 +487,12 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
     {
     	if (!getAll || !contactServer)
     		return statuses;
-     	
+     	notificationHandler.disableLog();
     	//Fill the missing urls
     	for (int i = 0; i < statuses.length; i++) {
 			JhlStatus jhlStatus = statuses[i];
 			if (SVNNodeKind.DIR == jhlStatus.getNodeKind() && jhlStatus.getReposLastChangedRevision() == null) {
-				if (jhlStatus.getUrlString() != null) {
+				if (jhlStatus.getUrlString() != null && jhlStatus.getRepositoryTextStatus() == SVNStatusKind.NONE) {
 					try {
 						ISVNInfo info = getInfo(jhlStatus.getUrl());
 						if (info != null) {
@@ -495,6 +503,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 				}
 			}
 		}
+    	notificationHandler.enableLog();
     	return statuses;
     }
     
