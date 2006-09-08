@@ -1813,4 +1813,28 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
             throw new SVNClientException(e);            
         }
 	}
+
+	public void mkdir(SVNUrl url, boolean makeParents, String message)
+	throws SVNClientException {
+		if (makeParents) {
+			SVNUrl parent = url.getParent();
+			if (parent != null) {
+				ISVNInfo info = null;
+				try {
+					info = this.getInfo(parent);
+				} catch (SVNClientException e) {
+					if (e.getCause() instanceof ClientException) {
+						ClientException ce = (ClientException) e.getCause();
+						if (ce.getAprError() != 170000)
+							throw e;
+					}
+				}
+				if (info == null)
+					this.mkdir(parent, makeParents, message);
+			}
+		}
+		this.mkdir(url, message);
+	}
+
+	
 }
