@@ -1253,28 +1253,14 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
     }
     
 	/* (non-Javadoc)
-	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#merge(org.tigris.subversion.svnclientadapter.SVNUrl, org.tigris.subversion.svnclientadapter.SVNRevision, org.tigris.subversion.svnclientadapter.SVNUrl, org.tigris.subversion.svnclientadapter.SVNRevision, java.io.File, boolean, boolean)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#merge(org.tigris.subversion.svnclientadapter.SVNUrl, org.tigris.subversion.svnclientadapter.SVNRevision, org.tigris.subversion.svnclientadapter.SVNUrl, org.tigris.subversion.svnclientadapter.SVNRevision, java.io.File, boolean, boolean, boolean, boolean)
 	 */
 	public void merge(SVNUrl path1, SVNRevision revision1, SVNUrl path2,
 			SVNRevision revision2, File localPath, boolean force,
-			boolean recurse) throws SVNClientException {
+			boolean recurse, boolean dryRun, boolean ignoreAncestry) throws SVNClientException {
 		try {
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(localPath));
-            _cmd.merge(toString(path1), toString(revision1), toString(path2), toString(revision2), toString(localPath), force, recurse, false);
-        } catch (CmdLineException e) {
-        	throw SVNClientException.wrapException(e);
-        }
-	}
-
-	/* (non-Javadoc)
-	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#merge(org.tigris.subversion.svnclientadapter.SVNUrl, org.tigris.subversion.svnclientadapter.SVNRevision, org.tigris.subversion.svnclientadapter.SVNUrl, org.tigris.subversion.svnclientadapter.SVNRevision, java.io.File, boolean, boolean, boolean)
-	 */
-	public void merge(SVNUrl path1, SVNRevision revision1, SVNUrl path2,
-			SVNRevision revision2, File localPath, boolean force,
-			boolean recurse, boolean dryRun) throws SVNClientException {
-		try {
-			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(localPath));
-            _cmd.merge(toString(path1), toString(revision1), toString(path2), toString(revision2), toString(localPath), force, recurse, dryRun);
+            _cmd.merge(toString(path1), toString(revision1), toString(path2), toString(revision2), toString(localPath), force, recurse, dryRun, ignoreAncestry);
         } catch (CmdLineException e) {
         	throw SVNClientException.wrapException(e);
         }

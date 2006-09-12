@@ -1488,21 +1488,12 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
         }
     }
     
-	/* (non-Javadoc)
-     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#merge(java.lang.String, org.tigris.subversion.svnclientadapter.SVNRevision, java.lang.String, org.tigris.subversion.svnclientadapter.SVNRevision, java.lang.String, boolean, boolean)
-     */
-    public void merge(SVNUrl path1, SVNRevision revision1, SVNUrl path2,
-    		SVNRevision revision2, File localPath, boolean force,
-    		boolean recurse) throws SVNClientException {
-        merge(path1, revision1, path2, revision2, localPath, force, recurse, false);
-    }
-
     /* (non-Javadoc)
-     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#merge(org.tigris.subversion.svnclientadapter.SVNUrl, org.tigris.subversion.svnclientadapter.SVNRevision, org.tigris.subversion.svnclientadapter.SVNUrl, org.tigris.subversion.svnclientadapter.SVNRevision, java.io.File, boolean, boolean, boolean)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#merge(org.tigris.subversion.svnclientadapter.SVNUrl, org.tigris.subversion.svnclientadapter.SVNRevision, org.tigris.subversion.svnclientadapter.SVNUrl, org.tigris.subversion.svnclientadapter.SVNRevision, java.io.File, boolean, boolean, boolean, boolean)
      */
     public void merge(SVNUrl path1, SVNRevision revision1, SVNUrl path2,
             SVNRevision revision2, File localPath, boolean force,
-            boolean recurse, boolean dryRun) throws SVNClientException {
+            boolean recurse, boolean dryRun, boolean ignoreAncestry) throws SVNClientException {
     	try {
             notificationHandler.setCommand(ISVNNotifyListener.Command.MERGE);
             
@@ -1517,6 +1508,9 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
             if (force) {
             	commandLine += " --force";
             }
+            if (ignoreAncestry) {
+            	commandLine += " --ignore-ancestry";
+            }
             if (path1.toString().equals(path2.toString())) {
             	commandLine += " -r" + revision1.toString() + ":" + revision2.toString() + " " + path1;
             } else {
@@ -1527,7 +1521,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
             File baseDir = SVNBaseDir.getBaseDir(localPath);
             notificationHandler.setBaseDir(baseDir);
     
-            svnClient.merge(path1.toString(), JhlConverter.convert(revision1), path2.toString(), JhlConverter.convert(revision2), target, force, recurse, false, dryRun );
+            svnClient.merge(path1.toString(), JhlConverter.convert(revision1), path2.toString(), JhlConverter.convert(revision2), target, force, recurse, ignoreAncestry, dryRun );
             if (dryRun)
                 notificationHandler.logCompleted("Dry-run merge complete.");
             else

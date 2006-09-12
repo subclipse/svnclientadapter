@@ -216,4 +216,18 @@ public abstract class AbstractClientAdapter implements ISVNClientAdapter {
 	public ISVNInfo getInfo(SVNUrl url) throws SVNClientException {
 		return getInfo(url, SVNRevision.HEAD, SVNRevision.HEAD);
 	}
+
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#merge(org.tigris.subversion.svnclientadapter.SVNUrl, org.tigris.subversion.svnclientadapter.SVNRevision, org.tigris.subversion.svnclientadapter.SVNUrl, org.tigris.subversion.svnclientadapter.SVNRevision, java.io.File, boolean, boolean, boolean)
+	 */
+	public void merge(SVNUrl path1, SVNRevision revision1, SVNUrl path2, SVNRevision revision2, File localPath, boolean force, boolean recurse, boolean dryRun) throws SVNClientException {
+		merge(path1, revision1, path2, revision2, localPath, force, recurse, dryRun, false);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#merge(org.tigris.subversion.svnclientadapter.SVNUrl, org.tigris.subversion.svnclientadapter.SVNRevision, org.tigris.subversion.svnclientadapter.SVNUrl, org.tigris.subversion.svnclientadapter.SVNRevision, java.io.File, boolean, boolean)
+	 */
+	public void merge(SVNUrl path1, SVNRevision revision1, SVNUrl path2, SVNRevision revision2, File localPath, boolean force, boolean recurse) throws SVNClientException {
+		merge(path1, revision1, path2, revision2, localPath, force, recurse, false, false);
+	}
 }
