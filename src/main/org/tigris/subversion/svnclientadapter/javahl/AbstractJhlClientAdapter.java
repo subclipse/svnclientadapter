@@ -497,12 +497,12 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 		}
     	for (int i = 0; i < statuses.length; i++) {
 			JhlStatus jhlStatus = statuses[i];
-			if (jhlStatus.getReposLastChangedRevision() != null) {
+			if (jhlStatus.getLastChangedRevision() != null) {
 				for (Iterator iter = folders.iterator(); iter.hasNext();) {
 					JhlStatus folder = (JhlStatus) iter.next();
-					if (jhlStatus.getUrlString().startsWith(folder.getUrlString())) {
+					if (jhlStatus.getUrlString().startsWith(folder.getUrlString() + "/")) {
 						if (folder.getLastChangedRevision() == null ||
-								folder.getLastChangedRevision().getNumber() < jhlStatus.getReposLastChangedRevision().getNumber()) {
+								folder.getLastChangedRevision().getNumber() < jhlStatus.getLastChangedRevision().getNumber()) {
 							folder.updateFromStatus(jhlStatus);
 						}
 					}
