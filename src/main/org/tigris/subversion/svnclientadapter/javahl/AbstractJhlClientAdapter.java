@@ -682,7 +682,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 			notificationHandler.logCommandLine("export " + src + ' ' + dest);
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(new File[]{srcPath,destPath }));
 			// in this case, revision is not used but must be valid
-			svnClient.doExport(src, dest, Revision.HEAD, force);
+			svnClient.doExport(src, dest, Revision.WORKING, force);
 		} catch (ClientException e) {
 			notificationHandler.logException(e);
 			throw new SVNClientException(e);
