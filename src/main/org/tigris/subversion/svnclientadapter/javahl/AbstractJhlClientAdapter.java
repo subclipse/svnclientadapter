@@ -16,8 +16,10 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.tigris.subversion.javahl.ClientException;
 import org.tigris.subversion.javahl.Info;
@@ -1021,14 +1023,32 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 					+ "\" "
 					+ target);
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
+
+			Set statusBefore = null;
+			if (recurse) {
+				statusBefore = new HashSet();
+				ISVNStatus[] statuses = getStatus(path,recurse,false);
+				for (int i = 0; i < statuses.length;i++) {
+					statusBefore.add(statuses[i].getFile().getAbsolutePath());
+				}
+			}
+
 			svnClient.propertySet(target, propertyName, propertyValue, recurse);
 			
 			// there is no notification (Notify.notify is not called) when we set a property
 			// so we will do notification ourselves
-			ISVNStatus[] statuses = getStatus(path,recurse,false);
-			for (int i = 0; i < statuses.length;i++) {
-				notificationHandler.notifyListenersOfChange(statuses[i].getFile().getAbsolutePath());	
-			}
+            if (recurse) {
+	   		   ISVNStatus[] statuses = getStatus(path,recurse,false);
+			   for (int i = 0; i < statuses.length;i++) {
+				   String statusPath = statuses[i].getFile().getAbsolutePath();
+				   notificationHandler.notifyListenersOfChange(statusPath);
+				   statusBefore.remove(statusPath);
+			   }
+			   for (Iterator it = statusBefore.iterator(); it.hasNext();)
+				   notificationHandler.notifyListenersOfChange((String)it.next());
+            } else {
+ 			   notificationHandler.notifyListenersOfChange(path.getAbsolutePath());	
+            }
 			
 		} catch (ClientException e) {
 			notificationHandler.logException(e);
@@ -1078,14 +1098,31 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 				}
 			}
 
+			Set statusBefore = null;
+			if (recurse) {
+				statusBefore = new HashSet();
+				ISVNStatus[] statuses = getStatus(path,recurse,false);
+				for (int i = 0; i < statuses.length;i++) {
+					statusBefore.add(statuses[i].getFile().getAbsolutePath());
+				}
+			}
+
 			svnClient.propertySet(target, propertyName, propertyBytes, recurse);
 
 			// there is no notification (Notify.notify is not called) when we set a property
 			// so we will do notification ourselves
-			ISVNStatus[] statuses = getStatus(path,recurse,false);
-			for (int i = 0; i < statuses.length;i++) {
-				notificationHandler.notifyListenersOfChange(statuses[i].getFile().getAbsolutePath());	
-			}
+            if (recurse) {
+	   		   ISVNStatus[] statuses = getStatus(path,recurse,false);
+			   for (int i = 0; i < statuses.length;i++) {
+				   String statusPath = statuses[i].getFile().getAbsolutePath();
+				   notificationHandler.notifyListenersOfChange(statusPath);
+				   statusBefore.remove(statusPath);
+			   }
+			   for (Iterator it = statusBefore.iterator(); it.hasNext();)
+				   notificationHandler.notifyListenersOfChange((String)it.next());
+            } else {
+ 			   notificationHandler.notifyListenersOfChange(path.getAbsolutePath());	
+            }
 			
 			
 		} catch (ClientException e) {
@@ -1153,6 +1190,15 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
             notificationHandler.logCommandLine("propdel "+propertyName+" "+target);
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
             
+			Set statusBefore = null;
+			if (recurse) {
+				statusBefore = new HashSet();
+				ISVNStatus[] statuses = getStatus(path,recurse,false);
+				for (int i = 0; i < statuses.length;i++) {
+					statusBefore.add(statuses[i].getFile().getAbsolutePath());
+				}
+			}
+			
 			// propertyRemove is on repository, this will be present on next version of javahl			
 			// svnClient.propertyRemove(target, propertyName,recurse);
 			// @TODO : change this method when svnjavahl will be upgraded
@@ -1160,13 +1206,20 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
             PropertyData propData = svnClient.propertyGet(target,propertyName);
             propData.remove(recurse);
             
-		   // there is no notification (Notify.notify is not called) when we set a property
-   		   // so we will do notification ourselves
-   		   ISVNStatus[] statuses = getStatus(path,recurse,false);
-		   for (int i = 0; i < statuses.length;i++) {
-			   notificationHandler.notifyListenersOfChange(statuses[i].getFile().getAbsolutePath());	
-		   }
-
+            // there is no notification (Notify.notify is not called) when we set a property
+            // so we will do notification ourselves
+            if (recurse) {
+	   		   ISVNStatus[] statuses = getStatus(path,recurse,false);
+			   for (int i = 0; i < statuses.length;i++) {
+				   String statusPath = statuses[i].getFile().getAbsolutePath();
+				   notificationHandler.notifyListenersOfChange(statusPath);
+				   statusBefore.remove(statusPath);
+			   }
+			   for (Iterator it = statusBefore.iterator(); it.hasNext();)
+				   notificationHandler.notifyListenersOfChange((String)it.next());
+            } else {
+ 			   notificationHandler.notifyListenersOfChange(path.getAbsolutePath());	
+            }
 
         } catch (ClientException e) {
             notificationHandler.logException(e);
