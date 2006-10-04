@@ -81,6 +81,30 @@ public class LogTest extends SVNTest {
         assertEquals("wrong number of chang pathes", 1, cp.length);
     }
 
+    /**
+     * test the SVNClientInfo.logMessage functionality on outgoing/uncommitted rename/move
+     * 
+     * @throws Throwable
+     */
+    public void testUncommitedRenameLogMessage() throws Throwable {
+        // create the working copy
+        OneTest thisTest = new OneTest("ucommitedRenameLogMessage", getGreekTestConfig());
+
+        // move file iota
+        File iota = new File(thisTest.getWorkingCopy(), "iota");
+        File iota2 = new File(thisTest.getWorkingCopy(), "iota2");
+        client.move(iota, iota2, true);
+        
+        ISVNLogMessage lm[] = client.getLogMessages(iota2, new SVNRevision.Number(1), SVNRevision.HEAD, true);
+        assertEquals("wrong number of objects", 1, lm.length);
+        assertEquals("wrong message", "Log Message", lm[0].getMessage());
+        assertEquals("wrong revision", 1, lm[0].getRevision().getNumber());
+        assertEquals("wrong user", "cedric", lm[0].getAuthor());
+        assertNotNull("changed paths set", lm[0].getChangedPaths());
+        ISVNLogMessageChangePath cp[] = lm[0].getChangedPaths();
+        assertEquals("wrong number of chang pathes", 20, cp.length);
+    }
+
     //TODO enable this test when ISVNClientAdapter#getLogMessages(SVNUrl, java.lang.String[], SVNRevision, SVNRevision, boolean, boolean) will be implemented
 //    public void testBasicLogUrlMultiPathMessage() throws Exception {
 //        // create the working copy

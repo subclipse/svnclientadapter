@@ -42,10 +42,6 @@ public class SVNStatusUtils {
         return isManaged(status.getTextStatus());
     }
 
-    public static boolean hasRemote(SVNStatusKind textStatus) {
-        return ((isManaged(textStatus)) && (!textStatus.equals(SVNStatusKind.ADDED)));
-    }
-    
     /**
      * Returns if the resource has a remote counter-part
      * @param status
@@ -53,7 +49,8 @@ public class SVNStatusUtils {
      * @return has version in repository
      */
     public static boolean hasRemote(ISVNStatus status) {
-        return hasRemote(status.getTextStatus());
+    	SVNStatusKind textStatus = status.getTextStatus();
+        return ((isManaged(textStatus)) && (!textStatus.equals(SVNStatusKind.ADDED) || status.isCopied()));
     }    
 
     public static boolean isAdded(ISVNStatus status) {

@@ -38,6 +38,7 @@ import org.tigris.subversion.svnclientadapter.SVNBaseDir;
 import org.tigris.subversion.svnclientadapter.SVNClientException;
 import org.tigris.subversion.svnclientadapter.SVNNotificationHandler;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
+import org.tigris.subversion.svnclientadapter.SVNScheduleKind;
 import org.tigris.subversion.svnclientadapter.SVNStatusUnversioned;
 import org.tigris.subversion.svnclientadapter.SVNUrl;
 
@@ -1426,7 +1427,13 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
     public ISVNLogMessage[] getLogMessages(File path, SVNRevision revStart,
 			SVNRevision revEnd, boolean stopOnCopy, boolean fetchChangePath,
 			long limit) throws SVNClientException {
-		return getLogMessages(toString(path), null, revStart, revEnd, stopOnCopy,
+    	String target = toString(path);
+		//If the file is an uncommitted rename/move, we have to refer to original/source, not the new copy.
+		ISVNInfo info = getInfoFromWorkingCopy(path);
+		if ((SVNScheduleKind.ADD == info.getSchedule()) && (info.getCopyUrl() != null)) {
+			target = info.getCopyUrl().toString();			
+		}
+		return getLogMessages(target, null, revStart, revEnd, stopOnCopy,
 				fetchChangePath, limit);
 	}
     

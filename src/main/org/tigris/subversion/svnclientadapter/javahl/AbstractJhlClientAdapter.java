@@ -46,6 +46,7 @@ import org.tigris.subversion.svnclientadapter.SVNInfoUnversioned;
 import org.tigris.subversion.svnclientadapter.SVNNodeKind;
 import org.tigris.subversion.svnclientadapter.SVNNotificationHandler;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
+import org.tigris.subversion.svnclientadapter.SVNScheduleKind;
 import org.tigris.subversion.svnclientadapter.SVNStatusKind;
 import org.tigris.subversion.svnclientadapter.SVNStatusUnversioned;
 import org.tigris.subversion.svnclientadapter.SVNUrl;
@@ -1744,6 +1745,11 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 			boolean stopOnCopy, boolean fetchChangePath, long limit)
 			throws SVNClientException {
 		String target = fileToSVNPath(path, false);
+		//If the file is an uncommitted rename/move, we have to refer to original/source, not the new copy.
+		ISVNInfo info = getInfoFromWorkingCopy(path);
+		if ((SVNScheduleKind.ADD == info.getSchedule()) && (info.getCopyUrl() != null)) {
+			target = info.getCopyUrl().toString();			
+		}
 		notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
 		return this.getLogMessages(target, revisionStart, revisionEnd,
 				stopOnCopy, fetchChangePath, limit);
