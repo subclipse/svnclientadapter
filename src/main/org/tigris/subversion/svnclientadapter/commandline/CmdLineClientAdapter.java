@@ -1014,7 +1014,13 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
     public ISVNAnnotations annotate(File file, SVNRevision revisionStart, SVNRevision revisionEnd)
         throws SVNClientException
     {
-        return annotate(toString(file), revisionStart, revisionEnd);
+    	String target = toString(file);
+		//If the file is an uncommitted rename/move, we have to refer to original/source, not the new copy.
+		ISVNInfo info = getInfoFromWorkingCopy(file);
+		if ((SVNScheduleKind.ADD == info.getSchedule()) && (info.getCopyUrl() != null)) {
+			target = info.getCopyUrl().toString();			
+		}
+        return annotate(target, revisionStart, revisionEnd);
     }
     
 	/*
