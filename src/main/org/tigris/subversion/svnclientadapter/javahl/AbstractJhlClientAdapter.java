@@ -1552,6 +1552,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
             
             String target = fileToSVNPath(localPath, false);
             String commandLine = "merge";
+            boolean samePath = false;
             if (!recurse) {
             	commandLine += " -N";
             }
@@ -1565,6 +1566,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
             	commandLine += " --ignore-ancestry";
             }
             if (path1.toString().equals(path2.toString())) {
+            	samePath = true;
             	commandLine += " -r" + revision1.toString() + ":" + revision2.toString() + " " + path1;
             } else {
             	commandLine += " " + path1 + "@" + revision1.toString() + " " + path2 + "@" + revision2.toString();
@@ -1574,7 +1576,11 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
             File baseDir = SVNBaseDir.getBaseDir(localPath);
             notificationHandler.setBaseDir(baseDir);
     
-            svnClient.merge(path1.toString(), JhlConverter.convert(revision1), path2.toString(), JhlConverter.convert(revision2), target, force, recurse, ignoreAncestry, dryRun );
+            if (samePath) {
+            	Revision peg = JhlConverter.convert(revision2);
+            	svnClient.merge(path1.toString(), peg, JhlConverter.convert(revision1), JhlConverter.convert(revision2), target, force, recurse, ignoreAncestry, dryRun );
+            } else
+            	svnClient.merge(path1.toString(), JhlConverter.convert(revision1), path2.toString(), JhlConverter.convert(revision2), target, force, recurse, ignoreAncestry, dryRun );
             if (dryRun)
                 notificationHandler.logCompleted("Dry-run merge complete.");
             else
