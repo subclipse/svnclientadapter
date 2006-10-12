@@ -526,7 +526,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 			String dest = fileToSVNPath(destPath, false);
 			notificationHandler.logCommandLine("copy " + src + " " + dest);
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(new File[] {srcPath,destPath }));
-			svnClient.copy(src, dest, "", Revision.HEAD);
+			svnClient.copy(src, dest, "", Revision.WORKING);
 			// last two parameters are not used
 		} catch (ClientException e) {
 			notificationHandler.logException(e);
