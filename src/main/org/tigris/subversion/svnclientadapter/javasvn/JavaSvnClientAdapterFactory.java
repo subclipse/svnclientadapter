@@ -46,12 +46,24 @@ public class JavaSvnClientAdapterFactory extends SVNClientAdapterFactory {
         return JAVASVN_CLIENT;
     }
     
+    public static boolean isAvailable() {
+        try {
+            Class c = Class.forName("org.tmatesoft.svn.core.javahl.SVNClientImpl");
+            return true;
+        } catch (Throwable t) {
+            return false;
+        }
+    }
+    
     /**
      * Setup the client adapter implementation and register it in the adapters factory
      * @throws SVNClientException
      */
     public static void setup() throws SVNClientException {
-    	SVNClientAdapterFactory.registerAdapterFactory(new JavaSvnClientAdapterFactory());
+        if (!isAvailable()) {
+            throw new SVNClientException("JavaSVN client adapter is not available");
+        }
+        SVNClientAdapterFactory.registerAdapterFactory(new JavaSvnClientAdapterFactory());
     }
   
 }
