@@ -395,6 +395,8 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 	public void copy(SVNUrl src, SVNUrl dest, String message, SVNRevision rev)
 		throws SVNClientException {
 		try {
+			if (message == null)
+				message = "";
 			_cmd.copy(toString(src), toString(dest), message, toString(rev));
 		} catch (CmdLineException e) {
 			throw SVNClientException.wrapException(e);
@@ -863,6 +865,8 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
      */
 	public void copy(File srcPath, SVNUrl destUrl, String message) throws SVNClientException {
 		try {
+			if (message == null)
+				message = "";
 			_cmd.copy(toString(srcPath), toString(destUrl), message, null);
 		} catch (CmdLineException e) {
 			throw SVNClientException.wrapException(e);

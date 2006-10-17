@@ -230,7 +230,8 @@ public class SvnCommandLine extends CommandLine {
 			args.add("-r");
 			args.add(validRev(revision));
 		}
-		args.addLogMessage(message);
+		if (message != null)
+			args.addLogMessage(message);
 		args.add(src);
 		args.add(dest);
 		args.addAuthInfo(this.user, this.pass);
