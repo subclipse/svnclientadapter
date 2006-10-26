@@ -10,8 +10,6 @@
  ******************************************************************************/
 package org.tigris.subversion.svnclientadapter.commandline;
 
-import java.util.ArrayList;
-
 import org.tigris.subversion.svnclientadapter.ISVNNotifyListener;
 
 /**

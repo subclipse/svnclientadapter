@@ -49,7 +49,10 @@ public class JavaSvnClientAdapterFactory extends SVNClientAdapterFactory {
     public static boolean isAvailable() {
         try {
             Class c = Class.forName("org.tmatesoft.svn.core.javahl.SVNClientImpl");
-            return true;
+            if (c != null)
+            	return true;
+            else
+            	return false;
         } catch (Throwable t) {
             return false;
         }

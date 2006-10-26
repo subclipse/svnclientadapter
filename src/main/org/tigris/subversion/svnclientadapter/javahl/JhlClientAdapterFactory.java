@@ -66,11 +66,13 @@ public class JhlClientAdapterFactory extends SVNClientAdapterFactory {
     
     public static boolean isAvailable() {
     	if (!availabilityCached) {
-    		Class cClient = null;
+    		Class c = null;
     		try {
     			// load a JavaHL class to see if it is found.  Do not use SVNClient as
     			// it will try to load native libraries and we do not want that yet
-    			cClient = Class.forName("org.tigris.subversion.javahl.ClientException");
+    			c = Class.forName("org.tigris.subversion.javahl.ClientException");
+    			if (c == null)
+    				return false;
     		} catch (Throwable t) {
     			availabilityCached = true;
     			return false;
