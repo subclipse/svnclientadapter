@@ -176,19 +176,27 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
         }        
     }
 
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.subclipse.client.ISVNClientAdapter#addDirectory(java.io.File, boolean)
+	 */
+	public void addDirectory(File file, boolean recurse) throws SVNClientException {
+		addDirectory(file, recurse, false);
+	}
+
     /* (non-Javadoc)
-     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#addDirectory(java.io.File, boolean)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#addDirectory(java.io.File, boolean, boolean)
      */
-    public void addDirectory(File dir, boolean recurse)
+    public void addDirectory(File dir, boolean recurse, boolean force)
         throws SVNClientException {
         try {
             notificationHandler.setCommand(ISVNNotifyListener.Command.ADD);            
             notificationHandler.logCommandLine(
                 "add"+
-                (recurse?"":"-N")+
+                (recurse?"":" -N")+
+                (force?" --force":"")+
                 " "+dir.toString());
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(dir));
-            svnClient.add(fileToSVNPath(dir, false), recurse);
+            svnClient.add(fileToSVNPath(dir, false), recurse, force);
         } catch (ClientException e) {
             notificationHandler.logException(e);
             throw new SVNClientException(e);

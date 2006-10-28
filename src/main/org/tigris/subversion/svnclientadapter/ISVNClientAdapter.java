@@ -39,7 +39,7 @@ public interface ISVNClientAdapter {
 	public abstract void removeNotifyListener(ISVNNotifyListener listener);
 
 	/**
-	 * Get the notification handler
+	 * @return the notification handler
 	 */
 	public abstract SVNNotificationHandler getNotificationHandler();
 	
@@ -75,6 +75,16 @@ public interface ISVNClientAdapter {
 	 * @throws SVNClientException
 	 */
 	public abstract void addDirectory(File dir, boolean recurse)
+		throws SVNClientException;
+
+	/**
+	 * Adds a directory to the repository.
+	 * @param dir
+	 * @param recurse
+	 * @param force
+	 * @throws SVNClientException
+	 */
+	public abstract void addDirectory(File dir, boolean recurse, boolean force)
 		throws SVNClientException;
 	
 	/**

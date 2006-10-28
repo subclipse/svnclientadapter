@@ -93,13 +93,18 @@ public class SvnCommandLine extends CommandLine {
 	 * @param recursive true if this is a directory
 	 *   and its children should be traversed
 	 *   recursively.
+	 * @param force true if this is a directory that 
+	 *   should be scanned even if it's already added
+	 *	 to the repository
 	 */
-	String add(String path, boolean recursive) throws CmdLineException {
+	String add(String path, boolean recursive, boolean force) throws CmdLineException {
 		setCommand(ISVNNotifyListener.Command.ADD, true);
 		CmdArguments args = new CmdArguments();
 		args.add("add");
 		if (!recursive)
 			args.add("-N");
+		if (force)
+			args.add("--force");
 		args.add(path);
 		return execString(args,false);
 	}

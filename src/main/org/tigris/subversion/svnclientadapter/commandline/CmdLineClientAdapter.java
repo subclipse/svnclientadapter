@@ -472,9 +472,16 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 	 * @see org.tigris.subversion.subclipse.client.ISVNClientAdapter#addDirectory(java.io.File, boolean)
 	 */
 	public void addDirectory(File file, boolean recurse) throws SVNClientException {
+		addDirectory(file, recurse, false);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.subclipse.client.ISVNClientAdapter#addDirectory(java.io.File, boolean, boolean)
+	 */
+	public void addDirectory(File file, boolean recurse, boolean force) throws SVNClientException {
 		try {
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(file));
-			_cmd.add(toString(file), recurse);
+			_cmd.add(toString(file), recurse, force);
 		} catch (CmdLineException e) {
 			//if something is already in svn and we
 			//try to add it, we get a warning.
@@ -491,7 +498,7 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 	public void addFile(File file) throws SVNClientException {
 		try {
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(file));
-			_cmd.add(toString(file), false);
+			_cmd.add(toString(file), false, false);
 		} catch (CmdLineException e) {
 			//if something is already in svn and we
 			//try to add it, we get a warning.
