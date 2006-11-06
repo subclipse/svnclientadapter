@@ -626,7 +626,10 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 		String newPath,
 		SVNRevision newPathRevision,
 		File outFile,
-		boolean recurse) throws SVNClientException {
+		boolean recurse,
+		boolean ignoreAncestry, 
+		boolean noDiffDeleted, 
+		boolean force) throws SVNClientException {
 		if (newPath == null)
 			newPath = oldPath;
 		if (oldPathRevision == null)
@@ -641,7 +644,10 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 					toString(oldPathRevision),
 					newPath,
 					toString(newPathRevision),
-					recurse);
+					recurse,
+					ignoreAncestry,
+					noDiffDeleted,
+					force);
 
 			streamToFile(is, outFile);
 			is.close();
@@ -666,14 +672,35 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 		throws SVNClientException {
 		if (oldPath == null)
 			oldPath = new File(".");
-		diff(
-			toString(oldPath),
+		diff(oldPath,
 			oldPathRevision,
-			toString(newPath),
+			newPath,
 			newPathRevision,
 			outFile,
-			recurse);
+			recurse, true, false, false);
 	}
+
+	public void diff(
+			File oldPath,
+			SVNRevision oldPathRevision,
+			File newPath,
+			SVNRevision newPathRevision,
+			File outFile,
+			boolean recurse,
+			boolean ignoreAncestry, 
+			boolean noDiffDeleted, 
+			boolean force)
+			throws SVNClientException {
+			if (oldPath == null)
+				oldPath = new File(".");
+			diff(
+				toString(oldPath),
+				oldPathRevision,
+				toString(newPath),
+				newPathRevision,
+				outFile,
+				recurse, ignoreAncestry, noDiffDeleted, force);
+		}
 
     /*
      * (non-Javadoc)
@@ -695,8 +722,25 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 		File outFile,
 		boolean recurse)
 		throws SVNClientException {
-		diff(toString(oldUrl), oldUrlRevision, toString(newUrl), newUrlRevision, outFile, recurse);
+		diff(oldUrl, oldUrlRevision, newUrl, newUrlRevision, outFile, recurse, true, false, false);
 	}
+
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#diff(org.tigris.subversion.svnclientadapter.SVNUrl, org.tigris.subversion.svnclientadapter.SVNRevision, org.tigris.subversion.svnclientadapter.SVNUrl, org.tigris.subversion.svnclientadapter.SVNRevision, java.io.File, boolean, boolean, boolean, boolean)
+	 */
+	public void diff(
+			SVNUrl oldUrl,
+			SVNRevision oldUrlRevision,
+			SVNUrl newUrl,
+			SVNRevision newUrlRevision,
+			File outFile,
+			boolean recurse,
+			boolean ignoreAncestry, 
+			boolean noDiffDeleted, 
+			boolean force)
+			throws SVNClientException {
+			diff(toString(oldUrl), oldUrlRevision, toString(newUrl), newUrlRevision, outFile, recurse, ignoreAncestry, noDiffDeleted, force);
+		}
 
     /*
      * (non-Javadoc)
@@ -1505,7 +1549,7 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 				toString(url) + "@" + toString(urlRevision),
 				null,
 				outFile,
-				recurse);
+				recurse, true, false, false);
 	}
 
 }

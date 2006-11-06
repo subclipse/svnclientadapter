@@ -1242,6 +1242,16 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
     public void diff(File oldPath, SVNRevision oldPathRevision,
                      File newPath, SVNRevision newPathRevision,
                      File outFile, boolean recurse) throws SVNClientException {
+    	diff(oldPath, oldPathRevision, newPath, newPathRevision, outFile, recurse, true, false, false);
+    }
+
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#diff(java.io.File, org.tigris.subversion.svnclientadapter.SVNRevision, java.io.File, org.tigris.subversion.svnclientadapter.SVNRevision, java.io.File, boolean, boolean, boolean, boolean)
+     */
+    public void diff(File oldPath, SVNRevision oldPathRevision,
+                     File newPath, SVNRevision newPathRevision,
+                     File outFile, boolean recurse,	boolean ignoreAncestry, 
+             		 boolean noDiffDeleted, boolean force) throws SVNClientException {
         try {
             notificationHandler.setCommand(ISVNNotifyListener.Command.DIFF);
                 
@@ -1277,13 +1287,14 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
             
             notificationHandler.logCommandLine(commandLine);
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(new File[]{oldPath,newPath}));
-            svnClient.diff(oldTarget,JhlConverter.convert(oldPathRevision),newTarget,JhlConverter.convert(newPathRevision), svnOutFile, recurse);
+            svnClient.diff(oldTarget,JhlConverter.convert(oldPathRevision),newTarget,JhlConverter.convert(newPathRevision), svnOutFile, recurse, ignoreAncestry, noDiffDeleted, force);
         } catch (ClientException e) {
             notificationHandler.logException(e);
             throw new SVNClientException(e);            
         }
     }
-
+    
+    
     /* (non-Javadoc)
      * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#diff(java.io.File, java.io.File, boolean)
      */
@@ -1297,6 +1308,16 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
     public void diff(SVNUrl oldUrl, SVNRevision oldUrlRevision,
                      SVNUrl newUrl, SVNRevision newUrlRevision,
                      File outFile, boolean recurse) throws SVNClientException {
+    	diff(oldUrl, oldUrlRevision, newUrl, newUrlRevision, outFile, recurse, true, false, false);
+    }
+
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#diff(org.tigris.subversion.svnclientadapter.SVNUrl, org.tigris.subversion.svnclientadapter.SVNRevision, org.tigris.subversion.svnclientadapter.SVNUrl, org.tigris.subversion.svnclientadapter.SVNRevision, java.io.File, boolean, boolean, boolean, boolean)
+     */
+    public void diff(SVNUrl oldUrl, SVNRevision oldUrlRevision,
+                     SVNUrl newUrl, SVNRevision newUrlRevision,
+                     File outFile, boolean recurse,	boolean ignoreAncestry, 
+             		 boolean noDiffDeleted, boolean force) throws SVNClientException {
         try {
             notificationHandler.setCommand(ISVNNotifyListener.Command.DIFF);
                 
@@ -1324,7 +1345,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
             
             notificationHandler.logCommandLine(commandLine);
 			notificationHandler.setBaseDir();
-            svnClient.diff(oldUrl.toString(),JhlConverter.convert(oldUrlRevision),newUrl.toString(),JhlConverter.convert(newUrlRevision), svnOutFile, recurse);
+            svnClient.diff(oldUrl.toString(),JhlConverter.convert(oldUrlRevision),newUrl.toString(),JhlConverter.convert(newUrlRevision), svnOutFile, recurse, ignoreAncestry, noDiffDeleted, force);
         } catch (ClientException e) {
             notificationHandler.logException(e);
             throw new SVNClientException(e);            

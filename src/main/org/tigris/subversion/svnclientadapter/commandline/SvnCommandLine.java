@@ -13,6 +13,7 @@ package org.tigris.subversion.svnclientadapter.commandline;
 import java.io.InputStream;
 
 import org.tigris.subversion.svnclientadapter.ISVNNotifyListener;
+import org.tigris.subversion.svnclientadapter.SVNClientException;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
 import org.tigris.subversion.svnclientadapter.commandline.parser.SvnOutputParser;
 
@@ -294,8 +295,8 @@ public class SvnCommandLine extends CommandLine {
 	 * Display the differences between two paths.</p>
 	 * 
 	 */
-	InputStream diff(String oldPath, String oldRev, String newPath, String newRev, boolean recurse)
-		throws CmdLineException {
+	InputStream diff(String oldPath, String oldRev, String newPath, String newRev, boolean recurse, 
+			boolean ignoreAncestry, boolean noDiffDeleted, boolean force) throws CmdLineException {
         setCommand(ISVNNotifyListener.Command.DIFF, false);
 		CmdArguments args = new CmdArguments();
 		args.add("diff");
@@ -307,6 +308,18 @@ public class SvnCommandLine extends CommandLine {
 				args.add(oldRev+":"+newRev);			
 			}
 		}
+        if (!recurse) {
+            args.add("-N");
+        }
+        if (!ignoreAncestry) {
+        	args.add("--notice-ancestry");
+        }
+        if (noDiffDeleted) {
+        	args.add("--no-diff-deleted");
+        }
+        if (force) {
+        	args.add("--force");
+        }
 		args.add("--old");
 		args.add(oldPath);
 		args.add("--new");

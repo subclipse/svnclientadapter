@@ -762,6 +762,28 @@ public interface ISVNClientAdapter {
 
 	/**
 	 * display the differences between two paths.
+	 * @param oldPath
+	 * @param oldPathRevision
+	 * @param newPath
+	 * @param newPathRevision
+	 * @param outFile
+	 * @param recurse
+	 * @throws SVNClientException
+	 */
+	public abstract void diff(
+		File oldPath,
+		SVNRevision oldPathRevision,
+		File newPath,
+		SVNRevision newPathRevision,
+		File outFile,
+		boolean recurse,
+		boolean ignoreAncestry, 
+		boolean noDiffDeleted, 
+		boolean force)		
+		throws SVNClientException;
+
+	/**
+	 * display the differences between two paths.
 	 * @param path
 	 * @param outFile
 	 * @param recurse
@@ -790,6 +812,28 @@ public interface ISVNClientAdapter {
 		SVNRevision newUrlRevision,
 		File outFile,
 		boolean recurse)
+		throws SVNClientException;
+
+	/**
+	 * display the differences between two urls.
+	 * @param oldUrl
+	 * @param oldUrlRevision
+	 * @param newUrl
+	 * @param newUrlRevision
+	 * @param outFile
+	 * @param recurse
+	 * @throws SVNClientException
+	 */
+	public abstract void diff(
+		SVNUrl oldUrl,
+		SVNRevision oldUrlRevision,
+		SVNUrl newUrl,
+		SVNRevision newUrlRevision,
+		File outFile,
+		boolean recurse,
+		boolean ignoreAncestry, 
+		boolean noDiffDeleted, 
+		boolean force)		
 		throws SVNClientException;
 
 	/**
