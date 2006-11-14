@@ -64,6 +64,16 @@ public interface ISVNPromptUserPassword {
 	public boolean prompt(String realm, String username, boolean maySave);
 	
 	/**
+	 * Request the username to be used for SVN operation
+	 * the save data check box status will be queried by userAllowedSave
+	 * @param realm     realm for the username
+	 * @param username  username in the realm
+	 * @param maySave   should a save data check box be enabled.
+	 * @return          password as entered or null if canceled.
+	 */
+	public boolean promptUser(String realm, String username, boolean maySave);
+	
+	/**
 	 *  Ask the user a question about authentification
 	 * the save data check box status will be queried by userAllowedSave
 	 * @param realm         real of the question
