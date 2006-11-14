@@ -7,7 +7,7 @@ SVNClientAdapter is a high-level Java API for Subversion.
 It can use one of 3 low-level svn client implementations to provide access to the Subversion API:
 
 - JavaHL (JNI) subversion library (http://svn.collab.net/repos/svn/trunk/subversion/bindings/java/javahl/)
-- JavaSVN (pure Java) (http://tmate.org/svn/)
+- SVNKit (pure Java) (http://svnkit.com/)
 - svn(.exe) command line client (some functionality unavailable/unreliable with <1.3 command line clients)
 
 SVNClientAdapter is easier to use than SVNClient class and has more features.
