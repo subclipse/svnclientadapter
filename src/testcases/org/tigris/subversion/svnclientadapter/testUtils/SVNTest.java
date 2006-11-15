@@ -21,7 +21,7 @@ import org.tigris.subversion.svnclientadapter.SVNClientAdapterFactory;
 import org.tigris.subversion.svnclientadapter.SVNClientException;
 import org.tigris.subversion.svnclientadapter.commandline.CmdLineClientAdapterFactory;
 import org.tigris.subversion.svnclientadapter.javahl.JhlClientAdapterFactory;
-import org.tigris.subversion.svnclientadapter.javasvn.JavaSvnClientAdapterFactory;
+import org.tigris.subversion.svnclientadapter.svnkit.JavaSvnClientAdapterFactory;
 
 /**
  * common base class for the SvnclientAdapter tests

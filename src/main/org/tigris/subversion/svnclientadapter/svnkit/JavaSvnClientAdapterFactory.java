@@ -8,20 +8,20 @@
  * Contributors:
  *     Subclipse project committers - initial API and implementation
  ******************************************************************************/
-package org.tigris.subversion.svnclientadapter.javasvn;
+package org.tigris.subversion.svnclientadapter.svnkit;
 
 import org.tigris.subversion.svnclientadapter.ISVNClientAdapter;
 import org.tigris.subversion.svnclientadapter.SVNClientAdapterFactory;
 import org.tigris.subversion.svnclientadapter.SVNClientException;
 
 /**
- * Concrete implementation of SVNClientAdapterFactory for JavaSVN interface.
+ * Concrete implementation of SVNClientAdapterFactory for SVNKit interface.
  * To register this factory, just call {@link JavaSvnClientAdapterFactory#setup()} 
  */
 public class JavaSvnClientAdapterFactory extends SVNClientAdapterFactory {
 	
 	/** Client adapter implementation identifier */
-    public static final String JAVASVN_CLIENT = "javasvn";
+    public static final String SVNKIT_CLIENT = "svnkit";
     
 	/**
 	 * Private constructor.
@@ -43,7 +43,7 @@ public class JavaSvnClientAdapterFactory extends SVNClientAdapterFactory {
      * @see org.tigris.subversion.svnclientadapter.SVNClientAdapterFactory#getClientType()
      */
     protected String getClientType() {
-        return JAVASVN_CLIENT;
+        return SVNKIT_CLIENT;
     }
     
     public static boolean isAvailable() {
@@ -64,7 +64,7 @@ public class JavaSvnClientAdapterFactory extends SVNClientAdapterFactory {
      */
     public static void setup() throws SVNClientException {
         if (!isAvailable()) {
-            throw new SVNClientException("JavaSVN client adapter is not available");
+            throw new SVNClientException("SVNKit client adapter is not available");
         }
         SVNClientAdapterFactory.registerAdapterFactory(new JavaSvnClientAdapterFactory());
     }

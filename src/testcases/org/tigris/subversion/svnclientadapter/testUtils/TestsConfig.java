@@ -73,7 +73,7 @@ public class TestsConfig {
         if (adminClientType == null) {
             adminClientType = clientType;
         }
-//        if (adminClientType.equals("javasvn")) {
+//        if (adminClientType.equals("svnkit")) {
 //            adminClientType = "javahl";
 //        }
         System.out.println("Using "+adminClientType+" factory for admin commands...");

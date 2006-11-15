@@ -19,7 +19,7 @@ public class SVNJavaSVNTests extends SVNBasicTestsSuite {
     }
 
     public static TestSuite suite() {
-        System.setProperty("test.clientType","javasvn");
+        System.setProperty("test.clientType","svnkit");
         System.setProperty("test.protocol","svn");
 //        System.setProperty("test.serverHostname","127.0.0.1");
 //        System.setProperty("test.serverPort","svn");

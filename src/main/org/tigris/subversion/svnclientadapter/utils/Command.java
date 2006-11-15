@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 /**
- * execute a command. Some parts of this class come from javasvn
+ * execute a command. Some parts of this class come from SVNKit
  */
 public class Command {
 	private Process process = null;

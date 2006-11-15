@@ -8,7 +8,7 @@
  * Contributors:
  *     Subclipse project committers - initial API and implementation
  ******************************************************************************/
-package org.tigris.subversion.svnclientadapter.javasvn;
+package org.tigris.subversion.svnclientadapter.svnkit;
 
 import org.tigris.subversion.svnclientadapter.ISVNPromptUserPassword;
 import org.tmatesoft.svn.core.javahl.PromptUserPasswordSSH;
@@ -16,7 +16,7 @@ import org.tmatesoft.svn.core.javahl.PromptUserPasswordSSL;
 import org.tmatesoft.svn.core.javahl.PromptUserPasswordUser;
 
 /**
- * A JavaSVN's PromptUserPassword3 implementation.
+ * A SVNKit's PromptUserPassword3 implementation.
  */
 public class JavaSvnPromptUserPassword implements PromptUserPasswordSSH, PromptUserPasswordSSL, PromptUserPasswordUser {
 

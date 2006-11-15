@@ -54,9 +54,9 @@ import org.tigris.subversion.svnclientadapter.utils.Messages;
 
 /**
  * This is a base class for the JavaHL Adapter.  It allows the JavaHL
- * Adapter and the JavaSVN Adapter to share most of their implementation.
+ * Adapter and the SVNKit Adapter to share most of their implementation.
  * 
- * The JavaSVN Adapter works by providing an implementation of the JavaHL
+ * The SVNKit Adapter works by providing an implementation of the JavaHL
  * SVNClientInterface. 
  *
  */

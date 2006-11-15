@@ -9,7 +9,7 @@
 	
   <path id="project.classpath">
     <pathelement location="${svnjavahl.jar}"/>
-  	<pathelement location="${javasvn.jar}"/>
+  	<pathelement location="${svnkit.jar}"/>
   	<pathelement location="${ganymed.jar}"/>
   </path>
 
@@ -92,8 +92,8 @@
   	<!-- required libs -->
 	<copy file="${svnjavahl.jar}" todir="${build.distrib.dir}/lib"/>
 	<copy file="JAVAHL-LICENSE" todir="${build.distrib.dir}/lib"/>  	
-	<copy file="${javasvn.jar}" todir="${build.distrib.dir}/lib"/>
-	<copy file="JAVASVN-LICENSE" todir="${build.distrib.dir}/lib"/>  	
+	<copy file="${svnkit.jar}" todir="${build.distrib.dir}/lib"/>
+	<copy file="SVNKit-LICENSE" todir="${build.distrib.dir}/lib"/>  	
 	<copy file="${ganymed.jar}" todir="${build.distrib.dir}/lib"/>
 	<copy file="GANYMED-LICENSE" todir="${build.distrib.dir}/lib"/>
   	<!-- JavaHL win32 dlls -->

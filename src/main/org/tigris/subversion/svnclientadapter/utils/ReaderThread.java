@@ -15,7 +15,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 /**
- * This class has been taken from javasvn 
+ * This class has been taken from SVNKit 
  */
 public class ReaderThread extends Thread {
     

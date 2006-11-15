@@ -8,7 +8,7 @@
  * Contributors:
  *     Subclipse project committers - initial API and implementation
  ******************************************************************************/
-package org.tigris.subversion.svnclientadapter.javasvn;
+package org.tigris.subversion.svnclientadapter.svnkit;
 
 import java.io.File;
 
@@ -25,7 +25,7 @@ import org.tmatesoft.svn.core.io.SVNRepositoryFactory;
 import org.tmatesoft.svn.core.javahl.SVNClientImpl;
 
 /**
- * The JavaSVN Adapter works by providing an implementation of the
+ * The SVNKit Adapter works by providing an implementation of the
  * JavaHL SVNClientInterface.  This allows to provide a common
  * JavaHL implementation (AbstractJhlClientAdapter) where the specific
  * adapters just need to initialize the correct underlying classes.
@@ -43,7 +43,7 @@ public class JavaSvnClientAdapter extends AbstractJhlClientAdapter {
     public void createRepository(File path, String repositoryType)
             throws SVNClientException {
     	if (REPOSITORY_FSTYPE_BDB.equalsIgnoreCase(repositoryType))
-    		throw new SVNClientException("JavaSVN only supports fsfs repository type.");
+    		throw new SVNClientException("SVNKit only supports fsfs repository type.");
     	try {
     		boolean force = false;
     		boolean enableRevisionProperties = false;
@@ -100,7 +100,7 @@ public class JavaSvnClientAdapter extends AbstractJhlClientAdapter {
 
     /**
      * Returns the status of files and directory recursively.
-     * Overrides method from parent class to work around JavaSVN bug when status on resource within ignored folder
+     * Overrides method from parent class to work around SVNKit bug when status on resource within ignored folder
      * does not yield any status. 
      *
      * @param path File to gather status.
