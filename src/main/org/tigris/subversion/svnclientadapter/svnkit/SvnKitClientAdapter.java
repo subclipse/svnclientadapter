@@ -31,9 +31,9 @@ import org.tmatesoft.svn.core.javahl.SVNClientImpl;
  * adapters just need to initialize the correct underlying classes.
  *
  */
-public class JavaSvnClientAdapter extends AbstractJhlClientAdapter {
+public class SvnKitClientAdapter extends AbstractJhlClientAdapter {
 
-    protected JavaSvnClientAdapter() {
+    protected SvnKitClientAdapter() {
         svnClient = SVNClientImpl.newInstance();
         notificationHandler = new JhlNotificationHandler();
         svnClient.notification2(notificationHandler);        
@@ -57,7 +57,7 @@ public class JavaSvnClientAdapter extends AbstractJhlClientAdapter {
  
     public void addPasswordCallback(ISVNPromptUserPassword callback) {
         if (callback != null) {
-	        JavaSvnPromptUserPassword prompt = new JavaSvnPromptUserPassword(callback);
+	        SvnKitPromptUserPassword prompt = new SvnKitPromptUserPassword(callback);
 	        this.setPromptUserPassword(prompt);
         }
     }

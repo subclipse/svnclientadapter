@@ -12,9 +12,9 @@ package org.tigris.subversion.svnclientadapter.basictests;
 
 import junit.framework.TestSuite;
 
-public class SVNJavaSVNTests extends SVNBasicTestsSuite {
+public class SVNSvnKitTests extends SVNBasicTestsSuite {
 
-    public SVNJavaSVNTests(String name) {
+    public SVNSvnKitTests(String name) {
         super(name);
     }
 
@@ -24,7 +24,7 @@ public class SVNJavaSVNTests extends SVNBasicTestsSuite {
 //        System.setProperty("test.serverHostname","127.0.0.1");
 //        System.setProperty("test.serverPort","svn");
         
-        TestSuite testSuite = new SVNJavaSVNTests("Test group");
+        TestSuite testSuite = new SVNSvnKitTests("Test group");
         addTestsToSuite(testSuite);        
         return testSuite;
     }     

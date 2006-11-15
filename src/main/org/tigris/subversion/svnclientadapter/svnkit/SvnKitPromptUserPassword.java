@@ -18,7 +18,7 @@ import org.tmatesoft.svn.core.javahl.PromptUserPasswordUser;
 /**
  * A SVNKit's PromptUserPassword3 implementation.
  */
-public class JavaSvnPromptUserPassword implements PromptUserPasswordSSH, PromptUserPasswordSSL, PromptUserPasswordUser {
+public class SvnKitPromptUserPassword implements PromptUserPasswordSSH, PromptUserPasswordSSL, PromptUserPasswordUser {
 
     private ISVNPromptUserPassword worker;
     
@@ -26,7 +26,7 @@ public class JavaSvnPromptUserPassword implements PromptUserPasswordSSH, PromptU
      * Constructor
      * @param arg0
      */
-    public JavaSvnPromptUserPassword(ISVNPromptUserPassword arg0) {
+    public SvnKitPromptUserPassword(ISVNPromptUserPassword arg0) {
         super();
         this.worker = arg0;
     }

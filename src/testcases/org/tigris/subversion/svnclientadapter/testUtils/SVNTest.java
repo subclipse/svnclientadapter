@@ -21,7 +21,7 @@ import org.tigris.subversion.svnclientadapter.SVNClientAdapterFactory;
 import org.tigris.subversion.svnclientadapter.SVNClientException;
 import org.tigris.subversion.svnclientadapter.commandline.CmdLineClientAdapterFactory;
 import org.tigris.subversion.svnclientadapter.javahl.JhlClientAdapterFactory;
-import org.tigris.subversion.svnclientadapter.svnkit.JavaSvnClientAdapterFactory;
+import org.tigris.subversion.svnclientadapter.svnkit.SvnKitClientAdapterFactory;
 
 /**
  * common base class for the SvnclientAdapter tests
@@ -75,7 +75,7 @@ public abstract class SVNTest extends TestCase {
             // can't register this factory
         }
         try {
-            JavaSvnClientAdapterFactory.setup();
+            SvnKitClientAdapterFactory.setup();
         } catch (SVNClientException e1) {
             // can't register this factory
         }

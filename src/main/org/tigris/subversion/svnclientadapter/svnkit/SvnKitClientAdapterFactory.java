@@ -16,9 +16,9 @@ import org.tigris.subversion.svnclientadapter.SVNClientException;
 
 /**
  * Concrete implementation of SVNClientAdapterFactory for SVNKit interface.
- * To register this factory, just call {@link JavaSvnClientAdapterFactory#setup()} 
+ * To register this factory, just call {@link SvnKitClientAdapterFactory#setup()} 
  */
-public class JavaSvnClientAdapterFactory extends SVNClientAdapterFactory {
+public class SvnKitClientAdapterFactory extends SVNClientAdapterFactory {
 	
 	/** Client adapter implementation identifier */
     public static final String SVNKIT_CLIENT = "svnkit";
@@ -28,7 +28,7 @@ public class JavaSvnClientAdapterFactory extends SVNClientAdapterFactory {
 	 * Clients are expected the use {@link #createSVNClientImpl()}, res.
 	 * ask the {@link SVNClientAdapterFactory}
 	 */
-    private JavaSvnClientAdapterFactory() {
+    private SvnKitClientAdapterFactory() {
     	super();
     }
 
@@ -36,7 +36,7 @@ public class JavaSvnClientAdapterFactory extends SVNClientAdapterFactory {
 	 * @see org.tigris.subversion.svnclientadapter.SVNClientAdapterFactory#createSVNClientImpl()
 	 */
 	protected ISVNClientAdapter createSVNClientImpl() {
-		return new JavaSvnClientAdapter();
+		return new SvnKitClientAdapter();
 	}
 
     /* (non-Javadoc)
@@ -66,7 +66,7 @@ public class JavaSvnClientAdapterFactory extends SVNClientAdapterFactory {
         if (!isAvailable()) {
             throw new SVNClientException("SVNKit client adapter is not available");
         }
-        SVNClientAdapterFactory.registerAdapterFactory(new JavaSvnClientAdapterFactory());
+        SVNClientAdapterFactory.registerAdapterFactory(new SvnKitClientAdapterFactory());
     }
   
 }
