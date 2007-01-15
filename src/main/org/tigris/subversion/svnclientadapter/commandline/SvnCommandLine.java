@@ -13,7 +13,6 @@ package org.tigris.subversion.svnclientadapter.commandline;
 import java.io.InputStream;
 
 import org.tigris.subversion.svnclientadapter.ISVNNotifyListener;
-import org.tigris.subversion.svnclientadapter.SVNClientException;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
 import org.tigris.subversion.svnclientadapter.commandline.parser.SvnOutputParser;
 
@@ -575,6 +574,27 @@ public class SvnCommandLine extends CommandLine {
 		args.add("--strict");
 		args.add(propName);
 		args.add(path);
+        args.addAuthInfo(this.user, this.pass);
+        args.addConfigInfo(this.configDir);        
+		return execInputStream(args);
+	}
+
+	/**
+	 * <p>
+	 * Print value of <tt>propName</tt> on files, dirs, or revisions.</p>
+	 *
+	 * @param Local path of resource.
+	 * @param propName Property name whose value we wish to find.
+	 */
+	InputStream propget(String path, String propName, String revision, String peg) throws CmdLineException {
+        setCommand(ISVNNotifyListener.Command.PROPGET, false);
+        CmdArguments args = new CmdArguments();
+		args.add("propget");
+		args.add("--strict");
+		args.add("-r");
+		args.add(revision);
+		args.add(propName);
+		args.add(path + "@" + peg);
         args.addAuthInfo(this.user, this.pass);
         args.addConfigInfo(this.configDir);        
 		return execInputStream(args);

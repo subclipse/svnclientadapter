@@ -230,4 +230,14 @@ public abstract class AbstractClientAdapter implements ISVNClientAdapter {
 	public void merge(SVNUrl path1, SVNRevision revision1, SVNUrl path2, SVNRevision revision2, File localPath, boolean force, boolean recurse) throws SVNClientException {
 		merge(path1, revision1, path2, revision2, localPath, force, recurse, false, false);
 	}
+	
+
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#propertyGet(org.tigris.subversion.svnclientadapter.SVNUrl, java.lang.String)
+	 */
+	public ISVNProperty propertyGet(SVNUrl url, String propertyName)
+		throws SVNClientException {
+		return propertyGet(url, SVNRevision.HEAD, SVNRevision.HEAD, propertyName);
+	}
+
 }

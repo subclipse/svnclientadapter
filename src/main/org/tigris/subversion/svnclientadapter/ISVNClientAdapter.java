@@ -688,6 +688,19 @@ public interface ISVNClientAdapter {
 		throws SVNClientException;
 	
 	/**
+	 * get a property or null if property is not found
+	 * @param url
+	 * @param revision
+	 * @param peg
+	 * @param propertyName
+	 * @return a property or null
+	 * @throws SVNClientException
+	 */
+	public abstract ISVNProperty propertyGet(SVNUrl url, SVNRevision revision,
+			SVNRevision peg, String propertyName)
+		throws SVNClientException;
+	
+	/**
 	 * delete a property
 	 * @param path
 	 * @param propertyName
