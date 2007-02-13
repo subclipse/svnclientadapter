@@ -1,0 +1,202 @@
+<!-- This file is an ANT build script. ANT is a Java based build tool. -->
+<!-- It is available from http://ant.apache.org/               -->
+
+<project name="svnClientAdapter" default="makeDistrib" basedir=".">
+
+  <!-- all properties are in build.properties -->
+  <property file="build.properties"/>
+  <property name="debug" value="off"/>
+	
+  <path id="project.classpath">
+    <pathelement location="${svnjavahl.jar}"/>
+  	<pathelement location="${svnkit.jar}"/>
+  	<pathelement location="${ganymed.jar}"/>
+  </path>
+
+  <!-- ================================================================= -->
+  <!-- cleans everything                                                 -->
+  <!-- ================================================================= -->
+  <target name="clean" description="Clean everything">  	
+    <delete dir="${build.dir}"/>
+    <mkdir dir="${build.dir}" />
+  </target>
+
+  <!-- ================================================================= -->
+  <!-- compile                                                           -->
+  <!-- ================================================================= -->
+  <target name="compile" description="Compile all sources files">
+    <mkdir dir="${build.classes.dir}" />
+    <depend srcDir="${src.main.dir}"
+            destDir="${build.classes.dir}"
+            cache="${build.cache.dir}"/>
+    <javac srcdir="${src.main.dir}"
+           destdir="${build.classes.dir}"
+           debug="${debug}"
+		   source="${targetJvm}"    	
+		   target="${targetJvm}"    	
+           includes="**"
+		   classpathref="project.classpath">
+    </javac>
+    <copy todir="${build.classes.dir}">
+      <fileset dir="${src.main.dir}">
+        <exclude name="**/*.java"/>
+      </fileset>
+    </copy>  
+  </target>
+
+  <!-- ================================================================= -->
+  <!-- javadoc                                                           -->
+  <!-- ================================================================= -->
+  <target name="javadoc" description="Create javadoc">
+    <mkdir dir="${build.javadoc.dir}" />
+    <javadoc sourcepath="${src.main.dir}"
+	              classpathref="project.classpath"
+                  destdir="${build.javadoc.dir}"
+				  packagenames="org.*"
+                  windowtitle="svnClientAdapter API"
+                  doctitle="svnClientAdapter">
+    </javadoc>  
+  </target>
+
+  <!-- ================================================================= -->
+  <!-- create svnClientAdapter.jar                                       -->
+  <!-- ================================================================= -->
+  <target name="svnClientAdapter.jar" depends="compile" description="Generate svnClientAdapter.jar">
+  	<tstamp/>
+    <mkdir dir="${build.lib.dir}" />
+    <jar jarfile="${build.lib.dir}/svnClientAdapter.jar"
+         basedir="${build.classes.dir}"
+         includes="**/*"
+         excludes="**/*Test*.class">
+   	  <manifest>
+   	    <section name="org.tigris.subversion.svnclientadapter">
+   	      <attribute name="Specification-Title" value="SVNClientAdapter"/>
+   	      <attribute name="Specification-Version" value="${svnClientAdapter.version}"/>
+   	      <attribute name="Implementation-Title" value="org.tigris.subversion.svnclientadapter"/>
+   	      <attribute name="Implementation-Version" value="${svnClientAdapter.buildRev} (${TODAY})"/> 
+   	    </section>
+   	  </manifest>
+    </jar>
+  </target>
+
+  <!-- ================================================================= -->
+  <!-- make distribution                                                 -->
+  <!-- ================================================================= -->
+  <target name="makeDistrib" depends="clean,svnClientAdapter.jar,javadoc" description="Make binary distribution">
+    <delete dir="${build.distrib.dir}"/>
+	<mkdir dir="${build.distrib.dir}"/>
+	<mkdir dir="${build.distrib.dir}/lib"/>
+    <copy file="${build.lib.dir}/svnClientAdapter.jar" todir="${build.distrib.dir}/lib"/>
+	<copy file="readme.txt" todir="${build.distrib.dir}"/>
+	<copy file="license.txt" todir="${build.distrib.dir}"/>
+	<copy file="changelog.txt" todir="${build.distrib.dir}"/>
+  	<!-- required libs -->
+	<copy file="${svnjavahl.jar}" todir="${build.distrib.dir}/lib"/>
+	<copy file="${lib.dir}/JAVAHL-LICENSE" todir="${build.distrib.dir}/lib"/>  	
+	<copy file="${svnkit.jar}" todir="${build.distrib.dir}/lib"/>
+	<copy file="${lib.dir}/SVNKit-LICENSE" todir="${build.distrib.dir}/lib"/>  	
+	<copy file="${lib.dir}/SEQUENCE-LICENSE" todir="${build.distrib.dir}/lib"/>
+	<copy file="${ganymed.jar}" todir="${build.distrib.dir}/lib"/>
+	<copy file="${lib.dir}/GANYMED-LICENSE" todir="${build.distrib.dir}/lib"/>
+  	<!-- Javadoc files -->
+    <copy todir="${build.distrib.dir}/javadoc">
+      <fileset dir="${build.javadoc.dir}"/>
+    </copy>
+  	<!-- Samples -->
+    <copy todir="${build.distrib.dir}/samples">
+      <fileset dir="${src.samples.dir}"/>
+    </copy>	
+	<zip destfile="${build.dir}/svnClientAdapter ${svnClientAdapter.version}.zip" basedir="${build.distrib.dir}"/>
+  </target>
+
+  <!-- ================================================================= -->
+  <!-- Define custom tasks for the unit tests (e.g. code coverage)       -->
+  <!-- ================================================================= -->
+  <path id="emma.lib" >
+    <pathelement location="${test.lib.dir}/emma.jar" />
+    <pathelement location="${test.lib.dir}/emma_ant.jar" />
+  </path>
+  <taskdef resource="emma_ant.properties" classpathref="emma.lib" />
+	
+  <!-- ================================================================= -->
+  <!-- run junit tests                                                   -->
+  <!-- ================================================================= -->
+  <target name="runTests" depends="svnClientAdapter.jar, compileTests"
+          description="run junit tests">
+    <echo message="Please wait, tests can take a long time to execute...."
+      level="info"/>
+    <echo message="Running client adapters tests ..." level="info"/>
+  	<junit printsummary="yes" haltonfailure="false" failureproperty="testFailed" fork="yes">
+      <classpath>
+      	<pathelement location="${emma.instrClasses.dir}" />
+        <pathelement location="${build.classes.dir}"/>
+      	<pathelement location="${build.testClasses.dir}"/>
+        <path refid="project.classpath"/>	
+        <path refid="emma.lib" />
+      </classpath>
+      <jvmarg value="-Demma.coverage.out.file=${coverage.dir}/coverage.emma" />
+      <jvmarg value="-Demma.coverage.out.merge=true" />
+      <formatter type="brief" usefile="false"/>
+      <test name="org.tigris.subversion.svnclientadapter.basictests.SVNJavahlTests" fork="yes"/>
+      <test name="org.tigris.subversion.svnclientadapter.basictests.SVNSvnKitTests" fork="yes"/>
+      <test name="org.tigris.subversion.svnclientadapter.basictests.SVNCmdLineTests" fork="yes"/>
+    </junit>
+    <echo message="Running misc tests ..." level="info"/>
+    <junit printsummary="yes" haltonfailure="false" failureproperty="testFailed" fork="yes">
+      <classpath>
+      	<pathelement location="${emma.instrClasses.dir}" />
+        <pathelement location="${build.classes.dir}"/>
+        <pathelement location="${build.testClasses.dir}"/>
+        <path refid="project.classpath"/>	
+        <path refid="emma.lib" />
+      </classpath>
+      <jvmarg value="-Demma.coverage.out.file=${coverage.dir}/coverage.emma" />
+      <jvmarg value="-Demma.coverage.out.merge=true" />
+      <formatter type="brief" usefile="false"/>
+  	  <batchtest fork="yes">
+   	    <fileset dir="${build.testClasses.dir}">
+   	      <include name="**/*Test.class"/>
+   	      <exclude name="**/*Test*$*.class"/>
+   	      <exclude name="**/org/tigris/subversion/svnclientadapter/testUtils/*"/>
+   	      <exclude name="**/org/tigris/subversion/svnclientadapter/basictests/*"/>
+   	    </fileset>
+   	  </batchtest>
+    </junit>
+    <emma enabled="${emma.enabled}" >
+      <report sourcepath="${src.main.dir}" >
+        <fileset dir="${coverage.dir}" >
+          <include name="*.emma" />
+        </fileset>
+        <html outfile="${coverage.dir}/coverage.html" />
+      </report>
+    </emma>
+  	<fail message="Some Junit test failed !" if="testFailed"/>
+  </target>
+
+  <!-- ================================================================= -->
+  <!-- compile junit test classes                                        -->
+  <!-- ================================================================= -->
+  <target name="compileTests" description="compile junit source files">
+    <mkdir dir="${build.testClasses.dir}" />
+    <javac srcdir="${src.tests.dir}"
+           destdir="${build.testClasses.dir}"
+           debug="${debug}"
+           includes="**">
+		<classpath>
+			<pathelement location="${build.classes.dir}"/>
+			<path refid="project.classpath"/>	
+		</classpath>
+    </javac>
+  	<!-- run the EMMA instrumentation -->
+    <delete dir="${emma.instrClasses.dir}"/>
+    <mkdir dir="${emma.instrClasses.dir}" />
+    <emma enabled="${emma.enabled}" >
+      <instr instrpath="${build.classes.dir}"
+             destdir="${emma.instrClasses.dir}"
+             metadatafile="${coverage.dir}/metadata.emma"
+             merge="true"
+      />
+    </emma>
+  </target>
+
+</project>

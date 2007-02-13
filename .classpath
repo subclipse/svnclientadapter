@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" output="classes/main" path="src/main"/>
+	<classpathentry kind="src" output="classes/main" path="src/samples"/>
+	<classpathentry kind="src" output="classes/testcases" path="src/testcases"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="var" path="JUNIT_HOME/junit.jar"/>
+	<classpathentry kind="lib" path="lib/svnjavahl.jar"/>
+	<classpathentry kind="lib" path="lib/ganymed.jar"/>
+	<classpathentry kind="lib" path="lib/svnkit.jar"/>
+	<classpathentry kind="output" path="classes/main"/>
+</classpath>
