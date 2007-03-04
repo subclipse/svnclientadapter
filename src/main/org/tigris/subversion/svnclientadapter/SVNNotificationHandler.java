@@ -135,7 +135,11 @@ public abstract class SVNNotificationHandler {
      * @param baseDir
      */
     public void setBaseDir(File baseDir) {
-		this.baseDir = baseDir;    	
+    	if (baseDir != null) {
+    		this.baseDir = baseDir;
+    	} else {
+    		setBaseDir();
+    	}
     }
 
 	public void setBaseDir() {

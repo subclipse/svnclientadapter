@@ -124,6 +124,9 @@ public class SVNBaseDir {
      *         SVNClientException
      */
     static public File getRootDir(File[] files) {
+    	if ((files == null) || (files.length == 0)) {
+    		return null;
+    	}
         File[] canonicalFiles = new File[files.length];
         for (int i = 0; i < files.length; i++) {
             canonicalFiles[i] = files[i].getAbsoluteFile();

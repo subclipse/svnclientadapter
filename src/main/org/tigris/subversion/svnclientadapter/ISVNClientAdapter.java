@@ -781,6 +781,9 @@ public interface ISVNClientAdapter {
 	 * @param newPathRevision
 	 * @param outFile
 	 * @param recurse
+	 * @param ignoreAncestry
+	 * @param noDiffDeleted 
+	 * @param force		
 	 * @throws SVNClientException
 	 */
 	public abstract void diff(
@@ -835,6 +838,9 @@ public interface ISVNClientAdapter {
 	 * @param newUrlRevision
 	 * @param outFile
 	 * @param recurse
+	 * @param ignoreAncestry
+	 * @param noDiffDeleted 
+	 * @param force		
 	 * @throws SVNClientException
 	 */
 	public abstract void diff(
