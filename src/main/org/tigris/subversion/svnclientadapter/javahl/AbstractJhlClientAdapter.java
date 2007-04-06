@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.tigris.subversion.javahl.ClientException;
+import org.tigris.subversion.javahl.Depth;
 import org.tigris.subversion.javahl.Info;
 import org.tigris.subversion.javahl.Info2;
 import org.tigris.subversion.javahl.PromptUserPassword;
@@ -228,7 +229,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
                 fileToSVNPath(destPath, false),
                 JhlConverter.convert(revision),
                 JhlConverter.convert(revision),
-                recurse,
+                Depth.fromRecurse(recurse),
                 ignoreExternals,
                 force);
         } catch (ClientException e) {
@@ -838,7 +839,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
 			boolean ignoreExternals = false;
 			boolean force = true;
-			return svnClient.update(target, JhlConverter.convert(revision), recurse,
+			return svnClient.update(target, JhlConverter.convert(revision), Depth.fromRecurse(recurse),
 					ignoreExternals, force);
 		} catch (ClientException e) {
 			notificationHandler.logException(e);
@@ -872,7 +873,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
 			notificationHandler.holdStats();
 			boolean force = true;
-			long[] rtnCode =  svnClient.update(targets, JhlConverter.convert(revision), recurse, ignoreExternals, force);
+			long[] rtnCode =  svnClient.update(targets, JhlConverter.convert(revision), Depth.fromRecurse(recurse), ignoreExternals, force);
 			notificationHandler.releaseStats();
 			return rtnCode;
 		} catch (ClientException e) {
@@ -1550,7 +1551,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
             File baseDir = SVNBaseDir.getBaseDir(path);
             notificationHandler.setBaseDir(baseDir);
             boolean force = true;
-            svnClient.doSwitch(target, url.toString(),JhlConverter.convert(revision),recurse, force);
+            svnClient.doSwitch(target, url.toString(),JhlConverter.convert(revision),Depth.fromRecurse(recurse), force);
            
         } catch (ClientException e) {
             notificationHandler.logException(e);
