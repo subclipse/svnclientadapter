@@ -795,6 +795,24 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 			throw SVNClientException.wrapException(e);
 		}
 	}
+	
+	public ISVNProperty propertyGet(SVNUrl url, SVNRevision revision,
+			SVNRevision peg, String propertyName) throws SVNClientException {
+		try {
+			InputStream valueAndData = _cmd.propget(url.toString(), propertyName, toString(revision), toString(peg));
+            
+			byte[] bytes = streamToByteArray(valueAndData);
+            if (bytes.length == 0) {
+                return null; // the property does not exist
+            }
+            
+			return new CmdLineProperty(propertyName, new String(bytes), url, bytes);
+		} catch (CmdLineException e) {
+			throw SVNClientException.wrapException(e);
+		} catch (IOException e) {
+			throw SVNClientException.wrapException(e);
+		}
+	}
 
     /*
      * (non-Javadoc)

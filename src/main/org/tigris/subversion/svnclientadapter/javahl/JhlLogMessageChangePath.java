@@ -15,7 +15,7 @@ import org.tigris.subversion.svnclientadapter.SVNLogMessageChangePath;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
 
 /**
- * JavaHL specific implementation of the {@link ISVNLogMessageChangePath}. 
+ * JavaHL specific implementation of the {@link org.tigris.subversion.svnclientadapter.ISVNLogMessageChangePath}. 
  * Actually just an adapter from {@link org.tigris.subversion.javahl.ChangePath}
  * 
  */
