@@ -901,14 +901,6 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
         }         
     } 
 	
-	/**
-	 * @param logLevel
-	 * @param filePath
-	 */
-	public static void enableLogging(int logLevel,File filePath) {
-		SVNClient.enableLogging(logLevel,fileToSVNPath(filePath, false));	
-	}
-
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getContent(org.tigris.subversion.svnclientadapter.SVNUrl, org.tigris.subversion.svnclientadapter.SVNRevision)
 	 */

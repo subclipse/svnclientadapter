@@ -88,6 +88,13 @@ public class JhlClientAdapterFactory extends SVNClientAdapterFactory {
     			StringBuffer bdbErrors = new StringBuffer();
     			boolean bdbLoaded = false;
     			try {
+    				System.loadLibrary("sqlite3");
+    			} catch (Exception e) {
+    				javaHLErrors.append(e.getMessage()).append("\n");
+    			} catch (UnsatisfiedLinkError e) {
+    				javaHLErrors.append(e.getMessage()).append("\n");
+    			}
+    			try {
     				System.loadLibrary("libapr");
     			} catch (Exception e) {
     				javaHLErrors.append(e.getMessage()).append("\n");
