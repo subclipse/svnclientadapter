@@ -82,4 +82,14 @@ public class JhlClientAdapter extends AbstractJhlClientAdapter {
 	public boolean statusReturnsRemoteInfo() {
 		return true;
 	}
+
+	/**
+	 * @param logLevel
+	 * @param filePath
+	 */
+	public static void enableLogging(int logLevel,File filePath) {
+		SVNClient.enableLogging(logLevel,fileToSVNPath(filePath, false));	
+	}
+
+	
 }
