@@ -12,6 +12,7 @@ package org.tigris.subversion.svnclientadapter.javahl;
 
 import org.tigris.subversion.javahl.SVNClient;
 import org.tigris.subversion.javahl.SVNClientInterface;
+import org.tigris.subversion.javahl.Version;
 import org.tigris.subversion.svnclientadapter.ISVNClientAdapter;
 import org.tigris.subversion.svnclientadapter.SVNClientAdapterFactory;
 import org.tigris.subversion.svnclientadapter.SVNClientException;
@@ -274,17 +275,20 @@ public class JhlClientAdapterFactory extends SVNClientAdapterFactory {
     			// System.out.println(javaHLErrors.toString());
     		} else {
     			// At this point, the library appears to be available, but
-    			// it could be a 1.2.x version of JavaHL.  We have to try
-    			// to execute a 1.3.x method to be sure.
+    			// it could be too old version of JavaHL library.  We have to try
+    			// to get the version of the library to be sure.
     			try {
 	                SVNClientInterface svnClient = new SVNClient();
-	                String dirname = svnClient.getAdminDirectoryName();
-    				// to remove compiler warning about dirname not being read
-    				if (dirname != null)  
+    				Version version = svnClient.getVersion();
+    				if (version.getMajor() == 1 && version.getMinor() >= 5)
     					available = true;
+    				else {
+    					available = false;
+    					javaHLErrors.append("Incompatible JavaHL library loaded.  1.5.x or later required.");
+    				}
     			} catch (UnsatisfiedLinkError e) {
     				available = false;
-    				javaHLErrors.append("Incompatible JavaHL library loaded.  1.3.x or later required.");
+    				javaHLErrors.append("Incompatible JavaHL library loaded.  1.5.x or later required.");
     			}
     		}
     	}
