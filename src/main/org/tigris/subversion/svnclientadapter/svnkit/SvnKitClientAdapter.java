@@ -33,7 +33,7 @@ import org.tmatesoft.svn.core.javahl.SVNClientImpl;
  */
 public class SvnKitClientAdapter extends AbstractJhlClientAdapter {
 
-    protected SvnKitClientAdapter() {
+    public SvnKitClientAdapter() {
         svnClient = SVNClientImpl.newInstance();
         notificationHandler = new JhlNotificationHandler();
         svnClient.notification2(notificationHandler);        
