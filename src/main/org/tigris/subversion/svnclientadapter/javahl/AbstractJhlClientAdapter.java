@@ -28,7 +28,6 @@ import org.tigris.subversion.javahl.PromptUserPassword;
 import org.tigris.subversion.javahl.PropertyData;
 import org.tigris.subversion.javahl.Revision;
 import org.tigris.subversion.javahl.RevisionKind;
-import org.tigris.subversion.javahl.SVNClient;
 import org.tigris.subversion.javahl.SVNClientInterface;
 import org.tigris.subversion.javahl.Status;
 import org.tigris.subversion.svnclientadapter.AbstractClientAdapter;
@@ -891,14 +890,6 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
         }         
     } 
 	
-	/**
-	 * @param logLevel
-	 * @param filePath
-	 */
-	public static void enableLogging(int logLevel,File filePath) {
-		SVNClient.enableLogging(logLevel,fileToSVNPath(filePath, false));	
-	}
-
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getContent(org.tigris.subversion.svnclientadapter.SVNUrl, org.tigris.subversion.svnclientadapter.SVNRevision)
 	 */
