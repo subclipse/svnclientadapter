@@ -87,10 +87,6 @@ public class JhlClientAdapter extends AbstractJhlClientAdapter {
 	    
 	}
 
-	public boolean statusReturnsRemoteInfo() {
-		return true;
-	}
-
 	/**
 	 * @param logLevel
 	 * @param filePath
@@ -99,5 +95,11 @@ public class JhlClientAdapter extends AbstractJhlClientAdapter {
 		SVNClient.enableLogging(logLevel,fileToSVNPath(filePath, false));	
 	}
 
-	
+	public boolean statusReturnsRemoteInfo() {
+		return true;
+	}
+
+	public String getNativeLibraryVersionString() {
+		return svnClient.getVersion().toString();
+	}
 }

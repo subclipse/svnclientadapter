@@ -51,6 +51,7 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements No
     private int deletes;
     private int conflicts;
     private int merges;
+    private int exists;
     private int propConflicts;
     private int propMerges;
     private int propUpdates;
@@ -152,6 +153,11 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements No
                 logMessage("A  " + path); //$NON-NLS-1$
                 receivedSomeChange = true;
                 adds += 1;
+                break;
+            case NotifyAction.exists :
+                logMessage("E  " + path); //$NON-NLS-1$
+                receivedSomeChange = true;
+                exists += 1;
                 break;
             case NotifyAction.restore :
                 logMessage(Messages.bind("notify.restored", path)); //$NON-NLS-1$
@@ -332,6 +338,7 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements No
         deletes = 0;
         conflicts = 0;
         merges = 0;
+        exists = 0;
         propConflicts = 0;
         propMerges = 0;
         propUpdates = 0;
@@ -359,6 +366,8 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements No
 		            logMessage(Messages.bind("notify.stats.add", Integer.toString(adds))); //$NON-NLS-1$
 		        if (updates > 0)
 		            logMessage(Messages.bind("notify.stats.update", Integer.toString(updates))); //$NON-NLS-1$
+		        if (exists > 0)
+		            logMessage(Messages.bind("notify.stats.exists", Integer.toString(exists))); //$NON-NLS-1$
 	        }
 	        if (propStats()){
 	            logMessage(Messages.bind("notify.stats.prop.head")); //$NON-NLS-1$
@@ -375,7 +384,7 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements No
     
     private boolean fileStats() {
         if (updates > 0 || adds > 0 || deletes > 0 
-                || conflicts > 0 || merges > 0)
+                || conflicts > 0 || merges > 0 || exists > 0)
             return true;
         return false;
     }

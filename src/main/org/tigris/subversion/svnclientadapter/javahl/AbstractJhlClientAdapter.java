@@ -30,12 +30,14 @@ import java.util.List;
 import java.util.Set;
 
 import org.tigris.subversion.javahl.ClientException;
+import org.tigris.subversion.javahl.Depth;
 import org.tigris.subversion.javahl.Info;
 import org.tigris.subversion.javahl.Info2;
 import org.tigris.subversion.javahl.PromptUserPassword;
 import org.tigris.subversion.javahl.PropertyData;
 import org.tigris.subversion.javahl.Revision;
 import org.tigris.subversion.javahl.RevisionKind;
+import org.tigris.subversion.javahl.SVNClient;
 import org.tigris.subversion.javahl.SVNClientInterface;
 import org.tigris.subversion.javahl.Status;
 import org.tigris.subversion.svnclientadapter.AbstractClientAdapter;
@@ -226,15 +228,18 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
                 "checkout" +
                 (recurse?"":" -N") + 
                 " -r "+revision.toString()+
-                " "+url);        
+                " "+url + " --force");        
 			notificationHandler.setBaseDir(new File("."));
+			boolean ignoreExternals = false;
+			boolean force = true;
             svnClient.checkout(
 			    url,
                 fileToSVNPath(destPath, false),
                 JhlConverter.convert(revision),
                 JhlConverter.convert(revision),
-                recurse,
-                false);
+                Depth.fromRecurse(recurse),
+                ignoreExternals,
+                force);
         } catch (ClientException e) {
             notificationHandler.logException(e);
             throw new SVNClientException(e);
@@ -785,7 +790,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
             notificationHandler.logCommandLine(
                     "move "+src+' '+dest);
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(new File[] {srcPath, destPath}));        
-            svnClient.move(src,dest,"",Revision.HEAD,force);
+            svnClient.move(src,dest,"",force);
         } catch (ClientException e) {
             notificationHandler.logException(e);
             throw new SVNClientException(e);
@@ -802,6 +807,8 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 		SVNRevision revision)
 		throws SVNClientException {
 		try {
+			// NOTE:  The revision arg is ignored as you cannot move
+			// a specific revision, only HEAD.
         	if (message == null)
         		message = "";
 			notificationHandler.setCommand(ISVNNotifyListener.Command.MOVE);
@@ -810,14 +817,12 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 			notificationHandler.logCommandLine(
 				"move -m \""
 					+ message
-					+ "\" -r "
-					+ revision.toString()
 					+ ' '
 					+ src
 					+ ' '
 					+ dest);
 			notificationHandler.setBaseDir();
-			svnClient.move(src, dest, message, JhlConverter.convert(revision), false);
+			svnClient.move(src, dest, message, false);
 		} catch (ClientException e) {
 			notificationHandler.logException(e);
 			throw new SVNClientException(e);
@@ -837,9 +842,13 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 					+ revision.toString()
 					+ ' '
 					+ (recurse ? "" : "-N ")
-					+ target);
+					+ target
+					+ " --force");
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
-			return svnClient.update(target, JhlConverter.convert(revision), recurse);
+			boolean ignoreExternals = false;
+			boolean force = true;
+			return svnClient.update(target, JhlConverter.convert(revision), Depth.fromRecurse(recurse),
+					ignoreExternals, force);
 		} catch (ClientException e) {
 			notificationHandler.logException(e);
 			throw new SVNClientException(e);
@@ -867,10 +876,12 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 					+ ' '
 					+ (recurse ? "" : "-N ")
 					+ (ignoreExternals ? "--ignore-externals " : "")
-					+ targetsString.toString());
+					+ targetsString.toString()
+					+ " --force");
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
 			notificationHandler.holdStats();
-			long[] rtnCode =  svnClient.update(targets, JhlConverter.convert(revision), recurse, ignoreExternals);
+			boolean force = true;
+			long[] rtnCode =  svnClient.update(targets, JhlConverter.convert(revision), Depth.fromRecurse(recurse), ignoreExternals, force);
 			notificationHandler.releaseStats();
 			return rtnCode;
 		} catch (ClientException e) {
@@ -1532,15 +1543,15 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
             notificationHandler.setCommand(ISVNNotifyListener.Command.SWITCH);
             
             String target = fileToSVNPath(path, false);
-            String commandLine = "switch "+url+" "+target+" "+"-r"+revision.toString();
+            String commandLine = "switch --force "+url+" "+target+" "+"-r"+revision.toString();
             if (!recurse) {
             	commandLine += " -N";
             }
             notificationHandler.logCommandLine(commandLine);
             File baseDir = SVNBaseDir.getBaseDir(path);
             notificationHandler.setBaseDir(baseDir);
-
-            svnClient.doSwitch(target, url.toString(),JhlConverter.convert(revision),recurse);
+            boolean force = true;
+            svnClient.doSwitch(target, url.toString(),JhlConverter.convert(revision),Depth.fromRecurse(recurse), force);
            
         } catch (ClientException e) {
             notificationHandler.logException(e);

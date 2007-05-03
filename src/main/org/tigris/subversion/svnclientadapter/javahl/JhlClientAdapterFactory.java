@@ -20,6 +20,7 @@ package org.tigris.subversion.svnclientadapter.javahl;
 
 import org.tigris.subversion.javahl.SVNClient;
 import org.tigris.subversion.javahl.SVNClientInterface;
+import org.tigris.subversion.javahl.Version;
 import org.tigris.subversion.svnclientadapter.ISVNClientAdapter;
 import org.tigris.subversion.svnclientadapter.SVNClientAdapterFactory;
 import org.tigris.subversion.svnclientadapter.SVNClientException;
@@ -96,6 +97,13 @@ public class JhlClientAdapterFactory extends SVNClientAdapterFactory {
     			StringBuffer bdbErrors = new StringBuffer();
     			boolean bdbLoaded = false;
     			try {
+    				System.loadLibrary("sqlite3");
+    			} catch (Exception e) {
+    				javaHLErrors.append(e.getMessage()).append("\n");
+    			} catch (UnsatisfiedLinkError e) {
+    				javaHLErrors.append(e.getMessage()).append("\n");
+    			}
+    			try {
     				System.loadLibrary("libapr");
     			} catch (Exception e) {
     				javaHLErrors.append(e.getMessage()).append("\n");
@@ -104,6 +112,20 @@ public class JhlClientAdapterFactory extends SVNClientAdapterFactory {
     			}
     			try {
     				System.loadLibrary("libapriconv");
+    			} catch (Exception e) {
+    				javaHLErrors.append(e.getMessage()).append("\n");
+    			} catch (UnsatisfiedLinkError e) {
+    				javaHLErrors.append(e.getMessage()).append("\n");
+    			}
+    			try {
+    				System.loadLibrary("libapr-1");
+    			} catch (Exception e) {
+    				javaHLErrors.append(e.getMessage()).append("\n");
+    			} catch (UnsatisfiedLinkError e) {
+    				javaHLErrors.append(e.getMessage()).append("\n");
+    			}
+    			try {
+    				System.loadLibrary("libapriconv-1");
     			} catch (Exception e) {
     				javaHLErrors.append(e.getMessage()).append("\n");
     			} catch (UnsatisfiedLinkError e) {
@@ -150,7 +172,71 @@ public class JhlClientAdapterFactory extends SVNClientAdapterFactory {
     				javaHLErrors.append(e.getMessage()).append("\n");
     			}
     			try {
+    				System.loadLibrary("libaprutil-1");
+    			} catch (Exception e) {
+    				javaHLErrors.append(e.getMessage()).append("\n");
+    			} catch (UnsatisfiedLinkError e) {
+    				javaHLErrors.append(e.getMessage()).append("\n");
+    			}
+    			try {
     				System.loadLibrary("intl3_svn");
+    			} catch (Exception e) {
+    				javaHLErrors.append(e.getMessage()).append("\n");
+    			} catch (UnsatisfiedLinkError e) {
+    				javaHLErrors.append(e.getMessage()).append("\n");
+    			}
+            // Load DLL's for Subversion libraries -- as of 1.5    			
+    			try {
+    				System.loadLibrary("libsvn_subr-1");
+    			} catch (Exception e) {
+    				javaHLErrors.append(e.getMessage()).append("\n");
+    			} catch (UnsatisfiedLinkError e) {
+    				javaHLErrors.append(e.getMessage()).append("\n");
+    			}
+    			try {
+    				System.loadLibrary("libsvn_delta-1");
+    			} catch (Exception e) {
+    				javaHLErrors.append(e.getMessage()).append("\n");
+    			} catch (UnsatisfiedLinkError e) {
+    				javaHLErrors.append(e.getMessage()).append("\n");
+    			}
+    			try {
+    				System.loadLibrary("libsvn_diff-1");
+    			} catch (Exception e) {
+    				javaHLErrors.append(e.getMessage()).append("\n");
+    			} catch (UnsatisfiedLinkError e) {
+    				javaHLErrors.append(e.getMessage()).append("\n");
+    			}
+    			try {
+    				System.loadLibrary("libsvn_wc-1");
+    			} catch (Exception e) {
+    				javaHLErrors.append(e.getMessage()).append("\n");
+    			} catch (UnsatisfiedLinkError e) {
+    				javaHLErrors.append(e.getMessage()).append("\n");
+    			}
+    			try {
+    				System.loadLibrary("libsvn_fs-1");
+    			} catch (Exception e) {
+    				javaHLErrors.append(e.getMessage()).append("\n");
+    			} catch (UnsatisfiedLinkError e) {
+    				javaHLErrors.append(e.getMessage()).append("\n");
+    			}
+    			try {
+    				System.loadLibrary("libsvn_repos-1");
+    			} catch (Exception e) {
+    				javaHLErrors.append(e.getMessage()).append("\n");
+    			} catch (UnsatisfiedLinkError e) {
+    				javaHLErrors.append(e.getMessage()).append("\n");
+    			}
+    			try {
+    				System.loadLibrary("libsvn_ra-1");
+    			} catch (Exception e) {
+    				javaHLErrors.append(e.getMessage()).append("\n");
+    			} catch (UnsatisfiedLinkError e) {
+    				javaHLErrors.append(e.getMessage()).append("\n");
+    			}
+    			try {
+    				System.loadLibrary("libsvn_client-1");
     			} catch (Exception e) {
     				javaHLErrors.append(e.getMessage()).append("\n");
     			} catch (UnsatisfiedLinkError e) {
@@ -218,17 +304,20 @@ public class JhlClientAdapterFactory extends SVNClientAdapterFactory {
     			// System.out.println(javaHLErrors.toString());
     		} else {
     			// At this point, the library appears to be available, but
-    			// it could be a 1.2.x version of JavaHL.  We have to try
-    			// to execute a 1.3.x method to be sure.
+    			// it could be too old version of JavaHL library.  We have to try
+    			// to get the version of the library to be sure.
     			try {
 	                SVNClientInterface svnClient = new SVNClient();
-	                String dirname = svnClient.getAdminDirectoryName();
-    				// to remove compiler warning about dirname not being read
-    				if (dirname != null)  
+    				Version version = svnClient.getVersion();
+    				if (version.getMajor() == 1 && version.getMinor() >= 5)
     					available = true;
+    				else {
+    					available = false;
+    					javaHLErrors.append("Incompatible JavaHL library loaded.  1.5.x or later required.");
+    				}
     			} catch (UnsatisfiedLinkError e) {
     				available = false;
-    				javaHLErrors.append("Incompatible JavaHL library loaded.  1.3.x or later required.");
+    				javaHLErrors.append("Incompatible JavaHL library loaded.  1.5.x or later required.");
     			}
     		}
     	}

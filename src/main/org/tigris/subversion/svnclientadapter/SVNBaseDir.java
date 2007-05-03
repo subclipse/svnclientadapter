@@ -66,6 +66,10 @@ public class SVNBaseDir {
                 File.separatorChar);
         String[] file2Parts = StringUtils.split(file2AbsPath,
                 File.separatorChar);
+        if (file1Parts[0].equals(""))
+        	file1Parts[0] = File.separator;
+        if (file2Parts[0].equals(""))
+        	file2Parts[0] = File.separator;
 
         int parts1Length = file1Parts.length;
         int parts2Length = file2Parts.length;
