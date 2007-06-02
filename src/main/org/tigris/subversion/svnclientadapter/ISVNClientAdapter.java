@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
+
 /**
  * High level API for Subversion
  * 
@@ -1187,5 +1188,22 @@ public interface ISVNClientAdapter {
      */
     public abstract void relocate(String from, String to, String path, boolean recurse)
             throws SVNClientException;
+    
+    /**
+     * Merge set of revisions into a new local path.
+     * @param url          url
+     * @param pegRevision   revision to interpret path
+     * @param revisions     revisions to merge
+     * @param localPath     target local path
+     * @param force         overwrite local changes
+     * @param depth         how deep to traverse into subdirectories
+     * @param ignoreAncestry ignore if files are not related
+     * @param dryRun        do not change anything
+     * @throws ClientException
+     */
+    public abstract void merge(SVNUrl url, SVNRevision pegRevision, SVNRevisionRange[] revisions,
+               File localPath, boolean force, int depth,
+               boolean ignoreAncestry, boolean dryRun) throws SVNClientException;
 
+    
 }
