@@ -27,6 +27,7 @@ import org.tigris.subversion.javahl.LogMessage;
 import org.tigris.subversion.javahl.NodeKind;
 import org.tigris.subversion.javahl.Revision;
 import org.tigris.subversion.javahl.RevisionKind;
+import org.tigris.subversion.javahl.RevisionRange;
 import org.tigris.subversion.javahl.ScheduleKind;
 import org.tigris.subversion.javahl.Status;
 import org.tigris.subversion.javahl.StatusKind;
@@ -34,6 +35,7 @@ import org.tigris.subversion.svnclientadapter.ISVNLogMessageChangePath;
 import org.tigris.subversion.svnclientadapter.SVNLogMessageChangePath;
 import org.tigris.subversion.svnclientadapter.SVNNodeKind;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
+import org.tigris.subversion.svnclientadapter.SVNRevisionRange;
 import org.tigris.subversion.svnclientadapter.SVNScheduleKind;
 import org.tigris.subversion.svnclientadapter.SVNStatusKind;
 
@@ -70,6 +72,24 @@ public class JhlConverter {
             	return Revision.START; // should never go here
             }
         }
+    }
+    
+	/**
+	 * Convert clientAdapter's {@link SVNRevisionRange} into JavaHL's {@link RevisionRange}
+	 * @param svnRevisionRange
+	 * @return a {@link RevisionRange} representing suppplied SVNRevisionRange
+	 */
+    public static RevisionRange convert(SVNRevisionRange svnRevisionRange) {
+    	return new RevisionRange(JhlConverter.convert(svnRevisionRange.getFromRevision()), JhlConverter.convert(svnRevisionRange.getToRevision()));
+    }
+
+    
+    public static RevisionRange[] convert(SVNRevisionRange[] range) {
+        RevisionRange[] jhlRange = new RevisionRange[range.length];
+        for(int i=0; i < range.length; i++) {
+            jhlRange[i] = JhlConverter.convert(range[i]);
+        }
+        return jhlRange;
     }
 
 	/**

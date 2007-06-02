@@ -37,6 +37,7 @@ import org.tigris.subversion.javahl.PromptUserPassword;
 import org.tigris.subversion.javahl.PropertyData;
 import org.tigris.subversion.javahl.Revision;
 import org.tigris.subversion.javahl.RevisionKind;
+import org.tigris.subversion.javahl.RevisionRange;
 import org.tigris.subversion.javahl.SVNClientInterface;
 import org.tigris.subversion.javahl.Status;
 import org.tigris.subversion.svnclientadapter.AbstractClientAdapter;
@@ -54,6 +55,7 @@ import org.tigris.subversion.svnclientadapter.SVNInfoUnversioned;
 import org.tigris.subversion.svnclientadapter.SVNNodeKind;
 import org.tigris.subversion.svnclientadapter.SVNNotificationHandler;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
+import org.tigris.subversion.svnclientadapter.SVNRevisionRange;
 import org.tigris.subversion.svnclientadapter.SVNScheduleKind;
 import org.tigris.subversion.svnclientadapter.SVNStatusKind;
 import org.tigris.subversion.svnclientadapter.SVNStatusUnversioned;
@@ -1938,6 +1940,61 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 			}
 		}
 		this.mkdir(url, message);
+	}
+
+	public void merge(SVNUrl url, SVNRevision pegRevision, SVNRevisionRange[] revisions, File localPath, boolean force, int depth, boolean ignoreAncestry, boolean dryRun) throws SVNClientException {
+    	try {
+            notificationHandler.setCommand(ISVNNotifyListener.Command.MERGE);
+
+            String target = fileToSVNPath(localPath, false);
+            String commandLine = "merge";
+            if (dryRun) {
+            	commandLine += " --dry-run";
+            }
+            commandLine += depthCommandLine(depth);
+            if (force) {
+            	commandLine += " --force";
+            }
+            if (ignoreAncestry) {
+            	commandLine += " --ignore-ancestry";
+            }
+            commandLine += " -c ";
+            RevisionRange[] range = JhlConverter.convert(revisions);
+            for (int i = 0; i < range.length; i++) {
+            	if (i > 0)
+            		commandLine += ",";
+				commandLine += range[i].toString();
+			}
+            commandLine += url.toString();
+            
+            commandLine += " " + target;
+            notificationHandler.logCommandLine(commandLine);
+            File baseDir = SVNBaseDir.getBaseDir(localPath);
+            notificationHandler.setBaseDir(baseDir);
+        	Revision peg = JhlConverter.convert(pegRevision);
+        	svnClient.merge(url.toString(), peg, range, target, force, depth, ignoreAncestry, dryRun);
+            if (dryRun)
+                notificationHandler.logCompleted("Dry-run merge complete.");
+            else
+                notificationHandler.logCompleted("Merge complete.");
+        } catch (ClientException e) {
+            notificationHandler.logException(e);
+            throw new SVNClientException(e);            
+        }        
+	}
+
+	private String depthCommandLine(int depth) {
+		switch (depth) {
+		case 0:
+			return " --depth=empty";
+		case 1:
+			return " --depth=files";
+		case 2:
+			return " --depth=immediates";
+
+		default:
+			return "";
+		}
 	}
 
 	
