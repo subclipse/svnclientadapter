@@ -83,6 +83,22 @@ public class JhlConverter {
     	return new RevisionRange(JhlConverter.convert(svnRevisionRange.getFromRevision()), JhlConverter.convert(svnRevisionRange.getToRevision()));
     }
 
+    /**
+	 * Convert JavaHL's {@link RevisionRange} into clientAdapter's {@link SVNRevisionRange}
+	 * @param RevisionRange
+	 * @return a {@link SVNRevisionRange} representing suppplied RevisionRange
+	 */
+    public static SVNRevisionRange convert(RevisionRange svnRevisionRange) {
+    	return new SVNRevisionRange(JhlConverter.convert(svnRevisionRange.getFromRevision()), JhlConverter.convert(svnRevisionRange.getToRevision()));
+    }
+
+    public static SVNRevisionRange[] convert(RevisionRange[] jhlRange) {
+        SVNRevisionRange[] range = new SVNRevisionRange[jhlRange.length];
+        for(int i=0; i < jhlRange.length; i++) {
+            range[i] = JhlConverter.convert(jhlRange[i]);
+        }
+        return range;
+	}
     
     public static RevisionRange[] convert(SVNRevisionRange[] range) {
         RevisionRange[] jhlRange = new RevisionRange[range.length];

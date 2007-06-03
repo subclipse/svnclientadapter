@@ -33,6 +33,7 @@ import org.tigris.subversion.javahl.ClientException;
 import org.tigris.subversion.javahl.Depth;
 import org.tigris.subversion.javahl.Info;
 import org.tigris.subversion.javahl.Info2;
+import org.tigris.subversion.javahl.MergeInfo;
 import org.tigris.subversion.javahl.PromptUserPassword;
 import org.tigris.subversion.javahl.PropertyData;
 import org.tigris.subversion.javahl.Revision;
@@ -40,11 +41,13 @@ import org.tigris.subversion.javahl.RevisionKind;
 import org.tigris.subversion.javahl.RevisionRange;
 import org.tigris.subversion.javahl.SVNClientInterface;
 import org.tigris.subversion.javahl.Status;
+import org.tigris.subversion.javahl.SubversionException;
 import org.tigris.subversion.svnclientadapter.AbstractClientAdapter;
 import org.tigris.subversion.svnclientadapter.ISVNAnnotations;
 import org.tigris.subversion.svnclientadapter.ISVNDirEntry;
 import org.tigris.subversion.svnclientadapter.ISVNInfo;
 import org.tigris.subversion.svnclientadapter.ISVNLogMessage;
+import org.tigris.subversion.svnclientadapter.ISVNMergeInfo;
 import org.tigris.subversion.svnclientadapter.ISVNNotifyListener;
 import org.tigris.subversion.svnclientadapter.ISVNPromptUserPassword;
 import org.tigris.subversion.svnclientadapter.ISVNProperty;
@@ -1997,5 +2000,22 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 		}
 	}
 
+	public ISVNMergeInfo getMergeInfo(File path, SVNRevision revision) throws SVNClientException {
+		return this.getMergeInfo(fileToSVNPath(path, false), JhlConverter.convert(revision));
+	}
+
+	public ISVNMergeInfo getMergeInfo(SVNUrl url, SVNRevision revision) throws SVNClientException {
+		return this.getMergeInfo(url.toString(), JhlConverter.convert(revision));
+	}
+
+	private ISVNMergeInfo getMergeInfo(String path, Revision revision) throws SVNClientException {
+        try {
+        	MergeInfo info = svnClient.getMergeInfo(path, revision);
+        	return new JhlMergeInfo(info);
+        } catch (SubversionException e) {
+            throw new SVNClientException(e);
+		}           	
+		
+	}
 	
 }
