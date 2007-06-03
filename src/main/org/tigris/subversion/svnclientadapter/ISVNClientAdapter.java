@@ -24,6 +24,7 @@ import java.io.InputStream;
 import java.util.List;
 
 
+
 /**
  * High level API for Subversion
  * 
@@ -1199,11 +1200,30 @@ public interface ISVNClientAdapter {
      * @param depth         how deep to traverse into subdirectories
      * @param ignoreAncestry ignore if files are not related
      * @param dryRun        do not change anything
-     * @throws ClientException
+     * @throws SVNClientException
      */
     public abstract void merge(SVNUrl url, SVNRevision pegRevision, SVNRevisionRange[] revisions,
                File localPath, boolean force, int depth,
                boolean ignoreAncestry, boolean dryRun) throws SVNClientException;
 
+    /**
+     * Get merge info for <code>path</code> at <code>revision</code>.
+     * @param path Local Path.
+     * @param revision SVNRevision at which to get the merge info for
+     * <code>path</code>.
+     * @throws SVNClientException
+     */
+    public abstract ISVNMergeInfo getMergeInfo(File path, SVNRevision revision)
+        throws SVNClientException;
+
+    /**
+     * Get merge info for <code>url</code> at <code>revision</code>.
+     * @param url URL.
+     * @param revision SVNRevision at which to get the merge info for
+     * <code>path</code>.
+     * @throws SVNClientException
+     */
+    public abstract ISVNMergeInfo getMergeInfo(SVNUrl url, SVNRevision revision)
+        throws SVNClientException;
     
 }
