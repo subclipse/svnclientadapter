@@ -1620,7 +1620,8 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
             }
             if (path1.toString().equals(path2.toString())) {
             	samePath = true;
-            	commandLine += " -r" + revision1.toString() + ":" + revision2.toString() + " " + path1;
+            	if (revision1 == null || revision2 == null) commandLine += " " + path1;
+            	else commandLine += " -r" + revision1.toString() + ":" + revision2.toString() + " " + path1;
             } else {
             	commandLine += " " + path1 + "@" + revision1.toString() + " " + path2 + "@" + revision2.toString();
             }
