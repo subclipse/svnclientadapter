@@ -18,6 +18,9 @@
  ******************************************************************************/
 package org.tigris.subversion.svnclientadapter;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 
 /**
  * Object that describes a revision range
@@ -180,5 +183,31 @@ public class SVNRevisionRange implements Comparable, java.io.Serializable
         SVNRevision other = ((SVNRevisionRange) range).getFromRevision();
         return SVNRevisionRange.getRevisionAsLong(this.getFromRevision())
             .compareTo(SVNRevisionRange.getRevisionAsLong(other));
+    }
+    
+    public static SVNRevisionRange[] getRevisions(SVNRevision.Number[] revisions) {
+    	Arrays.sort(revisions);
+    	ArrayList svnRevisionRanges = new ArrayList();
+    	SVNRevision.Number fromRevision = null;
+    	SVNRevision.Number toRevision = null;
+    	for (int i = 0; i < revisions.length; i++) {
+    		if (fromRevision == null) {
+    			fromRevision = revisions[i];
+    		} else {
+    			if (revisions[i].getNumber() > fromRevision.getNumber() + 1) {
+    				SVNRevisionRange revisionRange = new SVNRevisionRange(fromRevision, toRevision);
+    				svnRevisionRanges.add(revisionRange);
+    				fromRevision = revisions[i];
+    			}
+    		}
+    		toRevision = revisions[i];
+    	}
+    	if (toRevision != null) {
+			SVNRevisionRange revisionRange = new SVNRevisionRange(fromRevision, toRevision);
+			svnRevisionRanges.add(revisionRange);    		
+    	}
+    	SVNRevisionRange[] revisionRangeArray = new SVNRevisionRange[svnRevisionRanges.size()];
+    	svnRevisionRanges.toArray(revisionRangeArray);
+    	return revisionRangeArray;
     }
 }

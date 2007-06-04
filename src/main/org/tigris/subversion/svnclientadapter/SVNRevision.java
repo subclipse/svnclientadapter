@@ -86,7 +86,7 @@ public class SVNRevision
     public static final SVNRevision.Number INVALID_REVISION = new SVNRevision.Number(SVN_INVALID_REVNUM);
 
 
-    public static class Number extends SVNRevision
+    public static class Number extends SVNRevision implements Comparable
     {
         protected long revNumber;
 
@@ -116,6 +116,13 @@ public class SVNRevision
         {
         	return (int) revNumber;
         }
+
+		public int compareTo(Object target) {
+			SVNRevision.Number compare = (SVNRevision.Number)target;
+			if (revNumber > compare.getNumber()) return 1;
+			if (compare.getNumber() > revNumber) return -1;
+			return 0;
+		}
     }
 
     public static class DateSpec extends SVNRevision
