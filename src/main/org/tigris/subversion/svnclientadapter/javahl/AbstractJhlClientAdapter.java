@@ -1971,7 +1971,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
             		commandLine += ",";
 				commandLine += range[i].toString();
 			}
-            commandLine += url.toString();
+            commandLine += " " + url.toString();
             
             commandLine += " " + target;
             notificationHandler.logCommandLine(commandLine);
