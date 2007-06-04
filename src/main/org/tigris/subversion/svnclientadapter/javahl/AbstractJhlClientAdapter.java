@@ -2031,6 +2031,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 	private SVNCopySource getCopySource(String path, Revision revision) throws SVNClientException {
 		try {
 			CopySource src = svnClient.getCopySource(path, revision);
+			if (src == null) return null;
 			return new SVNCopySource(src.getPath(), JhlConverter.convert(src.getRevision()), JhlConverter.convert(src.getPegRevision()));
 		} catch (SubversionException e) {
             throw new SVNClientException(e);

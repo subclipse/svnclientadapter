@@ -116,6 +116,7 @@ public class JhlConverter {
 	 * @return a {@link SVNRevision} representing suppplied Revision
 	 */
 	public static SVNRevision convert(Revision rev) {
+		if (rev == null) return null;
 		switch (rev.getKind()) {
 			case RevisionKind.base :
 				return SVNRevision.BASE;
