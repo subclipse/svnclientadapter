@@ -2014,6 +2014,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 	private ISVNMergeInfo getMergeInfo(String path, Revision revision) throws SVNClientException {
         try {
         	MergeInfo info = svnClient.getMergeInfo(path, revision);
+        	if (info == null) return null;
         	return new JhlMergeInfo(info);
         } catch (SubversionException e) {
             throw new SVNClientException(e);
