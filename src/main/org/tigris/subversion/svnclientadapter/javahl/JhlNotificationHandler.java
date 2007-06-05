@@ -123,9 +123,9 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements No
         	case NotifyAction.merge_begin :
         		if (mergeRange != null) {
 	        		if (mergeRange.getFromRevision().equals(mergeRange.getToRevision()))
-	        			logMessage("Merging revision: r" + mergeRange.getFromRevision().toString());
+	        			logMessage("Merging r" + mergeRange.getFromRevision().toString());
 	        		else
-	        			logMessage("Merging revisions: r" + mergeRange.getFromRevision().toString() + ":" + mergeRange.getToRevision().toString());
+	        			logMessage("Merging r" + mergeRange.getFromRevision().toString() + " through r" + mergeRange.getToRevision().toString());
 	        	}
         		notify = false;
         		break;
