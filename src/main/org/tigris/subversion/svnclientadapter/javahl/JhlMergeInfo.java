@@ -43,10 +43,14 @@ public class JhlMergeInfo implements ISVNMergeInfo {
 	}
 
 	public void addRevisionRange(String path, SVNRevisionRange range) {
+		if (info == null)
+			info = new MergeInfo();
 		info.addRevisionRange(path, JhlConverter.convert(range));
 	}
 
 	public void addRevisions(String path, SVNRevisionRange[] range) {
+		if (info == null)
+			info = new MergeInfo();
 		List rangeList = new ArrayList();
 		for (int i = 0; i < range.length; i++) {
 			rangeList.add(JhlConverter.convert(range[i]));
@@ -60,15 +64,21 @@ public class JhlMergeInfo implements ISVNMergeInfo {
 	}
 
 	public String[] getPaths() {
+		if (info == null)
+			return null;
 		return info.getPaths();
 		
 	}
 
 	public SVNRevisionRange[] getRevisionRange(String path) {
+		if (info == null)
+			return null;
 		return JhlConverter.convert(info.getRevisionRange(path));
 	}
 
 	public SVNRevisionRange[] getRevisions(String path) {
+		if (info == null)
+			return null;
 		List rangeList = info.getRevisions(path);
 		SVNRevisionRange[] range = new SVNRevisionRange[rangeList.size()];
 		int i = 0;
@@ -79,6 +89,8 @@ public class JhlMergeInfo implements ISVNMergeInfo {
 	}
 
 	public void loadFromMergeInfoProperty(String mergeInfo) {
+		if (info == null)
+			info = new MergeInfo();
 		info.loadFromMergeInfoProperty(mergeInfo);
 	}
 
