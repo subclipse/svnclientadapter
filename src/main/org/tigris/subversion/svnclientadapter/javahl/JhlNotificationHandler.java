@@ -24,6 +24,7 @@ import org.tigris.subversion.javahl.Notify2;
 import org.tigris.subversion.javahl.NotifyAction;
 import org.tigris.subversion.javahl.NotifyInformation;
 import org.tigris.subversion.javahl.NotifyStatus;
+import org.tigris.subversion.javahl.RevisionRange;
 import org.tigris.subversion.svnclientadapter.ISVNNotifyListener;
 import org.tigris.subversion.svnclientadapter.SVNNotificationHandler;
 import org.tigris.subversion.svnclientadapter.utils.Messages;
@@ -75,7 +76,9 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements No
                       info.getPropState(),
                       info.getRevision(),
                       info.getLock(),
-					 info.getErrMsg());
+                      info.getErrMsg(),
+                      info.getMergeRange(),
+                      info.getChangelistName());
     }
     
     /**
@@ -99,7 +102,9 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements No
         int propState,
         long revision,
         Lock lock,
-		String errorMsg) {
+		String errorMsg,
+		RevisionRange mergeRange,
+		String changeListName) {
 
         // for some actions, we don't want to call notifyListenersOfChange :
         // when the status of the target has not been modified 
@@ -115,6 +120,15 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements No
         			  logError(errorMsg); 
                 notify = false;                                
                 break;
+        	case NotifyAction.merge_begin :
+        		if (mergeRange != null) {
+	        		if (mergeRange.getFromRevision().equals(mergeRange.getToRevision()))
+	        			logMessage("Merging revision: r" + mergeRange.getFromRevision().toString());
+	        		else
+	        			logMessage("Merging revisions: r" + mergeRange.getFromRevision().toString() + ":" + mergeRange.getToRevision().toString());
+	        	}
+        		notify = false;
+        		break;
             case NotifyAction.skip :
                 logMessage(Messages.bind("notify.skipped", path)); //$NON-NLS-1$
                 notify = false;                                
