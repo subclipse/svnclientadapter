@@ -20,6 +20,7 @@ package org.tigris.subversion.svnclientadapter.javahl;
 
 import java.util.Date;
 
+import org.tigris.subversion.javahl.ChangePath;
 import org.tigris.subversion.javahl.LogMessage;
 import org.tigris.subversion.svnclientadapter.ISVNLogMessage;
 import org.tigris.subversion.svnclientadapter.ISVNLogMessageChangePath;
@@ -33,7 +34,14 @@ import org.tigris.subversion.svnclientadapter.SVNRevision;
  */
 public class JhlLogMessage implements ISVNLogMessage {
 
-	private LogMessage _m;
+	private JhlLogMessage[] children;
+	private int count;
+	private long numberOfChildren;
+	private ISVNLogMessageChangePath[] changedPaths;
+	private SVNRevision.Number revision;
+	private String author;
+	private long timeMicros;
+	private String message;
 
 	/**
 	 * Constructor
@@ -41,42 +49,68 @@ public class JhlLogMessage implements ISVNLogMessage {
 	 */
 	public JhlLogMessage(LogMessage msg) {
 		super();
-		_m = msg;
+		changedPaths = JhlConverter.convert(msg.getChangedPaths());
+		revision = new SVNRevision.Number(msg.getRevisionNumber());
+		author = msg.getAuthor();
+		timeMicros = msg.getTimeMicros();
+		message = msg.getMessage();
 	}
+	
+	public JhlLogMessage(ChangePath[] changedPaths, long revision, String author, long timeMicros, String message, long numberChildren) {
+		this.changedPaths = JhlConverter.convert(changedPaths);
+		this.revision = new SVNRevision.Number(revision);
+		this.author = author;
+		this.timeMicros = timeMicros;
+		this.message = message;
+		this.numberOfChildren = numberChildren;
+		this.children = new JhlLogMessage[(int) numberChildren];
+	}
+
+	public void addChild(JhlLogMessage msg) {
+		if (allChildrenAdded())
+			return;
+		children[count] = msg;
+		count++;
+	}
+	
+	public boolean allChildrenAdded() {
+		return (count == children.length);
+	}
+	
 
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNLogMessage#getRevision()
 	 */
 	public SVNRevision.Number getRevision() {
-		return (SVNRevision.Number)JhlConverter.convert(_m.getRevision());
+		return revision;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNLogMessage#getAuthor()
 	 */
 	public String getAuthor() {
-		return _m.getAuthor();
+		return author;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNLogMessage#getDate()
 	 */
 	public Date getDate() {
-		return _m.getDate();
+        return new Date(timeMicros / 1000);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNLogMessage#getMessage()
 	 */
 	public String getMessage() {
-		return _m.getMessage();
+		return message;
 	}
 
     /* (non-Javadoc)
      * @see org.tigris.subversion.svnclientadapter.ISVNLogMessage#getChangedPaths()
      */
     public ISVNLogMessageChangePath[] getChangedPaths() {
-    	return JhlConverter.convert(_m.getChangedPaths());
+    	return changedPaths;
     }
 
     /* (non-Javadoc)
@@ -85,5 +119,21 @@ public class JhlLogMessage implements ISVNLogMessage {
     public String toString() {
         return getMessage();
     }
+
+	public ISVNLogMessage[] getChildMessages() {
+		return children;
+	}
+
+	public long getNumberOfChildren() {
+		return this.numberOfChildren;
+	}
+
+	public long getTimeMicros() {
+		return timeMicros;
+	}
+
+	public long getTimeMillis() {
+        return timeMicros / 1000;
+	}
 
 }

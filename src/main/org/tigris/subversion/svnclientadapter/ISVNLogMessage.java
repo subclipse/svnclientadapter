@@ -42,6 +42,20 @@ public interface ISVNLogMessage {
 	public abstract String getAuthor();
 
     /**
+     * Returns the time of the commit
+     * @return the time of the commit measured in the number of
+     *         microseconds since 00:00:00 January 1, 1970 UTC
+     */
+    public abstract long getTimeMicros();
+
+    /**
+     * Returns the time of the commit
+     * @return the time of the commit measured in the number of
+     *         milliseconds since 00:00:00 January 1, 1970 UTC
+     */
+    public abstract long getTimeMillis();
+
+    /**
      * Returns the date of the commit
      * @return the date of the commit
      */
@@ -58,4 +72,19 @@ public interface ISVNLogMessage {
      * @return the changes items by this commit
      */
     public abstract ISVNLogMessageChangePath[] getChangedPaths();    
+    
+    /**
+     * Returns the number of child log messages.  When merge-sensitive
+     * log option was specified.
+     * @return the number of revisions merged by this commit
+     */
+
+    public abstract long getNumberOfChildren();    
+
+    /**
+     * Returns the child log messages.  When merge-sensitive
+     * log option was specified.
+     * @return the revisions merged by this commit
+     */
+    public abstract ISVNLogMessage[] getChildMessages();    
 }

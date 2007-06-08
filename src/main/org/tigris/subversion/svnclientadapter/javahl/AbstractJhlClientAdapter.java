@@ -1879,7 +1879,50 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
     }
 
     
-    /* (non-Javadoc)
+    public ISVNLogMessage[] getLogMessages(File path, SVNRevision pegRevision, SVNRevision revisionStart, SVNRevision revisionEnd, boolean stopOnCopy, boolean fetchChangePath, long limit, boolean includeMergedRevisions) throws SVNClientException {
+		String target = path.toString();
+		notificationHandler.setBaseDir();
+        return this.getLogMessages(target, pegRevision, revisionStart, revisionEnd, stopOnCopy, fetchChangePath, limit, includeMergedRevisions);
+	}
+
+	public ISVNLogMessage[] getLogMessages(SVNUrl url, SVNRevision pegRevision, SVNRevision revisionStart, SVNRevision revisionEnd, boolean stopOnCopy, boolean fetchChangePath, long limit, boolean includeMergedRevisions) throws SVNClientException {
+		String target = url.toString();
+		notificationHandler.setBaseDir();
+        return this.getLogMessages(target, pegRevision, revisionStart, revisionEnd, stopOnCopy, fetchChangePath, limit, includeMergedRevisions);
+	}
+
+	private ISVNLogMessage[] getLogMessages(String target, SVNRevision pegRevision, SVNRevision revisionStart, SVNRevision revisionEnd, boolean stopOnCopy, boolean fetchChangePath, long limit, boolean includeMergedRevisions) throws SVNClientException {
+		try {
+			notificationHandler.setCommand(
+				ISVNNotifyListener.Command.LOG);
+			String logExtras = "";
+			if (includeMergedRevisions)
+				logExtras = logExtras + " -g";
+			if (stopOnCopy)
+			    logExtras = logExtras + " --stop-on-copy";
+			if (limit > 0 )
+			    logExtras = logExtras + " --limit " + limit;
+			notificationHandler.logCommandLine(
+				"log -r "
+					+ revisionStart.toString()
+					+ ":"
+					+ revisionEnd.toString()
+					+ " "
+					+ target
+					+ logExtras);
+			JhlLogMessageCallback callback = new JhlLogMessageCallback();
+			svnClient.logMessages(target, JhlConverter.convert(pegRevision),
+                    JhlConverter.convert(revisionStart), 
+                    JhlConverter.convert(revisionEnd),
+					stopOnCopy, fetchChangePath, includeMergedRevisions, limit, callback);
+			return callback.getLogMessages();
+		} catch (ClientException e) {
+			notificationHandler.logException(e);
+			throw new SVNClientException(e);
+		}
+	}
+
+	/* (non-Javadoc)
      * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#relocate(java.lang.String, java.lang.String, java.lang.String, boolean)
      */
     public void relocate(String from, String to, String path, boolean recurse)
