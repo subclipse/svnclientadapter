@@ -1914,7 +1914,8 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 			svnClient.logMessages(target, JhlConverter.convert(pegRevision),
                     JhlConverter.convert(revisionStart), 
                     JhlConverter.convert(revisionEnd),
-					stopOnCopy, fetchChangePath, includeMergedRevisions, limit, callback);
+					stopOnCopy, fetchChangePath, includeMergedRevisions, 
+					false, limit, callback);
 			return callback.getLogMessages();
 		} catch (ClientException e) {
 			notificationHandler.logException(e);
