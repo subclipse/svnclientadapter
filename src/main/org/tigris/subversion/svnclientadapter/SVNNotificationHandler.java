@@ -19,16 +19,16 @@
 package org.tigris.subversion.svnclientadapter;
 
 import java.io.File;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
+import java.util.Set;
 
 /**
  * Notification handler :
  * It sends notifications to all listeners 
  */
 public abstract class SVNNotificationHandler {
-    protected List notifylisteners = new ArrayList();
+    protected Set notifylisteners = new HashSet();
     protected int command;
     protected boolean logEnabled = true;
     protected File baseDir = new File(".");
