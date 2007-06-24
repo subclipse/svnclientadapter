@@ -752,19 +752,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#mkdir(org.tigris.subversion.svnclientadapter.SVNUrl, java.lang.String)
 	 */
 	public void mkdir(SVNUrl url, String message) throws SVNClientException {
-        try {
-        	if (message == null)
-        		message = "";
-           notificationHandler.setCommand(ISVNNotifyListener.Command.MKDIR);
-		    String target = url.toString();
-            notificationHandler.logCommandLine(
-                "mkdir -m \""+message+"\" "+target);
-			notificationHandler.setBaseDir();
-            svnClient.mkdir(new String[] { target },message);
-        } catch (ClientException e) {
-            notificationHandler.logException(e);
-            throw new SVNClientException(e);
-        }                   	
+		this.mkdir(url, false, message);
 	}
 	
 	/* (non-Javadoc)
@@ -1972,24 +1960,23 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 
 	public void mkdir(SVNUrl url, boolean makeParents, String message)
 	throws SVNClientException {
-		if (makeParents) {
-			SVNUrl parent = url.getParent();
-			if (parent != null) {
-				ISVNInfo info = null;
-				try {
-					info = this.getInfo(parent);
-				} catch (SVNClientException e) {
-					if (e.getCause() instanceof ClientException) {
-						ClientException ce = (ClientException) e.getCause();
-						if (ce.getAprError() != 170000)
-							throw e;
-					}
-				}
-				if (info == null)
-					this.mkdir(parent, makeParents, message);
-			}
-		}
-		this.mkdir(url, message);
+        try {
+        	if (message == null)
+        		message = "";
+           notificationHandler.setCommand(ISVNNotifyListener.Command.MKDIR);
+		    String target = url.toString();
+		    if (makeParents)
+	            notificationHandler.logCommandLine(
+	                    "mkdir --parents -m \""+message+"\" "+target);
+		    else
+	            notificationHandler.logCommandLine(
+	                "mkdir -m \""+message+"\" "+target);
+			notificationHandler.setBaseDir();
+            svnClient.mkdir(new String[] { target },message, makeParents);
+        } catch (ClientException e) {
+            notificationHandler.logException(e);
+            throw new SVNClientException(e);
+        }                   	
 	}
 
 	public void merge(SVNUrl url, SVNRevision pegRevision, SVNRevisionRange[] revisions, File localPath, boolean force, int depth, boolean ignoreAncestry, boolean dryRun) throws SVNClientException {
