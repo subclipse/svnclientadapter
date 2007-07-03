@@ -185,29 +185,35 @@ public class SVNRevisionRange implements Comparable, java.io.Serializable
             .compareTo(SVNRevisionRange.getRevisionAsLong(other));
     }
     
-    public static SVNRevisionRange[] getRevisions(SVNRevision.Number[] revisions) {
-    	Arrays.sort(revisions);
+    public static SVNRevisionRange[] getRevisions(SVNRevision.Number[] selectedRevisions, SVNRevision.Number[] allRevisions) {
+    	Arrays.sort(selectedRevisions);
+    	Arrays.sort(allRevisions);
     	ArrayList svnRevisionRanges = new ArrayList();
     	SVNRevision.Number fromRevision = null;
-    	SVNRevision.Number toRevision = null;
-    	for (int i = 0; i < revisions.length; i++) {
+    	SVNRevision.Number toRevision = null; 
+    	
+    	int j = 0;
+    	for (int i = 0; i < selectedRevisions.length; i++) {
     		if (fromRevision == null) {
-    			fromRevision = revisions[i];
+    			fromRevision = selectedRevisions[i];
+    			while (allRevisions[j++].getNumber() != selectedRevisions[i].getNumber()) {}
     		} else {
-    			if (revisions[i].getNumber() > fromRevision.getNumber() + 1) {
+    			if (selectedRevisions[i].getNumber() != allRevisions[j++].getNumber()) {
     				SVNRevisionRange revisionRange = new SVNRevisionRange(fromRevision, toRevision);
     				svnRevisionRanges.add(revisionRange);
-    				fromRevision = revisions[i];
+    				fromRevision = selectedRevisions[i];
+    				while (allRevisions[j++].getNumber() != selectedRevisions[i].getNumber()) {}
     			}
     		}
-    		toRevision = revisions[i];
+    		toRevision = selectedRevisions[i];
     	}
     	if (toRevision != null) {
 			SVNRevisionRange revisionRange = new SVNRevisionRange(fromRevision, toRevision);
 			svnRevisionRanges.add(revisionRange);    		
-    	}
+		}    	
+    	
     	SVNRevisionRange[] revisionRangeArray = new SVNRevisionRange[svnRevisionRanges.size()];
     	svnRevisionRanges.toArray(revisionRangeArray);
-    	return revisionRangeArray;
+    	return revisionRangeArray;    	
     }
 }
