@@ -70,6 +70,12 @@ public interface ISVNClientAdapter {
 	 * @param callback
 	 */
 	public abstract void addPasswordCallback(ISVNPromptUserPassword callback);   
+	
+	/**
+	 * Add a callback for resolving conflicts during up/sw/merge
+	 * @param callback
+	 */
+	public abstract void addConflictResolutionCallback(ISVNConflictResolver callback);   
     
 	/**
 	 * Adds a file (or directory) to the repository.
