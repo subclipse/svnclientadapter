@@ -45,6 +45,7 @@ import org.tigris.subversion.javahl.Status;
 import org.tigris.subversion.javahl.SubversionException;
 import org.tigris.subversion.svnclientadapter.AbstractClientAdapter;
 import org.tigris.subversion.svnclientadapter.ISVNAnnotations;
+import org.tigris.subversion.svnclientadapter.ISVNConflictResolver;
 import org.tigris.subversion.svnclientadapter.ISVNDirEntry;
 import org.tigris.subversion.svnclientadapter.ISVNInfo;
 import org.tigris.subversion.svnclientadapter.ISVNLogMessage;
@@ -80,6 +81,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 
     protected SVNClientInterface svnClient;
     protected JhlNotificationHandler notificationHandler;
+    protected JhlConflictResolver conflictResolver;
 
     public AbstractJhlClientAdapter() {
 
@@ -2069,6 +2071,14 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 		} catch (SubversionException e) {
             throw new SVNClientException(e);
 		}
+	}
+
+	public void addConflictResolutionCallback(ISVNConflictResolver callback) {
+		if (callback == null)
+			conflictResolver = null;
+		else
+			conflictResolver = new JhlConflictResolver(callback);
+		svnClient.setConflictResolver(conflictResolver);
 	}
 	
 }

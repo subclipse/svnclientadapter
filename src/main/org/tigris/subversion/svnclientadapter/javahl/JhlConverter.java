@@ -21,6 +21,7 @@ package org.tigris.subversion.svnclientadapter.javahl;
 import java.util.logging.Logger;
 
 import org.tigris.subversion.javahl.ChangePath;
+import org.tigris.subversion.javahl.ConflictDescriptor;
 import org.tigris.subversion.javahl.DirEntry;
 import org.tigris.subversion.javahl.Lock;
 import org.tigris.subversion.javahl.LogMessage;
@@ -32,6 +33,7 @@ import org.tigris.subversion.javahl.ScheduleKind;
 import org.tigris.subversion.javahl.Status;
 import org.tigris.subversion.javahl.StatusKind;
 import org.tigris.subversion.svnclientadapter.ISVNLogMessageChangePath;
+import org.tigris.subversion.svnclientadapter.SVNConflictDescriptor;
 import org.tigris.subversion.svnclientadapter.SVNLogMessageChangePath;
 import org.tigris.subversion.svnclientadapter.SVNNodeKind;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
@@ -264,6 +266,13 @@ public class JhlConverter {
     
     public static JhlLock convertLock(Lock lock) {
         return new JhlLock(lock);
+    }
+    
+    public static SVNConflictDescriptor convertConflictDescriptor(ConflictDescriptor d) {
+    	return new SVNConflictDescriptor(d.getPath(), d.getNodeKind(), d.isBinary(),
+                d.getMIMEType(), d.getAction(), d.getReason(),
+                d.getBasePath(), d.getReposPath(),
+                d.getUserPath(), d.getMergedPath());
     }
     
 }
