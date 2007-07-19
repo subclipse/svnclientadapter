@@ -1547,7 +1547,8 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
             File baseDir = SVNBaseDir.getBaseDir(path);
             notificationHandler.setBaseDir(baseDir);
             boolean force = true;
-            svnClient.doSwitch(target, url.toString(),JhlConverter.convert(revision),Depth.fromRecurse(recurse), force);
+            boolean ignoreExternals = false;
+            svnClient.doSwitch(target, url.toString(),JhlConverter.convert(revision),Depth.fromRecurse(recurse), ignoreExternals, force);
            
         } catch (ClientException e) {
             notificationHandler.logException(e);
