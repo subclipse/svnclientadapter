@@ -880,6 +880,19 @@ public interface ISVNClientAdapter {
 		throws SVNClientException;
 	
 	/**
+	 * display the combined differences for an array of paths.
+	 * @param paths
+	 * @param outFile
+	 * @param recurse
+	 * @throws SVNClientException
+	 */
+	public abstract void diff(
+		File[] paths, 
+		File outFile, 
+		boolean recurse)
+		throws SVNClientException;	
+	
+	/**
 	 * display the differences between two urls.
 	 * @param oldUrl
 	 * @param oldUrlRevision

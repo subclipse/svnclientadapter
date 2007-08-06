@@ -19,6 +19,9 @@
 package org.tigris.subversion.svnclientadapter;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -247,5 +250,33 @@ public abstract class AbstractClientAdapter implements ISVNClientAdapter {
 		throws SVNClientException {
 		return propertyGet(url, SVNRevision.HEAD, SVNRevision.HEAD, propertyName);
 	}
+	
+	public void diff(File[] paths, File outFile, boolean recurse) throws SVNClientException {
+		FileOutputStream os = null;
+		try {
+			ArrayList tempFiles = new ArrayList();
+			for (int i = 0; i < paths.length; i++) {
+				File tempFile = File.createTempFile("tempDiff", ".txt");
+				tempFile.deleteOnExit();
+				diff(paths[i], tempFile, recurse);
+				tempFiles.add(tempFile);
+			}
+			os = new FileOutputStream(outFile);
+			Iterator iter = tempFiles.iterator();
+			while (iter.hasNext()) {
+				File tempFile = (File)iter.next();
+				FileInputStream is = new FileInputStream(tempFile);
+				byte[] buffer = new byte[4096];
+				int bytes_read;
+				while ((bytes_read = is.read(buffer)) != -1)
+					os.write(buffer, 0, bytes_read);				
+				is.close();
+			}
+		} catch (Exception e) {
+			throw new SVNClientException(e);
+		} finally {
+			if (os != null) try {os.close();} catch (IOException e) {}
+		}
+	}	
 
 }
