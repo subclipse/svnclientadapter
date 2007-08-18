@@ -21,6 +21,7 @@ package org.tigris.subversion.svnclientadapter.javahl;
 import java.util.Date;
 
 import org.tigris.subversion.javahl.BlameCallback;
+import org.tigris.subversion.javahl.BlameCallback2;
 import org.tigris.subversion.svnclientadapter.Annotations;
 
 /**
@@ -29,7 +30,7 @@ import org.tigris.subversion.svnclientadapter.Annotations;
  * as means of constructing the annotation records.  
  * 
  */
-public class JhlAnnotations extends Annotations implements BlameCallback {
+public class JhlAnnotations extends Annotations implements BlameCallback, BlameCallback2 {
 	
     /* (non-Javadoc)
      * @see org.tigris.subversion.javahl.BlameCallback#singleLine(java.util.Date, long, java.lang.String, java.lang.String)
@@ -38,4 +39,31 @@ public class JhlAnnotations extends Annotations implements BlameCallback {
                            String line) {
     	addAnnotation(new Annotation(revision, author, changed, line));
     }
+
+	public void singleLine(Date changed, long revision, String author,
+			Date merged_date, long merged_revision, String merged_author,
+			String line) {
+	   	addAnnotation(new Annotation(getRevision(revision, merged_revision), getAuthor(author, merged_author), getDate(changed, merged_date), line));
+	}
+	
+	private long getRevision(long revision, long merged_revision) {
+		if (merged_revision == -1)
+			return revision;
+		else
+			return merged_revision;
+	}
+	
+	private String getAuthor(String author, String merged_author) {
+		if (merged_author == null)
+			return author;
+		else
+			return merged_author;
+	}
+	
+	private Date getDate(Date changed, Date merged_date) {
+		if (merged_date == null)
+			return changed;
+		else
+			return merged_date;
+	}
 }

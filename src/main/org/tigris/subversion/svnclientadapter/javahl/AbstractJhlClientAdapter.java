@@ -1368,7 +1368,26 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
         diff(url,oldUrlRevision,url,newUrlRevision,outFile,recurse);                     
     }
 
-    private ISVNAnnotations annotate(String target, SVNRevision revisionStart, SVNRevision revisionEnd)
+    public ISVNAnnotations annotate(File file, SVNRevision revisionStart,
+			SVNRevision revisionEnd, boolean ignoreMimeType,
+			boolean includeMergedRevisions) throws SVNClientException {
+		String target = fileToSVNPath(file, false);
+		//If the file is an uncommitted rename/move, we have to refer to original/source, not the new copy.
+		ISVNInfo info = getInfoFromWorkingCopy(file);
+		if ((SVNScheduleKind.ADD == info.getSchedule()) && (info.getCopyUrl() != null)) {
+			target = info.getCopyUrl().toString();			
+		}
+    	return annotate(target, revisionStart, revisionEnd, ignoreMimeType, includeMergedRevisions);
+	}
+
+	public ISVNAnnotations annotate(SVNUrl url, SVNRevision revisionStart,
+			SVNRevision revisionEnd, boolean ignoreMimeType,
+			boolean includeMergedRevisions) throws SVNClientException {
+    	return annotate(url.toString(), revisionStart, revisionEnd, ignoreMimeType, includeMergedRevisions);
+	}
+
+	private ISVNAnnotations annotate(String target, SVNRevision revisionStart, SVNRevision revisionEnd,
+			boolean ignoreMimeType, boolean includeMergedRevisions)
     	throws SVNClientException
 	{
         try {
@@ -1378,13 +1397,15 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
             if(revisionEnd == null)
                 revisionEnd = SVNRevision.HEAD;
             String commandLine = "blame ";
+            if (includeMergedRevisions)
+            	commandLine += "-g ";
             commandLine = commandLine + "-r " + revisionEnd.toString() + " ";
             commandLine = commandLine + target + "@HEAD";
             notificationHandler.logCommandLine(commandLine);
 			notificationHandler.setBaseDir();
 			
 			JhlAnnotations annotations = new JhlAnnotations();
-            svnClient.blame(target, Revision.HEAD, JhlConverter.convert(revisionStart), JhlConverter.convert(revisionEnd), annotations);
+            svnClient.blame(target, Revision.HEAD, JhlConverter.convert(revisionStart), JhlConverter.convert(revisionEnd), ignoreMimeType, includeMergedRevisions,  annotations);
             return annotations;
         } catch (ClientException e) { 
             notificationHandler.logException(e);
@@ -1399,7 +1420,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
     public ISVNAnnotations annotate(SVNUrl url, SVNRevision revisionStart, SVNRevision revisionEnd)
         throws SVNClientException
     {
-    	return annotate(url.toString(), revisionStart, revisionEnd);
+    	return annotate(url.toString(), revisionStart, revisionEnd, false, false);
     }
 
     /* (non-Javadoc)
@@ -1414,7 +1435,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 		if ((SVNScheduleKind.ADD == info.getSchedule()) && (info.getCopyUrl() != null)) {
 			target = info.getCopyUrl().toString();			
 		}
-    	return annotate(target, revisionStart, revisionEnd);
+    	return annotate(target, revisionStart, revisionEnd, false, false);
     }        
     
     /* (non-Javadoc)
