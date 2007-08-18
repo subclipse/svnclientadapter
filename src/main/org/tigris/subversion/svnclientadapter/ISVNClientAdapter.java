@@ -1028,6 +1028,36 @@ public interface ISVNClientAdapter {
      */
     public ISVNAnnotations annotate(File file, SVNRevision revisionStart, SVNRevision revisionEnd)
         throws SVNClientException;
+
+    /**
+     * Output the content of specified url with revision and 
+     * author information in-line. 
+     * @param url
+     * @param revisionStart
+     * @param revisionEnd
+     * @param ignoreMimeType
+     * @param includeMergedRevisons
+     * @return annotations for the given url
+	 * @throws SVNClientException
+     */
+    public ISVNAnnotations annotate(SVNUrl url, SVNRevision revisionStart, SVNRevision revisionEnd,
+    		boolean ignoreMimeType, boolean includeMergedRevisions)
+        throws SVNClientException;
+
+    /**
+     * Output the content of specified file with revision and 
+     * author information in-line.
+     * @param file
+     * @param revisionStart
+     * @param revisionEnd
+     * @param ignoreMimeType
+     * @param includeMergedRevisons
+     * @return annotations for the given file
+	 * @throws SVNClientException
+     */
+    public ISVNAnnotations annotate(File file, SVNRevision revisionStart, SVNRevision revisionEnd,
+    		boolean ignoreMimeType, boolean includeMergedRevisions)
+        throws SVNClientException;
     
     /**
      * Get all the properties for the given file or dir
