@@ -42,7 +42,7 @@ public class JhlAnnotations extends Annotations implements BlameCallback, BlameC
 
 	public void singleLine(Date changed, long revision, String author,
 			Date merged_date, long merged_revision, String merged_author,
-			String line) {
+			String mergedPath, String line) {
 	   	addAnnotation(new Annotation(getRevision(revision, merged_revision), getAuthor(author, merged_author), getDate(changed, merged_date), line));
 	}
 	
