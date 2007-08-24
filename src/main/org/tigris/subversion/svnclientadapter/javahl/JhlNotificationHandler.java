@@ -61,6 +61,8 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements No
     private String lastUpdate;
     private String lastExternalUpdate;
     
+    private boolean statsCommand = false;
+    
     private static final int COMMIT_ACROSS_WC_COMPLETED = -11;
     private static final int ENDED_ABNORMAL = -1;
 
@@ -331,7 +333,12 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements No
     public void setCommand(int command) {
         receivedSomeChange = false;
         sentFirstTxdelta = false;
-        clearStats();
+        if (command == ISVNNotifyListener.Command.UPDATE
+                || command == ISVNNotifyListener.Command.MERGE
+                || command == ISVNNotifyListener.Command.SWITCH) {
+        	clearStats();
+        	statsCommand = true;
+        }
         super.setCommand(command);
     }
     
@@ -365,9 +372,7 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements No
     private void logStats() {
         if (holdStats)
             return;
-        if (command == ISVNNotifyListener.Command.UPDATE
-                || command == ISVNNotifyListener.Command.MERGE
-                || command == ISVNNotifyListener.Command.SWITCH) {
+        if (statsCommand) {
 	        if (fileStats()) {
 	            logMessage(Messages.bind("notify.stats.file.head")); //$NON-NLS-1$
 		        if (conflicts > 0)
@@ -392,8 +397,9 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements No
 		        if (propUpdates > 0)
 		            logMessage(Messages.bind("notify.stats.update", Integer.toString(propUpdates))); //$NON-NLS-1$
 	        }
+	        statsCommand = false;
+	        clearStats();
         }
-        clearStats();
     }
     
     private boolean fileStats() {
