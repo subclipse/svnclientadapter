@@ -1644,6 +1644,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
     
             if (samePath) {
             	Revision peg = JhlConverter.convert(revision2);
+            	if (peg == null) peg = Revision.HEAD;
             	svnClient.merge(path1.toString(), peg, JhlConverter.convert(revision1), JhlConverter.convert(revision2), target, force, recurse, ignoreAncestry, dryRun );
             } else
             	svnClient.merge(path1.toString(), JhlConverter.convert(revision1), path2.toString(), JhlConverter.convert(revision2), target, force, recurse, ignoreAncestry, dryRun );
@@ -2033,6 +2034,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
             File baseDir = SVNBaseDir.getBaseDir(localPath);
             notificationHandler.setBaseDir(baseDir);
         	Revision peg = JhlConverter.convert(pegRevision);
+        	if (peg == null) peg = Revision.HEAD;
         	svnClient.merge(url.toString(), peg, range, target, force, depth, ignoreAncestry, dryRun);
             if (dryRun)
                 notificationHandler.logCompleted("Dry-run merge complete.");
