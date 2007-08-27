@@ -57,6 +57,7 @@ import org.tigris.subversion.svnclientadapter.ISVNStatus;
 import org.tigris.subversion.svnclientadapter.SVNBaseDir;
 import org.tigris.subversion.svnclientadapter.SVNClientException;
 import org.tigris.subversion.svnclientadapter.SVNCopySource;
+import org.tigris.subversion.svnclientadapter.SVNDiffSummary;
 import org.tigris.subversion.svnclientadapter.SVNInfoUnversioned;
 import org.tigris.subversion.svnclientadapter.SVNNodeKind;
 import org.tigris.subversion.svnclientadapter.SVNNotificationHandler;
@@ -2103,6 +2104,97 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 		else
 			conflictResolver = new JhlConflictResolver(callback);
 		svnClient.setConflictResolver(conflictResolver);
+	}
+
+	private SVNDiffSummary[] diffSummarize(String target1, SVNRevision revision1,
+			String target2, SVNRevision revision2, int depth,
+			boolean ignoreAncestry)
+			throws SVNClientException {
+        try {
+            notificationHandler.setCommand(ISVNNotifyListener.Command.DIFF);
+                
+            if (revision1 == null)
+                revision1 = SVNRevision.HEAD;
+            if (revision2 == null)
+                revision2 = SVNRevision.HEAD;
+            
+            String commandLine = "diff --summarize";
+            commandLine += depthCommandLine(depth);
+            if (ignoreAncestry)
+            	commandLine += " --ignoreAncestry";
+            commandLine += " " + target1 + "@" + revision1 + " " + target2 + "@" + revision2;
+            notificationHandler.logCommandLine(commandLine);
+			notificationHandler.setBaseDir();
+			JhlDiffSummaryReceiver callback = new JhlDiffSummaryReceiver();
+			svnClient.diffSummarize(target1, JhlConverter.convert(revision1), target2, JhlConverter.convert(revision2), depth, ignoreAncestry, callback);
+			return callback.getDiffSummary();
+        } catch (ClientException e) {
+            notificationHandler.logException(e);
+            throw new SVNClientException(e);            
+        }
+	}
+
+	private SVNDiffSummary[] diffSummarize(String target, SVNRevision pegRevision,
+			SVNRevision startRevision, SVNRevision endRevision, int depth,
+			boolean ignoreAncestry)
+			throws SVNClientException {
+        try {
+            notificationHandler.setCommand(ISVNNotifyListener.Command.DIFF);
+                
+            if (pegRevision == null)
+                pegRevision = SVNRevision.HEAD;
+            if (startRevision == null)
+                startRevision = SVNRevision.HEAD;
+            if (endRevision == null)
+                endRevision = SVNRevision.HEAD;
+            
+            String commandLine = "diff --summarize";
+            commandLine += depthCommandLine(depth);
+            if (ignoreAncestry)
+            	commandLine += " --ignoreAncestry";
+           commandLine += " -r " + startRevision + ":" + endRevision + " " + target;
+            notificationHandler.logCommandLine(commandLine);
+			notificationHandler.setBaseDir();
+			JhlDiffSummaryReceiver callback = new JhlDiffSummaryReceiver();
+			svnClient.diffSummarize(target, JhlConverter.convert(pegRevision), JhlConverter.convert(startRevision), JhlConverter.convert(endRevision), 
+					depth, ignoreAncestry, callback);
+			return callback.getDiffSummary();
+        } catch (ClientException e) {
+            notificationHandler.logException(e);
+            throw new SVNClientException(e);            
+        }
+	}
+
+	public SVNDiffSummary[] diffSummarize(File path, SVNRevision pegRevision,
+			SVNRevision startRevision, SVNRevision endRevision, int depth,
+			boolean ignoreAncestry) throws SVNClientException {
+		String target = fileToSVNPath(path, false);
+		return this.diffSummarize(target, pegRevision,
+				startRevision, endRevision, depth, ignoreAncestry);
+	}
+
+	public SVNDiffSummary[] diffSummarize(SVNUrl url,
+			SVNRevision pegRevision, SVNRevision startRevision,
+			SVNRevision endRevision, int depth, boolean ignoreAncestry)
+			throws SVNClientException {
+		return this.diffSummarize(url.toString(), pegRevision,
+				startRevision, endRevision, depth, ignoreAncestry);
+	}
+
+	public SVNDiffSummary[] diffSummarize(File target1, SVNRevision revision1,
+			SVNUrl target2, SVNRevision revision2, int depth,
+			boolean ignoreAncestry) throws SVNClientException {
+		return diffSummarize(fileToSVNPath(target1, false), revision1,
+				target2.toString(), revision2, depth,
+				ignoreAncestry);
+	}
+
+	public SVNDiffSummary[] diffSummarize(SVNUrl target1,
+			SVNRevision revision1, SVNUrl target2, SVNRevision revision2,
+			int depth, boolean ignoreAncestry) throws SVNClientException {
+		return diffSummarize(target1.toString(), revision1,
+				target2.toString(), revision2, depth,
+				ignoreAncestry);
 	}
 	
 }

@@ -22,6 +22,7 @@ import java.util.logging.Logger;
 
 import org.tigris.subversion.javahl.ChangePath;
 import org.tigris.subversion.javahl.ConflictDescriptor;
+import org.tigris.subversion.javahl.DiffSummary;
 import org.tigris.subversion.javahl.DirEntry;
 import org.tigris.subversion.javahl.Lock;
 import org.tigris.subversion.javahl.LogMessage;
@@ -34,6 +35,7 @@ import org.tigris.subversion.javahl.Status;
 import org.tigris.subversion.javahl.StatusKind;
 import org.tigris.subversion.svnclientadapter.ISVNLogMessageChangePath;
 import org.tigris.subversion.svnclientadapter.SVNConflictDescriptor;
+import org.tigris.subversion.svnclientadapter.SVNDiffSummary;
 import org.tigris.subversion.svnclientadapter.SVNLogMessageChangePath;
 import org.tigris.subversion.svnclientadapter.SVNNodeKind;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
@@ -274,5 +276,22 @@ public class JhlConverter {
                 d.getBasePath(), d.getReposPath(),
                 d.getUserPath(), d.getMergedPath());
     }
+
+	public static SVNDiffSummary convert(DiffSummary d) {
+		return new SVNDiffSummary(d.getPath(), JhlConverter.convert(d.getDiffKind()),
+				d.propsChanged(), d.getNodeKind());
+	}
+	
+	public static SVNDiffSummary.SVNDiffKind convert(DiffSummary.DiffKind d) {
+		if (d == DiffSummary.DiffKind.ADDED) {
+			return SVNDiffSummary.SVNDiffKind.ADDED;
+		} else if (d == DiffSummary.DiffKind.MODIFIED) {
+			return SVNDiffSummary.SVNDiffKind.MODIFIED;
+		} else if (d == DiffSummary.DiffKind.DELETED) {
+			return SVNDiffSummary.SVNDiffKind.DELETED;
+		} else {
+			return SVNDiffSummary.SVNDiffKind.NORMAL;
+		}
+	}
     
 }
