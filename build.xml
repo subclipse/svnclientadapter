@@ -29,7 +29,40 @@
     <depend srcDir="${src.main.dir}"
             destDir="${build.classes.dir}"
             cache="${build.cache.dir}"/>
+    <depend srcDir="${src.javahl.dir}"
+            destDir="${build.classes.dir}"
+            cache="${build.cache.dir}"/>
+    <depend srcDir="${src.svnkit.dir}"
+            destDir="${build.classes.dir}"
+            cache="${build.cache.dir}"/>
+    <depend srcDir="${src.cmdline.dir}"
+            destDir="${build.classes.dir}"
+            cache="${build.cache.dir}"/>
     <javac srcdir="${src.main.dir}"
+           destdir="${build.classes.dir}"
+           debug="${debug}"
+		   source="${targetJvm}"    	
+		   target="${targetJvm}"    	
+           includes="**"
+		   classpathref="project.classpath">
+    </javac>
+    <javac srcdir="${src.javahl.dir}"
+           destdir="${build.classes.dir}"
+           debug="${debug}"
+		   source="${targetJvm}"    	
+		   target="${targetJvm}"    	
+           includes="**"
+		   classpathref="project.classpath">
+    </javac>
+    <javac srcdir="${src.svnkit.dir}"
+           destdir="${build.classes.dir}"
+           debug="${debug}"
+		   source="${targetJvm}"    	
+		   target="${targetJvm}"    	
+           includes="**"
+		   classpathref="project.classpath">
+    </javac>
+    <javac srcdir="${src.cmdline.dir}"
            destdir="${build.classes.dir}"
            debug="${debug}"
 		   source="${targetJvm}"    	

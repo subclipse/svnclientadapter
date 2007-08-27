@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" output="classes/main" path="src/main"/>
+	<classpathentry kind="src" path="src/commandline"/>
+	<classpathentry kind="src" path="src/javahl"/>
+	<classpathentry kind="src" path="src/svnkit"/>
 	<classpathentry kind="src" output="classes/main" path="src/samples"/>
 	<classpathentry kind="src" output="classes/testcases" path="src/testcases"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
