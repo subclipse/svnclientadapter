@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.tigris.subversion.javahl.ClientException;
-import org.tigris.subversion.javahl.CopySource;
 import org.tigris.subversion.javahl.Depth;
 import org.tigris.subversion.javahl.Info;
 import org.tigris.subversion.javahl.Info2;
@@ -56,7 +55,6 @@ import org.tigris.subversion.svnclientadapter.ISVNProperty;
 import org.tigris.subversion.svnclientadapter.ISVNStatus;
 import org.tigris.subversion.svnclientadapter.SVNBaseDir;
 import org.tigris.subversion.svnclientadapter.SVNClientException;
-import org.tigris.subversion.svnclientadapter.SVNCopySource;
 import org.tigris.subversion.svnclientadapter.SVNDiffSummary;
 import org.tigris.subversion.svnclientadapter.SVNInfoUnversioned;
 import org.tigris.subversion.svnclientadapter.SVNNodeKind;
@@ -2080,24 +2078,6 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 		
 	}
 
-	public SVNCopySource getCopySource(File path, SVNRevision revision) throws SVNClientException {
-		return this.getCopySource(fileToSVNPath(path, false), JhlConverter.convert(revision));
-	}
-
-	public SVNCopySource getCopySource(SVNUrl url, SVNRevision revision) throws SVNClientException {
-		return this.getCopySource(url.toString(), JhlConverter.convert(revision));
-	}
-	
-	private SVNCopySource getCopySource(String path, Revision revision) throws SVNClientException {
-		try {
-			CopySource src = svnClient.getCopySource(path, revision);
-			if (src == null) return null;
-			return new SVNCopySource(src.getPath(), JhlConverter.convert(src.getRevision()), JhlConverter.convert(src.getPegRevision()));
-		} catch (SubversionException e) {
-            throw new SVNClientException(e);
-		}
-	}
-
 	public void addConflictResolutionCallback(ISVNConflictResolver callback) {
 		if (callback == null)
 			conflictResolver = null;
@@ -2195,6 +2175,14 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 		return diffSummarize(target1.toString(), revision1,
 				target2.toString(), revision2, depth,
 				ignoreAncestry);
+	}
+
+	public String[] suggestMergeSources(File path) throws SVNClientException {
+		try {
+			return svnClient.suggestMergeSources(fileToSVNPath(path, false));
+		} catch (SubversionException e) {
+            throw new SVNClientException(e);
+		}
 	}
 	
 }
