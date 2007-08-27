@@ -24,7 +24,6 @@ import java.io.InputStream;
 import java.util.List;
 
 
-
 /**
  * High level API for Subversion
  * 
@@ -1351,4 +1350,111 @@ public interface ISVNClientAdapter {
   public abstract SVNCopySource getCopySource(SVNUrl url, SVNRevision revision)
            throws SVNClientException;
 
+
+  /**
+   * Produce a diff summary which lists the items changed between
+   * path and revision pairs.
+   *
+   * @param target1 Path.
+   * @param revision1 Revision of <code>target1</code>.
+   * @param target2 URL.
+   * @param revision2 Revision of <code>target2</code>.
+   * @param depth how deep to recurse.
+   * @param ignoreAncestry Whether to ignore unrelated files during
+   * comparison.  False positives may potentially be reported if
+   * this parameter <code>false</code>, since a file might have been
+   * modified between two revisions, but still have the same
+   * contents.
+   * @return the list of differences
+   *
+   * @throws SVNClientException
+   */
+  public abstract SVNDiffSummary[] diffSummarize(File target1, SVNRevision revision1,
+                     SVNUrl target2, SVNRevision revision2,
+                     int depth, boolean ignoreAncestry)
+          throws SVNClientException;
+
+  /**
+   * Produce a diff summary which lists the items changed between
+   * path and revision pairs.
+   *
+   * @param target1 URL.
+   * @param revision1 Revision of <code>target1</code>.
+   * @param target2 URL.
+   * @param revision2 Revision of <code>target2</code>.
+   * @param depth how deep to recurse.
+   * @param ignoreAncestry Whether to ignore unrelated files during
+   * comparison.  False positives may potentially be reported if
+   * this parameter <code>false</code>, since a file might have been
+   * modified between two revisions, but still have the same
+   * contents.
+   * @return the list of differences
+   *
+   * @throws SVNClientException
+   */
+  public abstract SVNDiffSummary[] diffSummarize(SVNUrl target1, SVNRevision revision1,
+                     SVNUrl target2, SVNRevision revision2,
+                     int depth, boolean ignoreAncestry)
+          throws SVNClientException;
+
+  /**
+   * Produce a diff summary which lists the items changed between
+   * path and revision pairs.
+   *
+   * @param target Path.
+   * @param pegRevision Revision at which to interpret
+   * <code>target</code>.  If {@link RevisionKind#unspecified} or
+   * <code>null</code>, behave identically to {@link
+   * diffSummarize(String, Revision, String, Revision, boolean,
+   * boolean, DiffSummaryReceiver)}, using <code>path</code> for
+   * both of that method's targets.
+   * @param startRevision Beginning of range for comparsion of
+   * <code>target</code>.
+   * @param endRevision End of range for comparsion of
+   * <code>target</code>.
+   * @param depth how deep to recurse.
+   * @param ignoreAncestry Whether to ignore unrelated files during
+   * comparison.  False positives may potentially be reported if
+   * this parameter <code>false</code>, since a file might have been
+   * modified between two revisions, but still have the same
+   * contents.
+   * @return the list of differences
+   *
+   * @throws SVNClientException
+   */
+  public abstract SVNDiffSummary[] diffSummarize(File target, SVNRevision pegRevision,
+                     SVNRevision startRevision, SVNRevision endRevision,
+                     int depth, boolean ignoreAncestry)
+      throws SVNClientException;
+  
+  /**
+   * Produce a diff summary which lists the items changed between
+   * path and revision pairs.
+   *
+   * @param target URL.
+   * @param pegRevision Revision at which to interpret
+   * <code>target</code>.  If {@link RevisionKind#unspecified} or
+   * <code>null</code>, behave identically to {@link
+   * diffSummarize(String, Revision, String, Revision, boolean,
+   * boolean, DiffSummaryReceiver)}, using <code>path</code> for
+   * both of that method's targets.
+   * @param startRevision Beginning of range for comparsion of
+   * <code>target</code>.
+   * @param endRevision End of range for comparsion of
+   * <code>target</code>.
+   * @param depth how deep to recurse.
+   * @param ignoreAncestry Whether to ignore unrelated files during
+   * comparison.  False positives may potentially be reported if
+   * this parameter <code>false</code>, since a file might have been
+   * modified between two revisions, but still have the same
+   * contents.
+   * @return the list of differences
+   *
+   * @throws SVNClientException
+   */
+  public abstract SVNDiffSummary[] diffSummarize(SVNUrl target, SVNRevision pegRevision,
+                     SVNRevision startRevision, SVNRevision endRevision,
+                     int depth, boolean ignoreAncestry)
+      throws SVNClientException;
+  
 }
