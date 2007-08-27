@@ -1326,31 +1326,6 @@ public interface ISVNClientAdapter {
     public abstract ISVNMergeInfo getMergeInfo(SVNUrl url, SVNRevision revision)
         throws SVNClientException;
 
-    /**
-     * Return the source a WC path was copied from.
-     * @param path The path to determine a source for.
-     * @param revision The revision at which to determine a source.
-     * @return The last source <code>path</code> was copied from, or
-     * <code>null</code> if never copied.
-     * @throws SVNClientException If there is a problem determing the
-     * copy source.
-     */
-   public abstract SVNCopySource getCopySource(File path, SVNRevision revision)
-            throws SVNClientException;
-    
-   /**
-    * Return the source a URL was copied from.
-    * @param url The url to determine a source for.
-    * @param revision The revision at which to determine a source.
-    * @return The last source <code>path</code> was copied from, or
-    * <code>null</code> if never copied.
-    * @throws SVNClientException If there is a problem determing the
-    * copy source.
-    */
-  public abstract SVNCopySource getCopySource(SVNUrl url, SVNRevision revision)
-           throws SVNClientException;
-
-
   /**
    * Produce a diff summary which lists the items changed between
    * path and revision pairs.
@@ -1456,5 +1431,14 @@ public interface ISVNClientAdapter {
                      SVNRevision startRevision, SVNRevision endRevision,
                      int depth, boolean ignoreAncestry)
       throws SVNClientException;
+
+  /**
+   * Return an ordered list of suggested merge source URLs.
+   * @param path The merge target path for which to suggest sources.
+   * @return The list of URLs, empty if there are no suggestions.
+   * @throws SVNClientException If an error occurs.
+   */
+  public abstract String[] suggestMergeSources(File path)
+          throws SVNClientException;
   
 }
