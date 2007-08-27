@@ -258,4 +258,24 @@ class CmdLineLogMessage extends CmdLineXmlCommand implements ISVNLogMessage {
 	public ISVNLogMessageChangePath[] getChangedPaths() {
 		return logMessageChangePaths;
 	}
+
+	public ISVNLogMessage[] getChildMessages() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public long getNumberOfChildren() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	public long getTimeMicros() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	public long getTimeMillis() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 }

@@ -36,16 +36,20 @@ import java.util.Vector;
 
 import org.tigris.subversion.svnclientadapter.AbstractClientAdapter;
 import org.tigris.subversion.svnclientadapter.ISVNAnnotations;
+import org.tigris.subversion.svnclientadapter.ISVNConflictResolver;
 import org.tigris.subversion.svnclientadapter.ISVNDirEntry;
 import org.tigris.subversion.svnclientadapter.ISVNInfo;
 import org.tigris.subversion.svnclientadapter.ISVNLogMessage;
+import org.tigris.subversion.svnclientadapter.ISVNMergeInfo;
 import org.tigris.subversion.svnclientadapter.ISVNNotifyListener;
 import org.tigris.subversion.svnclientadapter.ISVNProperty;
 import org.tigris.subversion.svnclientadapter.ISVNStatus;
 import org.tigris.subversion.svnclientadapter.SVNBaseDir;
 import org.tigris.subversion.svnclientadapter.SVNClientException;
+import org.tigris.subversion.svnclientadapter.SVNCopySource;
 import org.tigris.subversion.svnclientadapter.SVNNotificationHandler;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
+import org.tigris.subversion.svnclientadapter.SVNRevisionRange;
 import org.tigris.subversion.svnclientadapter.SVNScheduleKind;
 import org.tigris.subversion.svnclientadapter.SVNStatusUnversioned;
 import org.tigris.subversion.svnclientadapter.SVNUrl;
@@ -1576,6 +1580,71 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 				null,
 				outFile,
 				recurse, true, false, false);
+	}
+
+	public void addConflictResolutionCallback(ISVNConflictResolver callback) {
+		// TODO
+	}
+
+	public ISVNAnnotations annotate(File file, SVNRevision revisionStart,
+			SVNRevision revisionEnd, boolean ignoreMimeType,
+			boolean includeMergedRevisions) throws SVNClientException {
+		notImplementedYet();
+		return null;
+	}
+
+	public ISVNAnnotations annotate(SVNUrl url, SVNRevision revisionStart,
+			SVNRevision revisionEnd, boolean ignoreMimeType,
+			boolean includeMergedRevisions) throws SVNClientException {
+		notImplementedYet();
+		return null;
+	}
+
+	public SVNCopySource getCopySource(File path, SVNRevision revision)
+			throws SVNClientException {
+		notImplementedYet();
+		return null;
+	}
+
+	public SVNCopySource getCopySource(SVNUrl url, SVNRevision revision)
+			throws SVNClientException {
+		notImplementedYet();
+		return null;
+	}
+
+	public ISVNLogMessage[] getLogMessages(File path, SVNRevision pegRevision,
+			SVNRevision revisionStart, SVNRevision revisionEnd,
+			boolean stopOnCopy, boolean fetchChangePath, long limit,
+			boolean includeMergedRevisions) throws SVNClientException {
+		notImplementedYet();
+		return null;
+	}
+
+	public ISVNLogMessage[] getLogMessages(SVNUrl url, SVNRevision pegRevision,
+			SVNRevision revisionStart, SVNRevision revisionEnd,
+			boolean stopOnCopy, boolean fetchChangePath, long limit,
+			boolean includeMergedRevisions) throws SVNClientException {
+		notImplementedYet();
+		return null;
+	}
+
+	public ISVNMergeInfo getMergeInfo(File path, SVNRevision revision)
+			throws SVNClientException {
+		notImplementedYet();
+		return null;
+	}
+
+	public ISVNMergeInfo getMergeInfo(SVNUrl url, SVNRevision revision)
+			throws SVNClientException {
+		notImplementedYet();
+		return null;
+	}
+
+	public void merge(SVNUrl url, SVNRevision pegRevision,
+			SVNRevisionRange[] revisions, File localPath, boolean force,
+			int depth, boolean ignoreAncestry, boolean dryRun)
+			throws SVNClientException {
+		notImplementedYet();
 	}
 
 }

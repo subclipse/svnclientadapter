@@ -1,5 +1,6 @@
-#Wed Apr 25 10:42:42 EDT 2007
+#Mon Aug 27 10:19:17 EDT 2007
 eclipse.preferences.version=1
+instance/org.eclipse.core.net/org.eclipse.core.net.hasMigrated=true
 org.eclipse.jdt.ui.ignorelowercasenames=true
 org.eclipse.jdt.ui.importorder=java;javax;org;com;
 org.eclipse.jdt.ui.ondemandthreshold=99
