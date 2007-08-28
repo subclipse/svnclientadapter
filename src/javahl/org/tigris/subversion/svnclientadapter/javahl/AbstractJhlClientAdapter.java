@@ -2179,7 +2179,15 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 
 	public String[] suggestMergeSources(File path) throws SVNClientException {
 		try {
-			return svnClient.suggestMergeSources(fileToSVNPath(path, false));
+			return svnClient.suggestMergeSources(fileToSVNPath(path, false), Revision.HEAD);
+		} catch (SubversionException e) {
+            throw new SVNClientException(e);
+		}
+	}
+
+	public String[] suggestMergeSources(SVNUrl url, SVNRevision peg) throws SVNClientException {
+		try {
+			return svnClient.suggestMergeSources(url.toString(), JhlConverter.convert(peg));
 		} catch (SubversionException e) {
             throw new SVNClientException(e);
 		}
