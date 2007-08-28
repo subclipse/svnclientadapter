@@ -1440,5 +1440,15 @@ public interface ISVNClientAdapter {
    */
   public abstract String[] suggestMergeSources(File path)
           throws SVNClientException;
+
+  /**
+   * Return an ordered list of suggested merge source URLs.
+   * @param url The merge target path for which to suggest sources.
+   * @param peg The peg revision for the URL
+   * @return The list of URLs, empty if there are no suggestions.
+   * @throws SVNClientException If an error occurs.
+   */
+  public abstract String[] suggestMergeSources(SVNUrl url, SVNRevision peg)
+          throws SVNClientException;
   
 }
