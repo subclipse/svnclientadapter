@@ -46,7 +46,7 @@ import org.tigris.subversion.svnclientadapter.ISVNProperty;
 import org.tigris.subversion.svnclientadapter.ISVNStatus;
 import org.tigris.subversion.svnclientadapter.SVNBaseDir;
 import org.tigris.subversion.svnclientadapter.SVNClientException;
-import org.tigris.subversion.svnclientadapter.SVNCopySource;
+import org.tigris.subversion.svnclientadapter.SVNDiffSummary;
 import org.tigris.subversion.svnclientadapter.SVNNotificationHandler;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
 import org.tigris.subversion.svnclientadapter.SVNRevisionRange;
@@ -1600,18 +1600,6 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 		return null;
 	}
 
-	public SVNCopySource getCopySource(File path, SVNRevision revision)
-			throws SVNClientException {
-		notImplementedYet();
-		return null;
-	}
-
-	public SVNCopySource getCopySource(SVNUrl url, SVNRevision revision)
-			throws SVNClientException {
-		notImplementedYet();
-		return null;
-	}
-
 	public ISVNLogMessage[] getLogMessages(File path, SVNRevision pegRevision,
 			SVNRevision revisionStart, SVNRevision revisionEnd,
 			boolean stopOnCopy, boolean fetchChangePath, long limit,
@@ -1645,6 +1633,36 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 			int depth, boolean ignoreAncestry, boolean dryRun)
 			throws SVNClientException {
 		notImplementedYet();
+	}
+
+	public SVNDiffSummary[] diffSummarize(File target, SVNRevision pegRevision, SVNRevision startRevision, SVNRevision endRevision, int depth, boolean ignoreAncestry) throws SVNClientException {
+		notImplementedYet();
+		return null;
+	}
+
+	public SVNDiffSummary[] diffSummarize(File target1, SVNRevision revision1, SVNUrl target2, SVNRevision revision2, int depth, boolean ignoreAncestry) throws SVNClientException {
+		notImplementedYet();
+		return null;
+	}
+
+	public SVNDiffSummary[] diffSummarize(SVNUrl target, SVNRevision pegRevision, SVNRevision startRevision, SVNRevision endRevision, int depth, boolean ignoreAncestry) throws SVNClientException {
+		notImplementedYet();
+		return null;
+	}
+
+	public SVNDiffSummary[] diffSummarize(SVNUrl target1, SVNRevision revision1, SVNUrl target2, SVNRevision revision2, int depth, boolean ignoreAncestry) throws SVNClientException {
+		notImplementedYet();
+		return null;
+	}
+
+	public String[] suggestMergeSources(File path) throws SVNClientException {
+		notImplementedYet();
+		return null;
+	}
+
+	public String[] suggestMergeSources(SVNUrl url, SVNRevision peg) throws SVNClientException {
+		notImplementedYet();
+		return null;
 	}
 
 }
