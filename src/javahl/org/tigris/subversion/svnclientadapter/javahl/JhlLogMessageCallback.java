@@ -6,6 +6,7 @@ import java.util.Stack;
 
 import org.tigris.subversion.javahl.ChangePath;
 import org.tigris.subversion.javahl.LogMessageCallback;
+import org.tigris.subversion.javahl.Revision;
 
 public class JhlLogMessageCallback implements LogMessageCallback {
 	
@@ -13,17 +14,19 @@ public class JhlLogMessageCallback implements LogMessageCallback {
 	private Stack stack = new Stack();
 
 	public void singleMessage(ChangePath[] changedPaths, long revision,
-			String author, long timeMicros, String message, long numberChildren) {
-		JhlLogMessage msg = new JhlLogMessage(changedPaths, revision, author, timeMicros, message, numberChildren);
-		if (stack.empty())
-			messages.add(msg);
-		else {
+			String author, long timeMicros, String message, boolean hasChildren) {
+		if (revision == Revision.SVN_INVALID_REVNUM) {
+			stack.pop();
+			return;
+		}
+		JhlLogMessage msg = new JhlLogMessage(changedPaths, revision, author, timeMicros, message, hasChildren);
+		if (stack.empty()) {
+				messages.add(msg);
+		} else {
 			JhlLogMessage current = (JhlLogMessage) stack.peek();
 			current.addChild(msg);
-			if (current.allChildrenAdded())
-				stack.pop();
 		}
-		if (numberChildren > 0)
+		if (hasChildren)
 			stack.push(msg);
 	}
 	

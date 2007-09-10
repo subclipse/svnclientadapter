@@ -18,7 +18,9 @@
  ******************************************************************************/
 package org.tigris.subversion.svnclientadapter.javahl;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.tigris.subversion.javahl.ChangePath;
 import org.tigris.subversion.javahl.LogMessage;
@@ -34,9 +36,8 @@ import org.tigris.subversion.svnclientadapter.SVNRevision;
  */
 public class JhlLogMessage implements ISVNLogMessage {
 
-	private JhlLogMessage[] children;
-	private int count;
-	private long numberOfChildren;
+	private List children;
+	private boolean hasChildren;
 	private ISVNLogMessageChangePath[] changedPaths;
 	private SVNRevision.Number revision;
 	private String author;
@@ -56,28 +57,21 @@ public class JhlLogMessage implements ISVNLogMessage {
 		message = msg.getMessage();
 	}
 	
-	public JhlLogMessage(ChangePath[] changedPaths, long revision, String author, long timeMicros, String message, long numberChildren) {
+	public JhlLogMessage(ChangePath[] changedPaths, long revision, String author, long timeMicros, String message, boolean hasChildren) {
 		this.changedPaths = JhlConverter.convert(changedPaths);
 		this.revision = new SVNRevision.Number(revision);
 		this.author = author;
 		this.timeMicros = timeMicros;
 		this.message = message;
-		this.numberOfChildren = numberChildren;
-		this.children = new JhlLogMessage[(int) numberChildren];
+		this.hasChildren = hasChildren;
 	}
 
 	public void addChild(JhlLogMessage msg) {
-		if (allChildrenAdded())
-			return;
-		children[count] = msg;
-		count++;
+		if (children == null)
+			children = new ArrayList();
+		children.add(msg);
 	}
 	
-	public boolean allChildrenAdded() {
-		return (count == children.length);
-	}
-	
-
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNLogMessage#getRevision()
 	 */
@@ -121,11 +115,19 @@ public class JhlLogMessage implements ISVNLogMessage {
     }
 
 	public ISVNLogMessage[] getChildMessages() {
-		return children;
+		if (hasChildren && children != null) {
+			ISVNLogMessage[] childArray = new JhlLogMessage[children.size()];
+			children.toArray(childArray);
+			return childArray;
+		} else
+			return null;
 	}
 
 	public long getNumberOfChildren() {
-		return this.numberOfChildren;
+		if (hasChildren && children != null)
+			return children.size();
+		else
+			return 0;
 	}
 
 	public long getTimeMicros() {
