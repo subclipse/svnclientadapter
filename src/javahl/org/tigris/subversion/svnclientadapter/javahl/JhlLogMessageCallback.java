@@ -16,7 +16,8 @@ public class JhlLogMessageCallback implements LogMessageCallback {
 	public void singleMessage(ChangePath[] changedPaths, long revision,
 			String author, long timeMicros, String message, boolean hasChildren) {
 		if (revision == Revision.SVN_INVALID_REVNUM) {
-			stack.pop();
+			if (!stack.empty())
+				stack.pop();
 			return;
 		}
 		JhlLogMessage msg = new JhlLogMessage(changedPaths, revision, author, timeMicros, message, hasChildren);
