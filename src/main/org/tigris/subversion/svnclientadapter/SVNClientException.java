@@ -26,8 +26,12 @@ import java.lang.reflect.InvocationTargetException;
  * @author philip schatz
  */
 public class SVNClientException extends Exception {
+	private int aprError = NONE;
 
 	private static final long serialVersionUID = 1L;
+	
+	public static final int NONE = -1;
+	public static final int MERGE_CONFLICT = 155015;
 
 	/**
      * Constructs a new exception with <code>null</code> as its detail message.
@@ -85,6 +89,14 @@ public class SVNClientException extends Exception {
 			t = target;
 		}
 		return new SVNClientException(t);
+	}
+
+	public int getAprError() {
+		return aprError;
+	}
+
+	public void setAprError(int aprError) {
+		this.aprError = aprError;
 	}
 
 }
