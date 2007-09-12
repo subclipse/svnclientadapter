@@ -1653,7 +1653,9 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
                 notificationHandler.logCompleted("Merge complete.");
         } catch (ClientException e) {
             notificationHandler.logException(e);
-            throw new SVNClientException(e);            
+            SVNClientException svnClientException = new SVNClientException(e);
+            svnClientException.setAprError(e.getAprError());
+            throw svnClientException;          
         }        
     }
     
@@ -2041,7 +2043,9 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
                 notificationHandler.logCompleted("Merge complete.");
         } catch (ClientException e) {
             notificationHandler.logException(e);
-            throw new SVNClientException(e);            
+            SVNClientException svnClientException = new SVNClientException(e);
+            svnClientException.setAprError(e.getAprError());
+            throw svnClientException;          
         }        
 	}
 
