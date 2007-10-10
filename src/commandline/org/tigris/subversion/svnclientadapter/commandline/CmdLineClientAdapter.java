@@ -1665,4 +1665,18 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 		return null;
 	}
 
+	public SVNRevisionRange[] getAvailableMerges(File path,
+			SVNRevision pegRevision, SVNUrl mergeSource)
+			throws SVNClientException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public SVNRevisionRange[] getAvailableMerges(SVNUrl url,
+			SVNRevision pegRevision, SVNUrl mergeSource)
+			throws SVNClientException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }
