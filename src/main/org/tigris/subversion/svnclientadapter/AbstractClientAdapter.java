@@ -281,7 +281,7 @@ public abstract class AbstractClientAdapter implements ISVNClientAdapter {
 
 	public ISVNLogMessage[] getLogMessagesForRevisions(SVNUrl url,
 			SVNRevision pegRevision, SVNRevisionRange[] range,
-			boolean fetchChangePath) throws SVNClientException {
+			boolean fetchChangePath, boolean includeMergedRevisions) throws SVNClientException {
 		if (range == null || range.length == 0) {
 			return new ISVNLogMessage[0];
 		}
@@ -290,7 +290,7 @@ public abstract class AbstractClientAdapter implements ISVNClientAdapter {
 		boolean stopOnCopy = false;
 		int limit = 0;
 		ISVNLogMessage[] messages = getLogMessages(url, pegRevision,
-				revisionStart, revisionEnd, stopOnCopy, fetchChangePath, limit);
+				revisionStart, revisionEnd, stopOnCopy, fetchChangePath, limit, includeMergedRevisions);
 		return applyFilterToLogs(range, messages);
 	}
 

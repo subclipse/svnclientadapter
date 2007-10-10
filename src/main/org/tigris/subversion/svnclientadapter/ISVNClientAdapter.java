@@ -671,7 +671,7 @@ public interface ISVNClientAdapter {
             SVNUrl url, 
             SVNRevision pegRevision,
             SVNRevisionRange[] range,
-            boolean fetchChangePath)
+            boolean fetchChangePath, boolean includeMergedRevisions)
             throws SVNClientException;
     
     /**
