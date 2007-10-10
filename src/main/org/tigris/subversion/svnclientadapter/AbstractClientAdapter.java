@@ -297,9 +297,10 @@ public abstract class AbstractClientAdapter implements ISVNClientAdapter {
 	private ISVNLogMessage[] applyFilterToLogs(SVNRevisionRange[] range,
 			ISVNLogMessage[] messages) {
 		List msgList = new ArrayList();
+		boolean inclusiveFromRev = false;
 		for (int i = 0; i < messages.length; i++) {
 			for (int j = 0; j < range.length; j++) {
-				if (range[j].contains(messages[i].getRevision())) {
+				if (range[j].contains(messages[i].getRevision(), inclusiveFromRev)) {
 					msgList.add(messages[i]);
 					break;
 				}
