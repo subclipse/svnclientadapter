@@ -1097,6 +1097,14 @@ public interface ISVNClientAdapter {
 	 * @throws SVNClientException
 	 */ 	
 	public abstract void resolved(File path) throws SVNClientException;
+
+	/**
+	 * Remove 'conflicted' state on working copy files or directories
+	 * @param path
+	 * @param result - choose resolve option - {@link ISVNConflictResolver.Result}
+	 * @throws SVNClientException
+	 */ 	
+	public abstract void resolved(File path, int result) throws SVNClientException;
     
 	/**
 	 * Create a new, empty repository at path 

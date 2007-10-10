@@ -1443,19 +1443,38 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
     public void resolved(File path) 
     	throws SVNClientException
     {
+    	this.resolved(path, ISVNConflictResolver.Result.choose_merged);
+    }
+
+	public void resolved(File path, int result) throws SVNClientException {
 		try {
 			notificationHandler.setCommand(ISVNNotifyListener.Command.RESOLVED);
             
 			String target = fileToSVNPath(path, true);
-			notificationHandler.logCommandLine("resolved "+target);
+			String commandLine = "resolved ";
+			switch (result) {
+			case ISVNConflictResolver.Result.choose_base:
+				commandLine += "--accept=base ";
+				break;
+			case ISVNConflictResolver.Result.choose_repos:
+				commandLine += "--accept=theirs ";
+				break;
+			case ISVNConflictResolver.Result.choose_user:
+				commandLine += "--accept=mine ";
+				break;
+			default:
+				break;
+			}
+			commandLine += target;
+			notificationHandler.logCommandLine(commandLine);
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
-			svnClient.resolved(target, Depth.empty);
+			svnClient.resolved(target, Depth.empty, result);
 		} catch (SubversionException e) {
 			notificationHandler.logException(e);
 			throw new SVNClientException(e);            
 		}        
-   	
-    }
+		
+	}
 
 	/*
 	 * (non-Javadoc)
