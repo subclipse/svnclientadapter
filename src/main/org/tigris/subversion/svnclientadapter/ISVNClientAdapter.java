@@ -661,6 +661,23 @@ public interface ISVNClientAdapter {
      * Retrieve the log messages for an item
      * @param url           url to get the log message for.
      * @param pegRevision   peg revision for URL
+     * @param range         range of revisions to retrieve
+     * @param fetchChangePath  returns the paths of the changed items in the
+     *                      returned objects
+     * @return array of LogMessages
+	 * @throws SVNClientException
+     */
+    public abstract ISVNLogMessage[] getLogMessagesForRevisions(
+            SVNUrl url, 
+            SVNRevision pegRevision,
+            SVNRevisionRange[] range,
+            boolean fetchChangePath)
+            throws SVNClientException;
+    
+    /**
+     * Retrieve the log messages for an item
+     * @param url           url to get the log message for.
+     * @param pegRevision   peg revision for URL
      * @param revisionStart first revision to show
      * @param revisionEnd   last revision to show
      * @param stopOnCopy    do not continue on copy operations
@@ -1397,5 +1414,37 @@ public interface ISVNClientAdapter {
    */
   public abstract String[] suggestMergeSources(SVNUrl url, SVNRevision peg)
           throws SVNClientException;
+
+  /**
+   * Get merge info for <code>path</code> at <code>pegRevision</code>.
+   * @param path WC path
+   * @param pegRevision Revision at which to get the merge info for
+   * <code>path</code>.
+   * @param mergeSource The merge source for which the list of
+   * revisions is available.
+   * @return The list of revisions available for merge from
+   * <code>mergeSource</code>, or <code>null</code> if all eligible
+   * revisions have been merged.
+   * @throws SVNClientException
+   */
+  public abstract SVNRevisionRange[] getAvailableMerges(File path, SVNRevision pegRevision,
+                                     SVNUrl mergeSource)
+      throws SVNClientException;
+
+  /**
+   * Get merge info for <code>url</code> at <code>pegRevision</code>.
+   * @param url URL
+   * @param pegRevision Revision at which to get the merge info for
+   * <code>path</code>.
+   * @param mergeSource The merge source for which the list of
+   * revisions is available.
+   * @return The list of revisions available for merge from
+   * <code>mergeSource</code>, or <code>null</code> if all eligible
+   * revisions have been merged.
+   * @throws SVNClientException
+   */
+  public abstract SVNRevisionRange[] getAvailableMerges(SVNUrl url, SVNRevision pegRevision,
+                                     SVNUrl mergeSource)
+      throws SVNClientException;
   
 }

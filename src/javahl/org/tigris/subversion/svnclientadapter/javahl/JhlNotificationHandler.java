@@ -24,6 +24,7 @@ import org.tigris.subversion.javahl.Notify2;
 import org.tigris.subversion.javahl.NotifyAction;
 import org.tigris.subversion.javahl.NotifyInformation;
 import org.tigris.subversion.javahl.NotifyStatus;
+import org.tigris.subversion.javahl.Revision;
 import org.tigris.subversion.javahl.RevisionRange;
 import org.tigris.subversion.svnclientadapter.ISVNNotifyListener;
 import org.tigris.subversion.svnclientadapter.SVNNotificationHandler;
@@ -125,9 +126,15 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements No
         	case NotifyAction.merge_begin :
         		if (mergeRange != null) {
 	        		if (mergeRange.getFromRevision().equals(mergeRange.getToRevision()))
-	        			logMessage("Merging r" + mergeRange.getFromRevision().toString());
+	        			logMessage("--- Merging r" + mergeRange.getFromRevision().toString() + " into " + path);
 	        		else
-	        			logMessage("Merging r" + mergeRange.getFromRevision().toString() + " through r" + mergeRange.getToRevision().toString());
+	        			if (mergeRange.getToRevision().equals(Revision.HEAD) || 
+	        					RevisionRange.getRevisionAsLong(mergeRange.getToRevision()).longValue() > RevisionRange.getRevisionAsLong(mergeRange.getFromRevision()).longValue())
+	        				logMessage("--- Merging r" + mergeRange.getFromRevision().toString() + " through r" + mergeRange.getToRevision().toString() + " into " + path);
+	        			else
+	        				logMessage("--- Reverse-merging r" + mergeRange.getFromRevision().toString() + " through r" + mergeRange.getToRevision().toString() + " into " + path);
+		        } else {
+	        		logMessage("--- Merging differences between repository URLs into " + path);
 	        	}
         		notify = false;
         		break;
@@ -236,6 +243,9 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements No
                         statecharBuf[1] = 'U';
                         propUpdates += 1;
                     }
+                    if (command == ISVNNotifyListener.Command.MERGE && 
+                    		contentState == NotifyStatus.unknown && propState == NotifyStatus.unknown)
+                    	break;
                     if (error)
                         logError("" + statecharBuf[0] + statecharBuf[1] + " " + path);                       //$NON-NLS-1$ //$NON-NLS-2$
                     else

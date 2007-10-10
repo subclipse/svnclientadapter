@@ -244,7 +244,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
                 fileToSVNPath(destPath, false),
                 JhlConverter.convert(revision),
                 JhlConverter.convert(revision),
-                Depth.fromRecurse(recurse),
+                Depth.infinityOrImmediates(recurse),
                 ignoreExternals,
                 force);
         } catch (ClientException e) {
@@ -842,7 +842,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
 			boolean ignoreExternals = false;
 			boolean force = true;
-			return svnClient.update(target, JhlConverter.convert(revision), Depth.fromRecurse(recurse),
+			return svnClient.update(target, JhlConverter.convert(revision), Depth.infinityOrImmediates(recurse),
 					ignoreExternals, force);
 		} catch (ClientException e) {
 			notificationHandler.logException(e);
@@ -876,7 +876,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
 			notificationHandler.holdStats();
 			boolean force = true;
-			long[] rtnCode =  svnClient.update(targets, JhlConverter.convert(revision), Depth.fromRecurse(recurse), ignoreExternals, force);
+			long[] rtnCode =  svnClient.update(targets, JhlConverter.convert(revision), Depth.infinityOrImmediates(recurse), ignoreExternals, force);
 			notificationHandler.releaseStats();
 			return rtnCode;
 		} catch (ClientException e) {
@@ -1449,8 +1449,8 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 			String target = fileToSVNPath(path, true);
 			notificationHandler.logCommandLine("resolved "+target);
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
-			svnClient.resolved(target,false);
-		} catch (ClientException e) {
+			svnClient.resolved(target, Depth.empty);
+		} catch (SubversionException e) {
 			notificationHandler.logException(e);
 			throw new SVNClientException(e);            
 		}        
@@ -1568,7 +1568,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
             notificationHandler.setBaseDir(baseDir);
             boolean force = true;
             boolean ignoreExternals = false;
-            svnClient.doSwitch(target, url.toString(),JhlConverter.convert(revision),Depth.fromRecurse(recurse), ignoreExternals, force);
+            svnClient.doSwitch(target, url.toString(),JhlConverter.convert(revision),Depth.infinityOrImmediates(recurse), ignoreExternals, force);
            
         } catch (ClientException e) {
             notificationHandler.logException(e);
@@ -2025,12 +2025,9 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
             if (ignoreAncestry) {
             	commandLine += " --ignore-ancestry";
             }
-            commandLine += " -c ";
             RevisionRange[] range = JhlConverter.convert(revisions);
             for (int i = 0; i < range.length; i++) {
-            	if (i > 0)
-            		commandLine += ",";
-				commandLine += range[i].toString();
+				commandLine += " -c " + range[i].toString();
 			}
             commandLine += " " + url.toString();
             
@@ -2200,6 +2197,28 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 	public String[] suggestMergeSources(SVNUrl url, SVNRevision peg) throws SVNClientException {
 		try {
 			return svnClient.suggestMergeSources(url.toString(), JhlConverter.convert(peg));
+		} catch (SubversionException e) {
+            throw new SVNClientException(e);
+		}
+	}
+
+	public SVNRevisionRange[] getAvailableMerges(File path,
+			SVNRevision pegRevision, SVNUrl mergeSource)
+			throws SVNClientException {
+		try {
+			return JhlConverter.convert(svnClient.getAvailableMerges(fileToSVNPath(path, false),
+					JhlConverter.convert(pegRevision), mergeSource.toString()));
+		} catch (SubversionException e) {
+            throw new SVNClientException(e);
+		}
+	}
+
+	public SVNRevisionRange[] getAvailableMerges(SVNUrl url,
+			SVNRevision pegRevision, SVNUrl mergeSource)
+			throws SVNClientException {
+		try {
+			return JhlConverter.convert(svnClient.getAvailableMerges(url.toString(),
+					JhlConverter.convert(pegRevision), mergeSource.toString()));
 		} catch (SubversionException e) {
             throw new SVNClientException(e);
 		}

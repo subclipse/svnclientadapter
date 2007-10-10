@@ -277,6 +277,37 @@ public abstract class AbstractClientAdapter implements ISVNClientAdapter {
 		} finally {
 			if (os != null) try {os.close();} catch (IOException e) {}
 		}
+	}
+
+	public ISVNLogMessage[] getLogMessagesForRevisions(SVNUrl url,
+			SVNRevision pegRevision, SVNRevisionRange[] range,
+			boolean fetchChangePath) throws SVNClientException {
+		if (range == null || range.length == 0) {
+			return new ISVNLogMessage[0];
+		}
+		SVNRevision revisionStart = range[0].getFromRevision();
+		SVNRevision revisionEnd = range[range.length - 1].getToRevision();
+		boolean stopOnCopy = false;
+		int limit = 0;
+		ISVNLogMessage[] messages = getLogMessages(url, pegRevision,
+				revisionStart, revisionEnd, stopOnCopy, fetchChangePath, limit);
+		return applyFilterToLogs(range, messages);
+	}
+
+	private ISVNLogMessage[] applyFilterToLogs(SVNRevisionRange[] range,
+			ISVNLogMessage[] messages) {
+		List msgList = new ArrayList();
+		for (int i = 0; i < messages.length; i++) {
+			for (int j = 0; j < range.length; j++) {
+				if (range[j].contains(messages[i].getRevision())) {
+					msgList.add(messages[i]);
+					break;
+				}
+			}
+		}
+		ISVNLogMessage[] msgArray = new ISVNLogMessage[msgList.size()];
+		msgList.toArray(msgArray);
+		return msgArray;
 	}	
 
 }

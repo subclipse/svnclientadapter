@@ -216,4 +216,14 @@ public class SVNRevisionRange implements Comparable, java.io.Serializable
     	svnRevisionRanges.toArray(revisionRangeArray);
     	return revisionRangeArray;    	
     }
+    
+    public boolean contains(SVNRevision revision) {
+    	long fromRev = SVNRevisionRange.getRevisionAsLong(from).longValue();
+    	long toRev = SVNRevisionRange.getRevisionAsLong(to).longValue();
+    	long rev = SVNRevisionRange.getRevisionAsLong(revision).longValue();
+    	if (rev >= fromRev && rev <= toRev)
+    		return true;
+    	else
+    		return false;
+    }
 }
