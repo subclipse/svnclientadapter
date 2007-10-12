@@ -51,16 +51,7 @@ public class JhlMergeInfo implements ISVNMergeInfo {
 	public void addRevisions(String path, SVNRevisionRange[] range) {
 		if (info == null)
 			info = new MergeInfo();
-		List rangeList = new ArrayList();
-		for (int i = 0; i < range.length; i++) {
-			rangeList.add(JhlConverter.convert(range[i]));
-		}
-		try {
-			info.addRevisions(path, rangeList);
-		} catch (SubversionException e) {
-			// Will never happen because we know all objects
-			// are the right type
-		}
+		info.addRevisions(path, JhlConverter.convert(range));
 	}
 
 	public String[] getPaths() {
