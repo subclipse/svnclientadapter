@@ -48,6 +48,15 @@ public class SVNRevisionRange implements Comparable, java.io.Serializable
         this.to = to;
     }
 
+     public SVNRevisionRange(SVNRevision.Number from, SVNRevision.Number to, boolean convertToNMinusOne)
+     {
+    	 if (convertToNMinusOne) {
+    		 this.from = new SVNRevision.Number(from.getNumber() - 1);
+    	 } else
+    		 this.from = from;
+         this.to = to;
+     }
+
     /**
      * Accepts a string in one of these forms: n m-n Parses the results into a
      * from and to revision
@@ -199,7 +208,7 @@ public class SVNRevisionRange implements Comparable, java.io.Serializable
     			while (allRevisions[j++].getNumber() != selectedRevisions[i].getNumber()) {}
     		} else {
     			if (selectedRevisions[i].getNumber() != allRevisions[j++].getNumber()) {
-    				SVNRevisionRange revisionRange = new SVNRevisionRange(fromRevision, toRevision);
+    				SVNRevisionRange revisionRange = new SVNRevisionRange(fromRevision, toRevision, true);
     				svnRevisionRanges.add(revisionRange);
     				fromRevision = selectedRevisions[i];
     				while (allRevisions[j++].getNumber() != selectedRevisions[i].getNumber()) {}
@@ -208,7 +217,7 @@ public class SVNRevisionRange implements Comparable, java.io.Serializable
     		toRevision = selectedRevisions[i];
     	}
     	if (toRevision != null) {
-			SVNRevisionRange revisionRange = new SVNRevisionRange(fromRevision, toRevision);
+			SVNRevisionRange revisionRange = new SVNRevisionRange(fromRevision, toRevision, true);
 			svnRevisionRanges.add(revisionRange);    		
 		}    	
     	
@@ -239,4 +248,13 @@ public class SVNRevisionRange implements Comparable, java.io.Serializable
 	    		return false;
     	}
     }
+
+	public String toMergeString() {
+    	long fromRev = SVNRevisionRange.getRevisionAsLong(from).longValue();
+    	long toRev = SVNRevisionRange.getRevisionAsLong(to).longValue();
+    	if ((fromRev + 1) == toRev) {
+    		return "-c " + toRev;
+    	}
+		return "-r " + fromRev + ":" + toRev;
+	}
 }
