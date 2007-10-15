@@ -14,38 +14,33 @@ public interface ISVNConflictResolver {
     /**
      * From JavaHL
      */
-    public final class Result
+    public final class Choice
     {
         /**
          * User did nothing; conflict remains.
          */
-        public static final int conflicted = 0;
-
-        /**
-         * User has resolved the conflict.
-         */
-        public static final int resolved = 1;
+        public static final int postpone = 0;
 
         /**
          * User chooses the base file.
          */
-        public static final int choose_base = 2;
+        public static final int chooseBase = 1;
 
         /**
          * User chooses the repository file.
          */
-        public static final int choose_repos = 3;
+        public static final int chooseTheirs = 2;
 
         /**
          * User chooses own version of file.
          */
-        public static final int choose_user = 4;
+        public static final int chooseMine = 3;
 
         /**
          * User chooses the merged-file (which she may have manually
          * edited).
          */
-        public static final int choose_merged = 5;
+        public static final int chooseMerged = 4;
     }
 
 }

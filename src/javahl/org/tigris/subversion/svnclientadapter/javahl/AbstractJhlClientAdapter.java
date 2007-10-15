@@ -1443,7 +1443,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
     public void resolved(File path) 
     	throws SVNClientException
     {
-    	this.resolved(path, ISVNConflictResolver.Result.choose_merged);
+    	this.resolved(path, ISVNConflictResolver.Choice.chooseMerged);
     }
 
 	public void resolved(File path, int result) throws SVNClientException {
@@ -1453,13 +1453,13 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 			String target = fileToSVNPath(path, true);
 			String commandLine = "resolved ";
 			switch (result) {
-			case ISVNConflictResolver.Result.choose_base:
+			case ISVNConflictResolver.Choice.chooseBase:
 				commandLine += "--accept=base ";
 				break;
-			case ISVNConflictResolver.Result.choose_repos:
+			case ISVNConflictResolver.Choice.chooseTheirs:
 				commandLine += "--accept=theirs ";
 				break;
-			case ISVNConflictResolver.Result.choose_user:
+			case ISVNConflictResolver.Choice.chooseMine:
 				commandLine += "--accept=mine ";
 				break;
 			default:
@@ -2045,8 +2045,8 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
             	commandLine += " --ignore-ancestry";
             }
             RevisionRange[] range = JhlConverter.convert(revisions);
-            for (int i = 0; i < range.length; i++) {
-				commandLine += " -c " + range[i].toString();
+            for (int i = 0; i < revisions.length; i++) {
+				commandLine += " " + revisions[i].toMergeString();
 			}
             commandLine += " " + url.toString();
             

@@ -1101,7 +1101,7 @@ public interface ISVNClientAdapter {
 	/**
 	 * Remove 'conflicted' state on working copy files or directories
 	 * @param path
-	 * @param result - choose resolve option - {@link ISVNConflictResolver.Result}
+	 * @param result - choose resolve option - {@link ISVNConflictResolver.Choice}
 	 * @throws SVNClientException
 	 */ 	
 	public abstract void resolved(File path, int result) throws SVNClientException;
@@ -1319,7 +1319,7 @@ public interface ISVNClientAdapter {
      * Merge set of revisions into a new local path.
      * @param url          url
      * @param pegRevision   revision to interpret path
-     * @param revisions     revisions to merge
+     * @param revisions     revisions to merge (must be in the form N-1:M)
      * @param localPath     target local path
      * @param force         overwrite local changes
      * @param depth         how deep to traverse into subdirectories
