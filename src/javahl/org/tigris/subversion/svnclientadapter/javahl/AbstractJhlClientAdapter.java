@@ -246,23 +246,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
         	String url = moduleName.toString();
             notificationHandler.setCommand(ISVNNotifyListener.Command.CHECKOUT);
             StringBuffer commandLine = new StringBuffer("checkout " + url +
-            		" -r " + revision.toString() + " --depth ");
-            switch (depth) {
-				case Depth.empty:
-					commandLine.append("empty");
-					break;
-				case Depth.files:
-					commandLine.append("files");
-					break;
-				case Depth.immediates:
-					commandLine.append("immediates");
-					break;		
-				case Depth.infinity:
-					commandLine.append("infinity");
-					break;				
-				default:
-					break;
-			}
+            		" -r " + revision.toString() + depthCommandLine(depth));
             if (ignoreExternals) commandLine.append(" --ignore-externals");
             if (force) commandLine.append(" --force");            
             notificationHandler.logCommandLine(commandLine.toString());
@@ -869,24 +853,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 			notificationHandler.setCommand(ISVNNotifyListener.Command.UPDATE);
 			String target = fileToSVNPath(path, false);
 			StringBuffer commandLine = new StringBuffer("update " + target + " -r " +
-					revision.toString() +
-					" --depth ");
-            switch (depth) {
-				case Depth.empty:
-					commandLine.append("empty");
-					break;
-				case Depth.files:
-					commandLine.append("files");
-					break;
-				case Depth.immediates:
-					commandLine.append("immediates");
-					break;		
-				case Depth.infinity:
-					commandLine.append("infinity");
-					break;				
-				default:
-					break;
-            }	
+					revision.toString() + depthCommandLine(depth));
             if (ignoreExternals) commandLine.append(" --ignore-externals");
             if (force) commandLine.append(" --force");            
             notificationHandler.logCommandLine(commandLine.toString());
@@ -924,24 +891,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 				targetsString.append(" ");
 			}
 			StringBuffer commandLine = new StringBuffer("update " + targetsString.toString() + " -r " +
-					revision.toString() +
-			" --depth ");
-		    switch (depth) {
-				case Depth.empty:
-					commandLine.append("empty");
-					break;
-				case Depth.files:
-					commandLine.append("files");
-					break;
-				case Depth.immediates:
-					commandLine.append("immediates");
-					break;		
-				case Depth.infinity:
-					commandLine.append("infinity");
-					break;				
-				default:
-					break;
-		    }	
+					revision.toString() + depthCommandLine(depth));
 		    if (ignoreExternals) commandLine.append(" --ignore-externals");
 		    if (force) commandLine.append(" --force");          					
             notificationHandler.logCommandLine(commandLine.toString());
@@ -1658,23 +1608,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
             
             String target = fileToSVNPath(path, false);
             StringBuffer commandLine = new StringBuffer("switch " + url + " " + target + " -r " + revision.toString() +
-            		" --depth ");
-            switch (depth) {
-				case Depth.empty:
-					commandLine.append("empty");
-					break;
-				case Depth.files:
-					commandLine.append("files");
-					break;
-				case Depth.immediates:
-					commandLine.append("immediates");
-					break;		
-				case Depth.infinity:
-					commandLine.append("infinity");
-					break;				
-				default:
-					break;
-            }
+            		depthCommandLine(depth));
             if (ignoreExternals) commandLine.append(" --ignore-externals");
             if (force) commandLine.append(" --force");            
             notificationHandler.logCommandLine(commandLine.toString());
@@ -2174,7 +2108,6 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 			return " --depth=files";
 		case 2:
 			return " --depth=immediates";
-
 		default:
 			return "";
 		}
