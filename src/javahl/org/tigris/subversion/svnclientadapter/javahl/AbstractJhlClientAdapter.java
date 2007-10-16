@@ -228,30 +228,58 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
         SVNRevision revision,
         boolean recurse)
         throws SVNClientException {
+    		checkout(moduleName, destPath, revision, Depth.infinityOrImmediates(recurse), false, true);
+    }
+    
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#checkout(org.tigris.subversion.svnclientadapter.SVNUrl, java.io.File, org.tigris.subversion.svnclientadapter.SVNRevision, int, boolean, boolean)
+     */
+    public void checkout(
+        SVNUrl moduleName,
+        File destPath,
+        SVNRevision revision,
+        int depth,
+        boolean ignoreExternals,
+        boolean force)
+        throws SVNClientException {
         try {
         	String url = moduleName.toString();
             notificationHandler.setCommand(ISVNNotifyListener.Command.CHECKOUT);
-            notificationHandler.logCommandLine(
-                "checkout" +
-                (recurse?"":" -N") + 
-                " -r "+revision.toString()+
-                " "+url + " --force");        
+            StringBuffer commandLine = new StringBuffer("checkout " + url +
+            		" -r " + revision.toString() + " --depth ");
+            switch (depth) {
+				case Depth.empty:
+					commandLine.append("empty");
+					break;
+				case Depth.files:
+					commandLine.append("files");
+					break;
+				case Depth.immediates:
+					commandLine.append("immediates");
+					break;		
+				case Depth.infinity:
+					commandLine.append("infinity");
+					break;				
+				default:
+					break;
+			}
+            if (ignoreExternals) commandLine.append(" --ignore-externals");
+            if (force) commandLine.append(" --force");            
+            notificationHandler.logCommandLine(commandLine.toString());
 			notificationHandler.setBaseDir(new File("."));
-			boolean ignoreExternals = false;
-			boolean force = true;
             svnClient.checkout(
 			    url,
                 fileToSVNPath(destPath, false),
                 JhlConverter.convert(revision),
                 JhlConverter.convert(revision),
-                Depth.infinityOrImmediates(recurse),
+                depth,
                 ignoreExternals,
                 force);
         } catch (ClientException e) {
             notificationHandler.logException(e);
             throw new SVNClientException(e);
         }
-    }
+    }    
 
     /* (non-Javadoc)
      * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#commit(java.io.File[], java.lang.String, boolean)
@@ -829,31 +857,61 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 	 */
 	public long update(File path, SVNRevision revision, boolean recurse)
 		throws SVNClientException {
+			return update(path, revision, Depth.infinityOrImmediates(recurse), false, true);
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#update(java.io.File, org.tigris.subversion.svnclientadapter.SVNRevision, int, boolean, boolean)
+	 */
+	public long update(File path, SVNRevision revision, int depth, boolean ignoreExternals, boolean force)
+		throws SVNClientException {
 		try {
 			notificationHandler.setCommand(ISVNNotifyListener.Command.UPDATE);
 			String target = fileToSVNPath(path, false);
-			notificationHandler.logCommandLine(
-				"update -r "
-					+ revision.toString()
-					+ ' '
-					+ (recurse ? "" : "-N ")
-					+ target
-					+ " --force");
+			StringBuffer commandLine = new StringBuffer("update " + target + " -r " +
+					revision.toString() +
+					" --depth ");
+            switch (depth) {
+				case Depth.empty:
+					commandLine.append("empty");
+					break;
+				case Depth.files:
+					commandLine.append("files");
+					break;
+				case Depth.immediates:
+					commandLine.append("immediates");
+					break;		
+				case Depth.infinity:
+					commandLine.append("infinity");
+					break;				
+				default:
+					break;
+            }	
+            if (ignoreExternals) commandLine.append(" --ignore-externals");
+            if (force) commandLine.append(" --force");            
+            notificationHandler.logCommandLine(commandLine.toString());
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
-			boolean ignoreExternals = false;
-			boolean force = true;
-			return svnClient.update(target, JhlConverter.convert(revision), Depth.infinityOrImmediates(recurse),
+			return svnClient.update(target, JhlConverter.convert(revision), depth,
 					ignoreExternals, force);
 		} catch (ClientException e) {
 			notificationHandler.logException(e);
 			throw new SVNClientException(e);
 		}
-	}
+	}	
 
     /* (non-Javadoc)
      * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#update(java.io.File[], org.tigris.subversion.svnclientadapter.SVNRevision, boolean, boolean)
      */
     public long[] update(File[] path, SVNRevision revision, boolean recurse, boolean ignoreExternals) 
+        throws SVNClientException
+	{
+    	return update(path, revision, Depth.infinityOrImmediates(recurse), ignoreExternals, true);
+	}
+    
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#update(java.io.File[], org.tigris.subversion.svnclientadapter.SVNRevision, int, boolean, boolean)
+     */
+    public long[] update(File[] path, SVNRevision revision, int depth, boolean ignoreExternals, boolean force) 
         throws SVNClientException
 	{
 		try {
@@ -865,25 +923,38 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 				targetsString.append(targets[i]);
 				targetsString.append(" ");
 			}
-			notificationHandler.logCommandLine(
-				"update -r "
-					+ revision.toString()
-					+ ' '
-					+ (recurse ? "" : "-N ")
-					+ (ignoreExternals ? "--ignore-externals " : "")
-					+ targetsString.toString()
-					+ " --force");
+			StringBuffer commandLine = new StringBuffer("update " + targetsString.toString() + " -r " +
+					revision.toString() +
+			" --depth ");
+		    switch (depth) {
+				case Depth.empty:
+					commandLine.append("empty");
+					break;
+				case Depth.files:
+					commandLine.append("files");
+					break;
+				case Depth.immediates:
+					commandLine.append("immediates");
+					break;		
+				case Depth.infinity:
+					commandLine.append("infinity");
+					break;				
+				default:
+					break;
+		    }	
+		    if (ignoreExternals) commandLine.append(" --ignore-externals");
+		    if (force) commandLine.append(" --force");          					
+            notificationHandler.logCommandLine(commandLine.toString());
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
 			notificationHandler.holdStats();
-			boolean force = true;
-			long[] rtnCode =  svnClient.update(targets, JhlConverter.convert(revision), Depth.infinityOrImmediates(recurse), ignoreExternals, force);
+			long[] rtnCode =  svnClient.update(targets, JhlConverter.convert(revision), depth, ignoreExternals, force);
 			notificationHandler.releaseStats();
 			return rtnCode;
 		} catch (ClientException e) {
 			notificationHandler.logException(e);
 			throw new SVNClientException(e);
 		}    	
-	}
+	}    
 	
     /* (non-Javadoc)
      * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#revert(java.io.File, boolean)
@@ -1574,27 +1645,49 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
      * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#switchUrl(org.tigris.subversion.svnclientadapter.SVNUrl, java.io.File, org.tigris.subversion.svnclientadapter.SVNRevision, boolean)
      */
     public void switchToUrl(File path, SVNUrl url, SVNRevision revision, boolean recurse) throws SVNClientException {
+    	switchToUrl(path, url, revision, Depth.infinityOrImmediates(recurse), false, true);
+    }
+    
+    /*
+     * (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#switchUrl(org.tigris.subversion.svnclientadapter.SVNUrl, java.io.File, org.tigris.subversion.svnclientadapter.SVNRevision, int, boolean, boolean)
+     */
+    public void switchToUrl(File path, SVNUrl url, SVNRevision revision, int depth, boolean ignoreExternals, boolean force) throws SVNClientException {
         try {
             notificationHandler.setCommand(ISVNNotifyListener.Command.SWITCH);
             
             String target = fileToSVNPath(path, false);
-            String commandLine = "switch --force "+url+" "+target+" "+"-r"+revision.toString();
-            if (!recurse) {
-            	commandLine += " -N";
+            StringBuffer commandLine = new StringBuffer("switch " + url + " " + target + " -r " + revision.toString() +
+            		" --depth ");
+            switch (depth) {
+				case Depth.empty:
+					commandLine.append("empty");
+					break;
+				case Depth.files:
+					commandLine.append("files");
+					break;
+				case Depth.immediates:
+					commandLine.append("immediates");
+					break;		
+				case Depth.infinity:
+					commandLine.append("infinity");
+					break;				
+				default:
+					break;
             }
-            notificationHandler.logCommandLine(commandLine);
+            if (ignoreExternals) commandLine.append(" --ignore-externals");
+            if (force) commandLine.append(" --force");            
+            notificationHandler.logCommandLine(commandLine.toString());
             File baseDir = SVNBaseDir.getBaseDir(path);
             notificationHandler.setBaseDir(baseDir);
-            boolean force = true;
-            boolean ignoreExternals = false;
-            svnClient.doSwitch(target, url.toString(),JhlConverter.convert(revision),Depth.infinityOrImmediates(recurse), ignoreExternals, force);
+            svnClient.doSwitch(target, url.toString(),JhlConverter.convert(revision),depth, ignoreExternals, force);
            
         } catch (ClientException e) {
             notificationHandler.logException(e);
             throw new SVNClientException(e);            
         }        
     	
-    }
+    }    
 
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#setConfigDirectory(java.io.File)
