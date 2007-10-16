@@ -119,6 +119,26 @@ public interface ISVNClientAdapter {
 		throws SVNClientException;
 	
 	/**
+	 * Executes a revision checkout.
+	 * @param moduleName name of the module to checkout.
+	 * @param destPath destination directory for checkout.
+	 * @param revision the revision number to checkout. If the number is -1
+	 *                 then it will checkout the latest revision.          
+     * @param depth how deep to checkout files recursively.
+     * @param ignoreExternals if externals are ignored during checkout.
+     * @param force allow unversioned paths that obstruct adds.
+	 * @exception SVNClientException
+	 */
+	public abstract void checkout(
+		SVNUrl moduleName,
+		File destPath,
+		SVNRevision revision,
+		int depth,
+		boolean ignoreExternals,
+		boolean force)
+		throws SVNClientException;	
+	
+	/**
 	 * Commits changes to the repository. This usually requires
 	 * authentication, see Auth.
 	 * @return Returns a long representing the revision. It returns a
@@ -453,6 +473,20 @@ public interface ISVNClientAdapter {
 	 */
 	public abstract long update(File path, SVNRevision revision, boolean recurse)
 		throws SVNClientException;
+	
+	/**
+	 * Update a file or a directory
+	 * @param path
+	 * @param revision
+     * @param depth
+     * @param ignoreExternals
+     * @param force
+     * @return Returns a long representing the revision. It returns a
+     *         -1 if the revision number is invalid.
+	 * @throws SVNClientException
+	 */
+	public abstract long update(File path, SVNRevision revision, int depth, boolean ignoreExternals, boolean force)
+		throws SVNClientException;	
 
     /**
      * Updates the directories or files from repository
@@ -470,7 +504,26 @@ public interface ISVNClientAdapter {
 		SVNRevision revision, 
 		boolean recurse,
 		boolean ignoreExternals) 
-    	throws SVNClientException;	
+    	throws SVNClientException;
+    
+    /**
+     * Updates the directories or files from repository
+     * @param path array of target files.
+     * @param revision the revision number to update.
+     * @param depth  the depth to recursively update.
+     * @param ignoreExternals if externals are ignored during update.
+     * @param force allow unversioned paths that obstruct adds.
+     * @return Returns an array of longs representing the revision. It returns a
+     *         -1 if the revision number is invalid.
+     * @throws SVNClientException
+     */
+    public abstract long[] update(
+    	File[] path, 
+		SVNRevision revision, 
+		int depth,
+		boolean ignoreExternals,
+		boolean force)
+    	throws SVNClientException;	    
 	
 	/**
 	 * Restore pristine working copy file (undo all local edits)
@@ -1172,6 +1225,20 @@ public interface ISVNClientAdapter {
      * @throws SVNClientException
      */
     public void switchToUrl(File path, SVNUrl url, SVNRevision revision, boolean recurse) throws SVNClientException;
+    
+    /**
+     * Update the working copy to mirror a new URL within the repository.
+     * This behaviour is similar to 'svn update', and is the way to
+     * move a working copy to a branch or tag within the same repository.
+     * @param url
+     * @param path
+     * @param revision
+     * @param depth
+     * @param ignoreExternals
+     * @param force
+     * @throws SVNClientException
+     */
+    public void switchToUrl(File path, SVNUrl url, SVNRevision revision, int depth, boolean ignoreExternals, boolean force) throws SVNClientException;    
     
     /**
      * Set the configuration directory.
