@@ -2102,12 +2102,14 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 
 	private String depthCommandLine(int depth) {
 		switch (depth) {
-		case 0:
+		case Depth.empty:
 			return " --depth=empty";
-		case 1:
+		case Depth.files:
 			return " --depth=files";
-		case 2:
+		case Depth.immediates:
 			return " --depth=immediates";
+		case Depth.infinity:
+			return " --depth=infinity";
 		default:
 			return "";
 		}
