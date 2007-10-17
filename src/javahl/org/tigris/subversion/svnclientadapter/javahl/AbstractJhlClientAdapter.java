@@ -41,6 +41,7 @@ import org.tigris.subversion.javahl.RevisionKind;
 import org.tigris.subversion.javahl.RevisionRange;
 import org.tigris.subversion.javahl.SVNClientInterface;
 import org.tigris.subversion.javahl.Status;
+import org.tigris.subversion.javahl.StatusCallback;
 import org.tigris.subversion.javahl.SubversionException;
 import org.tigris.subversion.svnclientadapter.AbstractClientAdapter;
 import org.tigris.subversion.svnclientadapter.ISVNAnnotations;
@@ -448,16 +449,19 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
     public ISVNStatus[] getStatus(File path, boolean descend, boolean getAll, boolean contactServer, boolean ignoreExternals) throws SVNClientException {
 		notificationHandler.setCommand(ISVNNotifyListener.Command.STATUS);
 		String filePathSVN = fileToSVNPath(path, false);
-		notificationHandler.logCommandLine("status " + (contactServer?"-u ":"")+ filePathSVN);
+		int depth = Depth.unknownOrImmediates(descend);    // If descend is true, recurse fully, else do only immediate children.
+		notificationHandler.logCommandLine("status " + (contactServer?"-u ":"")+ depthCommandLine(depth) + filePathSVN);
 		notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
 		try {
-			return processFolderStatuses(processExternalStatuses(JhlConverter.convert(
-                svnClient.status(
+			MyStatusCallback callback = new MyStatusCallback();
+			svnClient.status(
                     filePathSVN,  
-                    descend,            // If descend is true, recurse fully, else do only immediate children.
+                    depth,        
                     contactServer,      // If update is set, contact the repository and augment the status structures with information about out-of-dateness     
 					getAll,getAll,		// retrieve all entries; otherwise, retrieve only "interesting" entries (local mods and/or out-of-date).
-					ignoreExternals))), getAll, contactServer);  // if yes the svn:externals will be ignored
+					ignoreExternals, callback);
+			return processFolderStatuses(processExternalStatuses(JhlConverter.convert(
+					callback.getStatusArray())), getAll, contactServer);  // if yes the svn:externals will be ignored
 		} catch (ClientException e) {
 			if (e.getAprError() == SVN_ERR_WC_NOT_DIRECTORY) {
 				// when there is no .svn dir, an exception is thrown ...
@@ -467,6 +471,24 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 				throw new SVNClientException(e);
 			}
 		}
+    }
+    /**
+     * A private status callback implementation used by thin wrappers.
+     * Instances of this class are not thread-safe.
+     */
+    private class MyStatusCallback implements StatusCallback
+    {
+        private List statuses = new ArrayList();
+
+        public void doStatus(Status status)
+        {
+            statuses.add(status);
+        }
+
+        public Status[] getStatusArray()
+        {
+            return (Status[]) statuses.toArray(new Status[statuses.size()]);
+        }
     }
 
     /**
