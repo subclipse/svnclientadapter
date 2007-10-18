@@ -1719,7 +1719,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
             if (samePath) {
             	Revision peg = JhlConverter.convert(revision2);
             	if (peg == null) peg = Revision.HEAD;
-            	RevisionRange[] revisionRanges = { new RevisionRange(Revision.START.toString()) };
+            	RevisionRange[] revisionRanges = { new RevisionRange(JhlConverter.convert(revision1), JhlConverter.convert(revision2)) };
             	svnClient.merge(path1.toString(), peg, revisionRanges, target, force, depth, ignoreAncestry, dryRun );           	
             } else
             	svnClient.merge(path1.toString(), JhlConverter.convert(revision1), path2.toString(), JhlConverter.convert(revision2), target, force, depth, ignoreAncestry, dryRun );
