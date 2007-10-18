@@ -962,6 +962,21 @@ public interface ISVNClientAdapter {
 		throws SVNClientException;	
 	
 	/**
+	 * create a patch from local differences.
+	 * @param paths
+	 * @param relativeToPath - create patch relative to this location
+	 * @param outFile
+	 * @param recurse
+	 * @throws SVNClientException
+	 */
+	public abstract void createPatch(
+		File[] paths,
+		File relativeToPath,
+		File outFile, 
+		boolean recurse)
+		throws SVNClientException;	
+	
+	/**
 	 * display the differences between two urls.
 	 * @param oldUrl
 	 * @param oldUrlRevision

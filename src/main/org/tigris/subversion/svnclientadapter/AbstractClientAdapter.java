@@ -20,6 +20,7 @@ package org.tigris.subversion.svnclientadapter;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -309,6 +310,74 @@ public abstract class AbstractClientAdapter implements ISVNClientAdapter {
 		ISVNLogMessage[] msgArray = new ISVNLogMessage[msgList.size()];
 		msgList.toArray(msgArray);
 		return msgArray;
-	}	
+	}
+
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#createPatch(java.io.File[], java.io.File, java.io.File, boolean)
+	 */
+	public void createPatch(File[] paths, File relativeToPath, File outFile,
+			boolean recurse) throws SVNClientException {
+		File tmpFile;
+		try {
+			tmpFile = File.createTempFile("svn","patch");
+	        tmpFile.deleteOnExit();
+		} catch (IOException e) {
+			throw new SVNClientException(e);
+		} 
+		this.diff(paths, tmpFile, recurse);
+		stripPathsFromPatch(tmpFile, outFile, relativeToPath);
+	}
+
+	/**
+	 * Takes svn diff output and processes it to remove absolute paths and
+	 * convert them to relative paths which makes it easier to apply patch
+	 * 
+	 * @param tmpFile - disk file containing diff output
+	 * @param outFile - file to store the updated diff output
+	 * @param relativeToPath - path to make file references relative to
+	 * @throws SVNClientException 
+	 */
+	private void stripPathsFromPatch(File tmpFile, File outFile, File relativeToPath) throws SVNClientException {
+		String relativeStr;
+		try {
+			if (relativeToPath.isDirectory())
+				relativeStr = relativeToPath.getCanonicalPath();
+			else
+				relativeStr = relativeToPath.getParentFile().getCanonicalPath();
+		} catch (IOException e1) {
+			if (relativeToPath.isDirectory())
+				relativeStr = relativeToPath.getAbsolutePath();
+			else
+				relativeStr = relativeToPath.getParentFile().getAbsolutePath();
+		}
+		relativeStr += "/";
+		relativeStr = relativeStr.replace('\\', '/');
+		
+		FileInputStream fis = null;
+		FileOutputStream fos = null;
+		try {
+			fis = new FileInputStream(tmpFile);
+			byte b[] = new byte[fis.available()];
+			fis.read(b);
+			byte o[] = new String( b ).replaceAll(relativeStr, "").getBytes();
+			fos = new FileOutputStream(outFile);
+			fos.write(o);
+		} catch (FileNotFoundException e) {
+			throw new SVNClientException(e);
+		} catch (IOException e) {
+			throw new SVNClientException(e);
+		} finally {
+			try {
+				if (fis != null)
+					fis.close();
+			} catch (IOException e) {
+			}
+			try {
+				if (fos != null)
+					fos.close();		
+			} catch (IOException e) {
+			}
+		}
+ 	}	
 
 }
