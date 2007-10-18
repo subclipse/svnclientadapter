@@ -1303,6 +1303,23 @@ public interface ISVNClientAdapter {
                boolean recurse, boolean dryRun, boolean ignoreAncestry) throws SVNClientException;    
 
     /**
+     * Merge changes from two paths into a new local path.
+     * @param path1         first path or url
+     * @param revision1     first revision
+     * @param path2         second path or url
+     * @param revision2     second revision
+     * @param localPath     target local path
+     * @param force         overwrite local changes
+     * @param int           depth
+     * @param dryRun        do not update working copy
+     * @param ignoreAncestry ignore ancestry when calculating merges
+     * @exception SVNClientException
+     */
+    public abstract void merge(SVNUrl path1, SVNRevision revision1, SVNUrl path2,
+               SVNRevision revision2, File localPath, boolean force,
+               int depth, boolean dryRun, boolean ignoreAncestry) throws SVNClientException;        
+    
+    /**
      * Lock a working copy item
      * @param paths  path of the items to lock
      * @param comment
