@@ -334,34 +334,41 @@ public abstract class AbstractClientAdapter implements ISVNClientAdapter {
 	 * 
 	 * @param tmpFile - disk file containing diff output
 	 * @param outFile - file to store the updated diff output
-	 * @param relativeToPath - path to make file references relative to
+	 * @param relativeToPath - path to make file references relative to or null
+	 *             for absolute paths
 	 * @throws SVNClientException 
 	 */
 	private void stripPathsFromPatch(File tmpFile, File outFile, File relativeToPath) throws SVNClientException {
-		String relativeStr;
-		try {
-			if (relativeToPath.isDirectory())
-				relativeStr = relativeToPath.getCanonicalPath();
-			else
-				relativeStr = relativeToPath.getParentFile().getCanonicalPath();
-		} catch (IOException e1) {
-			if (relativeToPath.isDirectory())
-				relativeStr = relativeToPath.getAbsolutePath();
-			else
-				relativeStr = relativeToPath.getParentFile().getAbsolutePath();
+		String relativeStr = null;
+		if (relativeToPath != null) {
+			try {
+				if (relativeToPath.isDirectory())
+					relativeStr = relativeToPath.getCanonicalPath();
+				else
+					relativeStr = relativeToPath.getParentFile().getCanonicalPath();
+			} catch (IOException e1) {
+				if (relativeToPath.isDirectory())
+					relativeStr = relativeToPath.getAbsolutePath();
+				else
+					relativeStr = relativeToPath.getParentFile().getAbsolutePath();
+			}
+			relativeStr += "/";
+			relativeStr = relativeStr.replace('\\', '/');
 		}
-		relativeStr += "/";
-		relativeStr = relativeStr.replace('\\', '/');
 		
 		FileInputStream fis = null;
 		FileOutputStream fos = null;
 		try {
 			fis = new FileInputStream(tmpFile);
+			fos = new FileOutputStream(outFile);
 			byte b[] = new byte[fis.available()];
 			fis.read(b);
-			byte o[] = new String( b ).replaceAll(relativeStr, "").getBytes();
-			fos = new FileOutputStream(outFile);
-			fos.write(o);
+			if (relativeToPath != null) {
+				byte o[] = new String(b).replaceAll(relativeStr, "").getBytes();
+				fos.write(o);
+			} else {
+				fos.write(b);
+			}
 		} catch (FileNotFoundException e) {
 			throw new SVNClientException(e);
 		} catch (IOException e) {
