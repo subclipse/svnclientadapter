@@ -74,7 +74,13 @@ public interface ISVNClientAdapter {
 	 * Add a callback for resolving conflicts during up/sw/merge
 	 * @param callback
 	 */
-	public abstract void addConflictResolutionCallback(ISVNConflictResolver callback);   
+	public abstract void addConflictResolutionCallback(ISVNConflictResolver callback);
+	
+	/**
+	 * Set a progress listener
+	 * @param progressListener
+	 */
+	public abstract void setProgressListener(ISVNProgressListener progressListener);   	
     
 	/**
 	 * Adds a file (or directory) to the repository.
