@@ -51,6 +51,7 @@ import org.tigris.subversion.svnclientadapter.ISVNInfo;
 import org.tigris.subversion.svnclientadapter.ISVNLogMessage;
 import org.tigris.subversion.svnclientadapter.ISVNMergeInfo;
 import org.tigris.subversion.svnclientadapter.ISVNNotifyListener;
+import org.tigris.subversion.svnclientadapter.ISVNProgressListener;
 import org.tigris.subversion.svnclientadapter.ISVNPromptUserPassword;
 import org.tigris.subversion.svnclientadapter.ISVNProperty;
 import org.tigris.subversion.svnclientadapter.ISVNStatus;
@@ -82,6 +83,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
     protected SVNClientInterface svnClient;
     protected JhlNotificationHandler notificationHandler;
     protected JhlConflictResolver conflictResolver;
+    protected JhlProgressListener progressListener;
 
     public AbstractJhlClientAdapter() {
 
@@ -2180,6 +2182,14 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 		else
 			conflictResolver = new JhlConflictResolver(callback);
 		svnClient.setConflictResolver(conflictResolver);
+	}
+	
+	public void setProgressListener(ISVNProgressListener listener) {
+		if (listener == null)
+			progressListener = null;
+		else
+			progressListener = new JhlProgressListener(listener);
+		svnClient.setProgressListener(progressListener);
 	}
 
 	private SVNDiffSummary[] diffSummarize(String target1, SVNRevision revision1,
