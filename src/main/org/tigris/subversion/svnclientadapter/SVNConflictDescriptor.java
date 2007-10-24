@@ -29,9 +29,16 @@ public class SVNConflictDescriptor
     private String path;
 
     /**
+     * @see .Kind
+     */
+    private int conflictKind;
+
+    /**
      * @see org.tigris.subversion.javahl.NodeKind
      */
     private int nodeKind;
+
+    private String propertyName;
 
     private boolean isBinary;
     private String mimeType;
@@ -44,24 +51,27 @@ public class SVNConflictDescriptor
     // paths of up to four fulltext files that can be used to
     // interactively resolve the conflict.
     private String basePath;
-    private String reposPath;
-    private String userPath;
+    private String theirPath;
+    private String myPath;
     private String mergedPath;
 
-    public SVNConflictDescriptor(String path, int nodeKind, boolean isBinary,
+    public SVNConflictDescriptor(String path, int conflictKind, int nodeKind, 
+    		           String propertyName, boolean isBinary,
                        String mimeType, int action, int reason,
-                       String basePath, String reposPath,
-                       String userPath, String mergedPath)
+                       String basePath, String theirPath,
+                       String myPath, String mergedPath)
     {
         this.path = path;
+        this.conflictKind = conflictKind;
         this.nodeKind = nodeKind;
+        this.propertyName = propertyName;
         this.isBinary = isBinary;
         this.mimeType = mimeType;
         this.action = action;
         this.reason = reason;
         this.basePath = basePath;
-        this.reposPath = reposPath;
-        this.userPath = userPath;
+        this.theirPath = theirPath;
+        this.myPath = myPath;
         this.mergedPath = mergedPath;
     }
 
@@ -70,9 +80,19 @@ public class SVNConflictDescriptor
         return path;
     }
 
+    public int getConflictKind()
+    {
+        return conflictKind;
+    }
+
     public int getNodeKind()
     {
         return nodeKind;
+    }
+
+    public String getPropertyName()
+    {
+        return propertyName;
     }
 
     public boolean isBinary()
@@ -100,20 +120,36 @@ public class SVNConflictDescriptor
         return basePath;
     }
 
-    public String getReposPath()
+    public String getTheirPath()
     {
-        return reposPath;
+        return theirPath;
     }
 
-    public String getUserPath()
+    public String getMyPath()
     {
-        return userPath;
+        return myPath;
     }
 
     public String getMergedPath()
     {
         return mergedPath;
     }
+    /**
+     * From JavaHL.
+     */
+    public final class Kind
+    {
+        /**
+         * Attempting to change text or props.
+         */
+        public static final int text = 0;
+
+        /**
+         * Attempting to add object.
+         */
+        public static final int property = 1;
+    }
+   
     /**
      * From JavaHL
      */

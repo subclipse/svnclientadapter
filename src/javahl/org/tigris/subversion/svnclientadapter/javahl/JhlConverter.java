@@ -271,10 +271,11 @@ public class JhlConverter {
     }
     
     public static SVNConflictDescriptor convertConflictDescriptor(ConflictDescriptor d) {
-    	return new SVNConflictDescriptor(d.getPath(), d.getNodeKind(), d.isBinary(),
+    	return new SVNConflictDescriptor(d.getPath(), d.getKind(), d.getNodeKind(),
+    			d.getPropertyName(), d.isBinary(),
                 d.getMIMEType(), d.getAction(), d.getReason(),
-                d.getBasePath(), d.getReposPath(),
-                d.getUserPath(), d.getMergedPath());
+                d.getBasePath(), d.getTheirPath(),
+                d.getMyPath(), d.getMergedPath());
     }
 
 	public static SVNDiffSummary convert(DiffSummary d) {
