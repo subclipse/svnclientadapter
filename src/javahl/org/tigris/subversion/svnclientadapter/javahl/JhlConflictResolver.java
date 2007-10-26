@@ -6,6 +6,7 @@ import org.tigris.subversion.javahl.ConflictResult;
 import org.tigris.subversion.javahl.SubversionException;
 import org.tigris.subversion.svnclientadapter.ISVNConflictResolver;
 import org.tigris.subversion.svnclientadapter.SVNClientException;
+import org.tigris.subversion.svnclientadapter.SVNConflictResult;
 
 public class JhlConflictResolver implements ConflictResolverCallback {
 	
@@ -19,7 +20,8 @@ public class JhlConflictResolver implements ConflictResolverCallback {
 	public ConflictResult resolve(ConflictDescriptor descrip)
 			throws SubversionException {
 		try {
-			return new ConflictResult(worker.resolve(JhlConverter.convertConflictDescriptor(descrip)), null);
+			SVNConflictResult svnConflictResult = worker.resolve(JhlConverter.convertConflictDescriptor(descrip));
+			return new ConflictResult(svnConflictResult.getChoice(), svnConflictResult.getMergedPath());
 		} catch (SVNClientException e) {
 			throw new JhlException(e);
 		}
