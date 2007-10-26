@@ -9,7 +9,7 @@ public interface ISVNConflictResolver {
      * @return The result of any conflict resolution.
      * @throws SubversionException If an error occurs.
      */
-    public int resolve(SVNConflictDescriptor descrip) throws SVNClientException;
+    public SVNConflictResult resolve(SVNConflictDescriptor descrip) throws SVNClientException;
 
     /**
      * From JavaHL
