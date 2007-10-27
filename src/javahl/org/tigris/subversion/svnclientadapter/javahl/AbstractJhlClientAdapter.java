@@ -1638,7 +1638,8 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
             notificationHandler.logCommandLine(commandLine.toString());
             File baseDir = SVNBaseDir.getBaseDir(path);
             notificationHandler.setBaseDir(baseDir);
-            svnClient.doSwitch(target, url.toString(),JhlConverter.convert(revision),depth, ignoreExternals, force);
+            Revision rev = JhlConverter.convert(revision);
+            svnClient.doSwitch(target, url.toString(),rev,rev,depth, ignoreExternals, force);
            
         } catch (ClientException e) {
             notificationHandler.logException(e);
@@ -2017,11 +2018,12 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 					+ target
 					+ logExtras);
 			JhlLogMessageCallback callback = new JhlLogMessageCallback();
+			String[] revprops = new String[] {"svn:author", "svn:date", "svn:log"};
 			svnClient.logMessages(target, JhlConverter.convert(pegRevision),
                     JhlConverter.convert(revisionStart), 
                     JhlConverter.convert(revisionEnd),
 					stopOnCopy, fetchChangePath, includeMergedRevisions, 
-					false, limit, callback);
+					revprops, limit, callback);
 			return callback.getLogMessages();
 		} catch (ClientException e) {
 			notificationHandler.logException(e);
