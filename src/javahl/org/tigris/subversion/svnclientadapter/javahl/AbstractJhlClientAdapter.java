@@ -31,6 +31,7 @@ import java.util.Set;
 
 import org.tigris.subversion.javahl.ClientException;
 import org.tigris.subversion.javahl.Depth;
+import org.tigris.subversion.javahl.ErrorCodes;
 import org.tigris.subversion.javahl.Info;
 import org.tigris.subversion.javahl.Info2;
 import org.tigris.subversion.javahl.MergeInfo;
@@ -78,7 +79,6 @@ import org.tigris.subversion.svnclientadapter.utils.Messages;
  *
  */
 public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
-    final protected static int SVN_ERR_WC_NOT_DIRECTORY = 155007;
 
     protected SVNClientInterface svnClient;
     protected JhlNotificationHandler notificationHandler;
@@ -417,7 +417,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
                 	statuses[i] = new JhlStatus(status);
                 }
             } catch (ClientException e) {
-                if (e.getAprError() == SVN_ERR_WC_NOT_DIRECTORY) {
+                if (e.getAprError() == ErrorCodes.wcNotDirectory) {
                     // when there is no .svn dir, an exception is thrown ...
                     statuses[i] = new SVNStatusUnversioned(path[i]);
                 } else
@@ -465,7 +465,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 			return processFolderStatuses(processExternalStatuses(JhlConverter.convert(
 					callback.getStatusArray())), getAll, contactServer);  // if yes the svn:externals will be ignored
 		} catch (ClientException e) {
-			if (e.getAprError() == SVN_ERR_WC_NOT_DIRECTORY) {
+			if (e.getAprError() == ErrorCodes.wcNotDirectory) {
 				// when there is no .svn dir, an exception is thrown ...
 				return new ISVNStatus[] {new SVNStatusUnversioned(path)};
 			} else {
