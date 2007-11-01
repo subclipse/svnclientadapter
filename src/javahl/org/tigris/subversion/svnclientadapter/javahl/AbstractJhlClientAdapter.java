@@ -1364,6 +1364,45 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
     }
 
     /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#diff(org.tigris.subversion.svnclientadapter.SVNUrl, org.tigris.subversion.svnclientadapter.SVNRevision, org.tigris.subversion.svnclientadapter.SVNRevision, org.tigris.subversion.svnclientadapter.SVNRevision, java.io.File, int, boolean, boolean, boolean)
+     */    
+    public void diff(SVNUrl target, SVNRevision pegRevision, SVNRevision startRevision, SVNRevision endRevision,
+			File outFile, int depth, boolean ignoreAncestry, 
+			boolean noDiffDeleted, boolean force) throws SVNClientException {
+        try {
+            notificationHandler.setCommand(ISVNNotifyListener.Command.DIFF);
+                
+            if (pegRevision == null)
+                pegRevision = SVNRevision.HEAD;
+            if (startRevision == null)
+                startRevision = SVNRevision.HEAD;
+            if (endRevision == null)
+                endRevision = SVNRevision.HEAD;
+            
+            String commandLine = "diff ";
+            commandLine += depthCommandLine(depth);
+            if (ignoreAncestry)
+            	commandLine += " --ignoreAncestry";
+           commandLine += " -r " + startRevision + ":" + endRevision + " " + target;
+            notificationHandler.logCommandLine(commandLine);
+			notificationHandler.setBaseDir();
+			svnClient.diff(target.toString(), JhlConverter.convert(pegRevision), JhlConverter.convert(startRevision), JhlConverter.convert(endRevision), 
+					outFile.getAbsolutePath(), depth, ignoreAncestry, noDiffDeleted, force);
+        } catch (ClientException e) {
+            notificationHandler.logException(e);
+            throw new SVNClientException(e);            
+        }    	
+    }
+    
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#diff(org.tigris.subversion.svnclientadapter.SVNUrl, org.tigris.subversion.svnclientadapter.SVNRevision, org.tigris.subversion.svnclientadapter.SVNRevision, org.tigris.subversion.svnclientadapter.SVNRevision, java.io.File, boolean)
+     */    
+    public void diff(SVNUrl target, SVNRevision pegRevision, SVNRevision startRevision, SVNRevision endRevision,
+			File outFile, boolean recurse) throws SVNClientException {   	
+        diff(target, pegRevision, startRevision, endRevision, outFile, Depth.infinityOrImmediates(recurse), true, false, false);
+    }    
+
+    /* (non-Javadoc)
      * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#diff(org.tigris.subversion.svnclientadapter.SVNUrl, org.tigris.subversion.svnclientadapter.SVNRevision, org.tigris.subversion.svnclientadapter.SVNUrl, org.tigris.subversion.svnclientadapter.SVNRevision, java.io.File, boolean, boolean, boolean, boolean)
      */
     public void diff(SVNUrl oldUrl, SVNRevision oldUrlRevision,
