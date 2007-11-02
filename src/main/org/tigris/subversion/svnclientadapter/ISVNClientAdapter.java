@@ -207,6 +207,22 @@ public interface ISVNClientAdapter {
 		SVNRevision revision,
 		boolean recurse)
 		throws SVNClientException;
+	
+	/**
+	 * List directory entries of a URL
+	 * @param url
+	 * @param revision
+	 * @param pegRevision
+	 * @param recurse
+	 * @return an array of ISVNDirEntries 
+	 * @throws SVNClientException
+	 */
+	public abstract ISVNDirEntry[] getList(
+		SVNUrl url,
+		SVNRevision revision,
+		SVNRevision pegRevision,
+		boolean recurse)
+		throws SVNClientException;	
 
 	/**
 	 * List directory entries of a directory
@@ -217,7 +233,19 @@ public interface ISVNClientAdapter {
 	 * @throws SVNClientException
 	 */	
 	public ISVNDirEntry[] getList(File path, SVNRevision revision, boolean recurse) 
-    	throws SVNClientException;	
+    	throws SVNClientException;
+	
+	/**
+	 * List directory entries of a directory
+	 * @param path
+	 * @param revision
+	 * @param pegRevision
+	 * @param recurse
+	 * @return an array of ISVNDirEntries 
+	 * @throws SVNClientException
+	 */	
+	public ISVNDirEntry[] getList(File path, SVNRevision revision, SVNRevision pegRevision, boolean recurse) 
+    	throws SVNClientException;		
 	
 	/**
 	 * get the dirEntry for the given url
