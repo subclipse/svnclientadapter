@@ -1701,6 +1701,14 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
      * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#switchUrl(org.tigris.subversion.svnclientadapter.SVNUrl, java.io.File, org.tigris.subversion.svnclientadapter.SVNRevision, int, boolean, boolean)
      */
     public void switchToUrl(File path, SVNUrl url, SVNRevision revision, int depth, boolean ignoreExternals, boolean force) throws SVNClientException {
+        switchToUrl(path, url, revision, revision, depth, ignoreExternals, force);
+    }
+    
+    /*
+     * (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#switchUrl(org.tigris.subversion.svnclientadapter.SVNUrl, java.io.File, org.tigris.subversion.svnclientadapter.SVNRevision, org.tigris.subversion.svnclientadapter.SVNRevision, int, boolean, boolean)
+     */
+    public void switchToUrl(File path, SVNUrl url, SVNRevision revision, SVNRevision pegRevision, int depth, boolean ignoreExternals, boolean force) throws SVNClientException {
         try {
             notificationHandler.setCommand(ISVNNotifyListener.Command.SWITCH);
             
@@ -1713,14 +1721,15 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
             File baseDir = SVNBaseDir.getBaseDir(path);
             notificationHandler.setBaseDir(baseDir);
             Revision rev = JhlConverter.convert(revision);
-            svnClient.doSwitch(target, url.toString(),rev,rev,depth, ignoreExternals, force);
+            Revision pegRev = JhlConverter.convert(pegRevision);
+            svnClient.doSwitch(target, url.toString(),rev,pegRev,depth, ignoreExternals, force);
            
         } catch (ClientException e) {
             notificationHandler.logException(e);
             throw new SVNClientException(e);            
         }        
     	
-    }    
+    }        
 
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#setConfigDirectory(java.io.File)
