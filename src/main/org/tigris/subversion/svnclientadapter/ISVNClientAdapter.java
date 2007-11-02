@@ -1332,6 +1332,21 @@ public interface ISVNClientAdapter {
      * @throws SVNClientException
      */
     public void switchToUrl(File path, SVNUrl url, SVNRevision revision, int depth, boolean ignoreExternals, boolean force) throws SVNClientException;    
+
+    /**
+     * Update the working copy to mirror a new URL within the repository.
+     * This behaviour is similar to 'svn update', and is the way to
+     * move a working copy to a branch or tag within the same repository.
+     * @param url
+     * @param path
+     * @param revision
+     * @param pegRevision
+     * @param depth
+     * @param ignoreExternals
+     * @param force
+     * @throws SVNClientException
+     */
+    public void switchToUrl(File path, SVNUrl url, SVNRevision revision, SVNRevision pegRevision, int depth, boolean ignoreExternals, boolean force) throws SVNClientException;        
     
     /**
      * Set the configuration directory.
