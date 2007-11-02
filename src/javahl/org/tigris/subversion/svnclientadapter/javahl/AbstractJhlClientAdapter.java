@@ -326,6 +326,23 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
             throw new SVNClientException(e);
         }
 	}
+	
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getList(org.tigris.subversion.svnclientadapter.SVNUrl, org.tigris.subversion.svnclientadapter.SVNRevision, org.tigris.subversion.svnclientadapter.SVNRevision, boolean)
+	 */
+	public ISVNDirEntry[] getList(SVNUrl url, SVNRevision revision, SVNRevision pegRevision, boolean recurse) 
+            throws SVNClientException {
+        try {
+            notificationHandler.setCommand(ISVNNotifyListener.Command.LS);
+            String commandLine = "list -r "+revision.toString()+(recurse?"-R":"")+" "+url.toString();
+            notificationHandler.logCommandLine(commandLine);
+			notificationHandler.setBaseDir(new File("."));		
+            return JhlConverter.convert(svnClient.list(url.toString(), JhlConverter.convert(revision), JhlConverter.convert(pegRevision), recurse));
+        } catch (ClientException e) {
+            notificationHandler.logException(e);
+            throw new SVNClientException(e);
+        }
+	}	
 
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getList(java.io.File, org.tigris.subversion.svnclientadapter.SVNRevision, boolean)
@@ -344,6 +361,24 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
             throw new SVNClientException(e);
         }
 	}
+	
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getList(java.io.File, org.tigris.subversion.svnclientadapter.SVNRevision, org.tigris.subversion.svnclientadapter.SVNRevision, boolean)
+	 */
+	public ISVNDirEntry[] getList(File path, SVNRevision revision, SVNRevision pegRevision, boolean recurse) 
+            throws SVNClientException {
+        try {
+            notificationHandler.setCommand(ISVNNotifyListener.Command.LS);
+            String target = fileToSVNPath(path, false);
+            String commandLine = "list -r "+revision.toString()+(recurse?"-R":"")+" "+path;
+            notificationHandler.logCommandLine(commandLine);
+			notificationHandler.setBaseDir(new File("."));		
+            return JhlConverter.convert(svnClient.list(target, JhlConverter.convert(revision), JhlConverter.convert(pegRevision), recurse));
+        } catch (ClientException e) {
+            notificationHandler.logException(e);
+            throw new SVNClientException(e);
+        }
+	}	
 	
 	
 	/*
