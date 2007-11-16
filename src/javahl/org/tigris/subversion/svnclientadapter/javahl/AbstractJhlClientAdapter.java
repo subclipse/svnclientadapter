@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.tigris.subversion.javahl.ClientException;
+import org.tigris.subversion.javahl.CopySource;
 import org.tigris.subversion.javahl.Depth;
 import org.tigris.subversion.javahl.ErrorCodes;
 import org.tigris.subversion.javahl.Info;
@@ -680,6 +681,19 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 		String message,
 		SVNRevision revision)
 		throws SVNClientException {
+		copy (srcUrl, destUrl, message, revision, false);
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#copy(org.tigris.subversion.svnclientadapter.SVNUrl, org.tigris.subversion.svnclientadapter.SVNUrl, java.lang.String, org.tigris.subversion.svnclientadapter.SVNRevision)
+	 */
+	public void copy(
+		SVNUrl srcUrl,
+		SVNUrl destUrl,
+		String message,
+		SVNRevision revision,
+		boolean makeParents)
+		throws SVNClientException {
 		try {
         	if (message == null)
         		message = "";
@@ -688,12 +702,13 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 			String dest = destUrl.toString();
 			notificationHandler.logCommandLine("copy -r" + revision.toString() + " " + src + " " + dest);
 			notificationHandler.setBaseDir();
-			svnClient.copy(src, dest, message, JhlConverter.convert(revision));
+			CopySource[] copySources = { new CopySource(src, JhlConverter.convert(revision), JhlConverter.convert(SVNRevision.HEAD)) };
+			svnClient.copy(copySources, dest, message, true, makeParents, false);
 		} catch (ClientException e) {
 			notificationHandler.logException(e);
 			throw new SVNClientException(e);
 		}
-	}
+	}	
 
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#remove(org.tigris.subversion.svnclientadapter.SVNUrl[], java.lang.String)

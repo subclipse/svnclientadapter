@@ -381,6 +381,23 @@ public interface ISVNClientAdapter {
 		throws SVNClientException;
 	
 	/**
+	 * complete server-side copy with option to create intermediate folders;  used to branch & tag
+	 * @param srcUrl
+	 * @param destUrl
+	 * @param message
+	 * @param revision
+	 * @param make parents
+	 * @throws SVNClientException
+	 */
+	public abstract void copy(
+		SVNUrl srcUrl,
+		SVNUrl destUrl,
+		String message,
+		SVNRevision revision,
+		boolean makeParents)
+		throws SVNClientException;	
+	
+	/**
 	 * item is deleted from the repository via an immediate commit.
 	 * @param url
 	 * @param message
