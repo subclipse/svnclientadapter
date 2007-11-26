@@ -21,6 +21,7 @@ package org.tigris.subversion.svnclientadapter.javahl;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -703,7 +704,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 			notificationHandler.logCommandLine("copy -r" + revision.toString() + " " + src + " " + dest);
 			notificationHandler.setBaseDir();
 			CopySource[] copySources = { new CopySource(src, JhlConverter.convert(revision), JhlConverter.convert(SVNRevision.HEAD)) };
-			svnClient.copy(copySources, dest, message, true, makeParents, false);
+			svnClient.copy(copySources, dest, message, true, makeParents);
 		} catch (ClientException e) {
 			notificationHandler.logException(e);
 			throw new SVNClientException(e);
@@ -1355,6 +1356,60 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
     	diff(oldPath, oldPathRevision, newPath, newPathRevision, outFile, recurse, true, false, false);
     }
 
+    private void diffRelative(File oldPath, SVNRevision oldPathRevision,
+                     File newPath, SVNRevision newPathRevision,
+                     File outFile, boolean recurse,	boolean ignoreAncestry, 
+             		 boolean noDiffDeleted, boolean force, File relativeTo) throws SVNClientException {
+        try {
+            notificationHandler.setCommand(ISVNNotifyListener.Command.DIFF);
+                
+            if (oldPath == null)
+                oldPath = new File(".");
+            if (newPath == null)
+                newPath = oldPath;
+            if (oldPathRevision == null)
+                oldPathRevision = SVNRevision.BASE;
+            if (newPathRevision == null)
+                newPathRevision = SVNRevision.WORKING;
+            
+            // we don't want canonical file path (otherwise the complete file name
+            // would be in the patch). This way the user can choose to use a relative
+            // path
+            String oldTarget = fileToSVNPath(oldPath, false);
+            String newTarget = fileToSVNPath(newPath, false);
+            String svnOutFile = fileToSVNPath(outFile, false);
+            String relativeToDir = fileToSVNPath(relativeTo, false);
+            
+            String commandLine = "diff ";
+            if ( (oldPathRevision.getKind() != RevisionKind.base) ||
+                 (newPathRevision.getKind() != RevisionKind.working) )
+            {
+                commandLine += "-r "+oldPathRevision.toString();
+                if (newPathRevision.getKind() != RevisionKind.working)
+                    commandLine+= ":"+newPathRevision.toString();
+                commandLine += " ";         
+            }
+            if (!oldPath.equals(new File(".")))
+                commandLine += "--old "+oldTarget+" ";
+            if (!newPath.equals(oldPath))
+                commandLine += "--new "+newTarget+" ";
+            
+            int depth = Depth.empty;
+            if (recurse)
+            	depth = Depth.infinity;
+            else {
+	            if (oldPath.isFile())
+	            	depth = Depth.files;
+            }
+            
+            notificationHandler.logCommandLine(commandLine);
+			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(new File[]{oldPath,newPath}));
+            svnClient.diff(oldTarget,JhlConverter.convert(oldPathRevision),newTarget,JhlConverter.convert(newPathRevision), relativeToDir, svnOutFile, depth, ignoreAncestry, noDiffDeleted, force);
+        } catch (ClientException e) {
+            notificationHandler.logException(e);
+            throw new SVNClientException(e);            
+        }
+    }
     /* (non-Javadoc)
      * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#diff(java.io.File, org.tigris.subversion.svnclientadapter.SVNRevision, java.io.File, org.tigris.subversion.svnclientadapter.SVNRevision, java.io.File, boolean, boolean, boolean, boolean)
      */
@@ -1445,7 +1500,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
             notificationHandler.logCommandLine(commandLine);
 			notificationHandler.setBaseDir();
 			svnClient.diff(target.toString(), JhlConverter.convert(pegRevision), JhlConverter.convert(startRevision), JhlConverter.convert(endRevision), 
-					outFile.getAbsolutePath(), depth, ignoreAncestry, noDiffDeleted, force);
+					null, outFile.getAbsolutePath(), depth, ignoreAncestry, noDiffDeleted, force);
         } catch (ClientException e) {
             notificationHandler.logException(e);
             throw new SVNClientException(e);            
@@ -2429,4 +2484,35 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 		}
 	}
 	
+	public void createPatch(File[] paths, File relativeToPath, File outFile,
+			boolean recurse) throws SVNClientException {
+		FileOutputStream os = null;
+		try {
+			ArrayList tempFiles = new ArrayList();
+			for (int i = 0; i < paths.length; i++) {
+				File tempFile = File.createTempFile("tempDiff", ".txt");
+				tempFile.deleteOnExit();
+				this.diffRelative(paths[i], SVNRevision.BASE, paths[i], SVNRevision.WORKING,
+						tempFile, recurse, false, false, false,
+						relativeToPath);
+				tempFiles.add(tempFile);
+			}
+			os = new FileOutputStream(outFile);
+			Iterator iter = tempFiles.iterator();
+			while (iter.hasNext()) {
+				File tempFile = (File)iter.next();
+				FileInputStream is = new FileInputStream(tempFile);
+				byte[] buffer = new byte[4096];
+				int bytes_read;
+				while ((bytes_read = is.read(buffer)) != -1)
+					os.write(buffer, 0, bytes_read);				
+				is.close();
+			}
+		} catch (Exception e) {
+			throw new SVNClientException(e);
+		} finally {
+			if (os != null) try {os.close();} catch (IOException e) {}
+		}
+	}
+
 }
