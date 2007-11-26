@@ -997,12 +997,12 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
             notificationHandler.logException(e);
             throw new SVNClientException(e);
         }         
-    } 
-	
+    }
+    
 	/* (non-Javadoc)
-	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getContent(org.tigris.subversion.svnclientadapter.SVNUrl, org.tigris.subversion.svnclientadapter.SVNRevision)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getContent(org.tigris.subversion.svnclientadapter.SVNUrl, org.tigris.subversion.svnclientadapter.SVNRevision, org.tigris.subversion.svnclientadapter.SVNRevision)
 	 */
-	public InputStream getContent(SVNUrl url, SVNRevision revision)
+	public InputStream getContent(SVNUrl url, SVNRevision revision, SVNRevision pegRevision)
 		throws SVNClientException {
 		try {
 			notificationHandler.setCommand(
@@ -1014,13 +1014,21 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
                                 + url.toString());
 			notificationHandler.setBaseDir();                
 			
-			byte[] contents = svnClient.fileContent(url.toString(), JhlConverter.convert(revision), Revision.HEAD);
+			byte[] contents = svnClient.fileContent(url.toString(), JhlConverter.convert(revision), JhlConverter.convert(pegRevision));
 			InputStream input = new ByteArrayInputStream(contents);
 			return input;
 		} catch (ClientException e) {
 			notificationHandler.logException(e);
 			throw new SVNClientException(e);
 		}
+	}    
+	
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getContent(org.tigris.subversion.svnclientadapter.SVNUrl, org.tigris.subversion.svnclientadapter.SVNRevision)
+	 */
+	public InputStream getContent(SVNUrl url, SVNRevision revision)
+	throws SVNClientException {
+		return getContent(url, revision, SVNRevision.HEAD);
 	}
 
 

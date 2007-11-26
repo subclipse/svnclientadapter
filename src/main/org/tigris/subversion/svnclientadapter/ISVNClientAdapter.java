@@ -808,6 +808,17 @@ public interface ISVNClientAdapter {
 	 * get the content of a file
 	 * @param url
 	 * @param revision
+	 * @param peg revision
+	 * @return the input stream with a content of the file
+	 * @throws SVNClientException
+	 */
+	public abstract InputStream getContent(SVNUrl url, SVNRevision revision, SVNRevision pegRevision)
+		throws SVNClientException;    
+    
+	/**
+	 * get the content of a file
+	 * @param url
+	 * @param revision
 	 * @return the input stream with a content of the file
 	 * @throws SVNClientException
 	 */
