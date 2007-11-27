@@ -1675,4 +1675,9 @@ public interface ISVNClientAdapter {
                                      SVNUrl mergeSource)
       throws SVNClientException;
   
+  /**
+   * release the native peer (should not depend on finalize)
+   */
+  public abstract void dispose();
+  
 }

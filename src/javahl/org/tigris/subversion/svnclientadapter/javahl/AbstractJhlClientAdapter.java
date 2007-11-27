@@ -2515,4 +2515,8 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 		}
 	}
 
+	public void dispose() {
+		svnClient.dispose();
+	}
+
 }
