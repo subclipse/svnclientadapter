@@ -42,6 +42,7 @@ import org.tigris.subversion.svnclientadapter.ISVNInfo;
 import org.tigris.subversion.svnclientadapter.ISVNLogMessage;
 import org.tigris.subversion.svnclientadapter.ISVNMergeInfo;
 import org.tigris.subversion.svnclientadapter.ISVNNotifyListener;
+import org.tigris.subversion.svnclientadapter.ISVNProgressListener;
 import org.tigris.subversion.svnclientadapter.ISVNProperty;
 import org.tigris.subversion.svnclientadapter.ISVNStatus;
 import org.tigris.subversion.svnclientadapter.SVNBaseDir;
@@ -1669,6 +1670,7 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 			SVNRevision pegRevision, SVNUrl mergeSource)
 			throws SVNClientException {
 		// TODO Auto-generated method stub
+		notImplementedYet();
 		return null;
 	}
 
@@ -1676,6 +1678,115 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 			SVNRevision pegRevision, SVNUrl mergeSource)
 			throws SVNClientException {
 		// TODO Auto-generated method stub
+		notImplementedYet();
+		return null;
+	}
+
+	public void checkout(SVNUrl moduleName, File destPath,
+			SVNRevision revision, int depth, boolean ignoreExternals,
+			boolean force) throws SVNClientException {
+		// TODO Auto-generated method stub
+		notImplementedYet();
+		
+	}
+
+	public void copy(SVNUrl srcUrl, SVNUrl destUrl, String message,
+			SVNRevision revision, boolean makeParents)
+			throws SVNClientException {
+		// TODO Auto-generated method stub
+		notImplementedYet();
+		
+	}
+
+	public void diff(SVNUrl target, SVNRevision pegRevision,
+			SVNRevision startRevision, SVNRevision endRevision, File outFile,
+			int depth, boolean ignoreAncestry, boolean noDiffDeleted,
+			boolean force) throws SVNClientException {
+		// TODO Auto-generated method stub
+		notImplementedYet();
+		
+	}
+
+	public void diff(SVNUrl target, SVNRevision pegRevision,
+			SVNRevision startRevision, SVNRevision endRevision, File outFile,
+			boolean recurse) throws SVNClientException {
+		// TODO Auto-generated method stub
+		notImplementedYet();
+		
+	}
+
+	public void dispose() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public InputStream getContent(SVNUrl url, SVNRevision revision,
+			SVNRevision pegRevision) throws SVNClientException {
+		// TODO Auto-generated method stub
+		notImplementedYet();
+		return null;
+	}
+
+	public ISVNDirEntry[] getList(SVNUrl url, SVNRevision revision,
+			SVNRevision pegRevision, boolean recurse) throws SVNClientException {
+		// TODO Auto-generated method stub
+		notImplementedYet();
+		return null;
+	}
+
+	public ISVNDirEntry[] getList(File path, SVNRevision revision,
+			SVNRevision pegRevision, boolean recurse) throws SVNClientException {
+		// TODO Auto-generated method stub
+		notImplementedYet();
+		return null;
+	}
+
+	public void merge(SVNUrl path1, SVNRevision revision1, SVNUrl path2,
+			SVNRevision revision2, File localPath, boolean force, int depth,
+			boolean dryRun, boolean ignoreAncestry) throws SVNClientException {
+		// TODO Auto-generated method stub
+		notImplementedYet();
+		
+	}
+
+	public void resolved(File path, int result) throws SVNClientException {
+		// TODO Auto-generated method stub
+		notImplementedYet();
+		
+	}
+
+	public void setProgressListener(ISVNProgressListener progressListener) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void switchToUrl(File path, SVNUrl url, SVNRevision revision,
+			int depth, boolean ignoreExternals, boolean force)
+			throws SVNClientException {
+		// TODO Auto-generated method stub
+		notImplementedYet();
+		
+	}
+
+	public void switchToUrl(File path, SVNUrl url, SVNRevision revision,
+			SVNRevision pegRevision, int depth, boolean ignoreExternals,
+			boolean force) throws SVNClientException {
+		// TODO Auto-generated method stub
+		notImplementedYet();
+		
+	}
+
+	public long update(File path, SVNRevision revision, int depth,
+			boolean ignoreExternals, boolean force) throws SVNClientException {
+		// TODO Auto-generated method stub
+		notImplementedYet();
+		return 0;
+	}
+
+	public long[] update(File[] path, SVNRevision revision, int depth,
+			boolean ignoreExternals, boolean force) throws SVNClientException {
+		// TODO Auto-generated method stub
+		notImplementedYet();
 		return null;
 	}
 
