@@ -281,18 +281,35 @@ public abstract class AbstractClientAdapter implements ISVNClientAdapter {
 	}
 
 	public ISVNLogMessage[] getLogMessagesForRevisions(SVNUrl url,
-			SVNRevision pegRevision, SVNRevisionRange[] range,
-			boolean fetchChangePath, boolean includeMergedRevisions) throws SVNClientException {
+			SVNRevision pegRevision, SVNRevision revisionStart, SVNRevisionRange[] range,
+			boolean fetchChangePath, boolean includeMergedRevisions, long limit) throws SVNClientException {
+		ArrayList logMessages = new ArrayList();
 		if (range == null || range.length == 0) {
 			return new ISVNLogMessage[0];
 		}
-		SVNRevision revisionStart = range[0].getFromRevision();
-		SVNRevision revisionEnd = range[range.length - 1].getToRevision();
+		if (revisionStart == null) revisionStart = range[range.length - 1].getToRevision();
+		SVNRevision revisionEnd = range[0].getFromRevision();		
 		boolean stopOnCopy = false;
-		int limit = 0;
-		ISVNLogMessage[] messages = getLogMessages(url, pegRevision,
-				revisionStart, revisionEnd, stopOnCopy, fetchChangePath, limit, includeMergedRevisions);
-		return applyFilterToLogs(range, messages);
+		ISVNLogMessage[] messages = null;
+		boolean first = true;
+		while (first || (messages.length == limit)) {
+			first = false;
+			messages = getLogMessages(url, pegRevision,
+					revisionStart, revisionEnd, stopOnCopy, fetchChangePath, limit, includeMergedRevisions);
+			ISVNLogMessage[] filteredMessages = applyFilterToLogs(range, messages);
+			for (int i = 0; i < filteredMessages.length; i++)
+				logMessages.add(filteredMessages[i]);
+			if (limit == 0 || logMessages.size() >= limit) break;
+			if (messages.length > 0) {
+				ISVNLogMessage lastMessage = messages[messages.length - 1];
+				long lastMessageNumber = lastMessage.getRevision().getNumber();
+				revisionStart = new SVNRevision.Number(lastMessageNumber + 1); 
+			}
+		}
+		
+		messages = new ISVNLogMessage[logMessages.size()];
+		logMessages.toArray(messages);
+		return messages;
 	}
 
 	private ISVNLogMessage[] applyFilterToLogs(SVNRevisionRange[] range,

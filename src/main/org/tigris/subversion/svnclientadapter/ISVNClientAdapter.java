@@ -765,17 +765,21 @@ public interface ISVNClientAdapter {
      * Retrieve the log messages for an item
      * @param url           url to get the log message for.
      * @param pegRevision   peg revision for URL
+     * @param revisionStart first revision to show
      * @param range         range of revisions to retrieve
      * @param fetchChangePath  returns the paths of the changed items in the
      *                      returned objects
+     * @param limit         limit the number of log messages (if 0 or less no
+     *                      limit)                   
      * @return array of LogMessages
 	 * @throws SVNClientException
      */
     public abstract ISVNLogMessage[] getLogMessagesForRevisions(
             SVNUrl url, 
             SVNRevision pegRevision,
+            SVNRevision revisionStart,
             SVNRevisionRange[] range,
-            boolean fetchChangePath, boolean includeMergedRevisions)
+            boolean fetchChangePath, boolean includeMergedRevisions, long limit)
             throws SVNClientException;
     
     /**
