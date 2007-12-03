@@ -237,12 +237,12 @@ public class SVNRevisionRange implements Comparable, java.io.Serializable
     	long toRev = SVNRevisionRange.getRevisionAsLong(to).longValue();
     	long rev = SVNRevisionRange.getRevisionAsLong(revision).longValue();
     	if (inclusiveFromRev) {
-	    	if (rev >= fromRev && rev <= toRev)
+	    	if (rev >= fromRev && (to.equals(SVNRevision.HEAD) || rev <= toRev))
 	    		return true;
 	    	else
 	    		return false;
     	} else {
-	    	if (rev > fromRev && rev <= toRev)
+	    	if (rev > fromRev && (to.equals(SVNRevision.HEAD) || rev <= toRev))
 	    		return true;
 	    	else
 	    		return false;

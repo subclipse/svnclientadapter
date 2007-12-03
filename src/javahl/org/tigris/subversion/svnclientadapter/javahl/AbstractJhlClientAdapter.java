@@ -2469,6 +2469,12 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 			return JhlConverter.convert(svnClient.getAvailableMerges(fileToSVNPath(path, false),
 					JhlConverter.convert(pegRevision), mergeSource.toString()));
 		} catch (SubversionException e) {
+			if (e instanceof ClientException) {
+				if (((ClientException)e).getAprError() == SVNClientException.UNSUPPORTED_FEATURE) {
+					SVNRevisionRange[] allRevisions = { new SVNRevisionRange(new SVNRevision.Number(0), SVNRevision.HEAD) };
+					return allRevisions;
+				}
+			}
             throw new SVNClientException(e);
 		}
 	}
@@ -2480,6 +2486,12 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 			return JhlConverter.convert(svnClient.getAvailableMerges(url.toString(),
 					JhlConverter.convert(pegRevision), mergeSource.toString()));
 		} catch (SubversionException e) {
+			if (e instanceof ClientException) {
+				if (((ClientException)e).getAprError() == SVNClientException.UNSUPPORTED_FEATURE) {
+					SVNRevisionRange[] allRevisions = { new SVNRevisionRange(new SVNRevision.Number(0), SVNRevision.HEAD) };
+					return allRevisions;
+				}
+			}
             throw new SVNClientException(e);
 		}
 	}
