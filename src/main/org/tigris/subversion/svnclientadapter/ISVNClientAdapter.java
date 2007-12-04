@@ -1453,11 +1453,13 @@ public interface ISVNClientAdapter {
      * @param int           depth
      * @param dryRun        do not update working copy
      * @param ignoreAncestry ignore ancestry when calculating merges
+     * @param recordOnly    just records mergeinfo, does not perform merge
      * @exception SVNClientException
      */
     public abstract void merge(SVNUrl path1, SVNRevision revision1, SVNUrl path2,
                SVNRevision revision2, File localPath, boolean force,
-               int depth, boolean dryRun, boolean ignoreAncestry) throws SVNClientException;        
+               int depth, boolean dryRun, boolean ignoreAncestry,
+               boolean recordOnly) throws SVNClientException;        
     
     /**
      * Lock a working copy item
@@ -1549,11 +1551,13 @@ public interface ISVNClientAdapter {
      * @param depth         how deep to traverse into subdirectories
      * @param ignoreAncestry ignore if files are not related
      * @param dryRun        do not change anything
+     * @param recordOnly    just records mergeinfo, does not perform merge
      * @throws SVNClientException
      */
     public abstract void merge(SVNUrl url, SVNRevision pegRevision, SVNRevisionRange[] revisions,
                File localPath, boolean force, int depth,
-               boolean ignoreAncestry, boolean dryRun) throws SVNClientException;
+               boolean ignoreAncestry, boolean dryRun,
+               boolean recordOnly) throws SVNClientException;
 
     /**
      * Get merge info for <code>path</code> at <code>revision</code>.

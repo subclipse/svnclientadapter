@@ -1843,7 +1843,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
     public void merge(SVNUrl path1, SVNRevision revision1, SVNUrl path2,
             SVNRevision revision2, File localPath, boolean force,
             boolean recurse, boolean dryRun, boolean ignoreAncestry) throws SVNClientException {
-    	merge(path1, revision1, path2, revision2, localPath, force, Depth.infinityOrFiles(recurse), dryRun, ignoreAncestry);
+    	merge(path1, revision1, path2, revision2, localPath, force, Depth.infinityOrFiles(recurse), dryRun, ignoreAncestry, false);
     }
     
     /* (non-Javadoc)
@@ -1851,14 +1851,13 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
      */
     public void merge(SVNUrl path1, SVNRevision revision1, SVNUrl path2,
             SVNRevision revision2, File localPath, boolean force,
-            int depth, boolean dryRun, boolean ignoreAncestry) throws SVNClientException {
+            int depth, boolean dryRun, boolean ignoreAncestry, boolean recordOnly) throws SVNClientException {
     	try {
             notificationHandler.setCommand(ISVNNotifyListener.Command.MERGE);
             
             String target = fileToSVNPath(localPath, false);
             String commandLine = "merge";
             boolean samePath = false;
-            boolean recordOnly = false;
             if (dryRun) {
             	commandLine += " --dry-run";
             }
@@ -2261,13 +2260,12 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
         }                   	
 	}
 
-	public void merge(SVNUrl url, SVNRevision pegRevision, SVNRevisionRange[] revisions, File localPath, boolean force, int depth, boolean ignoreAncestry, boolean dryRun) throws SVNClientException {
+	public void merge(SVNUrl url, SVNRevision pegRevision, SVNRevisionRange[] revisions, File localPath, boolean force, int depth, boolean ignoreAncestry, boolean dryRun, boolean recordOnly) throws SVNClientException {
     	try {
             notificationHandler.setCommand(ISVNNotifyListener.Command.MERGE);
 
             String target = fileToSVNPath(localPath, false);
             String commandLine = "merge";
-            boolean recordOnly = false;
             if (dryRun) {
             	commandLine += " --dry-run";
             }
