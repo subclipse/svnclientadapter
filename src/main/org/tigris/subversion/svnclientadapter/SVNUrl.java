@@ -107,18 +107,18 @@ public class SVNUrl {
         // parse protocol
         int i = parsed.indexOf("://");
         if (i == -1)
-            throw new MalformedURLException("Invalid svn url :"+svnUrl);
+            throw new MalformedURLException("Invalid svn url: "+svnUrl);
         protocol = parsed.substring(0,i).toLowerCase();
         if ((!protocol.equalsIgnoreCase(HTTP_PROTOCOL)) &&
             (!protocol.equalsIgnoreCase(HTTPS_PROTOCOL)) &&
             (!protocol.equalsIgnoreCase(FILE_PROTOCOL)) &&
             (!protocol.equalsIgnoreCase(SVN_PROTOCOL)) &&
             (!protocol.startsWith(SVNSSH_PROTOCOL)) ) {
-            throw new MalformedURLException("Invalid svn url :"+svnUrl);
+            throw new MalformedURLException("Invalid svn url: "+svnUrl);
         }
         parsed = parsed.substring(i+3);
 		if (parsed.length() == 0) {
-			throw new MalformedURLException("Invalid svn url :"+svnUrl);
+			throw new MalformedURLException("Invalid svn url: "+svnUrl);
 		}
 
         // parse host & port        
@@ -130,13 +130,13 @@ public class SVNUrl {
 	        String hostPort = parsed.substring(0,i).toLowerCase();
 	        String[] hostportArray = StringUtils.split(hostPort,':');
 	        if (hostportArray.length == 0) {
-	        	throw new MalformedURLException("Invalid svn url :"+svnUrl);                    
+	        	throw new MalformedURLException("Invalid svn url: "+svnUrl);                    
 	        } else if (hostportArray.length == 2) {
 	            this.host = hostportArray[0];
 	            try {
 	                this.port = Integer.parseInt(hostportArray[1]);
 	            } catch (NumberFormatException e) {
-	                throw new MalformedURLException("Invalid svn url :"+svnUrl);
+	                throw new MalformedURLException("Invalid svn url: "+svnUrl);
 	            }
 	        } else {
 	            this.host = hostportArray[0];
