@@ -1858,6 +1858,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
             String target = fileToSVNPath(localPath, false);
             String commandLine = "merge";
             boolean samePath = false;
+            boolean recordOnly = false;
             if (dryRun) {
             	commandLine += " --dry-run";
             }
@@ -1894,9 +1895,9 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
             	else
             		rev2 = JhlConverter.convert(revision2);
             	RevisionRange[] revisionRanges = { new RevisionRange(rev1, rev2) };
-            	svnClient.merge(path1.toString(), peg, revisionRanges, target, force, depth, ignoreAncestry, dryRun );           	
+            	svnClient.merge(path1.toString(), peg, revisionRanges, target, force, depth, ignoreAncestry, dryRun, recordOnly );           	
             } else
-            	svnClient.merge(path1.toString(), JhlConverter.convert(revision1), path2.toString(), JhlConverter.convert(revision2), target, force, depth, ignoreAncestry, dryRun );
+            	svnClient.merge(path1.toString(), JhlConverter.convert(revision1), path2.toString(), JhlConverter.convert(revision2), target, force, depth, ignoreAncestry, dryRun, recordOnly );
             if (dryRun)
                 notificationHandler.logCompleted("Dry-run merge complete.");
             else
@@ -2266,6 +2267,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 
             String target = fileToSVNPath(localPath, false);
             String commandLine = "merge";
+            boolean recordOnly = false;
             if (dryRun) {
             	commandLine += " --dry-run";
             }
@@ -2288,7 +2290,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
             notificationHandler.setBaseDir(baseDir);
         	Revision peg = JhlConverter.convert(pegRevision);
         	if (peg == null) peg = Revision.HEAD;
-        	svnClient.merge(url.toString(), peg, range, target, force, depth, ignoreAncestry, dryRun);
+        	svnClient.merge(url.toString(), peg, range, target, force, depth, ignoreAncestry, dryRun, recordOnly);
             if (dryRun)
                 notificationHandler.logCompleted("Dry-run merge complete.");
             else
