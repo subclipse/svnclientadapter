@@ -1741,14 +1741,6 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 		return null;
 	}
 
-	public void merge(SVNUrl path1, SVNRevision revision1, SVNUrl path2,
-			SVNRevision revision2, File localPath, boolean force, int depth,
-			boolean dryRun, boolean ignoreAncestry) throws SVNClientException {
-		// TODO Auto-generated method stub
-		notImplementedYet();
-		
-	}
-
 	public void resolved(File path, int result) throws SVNClientException {
 		// TODO Auto-generated method stub
 		notImplementedYet();
@@ -1788,6 +1780,23 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 		// TODO Auto-generated method stub
 		notImplementedYet();
 		return null;
+	}
+
+	public void merge(SVNUrl url, SVNRevision pegRevision,
+			SVNRevisionRange[] revisions, File localPath, boolean force,
+			int depth, boolean ignoreAncestry, boolean dryRun,
+			boolean recordOnly) throws SVNClientException {
+		// TODO Auto-generated method stub
+		notImplementedYet();
+		
+	}
+
+	public void merge(SVNUrl path1, SVNRevision revision1, SVNUrl path2,
+			SVNRevision revision2, File localPath, boolean force, int depth,
+			boolean dryRun, boolean ignoreAncestry, boolean recordOnly)
+			throws SVNClientException {
+		// TODO Auto-generated method stub
+		notImplementedYet();
 	}
 
 }
