@@ -558,20 +558,6 @@ public interface ISVNClientAdapter {
 	 * @param path
 	 * @param revision
      * @param depth
-     * @param ignoreExternals
-     * @param force
-     * @return Returns a long representing the revision. It returns a
-     *         -1 if the revision number is invalid.
-	 * @throws SVNClientException
-	 */
-	public abstract long update(File path, SVNRevision revision, int depth, boolean ignoreExternals, boolean force)
-		throws SVNClientException;
-	
-	/**
-	 * Update a file or a directory
-	 * @param path
-	 * @param revision
-     * @param depth
      * @param setDepth
      * @param ignoreExternals
      * @param force
@@ -598,25 +584,6 @@ public interface ISVNClientAdapter {
 		SVNRevision revision, 
 		boolean recurse,
 		boolean ignoreExternals) 
-    	throws SVNClientException;
-    
-    /**
-     * Updates the directories or files from repository
-     * @param path array of target files.
-     * @param revision the revision number to update.
-     * @param depth  the depth to recursively update.
-     * @param ignoreExternals if externals are ignored during update.
-     * @param force allow unversioned paths that obstruct adds.
-     * @return Returns an array of longs representing the revision. It returns a
-     *         -1 if the revision number is invalid.
-     * @throws SVNClientException
-     */
-    public abstract long[] update(
-    	File[] path, 
-		SVNRevision revision, 
-		int depth,
-		boolean ignoreExternals,
-		boolean force)
     	throws SVNClientException;
     
     /**
@@ -1415,19 +1382,6 @@ public interface ISVNClientAdapter {
      */
     public void switchToUrl(File path, SVNUrl url, SVNRevision revision, boolean recurse) throws SVNClientException;
     
-    /**
-     * Update the working copy to mirror a new URL within the repository.
-     * This behaviour is similar to 'svn update', and is the way to
-     * move a working copy to a branch or tag within the same repository.
-     * @param url
-     * @param path
-     * @param revision
-     * @param depth
-     * @param ignoreExternals
-     * @param force
-     * @throws SVNClientException
-     */
-    public void switchToUrl(File path, SVNUrl url, SVNRevision revision, int depth, boolean ignoreExternals, boolean force) throws SVNClientException;  
     
     /**
      * Update the working copy to mirror a new URL within the repository.
@@ -1444,20 +1398,6 @@ public interface ISVNClientAdapter {
      */
     public void switchToUrl(File path, SVNUrl url, SVNRevision revision, int depth, boolean setDepth, boolean ignoreExternals, boolean force) throws SVNClientException;        
 
-    /**
-     * Update the working copy to mirror a new URL within the repository.
-     * This behaviour is similar to 'svn update', and is the way to
-     * move a working copy to a branch or tag within the same repository.
-     * @param url
-     * @param path
-     * @param revision
-     * @param pegRevision
-     * @param depth
-     * @param ignoreExternals
-     * @param force
-     * @throws SVNClientException
-     */
-    public void switchToUrl(File path, SVNUrl url, SVNRevision revision, SVNRevision pegRevision, int depth, boolean ignoreExternals, boolean force) throws SVNClientException;        
 
     /**
      * Update the working copy to mirror a new URL within the repository.

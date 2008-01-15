@@ -970,15 +970,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 	 */
 	public long update(File path, SVNRevision revision, boolean recurse)
 		throws SVNClientException {
-			return update(path, revision, Depth.unknownOrFiles(recurse), false, true);
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#update(java.io.File, org.tigris.subversion.svnclientadapter.SVNRevision, int, boolean, boolean)
-	 */
-	public long update(File path, SVNRevision revision, int depth, boolean ignoreExternals, boolean force)
-		throws SVNClientException {
-		return update(path, revision, depth, false, ignoreExternals, force);
+			return update(path, revision, Depth.unknownOrFiles(recurse), false, false, true);
 	}
 	
 	/* (non-Javadoc)
@@ -1009,16 +1001,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
     public long[] update(File[] path, SVNRevision revision, boolean recurse, boolean ignoreExternals) 
         throws SVNClientException
 	{
-    	return update(path, revision, Depth.unknownOrFiles(recurse), ignoreExternals, true);
-	}
-    
-    /* (non-Javadoc)
-     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#update(java.io.File[], org.tigris.subversion.svnclientadapter.SVNRevision, int, boolean, boolean)
-     */
-    public long[] update(File[] path, SVNRevision revision, int depth, boolean ignoreExternals, boolean force) 
-        throws SVNClientException
-	{
-		return update(path, revision, depth, false, ignoreExternals, force);
+    	return update(path, revision, Depth.unknownOrFiles(recurse), false, ignoreExternals, true);
 	}
     
     /* (non-Javadoc)
@@ -1842,15 +1825,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
      * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#switchUrl(org.tigris.subversion.svnclientadapter.SVNUrl, java.io.File, org.tigris.subversion.svnclientadapter.SVNRevision, boolean)
      */
     public void switchToUrl(File path, SVNUrl url, SVNRevision revision, boolean recurse) throws SVNClientException {
-    	switchToUrl(path, url, revision, Depth.unknownOrFiles(recurse), false, true);
-    }
-    
-    /*
-     * (non-Javadoc)
-     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#switchUrl(org.tigris.subversion.svnclientadapter.SVNUrl, java.io.File, org.tigris.subversion.svnclientadapter.SVNRevision, int, boolean, boolean)
-     */
-    public void switchToUrl(File path, SVNUrl url, SVNRevision revision, int depth, boolean ignoreExternals, boolean force) throws SVNClientException {
-        switchToUrl(path, url, revision, revision, depth, ignoreExternals, force);
+    	switchToUrl(path, url, revision, Depth.unknownOrFiles(recurse), false, false, true);
     }
     
     /*
@@ -1860,14 +1835,6 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
     public void switchToUrl(File path, SVNUrl url, SVNRevision revision, int depth, boolean setDepth, boolean ignoreExternals, boolean force) throws SVNClientException {
         switchToUrl(path, url, revision, revision, depth, setDepth, ignoreExternals, force);
     }    
-    
-    /*
-     * (non-Javadoc)
-     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#switchUrl(org.tigris.subversion.svnclientadapter.SVNUrl, java.io.File, org.tigris.subversion.svnclientadapter.SVNRevision, org.tigris.subversion.svnclientadapter.SVNRevision, int, boolean, boolean)
-     */
-    public void switchToUrl(File path, SVNUrl url, SVNRevision revision, SVNRevision pegRevision, int depth, boolean ignoreExternals, boolean force) throws SVNClientException {
-        switchToUrl(path, url, revision, pegRevision, depth, false, ignoreExternals, force);
-    } 
     
     /*
      * (non-Javadoc)
