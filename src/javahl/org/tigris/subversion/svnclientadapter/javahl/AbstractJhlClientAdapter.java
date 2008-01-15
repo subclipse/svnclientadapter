@@ -654,6 +654,31 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 			throw new SVNClientException(e);
 		}
 	}
+	
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#copy(java.io.File, org.tigris.subversion.svnclientadapter.SVNUrl, java.lang.String)
+	 */
+	public void copy(File[] srcPaths, SVNUrl destUrl, String message, boolean makeParents)
+		throws SVNClientException {
+		try {
+        	if (message == null)
+        		message = "";
+			notificationHandler.setCommand(ISVNNotifyListener.Command.COPY);
+			CopySource[] copySources = new CopySource[srcPaths.length];
+			for (int i = 0; i < srcPaths.length; i++) 
+		//		copySources[i] = new CopySource(fileToSVNPath(srcPaths[i], false), JhlConverter.convert(SVNRevision.WORKING), JhlConverter.convert(SVNRevision.HEAD));
+				copySources[i] = new CopySource(fileToSVNPath(srcPaths[i], false), Revision.WORKING, Revision.HEAD);	
+			String dest = destUrl.toString();
+			if (srcPaths.length == 1) notificationHandler.logCommandLine("copy " + srcPaths[0] + " " + dest);
+			else notificationHandler.logCommandLine("copy " + srcPaths + " " + dest);
+//			notificationHandler.setBaseDir();
+			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(srcPaths[0]));
+			svnClient.copy(copySources, dest, message, true, makeParents);
+		} catch (ClientException e) {
+			notificationHandler.logException(e);
+			throw new SVNClientException(e);
+		}
+	}	
 
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#copy(org.tigris.subversion.svnclientadapter.SVNUrl, java.io.File, org.tigris.subversion.svnclientadapter.SVNRevision)
@@ -695,21 +720,35 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 		SVNRevision revision,
 		boolean makeParents)
 		throws SVNClientException {
+		copy(new SVNUrl[] { srcUrl }, destUrl, message, revision, makeParents);
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#copy(org.tigris.subversion.svnclientadapter.SVNUrl[], org.tigris.subversion.svnclientadapter.SVNUrl, java.lang.String, org.tigris.subversion.svnclientadapter.SVNRevision)
+	 */
+	public void copy(
+		SVNUrl[] srcUrls,
+		SVNUrl destUrl,
+		String message,
+		SVNRevision revision,
+		boolean makeParents)
+		throws SVNClientException {
 		try {
         	if (message == null)
         		message = "";
 			notificationHandler.setCommand(ISVNNotifyListener.Command.COPY);
-			String src = srcUrl.toString();
+			CopySource[] copySources = new CopySource[srcUrls.length];
+			for (int i = 0; i < srcUrls.length; i++) copySources[i] = new CopySource(srcUrls[i].toString(), JhlConverter.convert(revision), JhlConverter.convert(SVNRevision.HEAD));
 			String dest = destUrl.toString();
-			notificationHandler.logCommandLine("copy -r" + revision.toString() + " " + src + " " + dest);
+			if (srcUrls.length == 1) notificationHandler.logCommandLine("copy -r" + revision.toString() + " " + srcUrls[0] + " " + dest);
+			else notificationHandler.logCommandLine("copy -r" + revision.toString() + " " + srcUrls + " " + dest);
 			notificationHandler.setBaseDir();
-			CopySource[] copySources = { new CopySource(src, JhlConverter.convert(revision), JhlConverter.convert(SVNRevision.HEAD)) };
 			svnClient.copy(copySources, dest, message, true, makeParents);
 		} catch (ClientException e) {
 			notificationHandler.logException(e);
 			throw new SVNClientException(e);
 		}
-	}	
+	}		
 
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#remove(org.tigris.subversion.svnclientadapter.SVNUrl[], java.lang.String)

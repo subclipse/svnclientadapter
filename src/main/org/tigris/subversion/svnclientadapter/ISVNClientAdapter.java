@@ -356,6 +356,17 @@ public interface ISVNClientAdapter {
 		throws SVNClientException;
 	
 	/**
+	 * immediately commit a copy of WC to URL
+	 * @param srcPaths
+	 * @param destUrl
+	 * @param message
+	 * @param makeParents
+	 * @throws SVNClientException
+	 */
+	public abstract void copy(File[] srcPaths, SVNUrl destUrl, String message, boolean makeParents)
+		throws SVNClientException;	
+	
+	/**
 	 * check out URL into WC, schedule for addition
 	 * @param srcUrl
 	 * @param destPath
@@ -395,7 +406,24 @@ public interface ISVNClientAdapter {
 		String message,
 		SVNRevision revision,
 		boolean makeParents)
-		throws SVNClientException;	
+		throws SVNClientException;
+	
+	/**
+	 * complete server-side copy with option to create intermediate folders;  used to branch & tag
+	 * @param srcUrl
+	 * @param destUrl
+	 * @param message
+	 * @param revision
+	 * @param make parents
+	 * @throws SVNClientException
+	 */
+	public abstract void copy(
+		SVNUrl[] srcUrls,
+		SVNUrl destUrl,
+		String message,
+		SVNRevision revision,
+		boolean makeParents)
+		throws SVNClientException;		
 	
 	/**
 	 * item is deleted from the repository via an immediate commit.
