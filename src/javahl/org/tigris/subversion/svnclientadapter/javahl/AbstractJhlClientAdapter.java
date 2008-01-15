@@ -972,7 +972,8 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
             if (force) commandLine.append(" --force");            
             notificationHandler.logCommandLine(commandLine.toString());
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
-			return svnClient.update(target, JhlConverter.convert(revision), depth,
+            boolean setDepth = false;
+			return svnClient.update(target, JhlConverter.convert(revision), depth, setDepth,
 					ignoreExternals, force);
 		} catch (ClientException e) {
 			notificationHandler.logException(e);
@@ -1011,7 +1012,8 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
             notificationHandler.logCommandLine(commandLine.toString());
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
 			notificationHandler.holdStats();
-			long[] rtnCode =  svnClient.update(targets, JhlConverter.convert(revision), depth, ignoreExternals, force);
+            boolean setDepth = false;
+			long[] rtnCode =  svnClient.update(targets, JhlConverter.convert(revision), depth, setDepth, ignoreExternals, force);
 			notificationHandler.releaseStats();
 			return rtnCode;
 		} catch (ClientException e) {
@@ -1839,7 +1841,8 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
             notificationHandler.setBaseDir(baseDir);
             Revision rev = JhlConverter.convert(revision);
             Revision pegRev = JhlConverter.convert(pegRevision);
-            svnClient.doSwitch(target, url.toString(),rev,pegRev,depth, ignoreExternals, force);
+            boolean setDepth = false;
+            svnClient.doSwitch(target, url.toString(),rev,pegRev,depth, setDepth, ignoreExternals, force);
            
         } catch (ClientException e) {
             notificationHandler.logException(e);
