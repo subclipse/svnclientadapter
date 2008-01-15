@@ -660,19 +660,31 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 	 */
 	public void copy(File[] srcPaths, SVNUrl destUrl, String message, boolean makeParents)
 		throws SVNClientException {
+		
+		// This is a hack for now since copy of multiple isolated WC's is currently not working.
+		if (srcPaths.length > 1) {
+			mkdir(destUrl, makeParents, message);
+			for (int i = 0; i < srcPaths.length; i++) {
+				File[] file = { srcPaths[i] };
+				copy(file, destUrl, message, makeParents);
+			}
+			return;
+		}
+		
 		try {
         	if (message == null)
         		message = "";
 			notificationHandler.setCommand(ISVNNotifyListener.Command.COPY);
 			CopySource[] copySources = new CopySource[srcPaths.length];
 			for (int i = 0; i < srcPaths.length; i++) 
-		//		copySources[i] = new CopySource(fileToSVNPath(srcPaths[i], false), JhlConverter.convert(SVNRevision.WORKING), JhlConverter.convert(SVNRevision.HEAD));
 				copySources[i] = new CopySource(fileToSVNPath(srcPaths[i], false), Revision.WORKING, Revision.HEAD);	
 			String dest = destUrl.toString();
-			if (srcPaths.length == 1) notificationHandler.logCommandLine("copy " + srcPaths[0] + " " + dest);
-			else notificationHandler.logCommandLine("copy " + srcPaths + " " + dest);
-//			notificationHandler.setBaseDir();
-			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(srcPaths[0]));
+			StringBuffer commandLine = new StringBuffer("copy");
+			for (int i = 0; i < srcPaths.length; i++)
+				commandLine.append(" " + fileToSVNPath(srcPaths[i], false));
+			commandLine.append(" " + dest);
+			notificationHandler.logCommandLine(commandLine.toString());
+			notificationHandler.setBaseDir();
 			svnClient.copy(copySources, dest, message, true, makeParents);
 		} catch (ClientException e) {
 			notificationHandler.logException(e);
@@ -740,8 +752,11 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 			CopySource[] copySources = new CopySource[srcUrls.length];
 			for (int i = 0; i < srcUrls.length; i++) copySources[i] = new CopySource(srcUrls[i].toString(), JhlConverter.convert(revision), JhlConverter.convert(SVNRevision.HEAD));
 			String dest = destUrl.toString();
-			if (srcUrls.length == 1) notificationHandler.logCommandLine("copy -r" + revision.toString() + " " + srcUrls[0] + " " + dest);
-			else notificationHandler.logCommandLine("copy -r" + revision.toString() + " " + srcUrls + " " + dest);
+			StringBuffer commandLine = new StringBuffer("copy -r" + revision.toString());
+			for (int i = 0; i < srcUrls.length; i++)
+				commandLine.append(" " + srcUrls[i]);
+			commandLine.append(" " + dest);
+			notificationHandler.logCommandLine(commandLine.toString());
 			notificationHandler.setBaseDir();
 			svnClient.copy(copySources, dest, message, true, makeParents);
 		} catch (ClientException e) {
