@@ -1812,4 +1812,34 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 		notImplementedYet();
 	}
 
+	public void switchToUrl(File path, SVNUrl url, SVNRevision revision,
+			int depth, boolean setDepth, boolean ignoreExternals, boolean force)
+			throws SVNClientException {
+		// TODO Auto-generated method stub
+		notImplementedYet();		
+	}
+
+	public void switchToUrl(File path, SVNUrl url, SVNRevision revision,
+			SVNRevision pegRevision, int depth, boolean setDepth,
+			boolean ignoreExternals, boolean force) throws SVNClientException {
+		// TODO Auto-generated method stub
+		notImplementedYet();		
+	}
+
+	public long update(File path, SVNRevision revision, int depth,
+			boolean setDepth, boolean ignoreExternals, boolean force)
+			throws SVNClientException {
+		// TODO Auto-generated method stub
+		notImplementedYet();
+		return 0;
+	}
+
+	public long[] update(File[] path, SVNRevision revision, int depth,
+			boolean setDepth, boolean ignoreExternals, boolean force)
+			throws SVNClientException {
+		// TODO Auto-generated method stub
+		notImplementedYet();
+		return null;
+	}
+
 }
