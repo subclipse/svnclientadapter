@@ -1458,7 +1458,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
             
             notificationHandler.logCommandLine(commandLine);
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(new File[]{oldPath,newPath}));
-            svnClient.diff(oldTarget,JhlConverter.convert(oldPathRevision),newTarget,JhlConverter.convert(newPathRevision), relativeToDir, svnOutFile, depth, ignoreAncestry, noDiffDeleted, force);
+            svnClient.diff(oldTarget,JhlConverter.convert(oldPathRevision),newTarget,JhlConverter.convert(newPathRevision), relativeToDir, svnOutFile, depth, null, ignoreAncestry, noDiffDeleted, force);
         } catch (ClientException e) {
             notificationHandler.logException(e);
             throw new SVNClientException(e);            
@@ -1554,7 +1554,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
             notificationHandler.logCommandLine(commandLine);
 			notificationHandler.setBaseDir();
 			svnClient.diff(target.toString(), JhlConverter.convert(pegRevision), JhlConverter.convert(startRevision), JhlConverter.convert(endRevision), 
-					null, outFile.getAbsolutePath(), depth, ignoreAncestry, noDiffDeleted, force);
+					null, outFile.getAbsolutePath(), depth, null, ignoreAncestry, noDiffDeleted, force);
         } catch (ClientException e) {
             notificationHandler.logException(e);
             throw new SVNClientException(e);            
@@ -2429,7 +2429,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
             notificationHandler.logCommandLine(commandLine);
 			notificationHandler.setBaseDir();
 			JhlDiffSummaryReceiver callback = new JhlDiffSummaryReceiver();
-			svnClient.diffSummarize(target1, JhlConverter.convert(revision1), target2, JhlConverter.convert(revision2), depth, ignoreAncestry, callback);
+			svnClient.diffSummarize(target1, JhlConverter.convert(revision1), target2, JhlConverter.convert(revision2), depth, null, ignoreAncestry, callback);
 			return callback.getDiffSummary();
         } catch (ClientException e) {
             notificationHandler.logException(e);
@@ -2460,7 +2460,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 			notificationHandler.setBaseDir();
 			JhlDiffSummaryReceiver callback = new JhlDiffSummaryReceiver();
 			svnClient.diffSummarize(target, JhlConverter.convert(pegRevision), JhlConverter.convert(startRevision), JhlConverter.convert(endRevision), 
-					depth, ignoreAncestry, callback);
+					depth, null, ignoreAncestry, callback);
 			return callback.getDiffSummary();
         } catch (ClientException e) {
             notificationHandler.logException(e);
