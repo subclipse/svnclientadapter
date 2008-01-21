@@ -498,7 +498,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
                     depth,        
                     contactServer,      // If update is set, contact the repository and augment the status structures with information about out-of-dateness     
 					getAll,getAll,		// retrieve all entries; otherwise, retrieve only "interesting" entries (local mods and/or out-of-date).
-					ignoreExternals, callback);
+					ignoreExternals, null, callback);
 			return processFolderStatuses(processExternalStatuses(JhlConverter.convert(
 					callback.getStatusArray())), getAll, contactServer);  // if yes the svn:externals will be ignored
 		} catch (ClientException e) {
