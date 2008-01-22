@@ -1494,7 +1494,27 @@ public interface ISVNClientAdapter {
     public abstract void merge(SVNUrl path1, SVNRevision revision1, SVNUrl path2,
                SVNRevision revision2, File localPath, boolean force,
                int depth, boolean dryRun, boolean ignoreAncestry,
-               boolean recordOnly) throws SVNClientException;        
+               boolean recordOnly) throws SVNClientException;   
+
+    /**
+     * Perform a reintegration merge of path into localPath.
+     * localPath must be a single-revision, infinite depth,
+     * pristine, unswitched working copy -- in other words, it must
+     * reflect a single revision tree, the "target".  The mergeinfo on
+     * path must reflect that all of the target has been merged into it.
+     * Then this behaves like a merge from the target's URL to the
+     * localPath.
+     *
+     * The depth of the merge is always infinity.
+     * @param path          path or url
+     * @param pegRevision   revision to interpret path
+     * @param localPath     target local path
+     * @param force         overwrite local changes
+     * @param dryRun        do not update working copy
+     * @exception SVNClientException
+     */    
+    public abstract void mergeReintegrate(SVNUrl path, SVNRevision pegRevision,
+    		   File localPath, boolean force, boolean dryRun) throws SVNClientException;
     
     /**
      * Lock a working copy item

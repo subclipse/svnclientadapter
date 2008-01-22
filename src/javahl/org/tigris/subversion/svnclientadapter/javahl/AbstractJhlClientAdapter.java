@@ -1965,7 +1965,47 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
             svnClientException.setAprError(e.getAprError());
             throw svnClientException;          
         }        
-    }    
+    }
+    
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#mergeReintegrate(org.tigris.subversion.svnclientadapter.SVNUrl, org.tigris.subversion.svnclientadapter.SVNRevision, java.io.File, boolean, boolean)
+     */
+    public void mergeReintegrate(SVNUrl path, SVNRevision pegRevision,
+            File localPath, boolean force, boolean dryRun) throws SVNClientException {
+       	try {
+            notificationHandler.setCommand(ISVNNotifyListener.Command.MERGE);
+            
+            String target = fileToSVNPath(localPath, false);
+            String commandLine = "merge -reintegrate";
+            if (dryRun) {
+            	commandLine += " --dry-run";
+            }
+            if (force) {
+            	commandLine += " --force";
+            }
+            commandLine += " " + path + " " + target;
+            notificationHandler.logCommandLine(commandLine);
+            File baseDir = SVNBaseDir.getBaseDir(localPath);
+            notificationHandler.setBaseDir(baseDir);
+
+        	Revision peg = JhlConverter.convert(pegRevision);
+        	if (peg == null) peg = Revision.HEAD;
+            svnClient.mergeReintegrate(path.toString(), peg, target, force, dryRun);
+            if (dryRun)
+                notificationHandler.logCompleted("Dry-run merge complete.");
+            else
+                notificationHandler.logCompleted("Merge complete.");
+        } catch (ClientException e) {
+            notificationHandler.logException(e);
+            if (dryRun)
+                notificationHandler.logCompleted("Dry-run merge completed abnormally.");
+            else
+                notificationHandler.logCompleted("Merge completed abnormally.");
+            SVNClientException svnClientException = new SVNClientException(e);
+            svnClientException.setAprError(e.getAprError());
+            throw svnClientException;          
+        }           	
+    }
     
     /* (non-Javadoc)
      * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#addPasswordCallback(org.tigris.subversion.svnclientadapter.ISVNPromptUserPassword)
