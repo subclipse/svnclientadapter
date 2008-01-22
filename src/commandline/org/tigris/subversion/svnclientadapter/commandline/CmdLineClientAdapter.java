@@ -1812,4 +1812,11 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 		return null;
 	}
 
+	public void mergeReintegrate(SVNUrl path, SVNRevision pegRevision,
+			File localPath, boolean force, boolean dryRun)
+			throws SVNClientException {
+		// TODO Auto-generated method stub
+		notImplementedYet();
+	}
+
 }
