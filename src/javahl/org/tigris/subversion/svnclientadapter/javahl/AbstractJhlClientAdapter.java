@@ -656,9 +656,9 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 	}
 	
 	/* (non-Javadoc)
-	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#copy(java.io.File, org.tigris.subversion.svnclientadapter.SVNUrl, java.lang.String)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#copy(java.io.File[], org.tigris.subversion.svnclientadapter.SVNUrl, java.lang.String, boolean, boolean)
 	 */
-	public void copy(File[] srcPaths, SVNUrl destUrl, String message, boolean makeParents)
+	public void copy(File[] srcPaths, SVNUrl destUrl, String message, boolean copyAsChild, boolean makeParents)
 		throws SVNClientException {
 		
 		// This is a hack for now since copy of multiple isolated WC's is currently not working.
@@ -685,11 +685,19 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 			commandLine.append(" " + dest);
 			notificationHandler.logCommandLine(commandLine.toString());
 			notificationHandler.setBaseDir();
-			svnClient.copy(copySources, dest, message, true, makeParents);
+			svnClient.copy(copySources, dest, message, copyAsChild, makeParents);
 		} catch (ClientException e) {
 			notificationHandler.logException(e);
 			throw new SVNClientException(e);
 		}
+	}		
+	
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#copy(java.io.File[], org.tigris.subversion.svnclientadapter.SVNUrl, java.lang.String, boolean)
+	 */
+	public void copy(File[] srcPaths, SVNUrl destUrl, String message, boolean makeParents)
+		throws SVNClientException {		
+		copy (srcPaths, destUrl, message, true, makeParents);
 	}	
 
 	/* (non-Javadoc)
@@ -758,7 +766,8 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 			commandLine.append(" " + dest);
 			notificationHandler.logCommandLine(commandLine.toString());
 			notificationHandler.setBaseDir();
-			svnClient.copy(copySources, dest, message, true, makeParents);
+			boolean copyAsChild = copySources.length > 1;
+			svnClient.copy(copySources, dest, message, copyAsChild, makeParents);
 		} catch (ClientException e) {
 			notificationHandler.logException(e);
 			throw new SVNClientException(e);

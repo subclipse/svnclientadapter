@@ -364,7 +364,19 @@ public interface ISVNClientAdapter {
 	 * @throws SVNClientException
 	 */
 	public abstract void copy(File[] srcPaths, SVNUrl destUrl, String message, boolean makeParents)
-		throws SVNClientException;	
+		throws SVNClientException;
+	
+	/**
+	 * immediately commit a copy of WC to URL
+	 * @param srcPaths
+	 * @param destUrl
+	 * @param message
+	 * @param copyAsChild
+	 * @param makeParents
+	 * @throws SVNClientException
+	 */
+	public abstract void copy(File[] srcPaths, SVNUrl destUrl, String message, boolean copyAsChild, boolean makeParents)
+		throws SVNClientException;		
 	
 	/**
 	 * check out URL into WC, schedule for addition
