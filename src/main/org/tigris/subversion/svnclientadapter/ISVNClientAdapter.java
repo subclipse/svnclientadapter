@@ -360,17 +360,6 @@ public interface ISVNClientAdapter {
 	 * @param srcPaths
 	 * @param destUrl
 	 * @param message
-	 * @param makeParents
-	 * @throws SVNClientException
-	 */
-	public abstract void copy(File[] srcPaths, SVNUrl destUrl, String message, boolean makeParents)
-		throws SVNClientException;
-	
-	/**
-	 * immediately commit a copy of WC to URL
-	 * @param srcPaths
-	 * @param destUrl
-	 * @param message
 	 * @param copyAsChild
 	 * @param makeParents
 	 * @throws SVNClientException

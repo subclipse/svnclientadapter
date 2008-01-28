@@ -666,7 +666,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 			mkdir(destUrl, makeParents, message);
 			for (int i = 0; i < srcPaths.length; i++) {
 				File[] file = { srcPaths[i] };
-				copy(file, destUrl, message, makeParents);
+				copy(file, destUrl, message, copyAsChild, makeParents);
 			}
 			return;
 		}
@@ -692,14 +692,6 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 		}
 	}		
 	
-	/* (non-Javadoc)
-	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#copy(java.io.File[], org.tigris.subversion.svnclientadapter.SVNUrl, java.lang.String, boolean)
-	 */
-	public void copy(File[] srcPaths, SVNUrl destUrl, String message, boolean makeParents)
-		throws SVNClientException {		
-		copy (srcPaths, destUrl, message, true, makeParents);
-	}	
-
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#copy(org.tigris.subversion.svnclientadapter.SVNUrl, java.io.File, org.tigris.subversion.svnclientadapter.SVNRevision)
 	 */
