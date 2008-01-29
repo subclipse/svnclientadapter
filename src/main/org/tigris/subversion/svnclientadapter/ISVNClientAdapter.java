@@ -415,6 +415,7 @@ public interface ISVNClientAdapter {
 	 * @param destUrl
 	 * @param message
 	 * @param revision
+	 * @param copyAsChild
 	 * @param make parents
 	 * @throws SVNClientException
 	 */
@@ -423,6 +424,7 @@ public interface ISVNClientAdapter {
 		SVNUrl destUrl,
 		String message,
 		SVNRevision revision,
+		boolean copyAsChild,
 		boolean makeParents)
 		throws SVNClientException;		
 	
