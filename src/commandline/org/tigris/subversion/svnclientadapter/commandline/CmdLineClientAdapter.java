@@ -1819,4 +1819,10 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 		notImplementedYet();
 	}
 
+	public void copy(SVNUrl srcUrl, File destPath, SVNRevision revision,
+			boolean copyAsChild, boolean makeParents) throws SVNClientException {
+		// TODO Auto-generated method stub
+		notImplementedYet();
+	}
+
 }
