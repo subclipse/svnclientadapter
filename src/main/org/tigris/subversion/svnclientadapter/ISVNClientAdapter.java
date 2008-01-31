@@ -378,6 +378,18 @@ public interface ISVNClientAdapter {
 		throws SVNClientException;
 	
 	/**
+	 * check out URL into WC, schedule for addition
+	 * @param srcUrl
+	 * @param destPath
+	 * @param revision
+	 * @param boolean
+	 * @param boolean
+	 * @throws SVNClientException
+	 */
+	public abstract void copy(SVNUrl srcUrl, File destPath, SVNRevision revision, boolean copyAsChild, boolean makeParents)
+		throws SVNClientException;	
+	
+	/**
 	 * complete server-side copy;  used to branch & tag
 	 * @param srcUrl
 	 * @param destUrl
