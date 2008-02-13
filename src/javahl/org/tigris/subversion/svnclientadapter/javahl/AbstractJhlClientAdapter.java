@@ -36,7 +36,7 @@ import org.tigris.subversion.javahl.Depth;
 import org.tigris.subversion.javahl.ErrorCodes;
 import org.tigris.subversion.javahl.Info;
 import org.tigris.subversion.javahl.Info2;
-import org.tigris.subversion.javahl.MergeInfo;
+import org.tigris.subversion.javahl.Mergeinfo;
 import org.tigris.subversion.javahl.PromptUserPassword;
 import org.tigris.subversion.javahl.PropertyData;
 import org.tigris.subversion.javahl.Revision;
@@ -2436,7 +2436,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 
 	private ISVNMergeInfo getMergeInfo(String path, Revision revision) throws SVNClientException {
         try {
-        	MergeInfo info = svnClient.getMergeInfo(path, revision);
+        	Mergeinfo info = svnClient.getMergeinfo(path, revision);
         	if (info == null) return null;
         	return new JhlMergeInfo(info);
         } catch (SubversionException e) {

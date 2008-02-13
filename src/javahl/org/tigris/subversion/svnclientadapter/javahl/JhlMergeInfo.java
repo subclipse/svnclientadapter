@@ -18,39 +18,37 @@
  ******************************************************************************/
 package org.tigris.subversion.svnclientadapter.javahl;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.tigris.subversion.javahl.MergeInfo;
+import org.tigris.subversion.javahl.Mergeinfo;
 import org.tigris.subversion.javahl.RevisionRange;
-import org.tigris.subversion.javahl.SubversionException;
 import org.tigris.subversion.svnclientadapter.ISVNMergeInfo;
 import org.tigris.subversion.svnclientadapter.SVNRevisionRange;
 
 public class JhlMergeInfo implements ISVNMergeInfo {
 	
-	MergeInfo info;
+	Mergeinfo info;
 	
 	public JhlMergeInfo() {
 		super();
-		info = new MergeInfo();
+		info = new Mergeinfo();
 	}
 
-	public JhlMergeInfo(MergeInfo info) {
+	public JhlMergeInfo(Mergeinfo info) {
 		super();
 		this.info = info;
 	}
 
 	public void addRevisionRange(String path, SVNRevisionRange range) {
 		if (info == null)
-			info = new MergeInfo();
+			info = new Mergeinfo();
 		info.addRevisionRange(path, JhlConverter.convert(range));
 	}
 
 	public void addRevisions(String path, SVNRevisionRange[] range) {
 		if (info == null)
-			info = new MergeInfo();
+			info = new Mergeinfo();
 		info.addRevisions(path, JhlConverter.convert(range));
 	}
 
@@ -81,8 +79,8 @@ public class JhlMergeInfo implements ISVNMergeInfo {
 
 	public void loadFromMergeInfoProperty(String mergeInfo) {
 		if (info == null)
-			info = new MergeInfo();
-		info.loadFromMergeInfoProperty(mergeInfo);
+			info = new Mergeinfo();
+		info.loadFromMergeinfoProperty(mergeInfo);
 	}
 
 }
