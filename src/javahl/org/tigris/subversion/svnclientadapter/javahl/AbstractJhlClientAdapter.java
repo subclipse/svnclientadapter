@@ -1716,11 +1716,11 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 			case ISVNConflictResolver.Choice.chooseBase:
 				commandLine += "--accept=base ";
 				break;
-			case ISVNConflictResolver.Choice.chooseTheirs:
-				commandLine += "--accept=theirs ";
+			case ISVNConflictResolver.Choice.chooseTheirsFull:
+				commandLine += "--accept=theirs-full ";
 				break;
-			case ISVNConflictResolver.Choice.chooseMine:
-				commandLine += "--accept=mine ";
+			case ISVNConflictResolver.Choice.chooseMineFull:
+				commandLine += "--accept=mine-full ";
 				break;
 			default:
 				break;

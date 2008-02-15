@@ -29,18 +29,30 @@ public interface ISVNConflictResolver {
         /**
          * User chooses the repository file.
          */
-        public static final int chooseTheirs = 2;
+        public static final int chooseTheirsFull = 2;
 
         /**
          * User chooses own version of file.
          */
-        public static final int chooseMine = 3;
+        public static final int chooseMineFull = 3;
 
         /**
-         * User chooses the merged-file (which she may have manually
-         * edited).
+         * Resolve the conflict by choosing the incoming (repository)
+         * version of the object (for conflicted hunks only).
          */
-        public static final int chooseMerged = 4;
+        public static final int chooseTheirs = 4;
+
+        /**
+         * Resolve the conflict by choosing own (local) version of the
+         * object (for conflicted hunks only).
+         */
+        public static final int chooseMine = 5;
+
+        /**
+         * Resolve the conflict by choosing the merged object
+         * (potentially manually edited).
+         */
+        public static final int chooseMerged = 6;
     }
 
 }
