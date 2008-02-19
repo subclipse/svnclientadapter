@@ -45,8 +45,10 @@ public class JhlClientAdapter extends AbstractJhlClientAdapter {
         svnClient = new SVNClient();
         svnAdmin = new SVNAdmin();
         notificationHandler = new JhlNotificationHandler();
+        progressListener = new JhlProgressListener();
         svnClient.notification2(notificationHandler);
         svnClient.setPrompt(new DefaultPromptUserPassword());
+        svnClient.setProgressListener(progressListener);
     }
 
     /**

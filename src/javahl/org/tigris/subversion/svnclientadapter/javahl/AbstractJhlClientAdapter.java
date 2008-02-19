@@ -2454,11 +2454,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 	}
 	
 	public void setProgressListener(ISVNProgressListener listener) {
-		if (listener == null)
-			progressListener = null;
-		else
-			progressListener = new JhlProgressListener(listener);
-		svnClient.setProgressListener(progressListener);
+		progressListener.setWorker(listener);
 	}
 
 	private SVNDiffSummary[] diffSummarize(String target1, SVNRevision revision1,

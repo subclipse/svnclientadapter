@@ -8,13 +8,17 @@ import org.tigris.subversion.svnclientadapter.SVNProgressEvent;
 public class JhlProgressListener implements ProgressListener {
 	ISVNProgressListener worker;
 	
-	public JhlProgressListener(ISVNProgressListener worker) {
+	public JhlProgressListener() {
 		super();
-		this.worker = worker;
 	}
 
 	public void onProgress(ProgressEvent event) {
-		worker.onProgress(new SVNProgressEvent(event.getProgress(), event.getTotal()));
+		if (worker != null )
+			worker.onProgress(new SVNProgressEvent(event.getProgress(), event.getTotal()));
+	}
+	
+	public void setWorker(ISVNProgressListener worker) {
+		this.worker = worker;
 	}
 
 }
