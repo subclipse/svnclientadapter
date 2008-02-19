@@ -1667,6 +1667,9 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
             svnClient.blame(target, Revision.HEAD, JhlConverter.convert(revisionStart), JhlConverter.convert(revisionEnd), ignoreMimeType, includeMergedRevisions,  annotations);
             return annotations;
         } catch (ClientException e) { 
+        	if (includeMergedRevisions && ((ClientException)e).getAprError() == SVNClientException.UNSUPPORTED_FEATURE) {
+        		return annotate(target, revisionStart, revisionEnd, ignoreMimeType, false);
+        	}
             notificationHandler.logException(e);
             throw new SVNClientException(e);
         }
