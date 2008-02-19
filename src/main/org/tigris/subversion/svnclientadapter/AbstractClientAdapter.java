@@ -289,7 +289,7 @@ public abstract class AbstractClientAdapter implements ISVNClientAdapter {
 		}
 		if (revisionStart == null) revisionStart = range[range.length - 1].getToRevision();
 		SVNRevision revisionEnd = range[0].getFromRevision();		
-		boolean stopOnCopy = false;
+		boolean stopOnCopy = true;
 		ISVNLogMessage[] messages = null;
 		boolean first = true;
 		while (first || (messages.length == limit)) {
