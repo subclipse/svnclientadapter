@@ -2002,7 +2002,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 
         	Revision peg = JhlConverter.convert(pegRevision);
         	if (peg == null) peg = Revision.HEAD;
-            svnClient.mergeReintegrate(path.toString(), peg, target, force, dryRun);
+            svnClient.mergeReintegrate(path.toString(), peg, target, dryRun);
             if (dryRun)
                 notificationHandler.logCompleted("Dry-run merge complete.");
             else

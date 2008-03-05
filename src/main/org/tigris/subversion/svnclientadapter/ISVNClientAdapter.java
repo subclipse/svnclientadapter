@@ -1524,7 +1524,7 @@ public interface ISVNClientAdapter {
      * @param path          path or url
      * @param pegRevision   revision to interpret path
      * @param localPath     target local path
-     * @param force         overwrite local changes
+     * @param force         THIS IS NOT CURRENTLY USED
      * @param dryRun        do not update working copy
      * @exception SVNClientException
      */    
