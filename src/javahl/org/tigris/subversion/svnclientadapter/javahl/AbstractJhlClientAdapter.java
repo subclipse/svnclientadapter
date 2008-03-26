@@ -1706,16 +1706,19 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
     public void resolved(File path) 
     	throws SVNClientException
     {
-    	this.resolved(path, ISVNConflictResolver.Choice.chooseMerged);
+    	this.resolve(path, ISVNConflictResolver.Choice.chooseMerged);
     }
 
-	public void resolved(File path, int result) throws SVNClientException {
+	public void resolve(File path, int result) throws SVNClientException {
 		try {
-			notificationHandler.setCommand(ISVNNotifyListener.Command.RESOLVED);
+			notificationHandler.setCommand(ISVNNotifyListener.Command.RESOLVE);
             
 			String target = fileToSVNPath(path, true);
-			String commandLine = "resolved ";
+			String commandLine = "resolve ";
 			switch (result) {
+			case ISVNConflictResolver.Choice.chooseMerged:
+				commandLine += "--accept=working ";
+				break;
 			case ISVNConflictResolver.Choice.chooseBase:
 				commandLine += "--accept=base ";
 				break;
@@ -1731,7 +1734,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 			commandLine += target;
 			notificationHandler.logCommandLine(commandLine);
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
-			svnClient.resolved(target, Depth.empty, result);
+			svnClient.resolve(target, Depth.empty, result);
 		} catch (SubversionException e) {
 			notificationHandler.logException(e);
 			throw new SVNClientException(e);            

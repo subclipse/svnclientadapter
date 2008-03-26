@@ -65,6 +65,7 @@ public interface ISVNNotifyListener {
         public static final int LOCK = 28;
         public static final int UNLOCK = 29;
         public static final int RELOCATE = 30;
+        public static final int RESOLVE = 31;
     }    
 
     /**

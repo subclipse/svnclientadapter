@@ -1328,7 +1328,7 @@ public interface ISVNClientAdapter {
 	 * @param result - choose resolve option - {@link ISVNConflictResolver.Choice}
 	 * @throws SVNClientException
 	 */ 	
-	public abstract void resolved(File path, int result) throws SVNClientException;
+	public abstract void resolve(File path, int result) throws SVNClientException;
     
 	/**
 	 * Create a new, empty repository at path 
