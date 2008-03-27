@@ -1741,7 +1741,7 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 		return null;
 	}
 
-	public void resolved(File path, int result) throws SVNClientException {
+	public void resolve(File path, int result) throws SVNClientException {
 		// TODO Auto-generated method stub
 		notImplementedYet();
 		
