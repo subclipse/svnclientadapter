@@ -1915,11 +1915,8 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
     	merge(path1, revision1, path2, revision2, localPath, force, Depth.infinityOrFiles(recurse), dryRun, ignoreAncestry, false);
     }
     
-    /* (non-Javadoc)
-     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#merge(org.tigris.subversion.svnclientadapter.SVNUrl, org.tigris.subversion.svnclientadapter.SVNRevision, org.tigris.subversion.svnclientadapter.SVNUrl, org.tigris.subversion.svnclientadapter.SVNRevision, java.io.File, boolean, int, boolean, boolean)
-     */
     public void merge(SVNUrl path1, SVNRevision revision1, SVNUrl path2,
-            SVNRevision revision2, File localPath, boolean force,
+            SVNRevision revision2, SVNRevision pegRevision, File localPath, boolean force,
             int depth, boolean dryRun, boolean ignoreAncestry, boolean recordOnly) throws SVNClientException {
     	try {
             notificationHandler.setCommand(ISVNNotifyListener.Command.MERGE);
@@ -1950,8 +1947,6 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
             notificationHandler.setBaseDir(baseDir);
     
             if (samePath) {
-            	Revision peg = JhlConverter.convert(revision2);
-            	if (peg == null) peg = Revision.HEAD;
             	Revision rev1;
             	Revision rev2;
             	if (revision1 == null)
@@ -1963,7 +1958,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
             	else
             		rev2 = JhlConverter.convert(revision2);
             	RevisionRange[] revisionRanges = { new RevisionRange(rev1, rev2) };
-            	svnClient.merge(path1.toString(), peg, revisionRanges, target, force, depth, ignoreAncestry, dryRun, recordOnly );           	
+            	svnClient.merge(path1.toString(), JhlConverter.convert(pegRevision), revisionRanges, target, force, depth, ignoreAncestry, dryRun, recordOnly );           	
             } else
             	svnClient.merge(path1.toString(), JhlConverter.convert(revision1), path2.toString(), JhlConverter.convert(revision2), target, force, depth, ignoreAncestry, dryRun, recordOnly );
             if (dryRun)
@@ -1980,6 +1975,21 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
             svnClientException.setAprError(e.getAprError());
             throw svnClientException;          
         }        
+    }    
+     
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#merge(org.tigris.subversion.svnclientadapter.SVNUrl, org.tigris.subversion.svnclientadapter.SVNRevision, org.tigris.subversion.svnclientadapter.SVNUrl, org.tigris.subversion.svnclientadapter.SVNRevision, java.io.File, boolean, int, boolean, boolean)
+     */
+    public void merge(SVNUrl path1, SVNRevision revision1, SVNUrl path2,
+            SVNRevision revision2, File localPath, boolean force,
+            int depth, boolean dryRun, boolean ignoreAncestry, boolean recordOnly) throws SVNClientException {
+    	SVNUrlWithPegRevision svnUrlWithPegRevision = new SVNUrlWithPegRevision(path1);
+    	SVNRevision pegRevision = svnUrlWithPegRevision.getPegRevision();
+    	if (pegRevision == null) {
+    		if (revision2 == null) pegRevision = SVNRevision.HEAD;
+    		else pegRevision = revision2;
+    	}
+    	merge(svnUrlWithPegRevision.getUrl(), revision1, new SVNUrlWithPegRevision(path2).getUrl(), revision2, pegRevision, localPath, force, depth, dryRun, ignoreAncestry, recordOnly);
     }
     
     /* (non-Javadoc)
