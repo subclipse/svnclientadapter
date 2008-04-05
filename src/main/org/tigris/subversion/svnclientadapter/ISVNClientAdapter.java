@@ -812,27 +812,6 @@ public interface ISVNClientAdapter {
      * @param url           url to get the log message for.
      * @param pegRevision   peg revision for URL
      * @param revisionStart first revision to show
-     * @param range         range of revisions to retrieve
-     * @param fetchChangePath  returns the paths of the changed items in the
-     *                      returned objects
-     * @param limit         limit the number of log messages (if 0 or less no
-     *                      limit)                   
-     * @return array of LogMessages
-	 * @throws SVNClientException
-     */
-    public abstract ISVNLogMessage[] getLogMessagesForRevisions(
-            SVNUrl url, 
-            SVNRevision pegRevision,
-            SVNRevision revisionStart,
-            SVNRevisionRange[] range,
-            boolean fetchChangePath, boolean includeMergedRevisions, long limit)
-            throws SVNClientException;
-    
-    /**
-     * Retrieve the log messages for an item
-     * @param url           url to get the log message for.
-     * @param pegRevision   peg revision for URL
-     * @param revisionStart first revision to show
      * @param revisionEnd   last revision to show
      * @param stopOnCopy    do not continue on copy operations
      * @param fetchChangePath  returns the paths of the changed items in the
@@ -1630,24 +1609,34 @@ public interface ISVNClientAdapter {
                boolean recordOnly) throws SVNClientException;
 
     /**
-     * Get merge info for <code>path</code> at <code>revision</code>.
-     * @param path Local Path.
-     * @param revision SVNRevision at which to get the merge info for
-     * <code>path</code>.
+     * Retrieve either merged or eligible-to-be-merged revisions.
+     * @param kind                   kind of revisions to receive
+     * @param path                   target of merge
+     * @param pegRevision            peg rev for path
+     * @param mergeSourceUrl         the source of the merge
+     * @param srcPegRevision         peg rev for mergeSourceUrl
+     * @param discoverChangedPaths   return paths of changed items
+     * @return array of log messages
      * @throws SVNClientException
      */
-    public abstract ISVNMergeInfo getMergeInfo(File path, SVNRevision revision)
-        throws SVNClientException;
+    public abstract ISVNLogMessage[] getMergeinfoLog(int kind, File path,
+            SVNRevision pegRevision, SVNUrl mergeSourceUrl, SVNRevision srcPegRevision,
+            boolean discoverChangedPaths) throws SVNClientException;
 
     /**
-     * Get merge info for <code>url</code> at <code>revision</code>.
-     * @param url URL.
-     * @param revision SVNRevision at which to get the merge info for
-     * <code>path</code>.
+     * Retrieve either merged or eligible-to-be-merged revisions.
+     * @param kind                   kind of revisions to receive
+     * @param url                    target of merge
+     * @param pegRevision            peg rev for path
+     * @param mergeSourceUrl         the source of the merge
+     * @param srcPegRevision         peg rev for mergeSourceUrl
+     * @param discoverChangedPaths   return paths of changed items
+     * @return array of log messages
      * @throws SVNClientException
      */
-    public abstract ISVNMergeInfo getMergeInfo(SVNUrl url, SVNRevision revision)
-        throws SVNClientException;
+    public abstract ISVNLogMessage[] getMergeinfoLog(int kind, SVNUrl url,
+            SVNRevision pegRevision, SVNUrl mergeSourceUrl, SVNRevision srcPegRevision,
+            boolean discoverChangedPaths) throws SVNClientException;
 
   /**
    * Produce a diff summary which lists the items changed between
@@ -1721,38 +1710,6 @@ public interface ISVNClientAdapter {
   public abstract String[] suggestMergeSources(SVNUrl url, SVNRevision peg)
           throws SVNClientException;
 
-  /**
-   * Get merge info for <code>path</code> at <code>pegRevision</code>.
-   * @param path WC path
-   * @param pegRevision Revision at which to get the merge info for
-   * <code>path</code>.
-   * @param mergeSource The merge source for which the list of
-   * revisions is available.
-   * @return The list of revisions available for merge from
-   * <code>mergeSource</code>, or <code>null</code> if all eligible
-   * revisions have been merged.
-   * @throws SVNClientException
-   */
-  public abstract SVNRevisionRange[] getAvailableMerges(File path, SVNRevision pegRevision,
-                                     SVNUrl mergeSource)
-      throws SVNClientException;
-
-  /**
-   * Get merge info for <code>url</code> at <code>pegRevision</code>.
-   * @param url URL
-   * @param pegRevision Revision at which to get the merge info for
-   * <code>path</code>.
-   * @param mergeSource The merge source for which the list of
-   * revisions is available.
-   * @return The list of revisions available for merge from
-   * <code>mergeSource</code>, or <code>null</code> if all eligible
-   * revisions have been merged.
-   * @throws SVNClientException
-   */
-  public abstract SVNRevisionRange[] getAvailableMerges(SVNUrl url, SVNRevision pegRevision,
-                                     SVNUrl mergeSource)
-      throws SVNClientException;
-  
   /**
    * release the native peer (should not depend on finalize)
    */

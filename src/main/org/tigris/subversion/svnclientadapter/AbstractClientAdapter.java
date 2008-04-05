@@ -280,55 +280,6 @@ public abstract class AbstractClientAdapter implements ISVNClientAdapter {
 		}
 	}
 
-	public ISVNLogMessage[] getLogMessagesForRevisions(SVNUrl url,
-			SVNRevision pegRevision, SVNRevision revisionStart, SVNRevisionRange[] range,
-			boolean fetchChangePath, boolean includeMergedRevisions, long limit) throws SVNClientException {
-		ArrayList logMessages = new ArrayList();
-		if (range == null || range.length == 0) {
-			return new ISVNLogMessage[0];
-		}
-		if (revisionStart == null) revisionStart = range[range.length - 1].getToRevision();
-		SVNRevision revisionEnd = range[0].getFromRevision();		
-		boolean stopOnCopy = true;
-		ISVNLogMessage[] messages = null;
-		boolean first = true;
-		while (first || (messages.length == limit)) {
-			first = false;
-			messages = getLogMessages(url, pegRevision,
-					revisionStart, revisionEnd, stopOnCopy, fetchChangePath, limit, includeMergedRevisions);
-			ISVNLogMessage[] filteredMessages = applyFilterToLogs(range, messages);
-			for (int i = 0; i < filteredMessages.length; i++)
-				logMessages.add(filteredMessages[i]);
-			if (limit == 0 || logMessages.size() >= limit) break;
-			if (messages.length > 0) {
-				ISVNLogMessage lastMessage = messages[messages.length - 1];
-				long lastMessageNumber = lastMessage.getRevision().getNumber();
-				revisionStart = new SVNRevision.Number(lastMessageNumber + 1); 
-			}
-		}
-		
-		messages = new ISVNLogMessage[logMessages.size()];
-		logMessages.toArray(messages);
-		return messages;
-	}
-
-	private ISVNLogMessage[] applyFilterToLogs(SVNRevisionRange[] range,
-			ISVNLogMessage[] messages) {
-		List msgList = new ArrayList();
-		boolean inclusiveFromRev = false;
-		for (int i = 0; i < messages.length; i++) {
-			for (int j = 0; j < range.length; j++) {
-				if (range[j].contains(messages[i].getRevision(), inclusiveFromRev)) {
-					msgList.add(messages[i]);
-					break;
-				}
-			}
-		}
-		ISVNLogMessage[] msgArray = new ISVNLogMessage[msgList.size()];
-		msgList.toArray(msgArray);
-		return msgArray;
-	}
-
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#createPatch(java.io.File[], java.io.File, java.io.File, boolean)
 	 */

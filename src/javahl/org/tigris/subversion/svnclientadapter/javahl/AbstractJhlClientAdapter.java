@@ -36,7 +36,6 @@ import org.tigris.subversion.javahl.Depth;
 import org.tigris.subversion.javahl.ErrorCodes;
 import org.tigris.subversion.javahl.Info;
 import org.tigris.subversion.javahl.Info2;
-import org.tigris.subversion.javahl.Mergeinfo;
 import org.tigris.subversion.javahl.PromptUserPassword;
 import org.tigris.subversion.javahl.PropertyData;
 import org.tigris.subversion.javahl.Revision;
@@ -52,7 +51,7 @@ import org.tigris.subversion.svnclientadapter.ISVNConflictResolver;
 import org.tigris.subversion.svnclientadapter.ISVNDirEntry;
 import org.tigris.subversion.svnclientadapter.ISVNInfo;
 import org.tigris.subversion.svnclientadapter.ISVNLogMessage;
-import org.tigris.subversion.svnclientadapter.ISVNMergeInfo;
+import org.tigris.subversion.svnclientadapter.ISVNMergeinfoLogKind;
 import org.tigris.subversion.svnclientadapter.ISVNNotifyListener;
 import org.tigris.subversion.svnclientadapter.ISVNProgressListener;
 import org.tigris.subversion.svnclientadapter.ISVNPromptUserPassword;
@@ -2442,25 +2441,6 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 		}
 	}
 
-	public ISVNMergeInfo getMergeInfo(File path, SVNRevision revision) throws SVNClientException {
-		return this.getMergeInfo(fileToSVNPath(path, false), JhlConverter.convert(revision));
-	}
-
-	public ISVNMergeInfo getMergeInfo(SVNUrl url, SVNRevision revision) throws SVNClientException {
-		return this.getMergeInfo(url.toString(), JhlConverter.convert(revision));
-	}
-
-	private ISVNMergeInfo getMergeInfo(String path, Revision revision) throws SVNClientException {
-        try {
-        	Mergeinfo info = svnClient.getMergeinfo(path, revision);
-        	if (info == null) return null;
-        	return new JhlMergeInfo(info);
-        } catch (SubversionException e) {
-            throw new SVNClientException(e);
-		}           	
-		
-	}
-
 	public void addConflictResolutionCallback(ISVNConflictResolver callback) {
 		if (callback == null)
 			conflictResolver = null;
@@ -2580,39 +2560,6 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 		}
 	}
 
-	public SVNRevisionRange[] getAvailableMerges(File path,
-			SVNRevision pegRevision, SVNUrl mergeSource)
-			throws SVNClientException {
-		try {
-			return JhlConverter.convert(svnClient.getAvailableMerges(fileToSVNPath(path, false),
-					JhlConverter.convert(pegRevision), mergeSource.toString()));
-		} catch (SubversionException e) {
-			if (e instanceof ClientException) {
-				if (((ClientException)e).getAprError() == SVNClientException.UNSUPPORTED_FEATURE) {
-					SVNRevisionRange[] allRevisions = { new SVNRevisionRange(new SVNRevision.Number(0), SVNRevision.HEAD) };
-					return allRevisions;
-				}
-			}
-            throw new SVNClientException(e);
-		}
-	}
-
-	public SVNRevisionRange[] getAvailableMerges(SVNUrl url,
-			SVNRevision pegRevision, SVNUrl mergeSource)
-			throws SVNClientException {
-		try {
-			return JhlConverter.convert(svnClient.getAvailableMerges(url.toString(),
-					JhlConverter.convert(pegRevision), mergeSource.toString()));
-		} catch (SubversionException e) {
-			if (e instanceof ClientException) {
-				if (((ClientException)e).getAprError() == SVNClientException.UNSUPPORTED_FEATURE) {
-					SVNRevisionRange[] allRevisions = { new SVNRevisionRange(new SVNRevision.Number(0), SVNRevision.HEAD) };
-					return allRevisions;
-				}
-			}
-            throw new SVNClientException(e);
-		}
-	}
 	
 	public void createPatch(File[] paths, File relativeToPath, File outFile,
 			boolean recurse) throws SVNClientException {
@@ -2647,6 +2594,53 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 
 	public void dispose() {
 		svnClient.dispose();
+	}
+
+	public ISVNLogMessage[] getMergeinfoLog(int kind, File path,
+			SVNRevision pegRevision, SVNUrl mergeSourceUrl,
+			SVNRevision srcPegRevision, boolean discoverChangedPaths)
+			throws SVNClientException {
+		return this.getMergeinfoLog(kind, fileToSVNPath(path, false), pegRevision, mergeSourceUrl, srcPegRevision, discoverChangedPaths);
+	}
+
+	public ISVNLogMessage[] getMergeinfoLog(int kind, SVNUrl url,
+			SVNRevision pegRevision, SVNUrl mergeSourceUrl,
+			SVNRevision srcPegRevision, boolean discoverChangedPaths)
+			throws SVNClientException {
+		return this.getMergeinfoLog(kind, url.toString(), pegRevision, mergeSourceUrl, srcPegRevision, discoverChangedPaths);
+	}
+
+	private ISVNLogMessage[] getMergeinfoLog(int kind, String target,
+			SVNRevision pegRevision, SVNUrl mergeSourceUrl,
+			SVNRevision srcPegRevision, boolean discoverChangedPaths)
+			throws SVNClientException {
+		try {
+			notificationHandler.setCommand(
+				ISVNNotifyListener.Command.MERGEINFO);
+			String show = "";
+			if (kind == ISVNMergeinfoLogKind.eligible)
+				show = show + " --show-revs eligible ";
+			if (kind == ISVNMergeinfoLogKind.merged)
+				show = show + " --show-revs merged ";
+			notificationHandler.logCommandLine(
+				"mergeinfo "
+					+ show
+					+ mergeSourceUrl.toString()
+					+ " "
+					+ target);
+			JhlLogMessageCallback callback = new JhlLogMessageCallback();
+			String[] revprops = new String[] {"svn:author", "svn:date", "svn:log"};
+			svnClient.getMergeinfoLog(kind, target, JhlConverter.convert(pegRevision),
+					mergeSourceUrl.toString(), JhlConverter.convert(srcPegRevision),
+					discoverChangedPaths, revprops, callback);
+			return callback.getLogMessages();
+		} catch (ClientException e) {
+			if (e.getAprError() == ErrorCodes.unsupportedFeature) {
+				return null;
+			}
+			notificationHandler.logException(e);
+			throw new SVNClientException(e);
+		}
 	}
 
 }
