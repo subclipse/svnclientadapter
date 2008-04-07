@@ -1666,22 +1666,6 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 		return null;
 	}
 
-	public SVNRevisionRange[] getAvailableMerges(File path,
-			SVNRevision pegRevision, SVNUrl mergeSource)
-			throws SVNClientException {
-		// TODO Auto-generated method stub
-		notImplementedYet();
-		return null;
-	}
-
-	public SVNRevisionRange[] getAvailableMerges(SVNUrl url,
-			SVNRevision pegRevision, SVNUrl mergeSource)
-			throws SVNClientException {
-		// TODO Auto-generated method stub
-		notImplementedYet();
-		return null;
-	}
-
 	public void checkout(SVNUrl moduleName, File destPath,
 			SVNRevision revision, int depth, boolean ignoreExternals,
 			boolean force) throws SVNClientException {
@@ -1823,6 +1807,24 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 			boolean copyAsChild, boolean makeParents) throws SVNClientException {
 		// TODO Auto-generated method stub
 		notImplementedYet();
+	}
+
+	public ISVNLogMessage[] getMergeinfoLog(int kind, File path,
+			SVNRevision pegRevision, SVNUrl mergeSourceUrl,
+			SVNRevision srcPegRevision, boolean discoverChangedPaths)
+			throws SVNClientException {
+		// TODO Auto-generated method stub
+		notImplementedYet();
+		return null;
+	}
+
+	public ISVNLogMessage[] getMergeinfoLog(int kind, SVNUrl url,
+			SVNRevision pegRevision, SVNUrl mergeSourceUrl,
+			SVNRevision srcPegRevision, boolean discoverChangedPaths)
+			throws SVNClientException {
+		// TODO Auto-generated method stub
+		notImplementedYet();
+		return null;
 	}
 
 }
