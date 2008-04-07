@@ -1609,6 +1609,26 @@ public interface ISVNClientAdapter {
                boolean recordOnly) throws SVNClientException;
 
     /**
+     * Get merge info for <code>path</code> at <code>revision</code>.
+     * @param path Local Path.
+     * @param revision SVNRevision at which to get the merge info for
+     * <code>path</code>.
+     * @throws SVNClientException
+     */
+    public abstract ISVNMergeInfo getMergeInfo(File path, SVNRevision revision)
+        throws SVNClientException;
+
+    /**
+     * Get merge info for <code>url</code> at <code>revision</code>.
+     * @param url URL.
+     * @param revision SVNRevision at which to get the merge info for
+     * <code>path</code>.
+     * @throws SVNClientException
+     */
+    public abstract ISVNMergeInfo getMergeInfo(SVNUrl url, SVNRevision revision)
+        throws SVNClientException;
+
+    /**
      * Retrieve either merged or eligible-to-be-merged revisions.
      * @param kind                   kind of revisions to receive
      * @param path                   target of merge
@@ -1637,6 +1657,7 @@ public interface ISVNClientAdapter {
     public abstract ISVNLogMessage[] getMergeinfoLog(int kind, SVNUrl url,
             SVNRevision pegRevision, SVNUrl mergeSourceUrl, SVNRevision srcPegRevision,
             boolean discoverChangedPaths) throws SVNClientException;
+
 
   /**
    * Produce a diff summary which lists the items changed between

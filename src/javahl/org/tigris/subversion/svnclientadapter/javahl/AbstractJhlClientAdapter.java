@@ -36,6 +36,7 @@ import org.tigris.subversion.javahl.Depth;
 import org.tigris.subversion.javahl.ErrorCodes;
 import org.tigris.subversion.javahl.Info;
 import org.tigris.subversion.javahl.Info2;
+import org.tigris.subversion.javahl.Mergeinfo;
 import org.tigris.subversion.javahl.PromptUserPassword;
 import org.tigris.subversion.javahl.PropertyData;
 import org.tigris.subversion.javahl.Revision;
@@ -51,6 +52,7 @@ import org.tigris.subversion.svnclientadapter.ISVNConflictResolver;
 import org.tigris.subversion.svnclientadapter.ISVNDirEntry;
 import org.tigris.subversion.svnclientadapter.ISVNInfo;
 import org.tigris.subversion.svnclientadapter.ISVNLogMessage;
+import org.tigris.subversion.svnclientadapter.ISVNMergeInfo;
 import org.tigris.subversion.svnclientadapter.ISVNMergeinfoLogKind;
 import org.tigris.subversion.svnclientadapter.ISVNNotifyListener;
 import org.tigris.subversion.svnclientadapter.ISVNProgressListener;
@@ -2441,6 +2443,25 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 		}
 	}
 
+	public ISVNMergeInfo getMergeInfo(File path, SVNRevision revision) throws SVNClientException {
+		return this.getMergeInfo(fileToSVNPath(path, false), JhlConverter.convert(revision));
+	}
+
+	public ISVNMergeInfo getMergeInfo(SVNUrl url, SVNRevision revision) throws SVNClientException {
+		return this.getMergeInfo(url.toString(), JhlConverter.convert(revision));
+	}
+
+	private ISVNMergeInfo getMergeInfo(String path, Revision revision) throws SVNClientException {
+        try {
+        	Mergeinfo info = svnClient.getMergeinfo(path, revision);
+        	if (info == null) return null;
+        	return new JhlMergeInfo(info);
+        } catch (SubversionException e) {
+            throw new SVNClientException(e);
+		}           	
+		
+	}
+
 	public void addConflictResolutionCallback(ISVNConflictResolver callback) {
 		if (callback == null)
 			conflictResolver = null;
@@ -2636,7 +2657,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 			return callback.getLogMessages();
 		} catch (ClientException e) {
 			if (e.getAprError() == ErrorCodes.unsupportedFeature) {
-				return null;
+				return this.getLogMessages(mergeSourceUrl.toString(), srcPegRevision, new SVNRevision.Number(0), SVNRevision.HEAD, true, discoverChangedPaths, 0, false);
 			}
 			notificationHandler.logException(e);
 			throw new SVNClientException(e);
