@@ -28,6 +28,7 @@ import org.tigris.subversion.svnclientadapter.SVNClientException;
 import org.tigris.subversion.svnclientadapter.SVNStatusUnversioned;
 import org.tigris.subversion.svnclientadapter.javahl.AbstractJhlClientAdapter;
 import org.tigris.subversion.svnclientadapter.javahl.JhlNotificationHandler;
+import org.tigris.subversion.svnclientadapter.javahl.JhlProgressListener;
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.io.SVNRepositoryFactory;
 import org.tmatesoft.svn.core.javahl.SVNClientImpl;
@@ -44,8 +45,10 @@ public class SvnKitClientAdapter extends AbstractJhlClientAdapter {
     public SvnKitClientAdapter() {
         svnClient = SVNClientImpl.newInstance();
         notificationHandler = new JhlNotificationHandler();
+        progressListener = new JhlProgressListener();
         svnClient.notification2(notificationHandler);        
         svnClient.setPrompt(new DefaultPromptUserPassword());
+        svnClient.setProgressListener(progressListener);
     }
 
     public void createRepository(File path, String repositoryType)
