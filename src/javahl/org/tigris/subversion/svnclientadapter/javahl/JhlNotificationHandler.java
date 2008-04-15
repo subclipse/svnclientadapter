@@ -172,6 +172,12 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements No
                 receivedSomeChange = true;
                 deletes += 1;
                 break;
+            case NotifyAction.update_replaced :
+                logMessage("R  " + path); //$NON-NLS-1$
+                receivedSomeChange = true;
+                adds += 1;
+                deletes += 1;
+                break;
             case NotifyAction.update_add :
                 logMessage("A  " + path); //$NON-NLS-1$
                 receivedSomeChange = true;
