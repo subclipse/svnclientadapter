@@ -123,6 +123,21 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements No
         			  logError(errorMsg); 
                 notify = false;                                
                 break;
+        	case NotifyAction.foreign_merge_begin :
+        		if (mergeRange != null) {
+	        		if (mergeRange.getFromRevision().equals(mergeRange.getToRevision()))
+	        			logMessage("--- Merging (from foreign repository) r" + mergeRange.getFromRevision().toString() + " into " + path);
+	        		else
+	        			if (mergeRange.getToRevision().equals(Revision.HEAD) || 
+	        					RevisionRange.getRevisionAsLong(mergeRange.getToRevision()).longValue() > RevisionRange.getRevisionAsLong(mergeRange.getFromRevision()).longValue())
+	        				logMessage("--- Merging (from foreign repository) r" + mergeRange.getFromRevision().toString() + " through r" + mergeRange.getToRevision().toString() + " into " + path);
+	        			else
+	        				logMessage("--- Reverse-merging (from foreign repository) r" + mergeRange.getFromRevision().toString() + " through r" + mergeRange.getToRevision().toString() + " into " + path);
+		        } else {
+	        		logMessage("--- Merging differences between foreign repository URLs into " + path);
+	        	}
+        		notify = false;
+        		break;
         	case NotifyAction.merge_begin :
         		if (mergeRange != null) {
 	        		if (mergeRange.getFromRevision().equals(mergeRange.getToRevision()))
