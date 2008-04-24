@@ -2307,8 +2307,13 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 					revprops, limit, callback);
 			return callback.getLogMessages();
 		} catch (ClientException e) {
-			if (e.getAprError() == ErrorCodes.unsupportedFeature && includeMergedRevisions) {
-				return getLogMessages(target, pegRevision, revisionStart, revisionEnd, stopOnCopy, fetchChangePath, limit, false);
+			if (includeMergedRevisions) {
+				if (e.getAprError() == ErrorCodes.unsupportedFeature) {
+					return getLogMessages(target, pegRevision, revisionStart, revisionEnd, stopOnCopy, fetchChangePath, limit, false);
+				}
+				if (e.getAprError() == ErrorCodes.clientUnrelatedResources || e.getAprError() == ErrorCodes.fsNoSuchRevision) {
+					return new ISVNLogMessage[0];
+				}			
 			}
 			notificationHandler.logException(e);
 			throw new SVNClientException(e);
