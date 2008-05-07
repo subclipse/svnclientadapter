@@ -171,6 +171,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
     }
 
     protected static String fileToSVNPath(File file, boolean canonical) {
+    	if (file == null) return null;
     	// SVN need paths with '/' separators
     	if (canonical) {
             try {
