@@ -2,6 +2,7 @@ package org.tigris.subversion.svnclientadapter.javahl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Stack;
 
 import org.tigris.subversion.javahl.ChangePath;
@@ -13,14 +14,20 @@ public class JhlLogMessageCallback implements LogMessageCallback {
 	private List messages = new ArrayList();
 	private Stack stack = new Stack();
 
+	
+	public JhlLogMessage[] getLogMessages() {
+		JhlLogMessage[] array = new JhlLogMessage[messages.size()];
+		return (JhlLogMessage[]) messages.toArray(array);
+	}
+
 	public void singleMessage(ChangePath[] changedPaths, long revision,
-			String author, long timeMicros, String message, boolean hasChildren) {
+			Map revprops, boolean hasChildren) {
 		if (revision == Revision.SVN_INVALID_REVNUM) {
 			if (!stack.empty())
 				stack.pop();
 			return;
 		}
-		JhlLogMessage msg = new JhlLogMessage(changedPaths, revision, author, timeMicros, message, hasChildren);
+		JhlLogMessage msg = new JhlLogMessage(changedPaths, revision, revprops, hasChildren);
 		if (stack.empty()) {
 				messages.add(msg);
 		} else {
@@ -29,11 +36,6 @@ public class JhlLogMessageCallback implements LogMessageCallback {
 		}
 		if (hasChildren)
 			stack.push(msg);
-	}
-	
-	public JhlLogMessage[] getLogMessages() {
-		JhlLogMessage[] array = new JhlLogMessage[messages.size()];
-		return (JhlLogMessage[]) messages.toArray(array);
 	}
 
 }

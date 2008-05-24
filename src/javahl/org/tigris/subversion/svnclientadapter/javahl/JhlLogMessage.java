@@ -18,12 +18,14 @@
  ******************************************************************************/
 package org.tigris.subversion.svnclientadapter.javahl;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.tigris.subversion.javahl.ChangePath;
-import org.tigris.subversion.javahl.LogMessage;
+import org.tigris.subversion.javahl.LogDate;
 import org.tigris.subversion.svnclientadapter.ISVNLogMessage;
 import org.tigris.subversion.svnclientadapter.ISVNLogMessageChangePath;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
@@ -40,30 +42,18 @@ public class JhlLogMessage implements ISVNLogMessage {
 	private boolean hasChildren;
 	private ISVNLogMessageChangePath[] changedPaths;
 	private SVNRevision.Number revision;
-	private String author;
-	private long timeMicros;
-	private String message;
+	private Map revprops;
+	private LogDate logDate;
 
-	/**
-	 * Constructor
-	 * @param msg
-	 */
-	public JhlLogMessage(LogMessage msg) {
-		super();
-		changedPaths = JhlConverter.convert(msg.getChangedPaths());
-		revision = new SVNRevision.Number(msg.getRevisionNumber());
-		author = msg.getAuthor();
-		timeMicros = msg.getTimeMicros();
-		message = msg.getMessage();
-	}
-	
-	public JhlLogMessage(ChangePath[] changedPaths, long revision, String author, long timeMicros, String message, boolean hasChildren) {
+	public JhlLogMessage(ChangePath[] changedPaths, long revision, Map revprops, boolean hasChildren) {
 		this.changedPaths = JhlConverter.convert(changedPaths);
 		this.revision = new SVNRevision.Number(revision);
-		this.author = author;
-		this.timeMicros = timeMicros;
-		this.message = message;
+		this.revprops = revprops;
 		this.hasChildren = hasChildren;
+		try {
+			logDate = new LogDate((String) revprops.get(DATE));
+		} catch (ParseException e) {
+		}
 	}
 
 	public void addChild(JhlLogMessage msg) {
@@ -83,21 +73,23 @@ public class JhlLogMessage implements ISVNLogMessage {
 	 * @see org.tigris.subversion.svnclientadapter.ISVNLogMessage#getAuthor()
 	 */
 	public String getAuthor() {
-		return author;
+        return (String) revprops.get(AUTHOR);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNLogMessage#getDate()
 	 */
 	public Date getDate() {
-        return new Date(timeMicros / 1000);
+		if (logDate == null)
+			return new Date(0L);
+        return logDate.getDate();
 	}
 
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNLogMessage#getMessage()
 	 */
 	public String getMessage() {
-		return message;
+        return (String) revprops.get(MESSAGE);
 	}
 
     /* (non-Javadoc)
@@ -127,15 +119,19 @@ public class JhlLogMessage implements ISVNLogMessage {
 		if (hasChildren && children != null)
 			return children.size();
 		else
-			return 0;
-	}
-
-	public long getTimeMicros() {
-		return timeMicros;
+			return 0L;
 	}
 
 	public long getTimeMillis() {
-        return timeMicros / 1000;
+		if (logDate == null)
+			return 0L;
+        return logDate.getTimeMillis();
+	}
+	
+	public long getTimeMicros() {
+		if (logDate == null) 
+			return 0L;
+		return logDate.getTimeMicros();
 	}
 
 }

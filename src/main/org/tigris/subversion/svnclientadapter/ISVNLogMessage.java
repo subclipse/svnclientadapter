@@ -28,6 +28,10 @@ import java.util.Date;
  * @author Philip Schatz <a href="mailto:schatzp@purdue.edu">schatzp@purdue.edu</a>
  */
 public interface ISVNLogMessage {
+	public final String AUTHOR = "svn:author";
+	public final String MESSAGE = "svn:log";
+	public final String DATE = "svn:date";
+	public final String TIME_MICROS = "svnclientadapter:timemicros";
 
     /**
      * Returns the revision number

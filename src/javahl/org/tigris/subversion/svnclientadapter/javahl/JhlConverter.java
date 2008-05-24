@@ -26,7 +26,6 @@ import org.tigris.subversion.javahl.ConflictResult;
 import org.tigris.subversion.javahl.DiffSummary;
 import org.tigris.subversion.javahl.DirEntry;
 import org.tigris.subversion.javahl.Lock;
-import org.tigris.subversion.javahl.LogMessage;
 import org.tigris.subversion.javahl.NodeKind;
 import org.tigris.subversion.javahl.Revision;
 import org.tigris.subversion.javahl.RevisionKind;
@@ -225,14 +224,6 @@ public class JhlConverter {
 		return new JhlDirEntry(dirEntry);
 	}
 
-	static JhlLogMessage[] convert(LogMessage[] msg) {
-		JhlLogMessage[] messages = new JhlLogMessage[msg.length];
-		for(int i=0; i < msg.length; i++) {
-			messages[i] = new JhlLogMessage(msg[i]);
-		}
-		return messages;
-	}
-    
     public static JhlStatus[] convert(Status[] status) {
         JhlStatus[] jhlStatus = new JhlStatus[status.length];
         for(int i=0; i < status.length; i++) {

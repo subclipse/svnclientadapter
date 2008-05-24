@@ -687,7 +687,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 			commandLine.append(" " + dest);
 			notificationHandler.logCommandLine(commandLine.toString());
 			notificationHandler.setBaseDir();
-			svnClient.copy(copySources, dest, message, copyAsChild, makeParents);
+			svnClient.copy(copySources, dest, message, copyAsChild, makeParents, null);
 		} catch (ClientException e) {
 			notificationHandler.logException(e);
 			throw new SVNClientException(e);
@@ -713,7 +713,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 			CopySource[] sources = { new CopySource(srcUrl.toString(), JhlConverter.convert(revision), JhlConverter.convert(revision)) };			
 			notificationHandler.logCommandLine("copy " + srcUrl + " " + dest);
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(destPath));
-			svnClient.copy(sources, dest, null, copyAsChild, makeParents);
+			svnClient.copy(sources, dest, null, copyAsChild, makeParents, null);
 		} catch (ClientException e) {
 			notificationHandler.logException(e);
 			throw new SVNClientException(e);
@@ -769,7 +769,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 			commandLine.append(" " + dest);
 			notificationHandler.logCommandLine(commandLine.toString());
 			notificationHandler.setBaseDir();
-			svnClient.copy(copySources, dest, message, copyAsChild, makeParents);
+			svnClient.copy(copySources, dest, message, copyAsChild, makeParents, null);
 		} catch (ClientException e) {
 			notificationHandler.logException(e);
 			throw new SVNClientException(e);
@@ -2216,10 +2216,9 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
             SVNRevision revisionStart, SVNRevision revisionEnd,
             boolean stopOnCopy, boolean fetchChangePath, long limit)
             throws SVNClientException {
-    	//TODO pegRevision is ignored !
 			String target = url.toString();
 			notificationHandler.setBaseDir();
-	        return this.getLogMessages(target, revisionStart, revisionEnd, stopOnCopy, fetchChangePath, limit);
+	        return this.getLogMessages(target, pegRevision, revisionStart, revisionEnd, stopOnCopy, fetchChangePath, limit, false);
     }
 
 	/* (non-Javadoc)
@@ -2229,42 +2228,17 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 			final String[] paths, SVNRevision revStart, SVNRevision revEnd,
 			boolean stopOnCopy, boolean fetchChangePath)
 			throws SVNClientException {
-		notImplementedYet();
-		return null;
+		String target = url.toString();
+		notificationHandler.setBaseDir();
+        return this.getLogMessages(target, SVNRevision.HEAD, revStart, revEnd, stopOnCopy, fetchChangePath, 0, false);
 	}
 
     private ISVNLogMessage[] getLogMessages(String target,
             SVNRevision revisionStart, SVNRevision revisionEnd,
             boolean stopOnCopy, boolean fetchChangePath, long limit)
             throws SVNClientException {
-		try {
-			notificationHandler.setCommand(
-				ISVNNotifyListener.Command.LOG);
-			String logExtras = "";
-			if (stopOnCopy)
-			    logExtras = logExtras + " --stop-on-copy";
-			if (limit > 0 )
-			    logExtras = logExtras + " --limit " + limit;
-			notificationHandler.logCommandLine(
-				"log -r "
-					+ revisionStart.toString()
-					+ ":"
-					+ revisionEnd.toString()
-					+ " "
-					+ target
-					+ logExtras);
-			return JhlConverter.convert(
-                    svnClient.logMessages(
-                            target, 
-                            JhlConverter.convert(revisionStart), 
-                            JhlConverter.convert(revisionEnd),
-                            stopOnCopy, 
-                            fetchChangePath, 
-                            limit));  
-		} catch (ClientException e) {
-			notificationHandler.logException(e);
-			throw new SVNClientException(e);
-		}
+		notificationHandler.setBaseDir();
+        return this.getLogMessages(target, SVNRevision.HEAD, revisionStart, revisionEnd, stopOnCopy, fetchChangePath, limit, false);
     }
 
     
@@ -2377,7 +2351,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 	            notificationHandler.logCommandLine(
 	                "mkdir -m \""+message+"\" "+target);
 			notificationHandler.setBaseDir();
-            svnClient.mkdir(new String[] { target },message, makeParents);
+            svnClient.mkdir(new String[] { target },message, makeParents, null);
         } catch (ClientException e) {
             notificationHandler.logException(e);
             throw new SVNClientException(e);
