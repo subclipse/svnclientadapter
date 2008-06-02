@@ -21,6 +21,7 @@ package org.tigris.subversion.svnclientadapter.javahl;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -38,6 +39,8 @@ import org.tigris.subversion.svnclientadapter.SVNRevision;
  */
 public class JhlLogMessage implements ISVNLogMessage {
 
+	private static final String EMPTY = "";
+	
 	private List children;
 	private boolean hasChildren;
 	private ISVNLogMessageChangePath[] changedPaths;
@@ -49,9 +52,14 @@ public class JhlLogMessage implements ISVNLogMessage {
 		this.changedPaths = JhlConverter.convert(changedPaths);
 		this.revision = new SVNRevision.Number(revision);
 		this.revprops = revprops;
+		if (this.revprops == null) {
+			this.revprops = new HashMap(2); // avoid NullPointerErrors
+			this.revprops.put(AUTHOR, EMPTY);
+			this.revprops.put(MESSAGE, EMPTY);
+		}
 		this.hasChildren = hasChildren;
 		try {
-			logDate = new LogDate((String) revprops.get(DATE));
+			logDate = new LogDate((String) this.revprops.get(DATE));
 		} catch (ParseException e) {
 		}
 	}
