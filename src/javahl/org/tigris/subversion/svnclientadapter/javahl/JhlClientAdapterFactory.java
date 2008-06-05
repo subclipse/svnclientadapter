@@ -111,6 +111,13 @@ public class JhlClientAdapterFactory extends SVNClientAdapterFactory {
     				javaHLErrors.append(e.getMessage()).append("\n");
     			}
     			try {
+    				System.loadLibrary("libapriconv-1");
+    			} catch (Exception e) {
+    				javaHLErrors.append(e.getMessage()).append("\n");
+    			} catch (UnsatisfiedLinkError e) {
+    				javaHLErrors.append(e.getMessage()).append("\n");
+    			}
+    			try {
     				System.loadLibrary("libeay32");
     			} catch (Exception e) {
     				javaHLErrors.append(e.getMessage()).append("\n");
