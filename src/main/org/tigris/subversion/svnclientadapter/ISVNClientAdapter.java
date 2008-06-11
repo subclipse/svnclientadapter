@@ -36,6 +36,11 @@ public interface ISVNClientAdapter {
     public final static String REPOSITORY_FSTYPE_FSFS = "fsfs";
 	
 	/**
+	 * Returns whether the client adapter implementation is threadsafe
+	 */
+	public abstract boolean isThreadsafe();
+	
+	/**
 	 * Add a notification listener
 	 * @param listener
 	 */

@@ -51,7 +51,11 @@ public class JhlClientAdapter extends AbstractJhlClientAdapter {
         svnClient.setProgressListener(progressListener);
     }
 
-    /**
+	public boolean isThreadsafe() {
+		return true;
+	}
+
+	/**
      * tells if JhlClientAdapter is usable
      * @return true if Jhl client adapter is available
      * @deprecated

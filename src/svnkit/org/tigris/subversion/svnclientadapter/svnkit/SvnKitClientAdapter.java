@@ -51,6 +51,10 @@ public class SvnKitClientAdapter extends AbstractJhlClientAdapter {
         svnClient.setProgressListener(progressListener);
     }
 
+	public boolean isThreadsafe() {
+		return false;
+	}
+
     public void createRepository(File path, String repositoryType)
             throws SVNClientException {
     	if (REPOSITORY_FSTYPE_BDB.equalsIgnoreCase(repositoryType))
