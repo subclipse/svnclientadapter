@@ -92,6 +92,10 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 		this._cmdMulti = multiCmd;
 		this.svnAdminCmd = adminCmd;
 	}
+
+	public boolean isThreadsafe() {
+		return false;
+	}
     
 	//Methods
 	public static boolean isAvailable() {
