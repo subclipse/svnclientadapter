@@ -434,40 +434,18 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
     /* (non-Javadoc)
      * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getStatus(java.io.File[])
      */
-    public ISVNStatus[] getStatus(File[] path) 
-            throws SVNClientException {
-        notificationHandler.setCommand(ISVNNotifyListener.Command.STATUS);
-        String filePathSVN[] = new String[path.length];
-        String commandLine = "status -N --no-ignore"; 
-        for (int i = 0; i < filePathSVN.length;i++) {
-            filePathSVN[i] = fileToSVNPath(path[i], false);
-            commandLine+=" "+filePathSVN[i]; 
-        }
-        notificationHandler.logCommandLine(commandLine);
-		notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
-
-        ISVNStatus[] statuses = new ISVNStatus[path.length]; 
-        for (int i = 0; i < filePathSVN.length;i++) {
-            try {
-                Status status = svnClient.singleStatus(filePathSVN[i], false);
-                if (status == null) {
-                	statuses[i] = new SVNStatusUnversioned(path[i]);
-                } else {
-                	statuses[i] = new JhlStatus(status);
-                }
-            } catch (ClientException e) {
-                if (e.getAprError() == ErrorCodes.wcNotDirectory) {
-                    // when there is no .svn dir, an exception is thrown ...
-                    statuses[i] = new SVNStatusUnversioned(path[i]);
-                } else
-                {
-                    notificationHandler.logException(e);
-                    throw new SVNClientException(e);
-                }
-            }
-        }
-        return statuses;
-    }
+	public ISVNStatus[] getStatus(File[] path) throws SVNClientException {
+		ISVNStatus[] statuses = new ISVNStatus[path.length];
+		for (int i = 0; i < path.length; i++) {
+			ISVNStatus[] s = getStatus(path[i], false, true, false, false);
+			if (s == null || s.length == 0) {
+				statuses[i] = new SVNStatusUnversioned(path[i]);
+			} else {
+				statuses[i] = s[0];
+			}
+		}
+		return statuses;
+	}
 
     /* (non-Javadoc)
      * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getStatus(java.io.File, boolean, boolean)
