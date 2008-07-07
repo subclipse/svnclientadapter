@@ -21,6 +21,7 @@ package org.tigris.subversion.svnclientadapter.svnkit;
 import java.io.File;
 
 import org.tigris.subversion.javahl.ClientException;
+import org.tigris.subversion.javahl.SVNClient;
 import org.tigris.subversion.svnclientadapter.ISVNNotifyListener;
 import org.tigris.subversion.svnclientadapter.ISVNPromptUserPassword;
 import org.tigris.subversion.svnclientadapter.ISVNStatus;
@@ -30,6 +31,8 @@ import org.tigris.subversion.svnclientadapter.javahl.AbstractJhlClientAdapter;
 import org.tigris.subversion.svnclientadapter.javahl.JhlNotificationHandler;
 import org.tigris.subversion.svnclientadapter.javahl.JhlProgressListener;
 import org.tmatesoft.svn.core.SVNException;
+import org.tmatesoft.svn.core.internal.io.dav.http.IHTTPConnectionFactory;
+import org.tmatesoft.svn.core.internal.io.svn.ISVNConnectorFactory;
 import org.tmatesoft.svn.core.io.SVNRepositoryFactory;
 import org.tmatesoft.svn.core.javahl.SVNClientImpl;
 
@@ -43,7 +46,13 @@ import org.tmatesoft.svn.core.javahl.SVNClientImpl;
 public class SvnKitClientAdapter extends AbstractJhlClientAdapter {
 
     public SvnKitClientAdapter() {
-        svnClient = SVNClientImpl.newInstance();
+        this(null, null, null);
+    }
+
+    public SvnKitClientAdapter(SVNClient owner,
+                               IHTTPConnectionFactory httpConnectionFactory,
+                               ISVNConnectorFactory svnConnectorFactory) {
+        svnClient = SVNClientImpl.newInstance(owner, httpConnectionFactory, svnConnectorFactory);
         notificationHandler = new JhlNotificationHandler();
         progressListener = new JhlProgressListener();
         svnClient.notification2(notificationHandler);        
