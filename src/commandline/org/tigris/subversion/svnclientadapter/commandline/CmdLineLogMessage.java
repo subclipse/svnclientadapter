@@ -278,4 +278,14 @@ class CmdLineLogMessage extends CmdLineXmlCommand implements ISVNLogMessage {
 		// TODO Auto-generated method stub
 		return 0;
 	}
+
+	public void addChild(ISVNLogMessage msg) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public boolean hasChildren() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

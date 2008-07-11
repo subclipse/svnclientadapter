@@ -40,6 +40,7 @@ import org.tigris.subversion.svnclientadapter.ISVNConflictResolver;
 import org.tigris.subversion.svnclientadapter.ISVNDirEntry;
 import org.tigris.subversion.svnclientadapter.ISVNInfo;
 import org.tigris.subversion.svnclientadapter.ISVNLogMessage;
+import org.tigris.subversion.svnclientadapter.ISVNLogMessageCallback;
 import org.tigris.subversion.svnclientadapter.ISVNMergeInfo;
 import org.tigris.subversion.svnclientadapter.ISVNNotifyListener;
 import org.tigris.subversion.svnclientadapter.ISVNProgressListener;
@@ -1829,6 +1830,26 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 		// TODO Auto-generated method stub
 		notImplementedYet();
 		return null;
+	}
+
+	public void getLogMessages(File path, SVNRevision pegRevision,
+			SVNRevision revisionStart, SVNRevision revisionEnd,
+			boolean stopOnCopy, boolean fetchChangePath, long limit,
+			boolean includeMergedRevisions, String[] requestedProperties,
+			ISVNLogMessageCallback callback) throws SVNClientException {
+		// TODO Auto-generated method stub
+		notImplementedYet();
+		
+	}
+
+	public void getLogMessages(SVNUrl url, SVNRevision pegRevision,
+			SVNRevision revisionStart, SVNRevision revisionEnd,
+			boolean stopOnCopy, boolean fetchChangePath, long limit,
+			boolean includeMergedRevisions, String[] requestedProperties,
+			ISVNLogMessageCallback callback) throws SVNClientException {
+		// TODO Auto-generated method stub
+		notImplementedYet();
+		
 	}
 
 }
