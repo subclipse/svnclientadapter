@@ -1,41 +1,34 @@
 package org.tigris.subversion.svnclientadapter.javahl;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
-import java.util.Stack;
 
 import org.tigris.subversion.javahl.ChangePath;
 import org.tigris.subversion.javahl.LogMessageCallback;
 import org.tigris.subversion.javahl.Revision;
+import org.tigris.subversion.svnclientadapter.ISVNLogMessageCallback;
 
 public class JhlLogMessageCallback implements LogMessageCallback {
 	
-	private List messages = new ArrayList();
-	private Stack stack = new Stack();
+	private ISVNLogMessageCallback worker = null;
 
+	public JhlLogMessageCallback(ISVNLogMessageCallback callback) {
+		super();
+		worker = callback;
+	}
 	
-	public JhlLogMessage[] getLogMessages() {
-		JhlLogMessage[] array = new JhlLogMessage[messages.size()];
-		return (JhlLogMessage[]) messages.toArray(array);
+	public JhlLogMessageCallback() {
+		super();
 	}
 
 	public void singleMessage(ChangePath[] changedPaths, long revision,
 			Map revprops, boolean hasChildren) {
+
 		if (revision == Revision.SVN_INVALID_REVNUM) {
-			if (!stack.empty())
-				stack.pop();
-			return;
-		}
-		JhlLogMessage msg = new JhlLogMessage(changedPaths, revision, revprops, hasChildren);
-		if (stack.empty()) {
-				messages.add(msg);
+			worker.singleMessage(null);
 		} else {
-			JhlLogMessage current = (JhlLogMessage) stack.peek();
-			current.addChild(msg);
+			worker.singleMessage(new JhlLogMessage(changedPaths, revision, revprops, hasChildren));
 		}
-		if (hasChildren)
-			stack.push(msg);
+				
 	}
 
 }

@@ -34,6 +34,9 @@ public interface ISVNClientAdapter {
     public final static String REPOSITORY_FSTYPE_BDB = "bdb";
 	/** constant identifying the "fsfs"  repository type */
     public final static String REPOSITORY_FSTYPE_FSFS = "fsfs";
+    
+    public final static String[] DEFAULT_LOG_PROPERTIES = new String[] {"svn:author", "svn:date", "svn:log"};
+
 	
 	/**
 	 * Returns whether the client adapter implementation is threadsafe
@@ -836,6 +839,63 @@ public interface ISVNClientAdapter {
             boolean fetchChangePath,
             long limit,
             boolean includeMergedRevisions)
+            throws SVNClientException;
+    
+    /**
+     * Retrieve the log messages for an item
+     * @param path          path to get the log message for.
+     * @param pegRevision   peg revision for URL
+     * @param revisionStart first revision to show
+     * @param revisionEnd   last revision to show
+     * @param stopOnCopy    do not continue on copy operations
+     * @param fetchChangePath  returns the paths of the changed items in the
+     *                      returned objects
+     * @param limit         limit the number of log messages (if 0 or less no
+     *                      limit)
+     * @param includeMergedRevisions include revisions that were merged
+     * @param requestedProperties the revision properties to return for each entry
+     * @param callback      callback class to receive log messages
+	 * @throws SVNClientException
+     */
+    public abstract void getLogMessages(
+            File path, 
+            SVNRevision pegRevision,
+            SVNRevision revisionStart,
+            SVNRevision revisionEnd,
+            boolean stopOnCopy,
+            boolean fetchChangePath,
+            long limit,
+            boolean includeMergedRevisions,
+            String[] requestedProperties,
+            ISVNLogMessageCallback callback)
+            throws SVNClientException;    
+    /**
+     * Retrieve the log messages for an item
+     * @param url           url to get the log message for.
+     * @param pegRevision   peg revision for URL
+     * @param revisionStart first revision to show
+     * @param revisionEnd   last revision to show
+     * @param stopOnCopy    do not continue on copy operations
+     * @param fetchChangePath  returns the paths of the changed items in the
+     *                      returned objects
+     * @param limit         limit the number of log messages (if 0 or less no
+     *                      limit)
+     * @param includeMergedRevisions include revisions that were merged
+     * @param requestedProperties the revision properties to return for each entry
+     * @param callback      callback class to receive log messages
+	 * @throws SVNClientException
+     */
+    public abstract void getLogMessages(
+            SVNUrl url, 
+            SVNRevision pegRevision,
+            SVNRevision revisionStart,
+            SVNRevision revisionEnd,
+            boolean stopOnCopy,
+            boolean fetchChangePath,
+            long limit,
+            boolean includeMergedRevisions,
+            String[] requestedProperties,
+            ISVNLogMessageCallback callback)
             throws SVNClientException;
     
 	/**

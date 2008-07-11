@@ -90,5 +90,16 @@ public interface ISVNLogMessage {
      * log option was specified.
      * @return the revisions merged by this commit
      */
-    public abstract ISVNLogMessage[] getChildMessages();    
+    public abstract ISVNLogMessage[] getChildMessages();
+
+
+    /**
+     * Add a child logMessage to an existing message
+     */
+	public abstract void addChild(ISVNLogMessage msg);
+
+    /**
+     * Does this logMessage have any children
+     */
+	public abstract boolean hasChildren();    
 }

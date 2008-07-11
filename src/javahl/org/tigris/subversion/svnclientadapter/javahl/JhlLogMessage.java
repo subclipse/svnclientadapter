@@ -64,7 +64,7 @@ public class JhlLogMessage implements ISVNLogMessage {
 		}
 	}
 
-	public void addChild(JhlLogMessage msg) {
+	public void addChild(ISVNLogMessage msg) {
 		if (children == null)
 			children = new ArrayList();
 		children.add(msg);
@@ -140,6 +140,10 @@ public class JhlLogMessage implements ISVNLogMessage {
 		if (logDate == null) 
 			return 0L;
 		return logDate.getTimeMicros();
+	}
+
+	public boolean hasChildren() {
+		return hasChildren;
 	}
 
 }
