@@ -660,7 +660,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 			notificationHandler.setCommand(ISVNNotifyListener.Command.COPY);
 			CopySource[] copySources = new CopySource[srcPaths.length];
 			for (int i = 0; i < srcPaths.length; i++) 
-				copySources[i] = new CopySource(fileToSVNPath(srcPaths[i], false), Revision.WORKING, Revision.HEAD);	
+				copySources[i] = new CopySource(fileToSVNPath(srcPaths[i], false), Revision.WORKING, Revision.WORKING);	
 			String dest = destUrl.toString();
 			StringBuffer commandLine = new StringBuffer("copy");
 			for (int i = 0; i < srcPaths.length; i++)
@@ -691,7 +691,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 		try {
 			notificationHandler.setCommand(ISVNNotifyListener.Command.COPY);
 			String dest = fileToSVNPath(destPath, false);		
-			CopySource[] sources = { new CopySource(srcUrl.toString(), JhlConverter.convert(revision), JhlConverter.convert(revision)) };			
+			CopySource[] sources = { new CopySource(srcUrl.toString(), JhlConverter.convert(revision), Revision.HEAD) };			
 			notificationHandler.logCommandLine("copy " + srcUrl + " " + dest);
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(destPath));
 			svnClient.copy(sources, dest, null, copyAsChild, makeParents, null);
