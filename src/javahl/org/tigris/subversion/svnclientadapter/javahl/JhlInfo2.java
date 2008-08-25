@@ -56,6 +56,7 @@ public class JhlInfo2 implements ISVNInfo {
 	 * @see org.tigris.subversion.svnclientadapter.ISVNInfo#getFile()
 	 */
 	public File getFile() {
+		if (file == null) return null;
 		try {
 			return file.getCanonicalFile();
 		} catch (IOException e) {
