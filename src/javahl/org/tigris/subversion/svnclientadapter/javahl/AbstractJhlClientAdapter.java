@@ -301,8 +301,8 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 
             for (int i = 0; i < paths.length; i++) {
                 files[i] = fileToSVNPath(paths[i], false);
-                commandLine+=" "+ files[i];
             }
+            commandLine = appendPaths(commandLine, files);
             notificationHandler.logCommandLine(commandLine);
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(paths));
 
@@ -664,10 +664,12 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 			for (int i = 0; i < srcPaths.length; i++) 
 				copySources[i] = new CopySource(fileToSVNPath(srcPaths[i], false), Revision.WORKING, Revision.WORKING);	
 			String dest = destUrl.toString();
-			StringBuffer commandLine = new StringBuffer("copy");
-			for (int i = 0; i < srcPaths.length; i++)
-				commandLine.append(" " + fileToSVNPath(srcPaths[i], false));
-			commandLine.append(" " + dest);
+			String commandLine = "copy";
+			String[] paths = new String[srcPaths.length];
+			for (int i = 0; i < srcPaths.length; i++) {
+				paths[i] = fileToSVNPath(srcPaths[i], false);
+			}
+			commandLine = appendPaths(commandLine, paths) + " " + dest;
 			notificationHandler.logCommandLine(commandLine.toString());
 			notificationHandler.setBaseDir();
 			svnClient.copy(copySources, dest, message, copyAsChild, makeParents, null);
@@ -746,11 +748,13 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 			CopySource[] copySources = new CopySource[srcUrls.length];
 			for (int i = 0; i < srcUrls.length; i++) copySources[i] = new CopySource(srcUrls[i].toString(), JhlConverter.convert(revision), JhlConverter.convert(SVNRevision.HEAD));
 			String dest = destUrl.toString();
-			StringBuffer commandLine = new StringBuffer("copy -r" + revision.toString());
-			for (int i = 0; i < srcUrls.length; i++)
-				commandLine.append(" " + srcUrls[i]);
-			commandLine.append(" " + dest);
-			notificationHandler.logCommandLine(commandLine.toString());
+			String commandLine = "copy -r" + revision.toString();
+			String[] paths = new String[srcUrls.length];
+			for (int i = 0; i < srcUrls.length; i++) {
+				paths[i] = srcUrls.toString();
+			}
+			commandLine = appendPaths(commandLine, paths) + " " + dest;
+			notificationHandler.logCommandLine(commandLine);
 			notificationHandler.setBaseDir();
 			svnClient.copy(copySources, dest, message, copyAsChild, makeParents, null);
 		} catch (ClientException e) {
@@ -773,8 +777,8 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
             String targets[] = new String[url.length];
             for (int i = 0; i < url.length;i++) {
                 targets[i] = url[i].toString(); 
-                commandLine += " "+targets[i];
             }
+            commandLine = appendPaths(commandLine, targets);
             notificationHandler.logCommandLine(commandLine);
 			notificationHandler.setBaseDir();
 		    svnClient.remove(targets,message,false);
@@ -797,8 +801,8 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
             
             for (int i = 0; i < file.length;i++) {
                 targets[i] = fileToSVNPath(file[i], false);
-                commandLine += " "+targets[i];
             }
+            commandLine = appendPaths(commandLine, targets);
             
             notificationHandler.logCommandLine(commandLine);
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(file));
@@ -2058,8 +2062,8 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 
             for (int i = 0; i < paths.length; i++) {
                 files[i] = fileToSVNPath(paths[i], false);
-                commandLine+=" "+files[i];
             }
+            commandLine = appendPaths(commandLine, files);
             notificationHandler.logCommandLine(commandLine);
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(paths));
 
@@ -2087,8 +2091,8 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
     
             for (int i = 0; i < paths.length; i++) {
                 files[i] = fileToSVNPath(paths[i], false);
-                commandLine+=" "+files[i];
             }
+            commandLine = appendPaths(commandLine, files);
             notificationHandler.logCommandLine(commandLine);
     		notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(paths));
     
@@ -2559,6 +2563,15 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 			notificationHandler.logException(e);
 			throw new SVNClientException(e);
 		}
+	}
+	
+	private String appendPaths(String commandLine, String[] paths) {
+		StringBuffer stringBuffer = new StringBuffer(commandLine);
+		if (paths.length > 5) stringBuffer.append(" (" + paths.length + " paths specified)");
+		else {
+			for (int i = 0; i < paths.length; i++) stringBuffer.append(" " + paths[i]);
+		}
+		return stringBuffer.toString();
 	}
 
 }
