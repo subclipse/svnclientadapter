@@ -29,6 +29,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.StringTokenizer;
 
 import org.tigris.subversion.javahl.ClientException;
 import org.tigris.subversion.javahl.CopySource;
@@ -293,7 +294,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
         		message = "";
             notificationHandler.setCommand(ISVNNotifyListener.Command.COMMIT);
             String[] files = new String[paths.length];
-            String commandLine = "commit -m \""+message+"\"";
+            String commandLine = "commit -m \""+getFirstMessageLine(message)+"\"";
             if (!recurse)
                 commandLine+=" -N";
             if (keepLocks)
@@ -772,7 +773,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
         		message = "";
             notificationHandler.setCommand(ISVNNotifyListener.Command.REMOVE);
 
-            String commandLine = "delete -m \""+message+"\"";
+            String commandLine = "delete -m \""+getFirstMessageLine(message)+"\"";
             
             String targets[] = new String[url.length];
             for (int i = 0; i < url.length;i++) {
@@ -873,7 +874,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 			String dest = url.toString();
 			notificationHandler.logCommandLine(
 				"import -m \""
-					+ message
+					+ getFirstMessageLine(message)
 					+ "\" "
 					+ (recurse ? "" : "-N ")
 					+ src
@@ -950,7 +951,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 			String dest = destUrl.toString();
 			notificationHandler.logCommandLine(
 				"move -m \""
-					+ message
+					+ getFirstMessageLine(message)
 					+ ' '
 					+ src
 					+ ' '
@@ -2272,10 +2273,10 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 		    String target = url.toString();
 		    if (makeParents)
 	            notificationHandler.logCommandLine(
-	                    "mkdir --parents -m \""+message+"\" "+target);
+	                    "mkdir --parents -m \""+getFirstMessageLine(message)+"\" "+target);
 		    else
 	            notificationHandler.logCommandLine(
-	                "mkdir -m \""+message+"\" "+target);
+	                "mkdir -m \""+getFirstMessageLine(message)+"\" "+target);
 			notificationHandler.setBaseDir();
             svnClient.mkdir(new String[] { target },message, makeParents, null);
         } catch (ClientException e) {
@@ -2572,6 +2573,14 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 			for (int i = 0; i < paths.length; i++) stringBuffer.append(" " + paths[i]);
 		}
 		return stringBuffer.toString();
+	}
+	
+	private String getFirstMessageLine(String message) {
+		StringTokenizer tokenizer = new StringTokenizer(message, "\r\n");
+		int count = tokenizer.countTokens();
+		if (count > 1) return tokenizer.nextToken() + "...";
+		else return message;
+		
 	}
 
 }
