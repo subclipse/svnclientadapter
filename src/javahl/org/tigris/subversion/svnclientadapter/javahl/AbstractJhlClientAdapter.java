@@ -1648,7 +1648,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
             String commandLine = "blame ";
             if (includeMergedRevisions)
             	commandLine += "-g ";
-            commandLine = commandLine + "-r " + revisionEnd.toString() + " ";
+            commandLine = commandLine + "-r " + revisionStart.toString() + ":" + revisionEnd.toString() + " ";
             commandLine = commandLine + target + "@HEAD";
             notificationHandler.logCommandLine(commandLine);
 			notificationHandler.setBaseDir();
