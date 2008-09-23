@@ -138,9 +138,15 @@ public class Annotations implements ISVNAnnotations {
 		public Annotation(long revision, String author, Date changed,
 				String line) {
 			super();
-			this.revision = revision;
-			this.author = author;
-			this.changed = changed;
+			if (revision == -1) {
+				this.revision = 0;
+				this.author = "No change";
+				this.changed = new Date();
+			} else {
+				this.revision = revision;
+				this.author = author;
+				this.changed = changed;
+			}
 			this.line = line;
 		}
 
