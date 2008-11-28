@@ -752,7 +752,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 			String commandLine = "copy -r" + revision.toString();
 			String[] paths = new String[srcUrls.length];
 			for (int i = 0; i < srcUrls.length; i++) {
-				paths[i] = srcUrls.toString();
+				paths[i] = srcUrls[i].toString();
 			}
 			commandLine = appendPaths(commandLine, paths) + " " + dest;
 			notificationHandler.logCommandLine(commandLine);
