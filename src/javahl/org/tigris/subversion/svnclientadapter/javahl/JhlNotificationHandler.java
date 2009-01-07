@@ -18,7 +18,6 @@
  ******************************************************************************/
 package org.tigris.subversion.svnclientadapter.javahl;
 
-import org.tigris.subversion.javahl.Lock;
 import org.tigris.subversion.javahl.NodeKind;
 import org.tigris.subversion.javahl.Notify2;
 import org.tigris.subversion.javahl.NotifyAction;
@@ -40,8 +39,6 @@ import org.tigris.subversion.svnclientadapter.utils.Messages;
  * 
  * It mimics svn output (see subversion/clients/cmdline/notify.c)
  * 
- * @author Cédric Chabanois 
- *         <a href="mailto:cchabanois@ifrance.com">cchabanois@ifrance.com</a>
  *
  */
 public class JhlNotificationHandler extends SVNNotificationHandler implements Notify2 {
@@ -55,6 +52,7 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements No
     private int merges;
     private int exists;
     private int propConflicts;
+    private int treeConflicts;
     private int propMerges;
     private int propUpdates;
     private boolean inExternal;
@@ -67,227 +65,192 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements No
     private static final int COMMIT_ACROSS_WC_COMPLETED = -11;
     private static final int ENDED_ABNORMAL = -1;
 
-    /* (non-Javadoc)
-     * @see org.tigris.subversion.javahl.Notify2#onNotify(org.tigris.subversion.javahl.NotifyInformation)
-     */
     public void onNotify(NotifyInformation info) {
-        this.onNotify(info.getPath(),
-                      info.getAction(),
-                      info.getKind(),
-                      info.getMimeType(),
-                      info.getContentState(),
-                      info.getPropState(),
-                      info.getRevision(),
-                      info.getLock(),
-                      info.getErrMsg(),
-                      info.getMergeRange(),
-                      info.getChangelistName());
-    }
-    
-    /**
-     * Handler for Subversion notifications.
-     *
-     * Override this function to allow Subversion to send notifications
-     * @param path on which action happen
-     * @param action subversion action, see svn_wc_notify_action_t
-     * @param kind node kind of path after action occurred
-     * @param mimeType mime type of path after action occurred
-     * @param contentState state of content after action occurred
-     * @param propState state of properties after action occurred
-     * @param revision revision number  after action occurred
-     */
-    private void onNotify(
-        String path,
-        int action,
-        int kind,
-        String mimeType,
-        int contentState,
-        int propState,
-        long revision,
-        Lock lock,
-		String errorMsg,
-		RevisionRange mergeRange,
-		String changeListName) {
 
         // for some actions, we don't want to call notifyListenersOfChange :
         // when the status of the target has not been modified 
         boolean notify = true;
 
-        switch (action) {
+        switch (info.getAction()) {
         		case ENDED_ABNORMAL:
         		   if (command == ISVNNotifyListener.Command.COMMIT)
          		   logError(Messages.bind("notify.commit.abnormal")); //$NON-NLS-1$
         		   else
         		       logError(Messages.bind("notify.end.abnormal")); //$NON-NLS-1$
-        		   if (errorMsg != null)
-        			  logError(errorMsg); 
+        		   if (info.getErrMsg() != null)
+        			  logError(info.getErrMsg()); 
                 notify = false;                                
                 break;
         	case NotifyAction.foreign_merge_begin :
-        		if (mergeRange != null) {
-	        		if (mergeRange.getFromRevision().equals(mergeRange.getToRevision()))
-	        			logMessage("--- Merging (from foreign repository) r" + mergeRange.getFromRevision().toString() + " into " + path);
+        		if (info.getMergeRange() != null) {
+	        		if (info.getMergeRange().getFromRevision().equals(info.getMergeRange().getToRevision()))
+	        			logMessage("--- Merging (from foreign repository) r" + info.getMergeRange().getFromRevision().toString() + " into " + info.getPath());
 	        		else
-	        			if (mergeRange.getToRevision().equals(Revision.HEAD) || 
-	        					RevisionRange.getRevisionAsLong(mergeRange.getToRevision()).longValue() > RevisionRange.getRevisionAsLong(mergeRange.getFromRevision()).longValue())
-	        				logMessage("--- Merging (from foreign repository) r" + mergeRange.getFromRevision().toString() + " through r" + mergeRange.getToRevision().toString() + " into " + path);
+	        			if (info.getMergeRange().getToRevision().equals(Revision.HEAD) || 
+	        					RevisionRange.getRevisionAsLong(info.getMergeRange().getToRevision()).longValue() > RevisionRange.getRevisionAsLong(info.getMergeRange().getFromRevision()).longValue())
+	        				logMessage("--- Merging (from foreign repository) r" + info.getMergeRange().getFromRevision().toString() + " through r" + info.getMergeRange().getToRevision().toString() + " into " + info.getPath());
 	        			else
-	        				logMessage("--- Reverse-merging (from foreign repository) r" + mergeRange.getFromRevision().toString() + " through r" + mergeRange.getToRevision().toString() + " into " + path);
+	        				logMessage("--- Reverse-merging (from foreign repository) r" + info.getMergeRange().getFromRevision().toString() + " through r" + info.getMergeRange().getToRevision().toString() + " into " + info.getPath());
 		        } else {
-	        		logMessage("--- Merging differences between foreign repository URLs into " + path);
+	        		logMessage("--- Merging differences between foreign repository URLs into " + info.getPath());
 	        	}
         		notify = false;
         		break;
         	case NotifyAction.merge_begin :
-        		if (mergeRange != null) {
-	        		if (mergeRange.getFromRevision().equals(mergeRange.getToRevision()))
-	        			logMessage("--- Merging r" + mergeRange.getFromRevision().toString() + " into " + path);
+        		if (info.getMergeRange() != null) {
+	        		if (info.getMergeRange().getFromRevision().equals(info.getMergeRange().getToRevision()))
+	        			logMessage("--- Merging r" + info.getMergeRange().getFromRevision().toString() + " into " + info.getPath());
 	        		else
-	        			if (mergeRange.getToRevision().equals(Revision.HEAD) || 
-	        					RevisionRange.getRevisionAsLong(mergeRange.getToRevision()).longValue() > RevisionRange.getRevisionAsLong(mergeRange.getFromRevision()).longValue())
-	        				logMessage("--- Merging r" + mergeRange.getFromRevision().toString() + " through r" + mergeRange.getToRevision().toString() + " into " + path);
+	        			if (info.getMergeRange().getToRevision().equals(Revision.HEAD) || 
+	        					RevisionRange.getRevisionAsLong(info.getMergeRange().getToRevision()).longValue() > RevisionRange.getRevisionAsLong(info.getMergeRange().getFromRevision()).longValue())
+	        				logMessage("--- Merging r" + info.getMergeRange().getFromRevision().toString() + " through r" + info.getMergeRange().getToRevision().toString() + " into " + info.getPath());
 	        			else
-	        				logMessage("--- Reverse-merging r" + mergeRange.getFromRevision().toString() + " through r" + mergeRange.getToRevision().toString() + " into " + path);
+	        				logMessage("--- Reverse-merging r" + info.getMergeRange().getFromRevision().toString() + " through r" + info.getMergeRange().getToRevision().toString() + " into " + info.getPath());
 		        } else {
-	        		logMessage("--- Merging differences between repository URLs into " + path);
+	        		logMessage("--- Merging differences between repository URLs into " + info.getPath());
 	        	}
         		notify = false;
         		break;
             case NotifyAction.skip :
-                logMessage(Messages.bind("notify.skipped", path)); //$NON-NLS-1$
+                logMessage(Messages.bind("notify.skipped", info.getPath())); //$NON-NLS-1$
                 notify = false;                                
                 break;
             case NotifyAction.failed_lock: 
-            	if (errorMsg == null)
-            		logError(Messages.bind("notify.lock.failed", path)); //$NON-NLS-1$
+            	if (info.getErrMsg() == null)
+            		logError(Messages.bind("notify.lock.failed", info.getPath())); //$NON-NLS-1$
             	else
-            		logError(errorMsg);
+            		logError(info.getErrMsg());
                 notify = false;
                 break;
             case NotifyAction.failed_unlock:
-            	if (errorMsg == null)
-            		logError(Messages.bind("notify.unlock.failed", path)); //$NON-NLS-1$
+            	if (info.getErrMsg() == null)
+            		logError(Messages.bind("notify.unlock.failed", info.getPath())); //$NON-NLS-1$
             	else
-            		logError(errorMsg);
+            		logError(info.getErrMsg());
             	notify = false;
             	break;
             case NotifyAction.locked:
-                if (lock != null && lock.getOwner() != null)
-                    logMessage(Messages.bind("notify.lock.other", lock.getPath(), lock.getOwner())); //$NON-NLS-1$
+                if (info.getLock() != null && info.getLock().getOwner() != null)
+                    logMessage(Messages.bind("notify.lock.other", info.getLock().getPath(), info.getLock().getOwner())); //$NON-NLS-1$
                 else
-                    logMessage(Messages.bind("notify.lock", path)); //$NON-NLS-1$
+                    logMessage(Messages.bind("notify.lock", info.getPath())); //$NON-NLS-1$
         	    notify = false; // for JavaHL bug
             	break;
             case NotifyAction.unlocked:
-                logMessage(Messages.bind("notify.unlock", path)); //$NON-NLS-1$
+                logMessage(Messages.bind("notify.unlock", info.getPath())); //$NON-NLS-1$
             	notify = false; // for JavaHL bug
             	break;
             case NotifyAction.update_delete :
-                logMessage("D  " + path); //$NON-NLS-1$
+                logMessage("D   " + info.getPath()); //$NON-NLS-1$
                 receivedSomeChange = true;
                 deletes += 1;
                 break;
             case NotifyAction.update_replaced :
-                logMessage("R  " + path); //$NON-NLS-1$
+                logMessage("R   " + info.getPath()); //$NON-NLS-1$
                 receivedSomeChange = true;
                 adds += 1;
                 deletes += 1;
                 break;
             case NotifyAction.update_add :
-                logMessage("A  " + path); //$NON-NLS-1$
+                logMessage("A   " + info.getPath()); //$NON-NLS-1$
                 receivedSomeChange = true;
                 adds += 1;
                 break;
             case NotifyAction.exists :
-                logMessage("E  " + path); //$NON-NLS-1$
+                logMessage("E   " + info.getPath()); //$NON-NLS-1$
                 receivedSomeChange = true;
                 exists += 1;
                 break;
             case NotifyAction.restore :
-                logMessage(Messages.bind("notify.restored", path)); //$NON-NLS-1$
+                logMessage(Messages.bind("notify.restored", info.getPath())); //$NON-NLS-1$
                 break;
             case NotifyAction.revert :
-                logMessage(Messages.bind("notify.reverted", path)); //$NON-NLS-1$
+                logMessage(Messages.bind("notify.reverted", info.getPath())); //$NON-NLS-1$
                 break;
             case NotifyAction.failed_revert :
-                logError(Messages.bind("notify.revert.failed", path)); //$NON-NLS-1$
+                logError(Messages.bind("notify.revert.failed", info.getPath())); //$NON-NLS-1$
                 notify = false;
                 break;
             case NotifyAction.resolved :
-                logMessage(Messages.bind("notify.resolved", path)); //$NON-NLS-1$
+                logMessage(Messages.bind("notify.resolved", info.getPath())); //$NON-NLS-1$
                 break;
             case NotifyAction.add :
-                logMessage("A         " + path); //$NON-NLS-1$
+                logMessage("A         " + info.getPath()); //$NON-NLS-1$
                 break;
             case NotifyAction.delete :
-                logMessage("D         " + path); //$NON-NLS-1$
+                logMessage("D         " + info.getPath()); //$NON-NLS-1$
                 receivedSomeChange = true;
                 break;
+            case NotifyAction.tree_conflict :
+                logError("  C " + info.getPath()); //$NON-NLS-1$
+                receivedSomeChange = true;
+                treeConflicts += 1;
+            	break;
             case NotifyAction.update_update :
                 boolean error = false;
-                if (!((kind == NodeKind.dir)
-                    && ((propState == NotifyStatus.inapplicable)
-                        || (propState == NotifyStatus.unknown)
-                        || (propState == NotifyStatus.unchanged)))) {
+                if (!((info.getKind() == NodeKind.dir)
+                    && ((info.getPropState() == NotifyStatus.inapplicable)
+                        || (info.getPropState() == NotifyStatus.unknown)
+                        || (info.getPropState() == NotifyStatus.unchanged)))) {
                     receivedSomeChange = true;
                     char[] statecharBuf = new char[] { ' ', ' ' };
-                    if (kind == NodeKind.file) {
-                        if (contentState == NotifyStatus.conflicted) {
+                    if (info.getKind() == NodeKind.file) {
+                        if (info.getContentState() == NotifyStatus.conflicted) {
                             statecharBuf[0] = 'C';
                             conflicts += 1;
                             error = true;
                         }
-                        else if (contentState == NotifyStatus.merged) {
+                        else if (info.getContentState() == NotifyStatus.merged) {
                             statecharBuf[0] = 'G';
                             merges += 1;
                             error = true;
                         }
-                        else if (contentState == NotifyStatus.changed) {
+                        else if (info.getContentState() == NotifyStatus.changed) {
                             statecharBuf[0] = 'U';
                             updates += 1;
                         }
-                        else if (contentState == NotifyStatus.unchanged && command == ISVNNotifyListener.Command.MERGE
-                                && propState < NotifyStatus.obstructed)
+                        else if (info.getContentState() == NotifyStatus.unchanged && command == ISVNNotifyListener.Command.MERGE
+                                && info.getPropState() < NotifyStatus.obstructed)
                             break;
                     }
-                    if (propState == NotifyStatus.conflicted) {
+                    if (info.getPropState() == NotifyStatus.conflicted) {
                         statecharBuf[1] = 'C';
                         propConflicts += 1;
                         error = true;
                     }
-                    else if (propState == NotifyStatus.merged) {
+                    else if (info.getPropState() == NotifyStatus.merged) {
                         statecharBuf[1] = 'G';
                         propMerges += 1;
                         error = true;
                     }
-                    else if (propState == NotifyStatus.changed) {
+                    else if (info.getPropState() == NotifyStatus.changed) {
                         statecharBuf[1] = 'U';
                         propUpdates += 1;
                     }
                     if (command == ISVNNotifyListener.Command.MERGE && 
-                    		contentState == NotifyStatus.unknown && propState == NotifyStatus.unknown)
+                    		info.getContentState() == NotifyStatus.unknown && info.getPropState() == NotifyStatus.unknown)
                     	break;
                     if (error)
-                        logError("" + statecharBuf[0] + statecharBuf[1] + " " + path);                       //$NON-NLS-1$ //$NON-NLS-2$
+                        logError("" + statecharBuf[0] + statecharBuf[1] + "  " + info.getPath());                       //$NON-NLS-1$ //$NON-NLS-2$
                     else
-                        logMessage("" + statecharBuf[0] + statecharBuf[1] + " " + path);                       //$NON-NLS-1$ //$NON-NLS-2$
+                        logMessage("" + statecharBuf[0] + statecharBuf[1] + "  " + info.getPath());                       //$NON-NLS-1$ //$NON-NLS-2$
                 }
                 break;
             case NotifyAction.update_external :
-                logMessage(Messages.bind("notify.update.external", path)); //$NON-NLS-1$
+                logMessage(Messages.bind("notify.update.external", info.getPath())); //$NON-NLS-1$
             	inExternal = true;
                 break;
             case NotifyAction.update_completed :
                 notify = false;
-                if (revision >= 0) {
-                    logRevision( revision, path );
+                if (info.getRevision() >= 0) {
+                    logRevision( info.getRevision(), info.getPath() );
 
                     if (command == ISVNNotifyListener.Command.EXPORT) {
-                        logCompleted(Messages.bind("notify.export", Long.toString(revision))); //$NON-NLS-1$
+                        logCompleted(Messages.bind("notify.export", Long.toString(info.getRevision()))); //$NON-NLS-1$
                     }                       
                     else 
                     if (command == ISVNNotifyListener.Command.CHECKOUT) {
-                        logCompleted(Messages.bind("notify.checkout", Long.toString(revision))); //$NON-NLS-1$
+                        logCompleted(Messages.bind("notify.checkout", Long.toString(info.getRevision()))); //$NON-NLS-1$
                     }                       
                     else
                     if (receivedSomeChange) {
@@ -295,15 +258,15 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements No
                         // Hold off until the releaseStats() method
                         // is executed.  Keeps noise out of the log.
                             if (inExternal)
-                                lastExternalUpdate = Messages.bind("notify.update", Long.toString(revision)); //$NON-NLS-1$
+                                lastExternalUpdate = Messages.bind("notify.update", Long.toString(info.getRevision())); //$NON-NLS-1$
                             else
-                                lastUpdate = Messages.bind("notify.update", Long.toString(revision)); //$NON-NLS-1$
+                                lastUpdate = Messages.bind("notify.update", Long.toString(info.getRevision())); //$NON-NLS-1$
                             
                         } else
-                            logCompleted(Messages.bind("notify.update", Long.toString(revision))); //$NON-NLS-1$
+                            logCompleted(Messages.bind("notify.update", Long.toString(info.getRevision()))); //$NON-NLS-1$
                     }
                     else {
-                        logCompleted(Messages.bind("notify.at", Long.toString(revision))); //$NON-NLS-1$
+                        logCompleted(Messages.bind("notify.at", Long.toString(info.getRevision()))); //$NON-NLS-1$
                     }
                 } else
                 {
@@ -321,28 +284,28 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements No
                 break;
             case NotifyAction.status_external :
               if (!skipCommand())
-                logMessage(Messages.bind("notify.status.external", path)); //$NON-NLS-1$
+                logMessage(Messages.bind("notify.status.external", info.getPath())); //$NON-NLS-1$
               notify = false;
               break;
             case NotifyAction.status_completed :
               notify = false;
-              if (revision >= 0) {
-                logRevision(revision, path);
+              if (info.getRevision() >= 0) {
+                logRevision(info.getRevision(), info.getPath());
                 if (!skipCommand())
-                    logMessage(Messages.bind("notify.status.revision", Long.toString(revision))); //$NON-NLS-1$
+                    logMessage(Messages.bind("notify.status.revision", Long.toString(info.getRevision()))); //$NON-NLS-1$
               }
               break;                
             case NotifyAction.commit_modified :
-                logMessage(Messages.bind("notify.commit.modified", path)); //$NON-NLS-1$
+                logMessage(Messages.bind("notify.commit.modified", info.getPath())); //$NON-NLS-1$
                 break;
             case NotifyAction.commit_added :
-                logMessage(Messages.bind("notify.commit.add", path)); //$NON-NLS-1$
+                logMessage(Messages.bind("notify.commit.add", info.getPath())); //$NON-NLS-1$
                 break;
             case NotifyAction.commit_deleted :
-                logMessage(Messages.bind("notify.commit.delete", path)); //$NON-NLS-1$
+                logMessage(Messages.bind("notify.commit.delete", info.getPath())); //$NON-NLS-1$
                 break;
             case NotifyAction.commit_replaced :
-                logMessage(Messages.bind("notify.commit.replace", path)); //$NON-NLS-1$
+                logMessage(Messages.bind("notify.commit.replace", info.getPath())); //$NON-NLS-1$
                 break;
             case NotifyAction.commit_postfix_txdelta :
                 notify = false;
@@ -353,11 +316,15 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements No
                 break;                              
             case COMMIT_ACROSS_WC_COMPLETED :
                 notify = false;
-                logCompleted(Messages.bind("notify.commit", Long.toString(revision))); //$NON-NLS-1$
+                logCompleted(Messages.bind("notify.commit", Long.toString(info.getRevision()))); //$NON-NLS-1$
+                break;
+            default:
+            	logMessage("Unknown action received: " + info.getAction());
+                	
         }
         if (notify) {
             // only when the status changed
-            notifyListenersOfChange(path, JhlConverter.convertNodeKind(kind));                
+            notifyListenersOfChange(info.getPath(), JhlConverter.convertNodeKind(info.getKind()));                
         }
     }
 
@@ -392,6 +359,7 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements No
         merges = 0;
         exists = 0;
         propConflicts = 0;
+        treeConflicts = 0;
         propMerges = 0;
         propUpdates = 0;
         inExternal = false;
@@ -406,8 +374,6 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements No
         if (statsCommand) {
 	        if (fileStats()) {
 	            logMessage(Messages.bind("notify.stats.file.head")); //$NON-NLS-1$
-		        if (conflicts > 0)
-		            logMessage(Messages.bind("notify.stats.conflict", Integer.toString(conflicts))); //$NON-NLS-1$
 		        if (merges > 0)
 		            logMessage(Messages.bind("notify.stats.merge", Integer.toString(merges))); //$NON-NLS-1$
 		        if (deletes > 0)
@@ -421,12 +387,20 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements No
 	        }
 	        if (propStats()){
 	            logMessage(Messages.bind("notify.stats.prop.head")); //$NON-NLS-1$
-		        if (propConflicts > 0)
-		            logMessage(Messages.bind("notify.stats.conflict", Integer.toString(propConflicts))); //$NON-NLS-1$
 		        if (propMerges > 0)
 		            logMessage(Messages.bind("notify.stats.merge", Integer.toString(propMerges))); //$NON-NLS-1$
 		        if (propUpdates > 0)
 		            logMessage(Messages.bind("notify.stats.update", Integer.toString(propUpdates))); //$NON-NLS-1$
+	        }
+	        if (conflictStats()) {
+	            logMessage(Messages.bind("notify.stats.conflict.head")); //$NON-NLS-1$
+		        if (conflicts > 0)
+		            logMessage(Messages.bind("notify.stats.conflict", Integer.toString(conflicts))); //$NON-NLS-1$
+		        if (propConflicts > 0)
+		            logMessage(Messages.bind("notify.stats.prop.conflicts", Integer.toString(propConflicts))); //$NON-NLS-1$
+		        if (treeConflicts > 0) {
+		            logMessage(Messages.bind("notify.stats.tree.conflicts", Integer.toString(treeConflicts))); //$NON-NLS-1$
+		        }
 	        }
 	        statsCommand = false;
 	        clearStats();
@@ -435,14 +409,21 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements No
     
     private boolean fileStats() {
         if (updates > 0 || adds > 0 || deletes > 0 
-                || conflicts > 0 || merges > 0 || exists > 0)
+                || merges > 0 || exists > 0)
             return true;
         return false;
     }
+
     
+    private boolean conflictStats() {
+        if (treeConflicts > 0 || propConflicts > 0
+                || conflicts > 0)
+            return true;
+        return false;
+    }
+
     private boolean propStats() {
-        if (propUpdates > 0
-                || propConflicts > 0
+        if (propUpdates > 0               
                 || propMerges > 0)
             return true;
         return false;
