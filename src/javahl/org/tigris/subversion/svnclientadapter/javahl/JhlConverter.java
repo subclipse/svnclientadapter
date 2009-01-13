@@ -264,6 +264,7 @@ public class JhlConverter {
     }
     
     public static SVNConflictDescriptor convertConflictDescriptor(ConflictDescriptor d) {
+    	if (d == null) return null;
     	return new SVNConflictDescriptor(d.getPath(), d.getKind(), d.getNodeKind(),
     			d.getPropertyName(), d.isBinary(),
                 d.getMIMEType(), d.getAction(), d.getReason(), d.getOperation(),
