@@ -25,6 +25,7 @@ import java.util.Date;
 import org.tigris.subversion.javahl.Status;
 import org.tigris.subversion.svnclientadapter.ISVNInfo;
 import org.tigris.subversion.svnclientadapter.ISVNStatus;
+import org.tigris.subversion.svnclientadapter.SVNConflictDescriptor;
 import org.tigris.subversion.svnclientadapter.SVNStatusKind;
 import org.tigris.subversion.svnclientadapter.SVNNodeKind;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
@@ -284,6 +285,27 @@ public class JhlStatus implements ISVNStatus {
     public String getLockComment() {
         return _s.getLockComment();
     }
+
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getTreeConflicted()
+     */
+	public boolean hasTreeConflict() {
+		return _s.hasTreeConflict();
+	}
+	
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNStatus#isFileExternal()
+     */
+	public boolean isFileExternal() {
+		return _s.isFileExternal();
+	}	
+
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getConflictDescriptor()
+     */
+	public SVNConflictDescriptor getConflictDescriptor() {
+		return JhlConverter.convertConflictDescriptor(_s.getConflictDescriptor());
+	}
     
     public void updateFromInfo(ISVNInfo info) {
     	lastChangedRevision = info.getLastChangedRevision();
@@ -337,4 +359,5 @@ public class JhlStatus implements ISVNStatus {
     		return (url != null) ? url : super.getUrlString();
     	}
     }
+
 }

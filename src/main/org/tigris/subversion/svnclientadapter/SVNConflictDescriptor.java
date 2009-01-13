@@ -45,6 +45,7 @@ public class SVNConflictDescriptor
 
     private int action;
     private int reason;
+    private int operation;
 
     // File paths, present only when the conflict involves the merging
     // of two files descended from a common ancestor, here are the
@@ -57,7 +58,7 @@ public class SVNConflictDescriptor
 
     public SVNConflictDescriptor(String path, int conflictKind, int nodeKind, 
     		           String propertyName, boolean isBinary,
-                       String mimeType, int action, int reason,
+                       String mimeType, int action, int reason, int operation,
                        String basePath, String theirPath,
                        String myPath, String mergedPath)
     {
@@ -69,6 +70,7 @@ public class SVNConflictDescriptor
         this.mimeType = mimeType;
         this.action = action;
         this.reason = reason;
+        this.operation = operation;
         this.basePath = basePath;
         this.theirPath = theirPath;
         this.myPath = myPath;
@@ -113,6 +115,11 @@ public class SVNConflictDescriptor
     public int getReason()
     {
         return reason;
+    }
+    
+    public int getOperation()
+    {
+    	return operation;
     }
 
     public String getBasePath()

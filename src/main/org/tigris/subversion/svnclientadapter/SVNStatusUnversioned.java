@@ -222,4 +222,27 @@ public class SVNStatusUnversioned implements ISVNStatus {
     public String getLockOwner() {
         return null;
     }
+
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getConflictDescriptor()
+     */
+	public SVNConflictDescriptor getConflictDescriptor() {
+		return null;
+	}
+
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNStatus#hasTreeConflict()
+     */
+	public boolean hasTreeConflict() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNStatus#isFileExternal()
+     */
+	public boolean isFileExternal() {
+		return false;
+	}
 }

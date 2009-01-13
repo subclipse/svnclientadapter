@@ -155,5 +155,23 @@ public interface ISVNStatus {
      * @return the lock comment
      */
     public String getLockComment();
+ 
+    /**
+     * Returns the tree conflicted state
+     * @return the tree conflicted state
+     */    
+    public boolean hasTreeConflict();
+
+    /**
+     * Returns the conflict descriptor for the tree conflict
+     * @return the conflict descriptor for the tree conflict
+     */    
+    public SVNConflictDescriptor getConflictDescriptor();
+    
+    /**
+     * Returns if the item is a file external
+     * @return is the item is a file external
+     */
+    public boolean isFileExternal();
 
 }
