@@ -25,6 +25,7 @@ package org.tigris.subversion.svnclientadapter;
  */
 public class SVNStatusKind {
     private final int kind;
+    private boolean treeConflicted;
 
     private static final int none = 0;
     private static final int normal = 1;
@@ -101,6 +102,14 @@ public class SVNStatusKind {
      */
     public int toInt() {
     	return kind;
+    }
+    
+    public void setTreeConflicted(boolean treeConflicted) {
+    	this.treeConflicted = treeConflicted;
+    }
+    
+    public boolean hasTreeConflict() {
+    	return treeConflicted;
     }
     
     /**
