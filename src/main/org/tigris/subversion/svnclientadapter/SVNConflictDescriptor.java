@@ -76,6 +76,13 @@ public class SVNConflictDescriptor
         this.myPath = myPath;
         this.mergedPath = mergedPath;
     }
+    
+    public SVNConflictDescriptor(String path, int action, int reason, int operation) {
+    	this.path = path;
+    	this.action = action;
+    	this.reason = reason;
+    	this.operation = operation;
+    }
 
     public String getPath()
     {
