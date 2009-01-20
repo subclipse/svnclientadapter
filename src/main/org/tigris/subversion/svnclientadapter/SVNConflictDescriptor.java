@@ -215,4 +215,11 @@ public class SVNConflictDescriptor
          */
         public static final int unversioned = 4;
     }
+    
+    public final class Operation
+    {
+        public static final int _update = 0;
+        public static final int _switch = 1;
+        public static final int _merge = 2;
+    }    
 }
