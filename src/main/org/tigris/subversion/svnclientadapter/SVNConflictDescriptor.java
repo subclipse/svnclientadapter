@@ -46,6 +46,8 @@ public class SVNConflictDescriptor
     private int action;
     private int reason;
     private int operation;
+    private SVNConflictVersion srcLeftVersion;
+    private SVNConflictVersion srcRightVersion;
 
     // File paths, present only when the conflict involves the merging
     // of two files descended from a common ancestor, here are the
@@ -59,6 +61,7 @@ public class SVNConflictDescriptor
     public SVNConflictDescriptor(String path, int conflictKind, int nodeKind, 
     		           String propertyName, boolean isBinary,
                        String mimeType, int action, int reason, int operation,
+                       SVNConflictVersion srcLeftVersion, SVNConflictVersion srcRightVersion,
                        String basePath, String theirPath,
                        String myPath, String mergedPath)
     {
@@ -70,6 +73,8 @@ public class SVNConflictDescriptor
         this.mimeType = mimeType;
         this.action = action;
         this.reason = reason;
+        this.srcLeftVersion = srcLeftVersion;
+        this.srcRightVersion = srcRightVersion;
         this.operation = operation;
         this.basePath = basePath;
         this.theirPath = theirPath;
@@ -77,11 +82,13 @@ public class SVNConflictDescriptor
         this.mergedPath = mergedPath;
     }
     
-    public SVNConflictDescriptor(String path, int action, int reason, int operation) {
+    public SVNConflictDescriptor(String path, int action, int reason, int operation, SVNConflictVersion srcLeftVersion, SVNConflictVersion srcRightVersion) {
     	this.path = path;
     	this.action = action;
     	this.reason = reason;
     	this.operation = operation;
+        this.srcLeftVersion = srcLeftVersion;
+        this.srcRightVersion = srcRightVersion;
     }
 
     public String getPath()
@@ -128,6 +135,16 @@ public class SVNConflictDescriptor
     {
     	return operation;
     }
+    
+    public SVNConflictVersion getSrcLeftVersion()
+    {
+    	return srcLeftVersion;
+    }
+    
+    public SVNConflictVersion getSrcRightVersion()
+    {
+    	return srcRightVersion;
+    }    
 
     public String getBasePath()
     {

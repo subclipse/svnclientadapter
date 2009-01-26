@@ -36,6 +36,7 @@ import org.tigris.subversion.javahl.StatusKind;
 import org.tigris.subversion.svnclientadapter.ISVNLogMessageChangePath;
 import org.tigris.subversion.svnclientadapter.SVNConflictDescriptor;
 import org.tigris.subversion.svnclientadapter.SVNConflictResult;
+import org.tigris.subversion.svnclientadapter.SVNConflictVersion;
 import org.tigris.subversion.svnclientadapter.SVNDiffSummary;
 import org.tigris.subversion.svnclientadapter.SVNLogMessageChangePath;
 import org.tigris.subversion.svnclientadapter.SVNNodeKind;
@@ -265,9 +266,18 @@ public class JhlConverter {
     
     public static SVNConflictDescriptor convertConflictDescriptor(ConflictDescriptor d) {
     	if (d == null) return null;
+    	SVNConflictVersion srcLeftVersion = null;
+    	if (d.getSrcLeftVersion() != null) {
+    		srcLeftVersion = new SVNConflictVersion(d.getSrcLeftVersion().getReposURL(), d.getSrcLeftVersion().getPegRevision(), d.getSrcLeftVersion().getPathInRepos(), d.getSrcLeftVersion().getNodeKind());
+    	}
+    	SVNConflictVersion srcRightVersion = null;
+    	if (d.getSrcRightVersion() != null) {
+    		srcRightVersion = new SVNConflictVersion(d.getSrcRightVersion().getReposURL(), d.getSrcRightVersion().getPegRevision(), d.getSrcRightVersion().getPathInRepos(), d.getSrcRightVersion().getNodeKind());
+    	}
     	return new SVNConflictDescriptor(d.getPath(), d.getKind(), d.getNodeKind(),
     			d.getPropertyName(), d.isBinary(),
                 d.getMIMEType(), d.getAction(), d.getReason(), d.getOperation(),
+                srcLeftVersion, srcRightVersion,
                 d.getBasePath(), d.getTheirPath(),
                 d.getMyPath(), d.getMergedPath());
     }
