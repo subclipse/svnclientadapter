@@ -235,8 +235,9 @@ public class SVNConflictDescriptor
     
     public final class Operation
     {
-        public static final int _update = 0;
-        public static final int _switch = 1;
-        public static final int _merge = 2;
+        public static final int _none = 0;
+        public static final int _update = 1;
+        public static final int _switch = 2;
+        public static final int _merge = 3;
     }    
 }
