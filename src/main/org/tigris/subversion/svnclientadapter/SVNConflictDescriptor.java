@@ -231,6 +231,11 @@ public class SVNConflictDescriptor
          * Object is unversioned.
          */
         public static final int unversioned = 4;
+        
+        /**
+         * Object is already added or schedule-add.
+         */
+        public static final int added = 5;
     }
     
     public final class Operation
