@@ -318,6 +318,29 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements No
                 notify = false;
                 logCompleted(Messages.bind("notify.commit", Long.toString(info.getRevision()))); //$NON-NLS-1$
                 break;
+            case NotifyAction.property_added:
+            	logMessage(Messages.bind("notify.property.set", info.getPath())); //$NON-NLS-1$
+            	break;
+            case NotifyAction.property_modified:
+            	logMessage(Messages.bind("notify.property.set", info.getPath())); //$NON-NLS-1$
+            	break; 
+            case NotifyAction.property_deleted:
+            	logMessage(Messages.bind("notify.property.deleted", info.getPath())); //$NON-NLS-1$
+            	break;
+            case NotifyAction.property_deleted_nonexistent:
+            	notify = false;
+            	logMessage(Messages.bind("notify.property.deleted.nonexistent")); //$NON-NLS-1$
+            	break; 
+            case NotifyAction.revprop_set:
+            	notify = false;
+            	logMessage(Messages.bind("notify.revision.property.set")); //$NON-NLS-1$
+            	break;  
+            case NotifyAction.revprop_deleted:
+            	notify = false;
+            	logMessage(Messages.bind("notify.revision.property.deleted")); //$NON-NLS-1$
+            	break;    
+            case NotifyAction.merge_completed:
+            	break;                   	
             default:
             	logMessage("Unknown action received: " + info.getAction());
                 	
