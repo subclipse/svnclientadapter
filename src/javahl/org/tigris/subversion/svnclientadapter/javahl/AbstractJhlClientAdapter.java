@@ -980,10 +980,15 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 		try {
 			notificationHandler.setCommand(ISVNNotifyListener.Command.UPDATE);
 			String target = fileToSVNPath(path, false);
-			StringBuffer commandLine = new StringBuffer("update " + target + " -r " +
+			StringBuffer commandLine;
+			if (depth == Depth.exclude)
+				commandLine = new StringBuffer("update " + target + " --set-depth=exclude");
+			else {
+				commandLine = new StringBuffer("update " + target + " -r " +
 					revision.toString() + depthCommandLine(depth));
-            if (ignoreExternals) commandLine.append(" --ignore-externals");
-            if (force) commandLine.append(" --force");            
+				if (ignoreExternals) commandLine.append(" --ignore-externals");
+	            if (force) commandLine.append(" --force");				
+			}
             notificationHandler.logCommandLine(commandLine.toString());
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
 			return svnClient.update(target, JhlConverter.convert(revision), depth, setDepth,
@@ -1846,7 +1851,11 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
      * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#switchUrl(org.tigris.subversion.svnclientadapter.SVNUrl, java.io.File, org.tigris.subversion.svnclientadapter.SVNRevision, org.tigris.subversion.svnclientadapter.SVNRevision, int, boolean, boolean, boolean)
      */
     public void switchToUrl(File path, SVNUrl url, SVNRevision revision, SVNRevision pegRevision, int depth, boolean setDepth, boolean ignoreExternals, boolean force) throws SVNClientException {
-        try {
+        if (depth == Depth.exclude) {
+        	update(path, pegRevision, depth, true, ignoreExternals, force);
+        	return;
+        }
+    	try {
             notificationHandler.setCommand(ISVNNotifyListener.Command.SWITCH);
             
             String target = fileToSVNPath(path, false);
