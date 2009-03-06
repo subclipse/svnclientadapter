@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.Date;
 
+import org.tigris.subversion.javahl.Depth;
 import org.tigris.subversion.javahl.Info;
 import org.tigris.subversion.svnclientadapter.ISVNInfo;
 import org.tigris.subversion.svnclientadapter.SVNNodeKind;
@@ -205,5 +206,13 @@ public class JhlInfo implements ISVNInfo {
     public String getLockComment() {
     	//Not available in info(1)
         return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNInfo#getDepth()
+     */
+    public int getDepth() {
+    	//Not available in info(1)
+    	return Depth.unknown;
     }
 }
