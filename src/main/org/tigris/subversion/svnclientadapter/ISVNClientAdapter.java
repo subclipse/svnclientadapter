@@ -1408,6 +1408,16 @@ public interface ISVNClientAdapter {
 	 * @throws SVNClientException
 	 */
 	public ISVNInfo getInfo(File file) throws SVNClientException;
+	
+	/**
+	 * Get information about a file or directory.
+	 * Uses info2() call which contacts the repository
+	 * @param file
+	 * @param descend get recursive information
+	 * @return information about a file or directory.
+	 * @throws SVNClientException
+	 */
+	public ISVNInfo[] getInfo(File file, boolean descend) throws SVNClientException;	
 
 	/**
 	 * Get information about an URL.
