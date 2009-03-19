@@ -1808,6 +1808,38 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 	}
 
 	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getInfo(java.io.File, boolean)
+	 */
+	public ISVNInfo[] getInfo(File path, boolean descend) throws SVNClientException {
+		try {
+			notificationHandler.setCommand(ISVNNotifyListener.Command.INFO);    
+			String target = fileToSVNPath(path, false);
+			if (descend) notificationHandler.logCommandLine("info " + target + " --depth=infinity");
+			else notificationHandler.logCommandLine("info " + target);
+			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
+			List infoList = new ArrayList();			
+			Info info = svnClient.info(target);
+			if (info == null) {
+				infoList.add(new SVNInfoUnversioned(path));
+			} else {
+				Info2[] infos = svnClient.info2(target, null, null, true);
+				if (infos == null || infos.length == 0) {
+					infoList.add(new SVNInfoUnversioned(path));
+				} else {
+					for (int i = 0; i < infos.length; i++)
+						infoList.add(new JhlInfo2(path,infos[i]));
+				}
+			}
+			ISVNInfo[] infoArray = new ISVNInfo[infoList.size()];
+			infoList.toArray(infoArray);
+			return infoArray;
+		} catch (ClientException e) {
+			notificationHandler.logException(e);
+			throw new SVNClientException(e);            
+		}      
+	}
+	
+	/* (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getInfo(org.tigris.subversion.svnclientadapter.SVNUrl)
 	 */
 	public ISVNInfo getInfo(SVNUrl url, SVNRevision revision, SVNRevision peg) throws SVNClientException {
