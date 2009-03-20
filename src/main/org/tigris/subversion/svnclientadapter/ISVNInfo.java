@@ -141,5 +141,12 @@ public interface ISVNInfo
      * @return lock comment
      */
     public String getLockComment();
+    
+    
+    /**
+     * Retrieves the depth of the item
+     * @return depth
+     */    
+    public int getDepth();
 
 }

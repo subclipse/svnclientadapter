@@ -170,4 +170,12 @@ public class SVNInfoUnversioned implements ISVNInfo {
     public String getLockComment() {
         return null;
     }
+    
+    
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNInfo#getDepth()
+     */
+    public int getDepth() {
+    	return -2;
+    }        
 }
