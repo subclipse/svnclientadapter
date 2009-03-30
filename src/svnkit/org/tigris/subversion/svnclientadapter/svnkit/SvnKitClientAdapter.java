@@ -36,6 +36,7 @@ import org.tmatesoft.svn.core.internal.io.svn.ISVNConnectorFactory;
 import org.tmatesoft.svn.core.io.SVNRepositoryFactory;
 import org.tmatesoft.svn.core.javahl.SVNClientImpl;
 
+
 /**
  * The SVNKit Adapter works by providing an implementation of the
  * JavaHL SVNClientInterface.  This allows to provide a common
@@ -93,10 +94,12 @@ public class SvnKitClientAdapter extends AbstractJhlClientAdapter {
     public long[] commitAcrossWC(File[] paths, String message, boolean recurse,
             boolean keepLocks, boolean atomic) throws SVNClientException {
         try {
-        	String messageString = (message == null) ? "" : message;
+        	String fixedMessage = fixSVNString(message);
+        	if (fixedMessage == null)
+        		fixedMessage = "";
             notificationHandler.setCommand(ISVNNotifyListener.Command.COMMIT);
             String[] files = new String[paths.length];
-            String commandLine = "commit -m \""+messageString+"\"";
+            String commandLine = "commit -m \""+fixedMessage+"\"";
             if (!recurse)
                 commandLine+=" -N";
             if (keepLocks)
@@ -109,7 +112,7 @@ public class SvnKitClientAdapter extends AbstractJhlClientAdapter {
             notificationHandler.logCommandLine(commandLine);
 			notificationHandler.setBaseDir();
 
-            long[] newRev = ((SVNClientImpl)svnClient).commit(files, messageString, recurse, keepLocks, atomic);
+            long[] newRev = ((SVNClientImpl)svnClient).commit(files, fixedMessage, recurse, keepLocks, atomic);
             return newRev;
         } catch (ClientException e) {
             notificationHandler.logException(e);
