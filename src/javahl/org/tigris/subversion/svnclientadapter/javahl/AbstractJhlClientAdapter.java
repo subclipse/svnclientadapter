@@ -290,7 +290,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
     public long commit(File[] paths, String message, boolean recurse, boolean keepLocks)
         throws SVNClientException {
         try {
-        	String fixedMessage = fixupMessage(message);
+        	String fixedMessage = fixSVNString(message);
         	if (fixedMessage == null)
         		fixedMessage = "";
             notificationHandler.setCommand(ISVNNotifyListener.Command.COMMIT);
@@ -627,7 +627,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 	public void copy(File srcPath, SVNUrl destUrl, String message)
 		throws SVNClientException {
 		try {
-        	String fixedMessage = fixupMessage(message);
+        	String fixedMessage = fixSVNString(message);
         	if (fixedMessage == null)
         		fixedMessage = "";
 			notificationHandler.setCommand(ISVNNotifyListener.Command.COPY);
@@ -649,7 +649,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 	public void copy(File[] srcPaths, SVNUrl destUrl, String message, boolean copyAsChild, boolean makeParents)
 		throws SVNClientException {
 		
-    	String fixedMessage = fixupMessage(message);
+    	String fixedMessage = fixSVNString(message);
 
 		// This is a hack for now since copy of multiple isolated WC's is currently not working.
 		if (srcPaths.length > 1) {
@@ -747,7 +747,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 		boolean makeParents)
 		throws SVNClientException {
 		try {
-        	String fixedMessage = fixupMessage(message);
+        	String fixedMessage = fixSVNString(message);
 
         	if (fixedMessage == null)
         		fixedMessage = "";
@@ -775,7 +775,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 	 */
 	public void remove(SVNUrl url[], String message) throws SVNClientException {
         try {
-        	String fixedMessage = fixupMessage(message);
+        	String fixedMessage = fixSVNString(message);
 
         	if (fixedMessage == null)
         		fixedMessage = "";
@@ -875,7 +875,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 		boolean recurse)
 		throws SVNClientException {
 		try {
-        	String fixedMessage = fixupMessage(message);
+        	String fixedMessage = fixSVNString(message);
 
         	if (fixedMessage == null)
         		fixedMessage = "";
@@ -952,7 +952,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 		SVNRevision revision)
 		throws SVNClientException {
 		try {
-        	String fixedMessage = fixupMessage(message);
+        	String fixedMessage = fixSVNString(message);
 
 			// NOTE:  The revision arg is ignored as you cannot move
 			// a specific revision, only HEAD.
@@ -1220,8 +1220,13 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 					statusBefore.add(statuses[i].getFile().getAbsolutePath());
 				}
 			}
-
-			svnClient.propertySet(target, propertyName, propertyValue, recurse);
+			
+			if (propertyName.startsWith("svn:")) {
+				// Normalize line endings in property value
+				svnClient.propertySet(target, propertyName, fixSVNString(propertyValue), recurse);
+			} else {
+				svnClient.propertySet(target, propertyName, propertyValue, recurse);
+			}
 			
 			// there is no notification (Notify.notify is not called) when we set a property
 			// so we will do notification ourselves
@@ -2320,7 +2325,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 	public void mkdir(SVNUrl url, boolean makeParents, String message)
 	throws SVNClientException {
         try {
-        	String fixedMessage = fixupMessage(message);
+        	String fixedMessage = fixSVNString(message);
 
         	if (fixedMessage == null)
         		fixedMessage = "";
@@ -2639,12 +2644,12 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 	}
 
 	/**
-	 * Applies any SVN rules to commit messages.
+	 * Applies any SVN rules to strings (commit messages and property values).
 	 * Currently that means making all line-endings LF
 	 * @param message
 	 * @return
 	 */
-	protected String fixupMessage(String message) {
+	protected String fixSVNString(String message) {
 		if (message == null)
 			return null;
 		// Normalize all line endings to LF
