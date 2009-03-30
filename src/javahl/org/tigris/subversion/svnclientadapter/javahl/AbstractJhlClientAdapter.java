@@ -290,11 +290,12 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
     public long commit(File[] paths, String message, boolean recurse, boolean keepLocks)
         throws SVNClientException {
         try {
-        	if (message == null)
-        		message = "";
+        	String fixedMessage = fixupMessage(message);
+        	if (fixedMessage == null)
+        		fixedMessage = "";
             notificationHandler.setCommand(ISVNNotifyListener.Command.COMMIT);
             String[] files = new String[paths.length];
-            String commandLine = "commit -m \""+getFirstMessageLine(message)+"\"";
+            String commandLine = "commit -m \""+getFirstMessageLine(fixedMessage)+"\"";
             if (!recurse)
                 commandLine+=" -N";
             if (keepLocks)
@@ -307,7 +308,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
             notificationHandler.logCommandLine(commandLine);
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(paths));
 
-            long newRev = svnClient.commit(files, message, recurse, keepLocks);
+            long newRev = svnClient.commit(files, fixedMessage, recurse, keepLocks);
             if (newRev > 0)
             	notificationHandler.logCompleted("Committed revision " + newRev + ".");
             return newRev;
@@ -626,14 +627,15 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 	public void copy(File srcPath, SVNUrl destUrl, String message)
 		throws SVNClientException {
 		try {
-        	if (message == null)
-        		message = "";
+        	String fixedMessage = fixupMessage(message);
+        	if (fixedMessage == null)
+        		fixedMessage = "";
 			notificationHandler.setCommand(ISVNNotifyListener.Command.COPY);
 			String src = fileToSVNPath(srcPath, false);
 			String dest = destUrl.toString();
 			notificationHandler.logCommandLine("copy " + src + " " + dest);
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(srcPath));
-			svnClient.copy(src, dest, message, Revision.WORKING);
+			svnClient.copy(src, dest, fixedMessage, Revision.WORKING);
 			// last parameter is not used
 		} catch (ClientException e) {
 			notificationHandler.logException(e);
@@ -647,19 +649,21 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 	public void copy(File[] srcPaths, SVNUrl destUrl, String message, boolean copyAsChild, boolean makeParents)
 		throws SVNClientException {
 		
+    	String fixedMessage = fixupMessage(message);
+
 		// This is a hack for now since copy of multiple isolated WC's is currently not working.
 		if (srcPaths.length > 1) {
-			mkdir(destUrl, makeParents, message);
+			mkdir(destUrl, makeParents, fixedMessage);
 			for (int i = 0; i < srcPaths.length; i++) {
 				File[] file = { srcPaths[i] };
-				copy(file, destUrl, message, copyAsChild, makeParents);
+				copy(file, destUrl, fixedMessage, copyAsChild, makeParents);
 			}
 			return;
 		}
 		
 		try {
-        	if (message == null)
-        		message = "";
+        	if (fixedMessage == null)
+        		fixedMessage = "";
 			notificationHandler.setCommand(ISVNNotifyListener.Command.COPY);
 			CopySource[] copySources = new CopySource[srcPaths.length];
 			for (int i = 0; i < srcPaths.length; i++) 
@@ -673,7 +677,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 			commandLine = appendPaths(commandLine, paths) + " " + dest;
 			notificationHandler.logCommandLine(commandLine.toString());
 			notificationHandler.setBaseDir();
-			svnClient.copy(copySources, dest, message, copyAsChild, makeParents, null);
+			svnClient.copy(copySources, dest, fixedMessage, copyAsChild, makeParents, null);
 		} catch (ClientException e) {
 			notificationHandler.logException(e);
 			throw new SVNClientException(e);
@@ -743,8 +747,10 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 		boolean makeParents)
 		throws SVNClientException {
 		try {
-        	if (message == null)
-        		message = "";
+        	String fixedMessage = fixupMessage(message);
+
+        	if (fixedMessage == null)
+        		fixedMessage = "";
 			notificationHandler.setCommand(ISVNNotifyListener.Command.COPY);
 			CopySource[] copySources = new CopySource[srcUrls.length];
 			for (int i = 0; i < srcUrls.length; i++) copySources[i] = new CopySource(srcUrls[i].toString(), JhlConverter.convert(revision), JhlConverter.convert(SVNRevision.HEAD));
@@ -757,7 +763,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 			commandLine = appendPaths(commandLine, paths) + " " + dest;
 			notificationHandler.logCommandLine(commandLine);
 			notificationHandler.setBaseDir();
-			svnClient.copy(copySources, dest, message, copyAsChild, makeParents, null);
+			svnClient.copy(copySources, dest, fixedMessage, copyAsChild, makeParents, null);
 		} catch (ClientException e) {
 			notificationHandler.logException(e);
 			throw new SVNClientException(e);
@@ -769,11 +775,13 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 	 */
 	public void remove(SVNUrl url[], String message) throws SVNClientException {
         try {
-        	if (message == null)
-        		message = "";
+        	String fixedMessage = fixupMessage(message);
+
+        	if (fixedMessage == null)
+        		fixedMessage = "";
             notificationHandler.setCommand(ISVNNotifyListener.Command.REMOVE);
 
-            String commandLine = "delete -m \""+getFirstMessageLine(message)+"\"";
+            String commandLine = "delete -m \""+getFirstMessageLine(fixedMessage)+"\"";
             
             String targets[] = new String[url.length];
             for (int i = 0; i < url.length;i++) {
@@ -782,7 +790,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
             commandLine = appendPaths(commandLine, targets);
             notificationHandler.logCommandLine(commandLine);
 			notificationHandler.setBaseDir();
-		    svnClient.remove(targets,message,false);
+		    svnClient.remove(targets,fixedMessage,false);
             
         } catch (ClientException e) {
             notificationHandler.logException(e);
@@ -867,21 +875,23 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 		boolean recurse)
 		throws SVNClientException {
 		try {
-        	if (message == null)
-        		message = "";
+        	String fixedMessage = fixupMessage(message);
+
+        	if (fixedMessage == null)
+        		fixedMessage = "";
 			notificationHandler.setCommand(ISVNNotifyListener.Command.IMPORT);
 			String src = fileToSVNPath(path, false);
 			String dest = url.toString();
 			notificationHandler.logCommandLine(
 				"import -m \""
-					+ getFirstMessageLine(message)
+					+ getFirstMessageLine(fixedMessage)
 					+ "\" "
 					+ (recurse ? "" : "-N ")
 					+ src
 					+ ' '
 					+ dest);
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
-			svnClient.doImport(src, dest, message, recurse);
+			svnClient.doImport(src, dest, fixedMessage, recurse);
 			notificationHandler.logCompleted(Messages.bind("notify.import.complete"));
 		} catch (ClientException e) {
 			notificationHandler.logException(e);
@@ -942,22 +952,24 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 		SVNRevision revision)
 		throws SVNClientException {
 		try {
+        	String fixedMessage = fixupMessage(message);
+
 			// NOTE:  The revision arg is ignored as you cannot move
 			// a specific revision, only HEAD.
-        	if (message == null)
-        		message = "";
+        	if (fixedMessage == null)
+        		fixedMessage = "";
 			notificationHandler.setCommand(ISVNNotifyListener.Command.MOVE);
 			String src = srcUrl.toString();
 			String dest = destUrl.toString();
 			notificationHandler.logCommandLine(
 				"move -m \""
-					+ getFirstMessageLine(message)
+					+ getFirstMessageLine(fixedMessage)
 					+ ' '
 					+ src
 					+ ' '
 					+ dest);
 			notificationHandler.setBaseDir();
-			svnClient.move(src, dest, message, false);
+			svnClient.move(src, dest, fixedMessage, false);
 		} catch (ClientException e) {
 			notificationHandler.logException(e);
 			throw new SVNClientException(e);
@@ -2308,18 +2320,20 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 	public void mkdir(SVNUrl url, boolean makeParents, String message)
 	throws SVNClientException {
         try {
-        	if (message == null)
-        		message = "";
+        	String fixedMessage = fixupMessage(message);
+
+        	if (fixedMessage == null)
+        		fixedMessage = "";
            notificationHandler.setCommand(ISVNNotifyListener.Command.MKDIR);
 		    String target = url.toString();
 		    if (makeParents)
 	            notificationHandler.logCommandLine(
-	                    "mkdir --parents -m \""+getFirstMessageLine(message)+"\" "+target);
+	                    "mkdir --parents -m \""+getFirstMessageLine(fixedMessage)+"\" "+target);
 		    else
 	            notificationHandler.logCommandLine(
-	                "mkdir -m \""+getFirstMessageLine(message)+"\" "+target);
+	                "mkdir -m \""+getFirstMessageLine(fixedMessage)+"\" "+target);
 			notificationHandler.setBaseDir();
-            svnClient.mkdir(new String[] { target },message, makeParents, null);
+            svnClient.mkdir(new String[] { target },fixedMessage, makeParents, null);
         } catch (ClientException e) {
             notificationHandler.logException(e);
             throw new SVNClientException(e);
@@ -2617,11 +2631,24 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 	}
 	
 	private String getFirstMessageLine(String message) {
-		StringTokenizer tokenizer = new StringTokenizer(message, "\r\n");
+		StringTokenizer tokenizer = new StringTokenizer(message, "\n");
 		int count = tokenizer.countTokens();
 		if (count > 1) return tokenizer.nextToken() + "...";
 		else return message;
 		
+	}
+
+	/**
+	 * Applies any SVN rules to commit messages.
+	 * Currently that means making all line-endings LF
+	 * @param message
+	 * @return
+	 */
+	protected String fixupMessage(String message) {
+		if (message == null)
+			return null;
+		// Normalize all line endings to LF
+		return message.replaceAll("\r\n", "\n").replaceAll("\r", "\n");
 	}
 
 }
