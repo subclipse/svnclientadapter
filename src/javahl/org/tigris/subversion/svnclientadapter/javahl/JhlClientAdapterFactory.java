@@ -313,11 +313,11 @@ public class JhlClientAdapterFactory extends SVNClientAdapterFactory {
     					available = true;
     				else {
     					available = false;
-    					javaHLErrors.append("Incompatible JavaHL library loaded.  1.5.x or later required.");
+    					javaHLErrors.append("Incompatible JavaHL library loaded.  1.6.x or later required.");
     				}
     			} catch (UnsatisfiedLinkError e) {
     				available = false;
-    				javaHLErrors.append("Incompatible JavaHL library loaded.  1.5.x or later required.");
+    				javaHLErrors.append("Incompatible JavaHL library loaded.  1.6.x or later required.");
     			}
     		}
     	}
