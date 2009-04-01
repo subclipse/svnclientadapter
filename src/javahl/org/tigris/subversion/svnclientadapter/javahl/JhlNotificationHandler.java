@@ -341,6 +341,8 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements No
             	break;    
             case NotifyAction.merge_completed:
             	break;                   	
+            case NotifyAction.blame_revision:
+            	break;                   	
             default:
             	logMessage("Unknown action received: " + info.getAction());
                 	
