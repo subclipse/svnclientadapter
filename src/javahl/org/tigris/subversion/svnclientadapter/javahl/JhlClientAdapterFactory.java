@@ -137,34 +137,6 @@ public class JhlClientAdapterFactory extends SVNClientAdapterFactory {
     				javaHLErrors.append(e.getMessage()).append("\n");
     			}
     			try {
-    				System.loadLibrary("saslANONYMOUS");
-    			} catch (Exception e) {
-    				javaHLErrors.append(e.getMessage()).append("\n");
-    			} catch (UnsatisfiedLinkError e) {
-    				javaHLErrors.append(e.getMessage()).append("\n");
-    			}
-    			try {
-    				System.loadLibrary("saslCRAMMD5");
-    			} catch (Exception e) {
-    				javaHLErrors.append(e.getMessage()).append("\n");
-    			} catch (UnsatisfiedLinkError e) {
-    				javaHLErrors.append(e.getMessage()).append("\n");
-    			}
-    			try {
-    				System.loadLibrary("saslDIGESTMD5");
-    			} catch (Exception e) {
-    				javaHLErrors.append(e.getMessage()).append("\n");
-    			} catch (UnsatisfiedLinkError e) {
-    				javaHLErrors.append(e.getMessage()).append("\n");
-    			}
-    			try {
-    				System.loadLibrary("saslNTLM");
-    			} catch (Exception e) {
-    				javaHLErrors.append(e.getMessage()).append("\n");
-    			} catch (UnsatisfiedLinkError e) {
-    				javaHLErrors.append(e.getMessage()).append("\n");
-    			}
-    			try {
     				System.loadLibrary("libsasl");
     			} catch (Exception e) {
     				javaHLErrors.append(e.getMessage()).append("\n");
