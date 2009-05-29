@@ -94,15 +94,6 @@ public class JhlClientAdapterFactory extends SVNClientAdapterFactory {
     		// because of a problem in one of these libraries the proper behavior
     		// will still occur -- meaning JavaHL adapter is disabled.
     		if(isOsWindows()) {
-    			StringBuffer bdbErrors = new StringBuffer();
-    			boolean bdbLoaded = false;
-//    			try {
-//    				System.loadLibrary("libapr");
-//    			} catch (Exception e) {
-//    				javaHLErrors.append(e.getMessage()).append("\n");
-//    			} catch (UnsatisfiedLinkError e) {
-//    				javaHLErrors.append(e.getMessage()).append("\n");
-//    			}
     			try {
     				System.loadLibrary("libapr-1");
     			} catch (Exception e) {
@@ -125,38 +116,12 @@ public class JhlClientAdapterFactory extends SVNClientAdapterFactory {
     				javaHLErrors.append(e.getMessage()).append("\n");
     			}
     			try {
-    				System.loadLibrary("libdb44");
-    				bdbLoaded = true;
-    			} catch (Exception e) {
-    				bdbErrors.append(e.getMessage()).append("\n");
-    			} catch (UnsatisfiedLinkError e) {
-    				bdbErrors.append(e.getMessage()).append("\n");
-    			}
-//    			try {
-//    				System.loadLibrary("libdb43");
-//    				bdbLoaded = true;
-//    			} catch (Exception e) {
-//    				bdbErrors.append(e.getMessage()).append("\n");
-//    			} catch (UnsatisfiedLinkError e) {
-//    				bdbErrors.append(e.getMessage()).append("\n");
-//    			}
-    			if (!bdbLoaded) {
-    				javaHLErrors.append(bdbErrors.toString());
-    			}
-    			try {
     				System.loadLibrary("ssleay32");
     			} catch (Exception e) {
     				javaHLErrors.append(e.getMessage()).append("\n");
     			} catch (UnsatisfiedLinkError e) {
     				javaHLErrors.append(e.getMessage()).append("\n");
     			}
-//    			try {
-//    				System.loadLibrary("libaprutil");
-//    			} catch (Exception e) {
-//    				javaHLErrors.append(e.getMessage()).append("\n");
-//    			} catch (UnsatisfiedLinkError e) {
-//    				javaHLErrors.append(e.getMessage()).append("\n");
-//    			}
     			try {
     				System.loadLibrary("libaprutil-1");
     			} catch (Exception e) {
@@ -165,14 +130,35 @@ public class JhlClientAdapterFactory extends SVNClientAdapterFactory {
     				javaHLErrors.append(e.getMessage()).append("\n");
     			}
     			try {
-    				System.loadLibrary("intl3_svn");
+    				System.loadLibrary("dbghelp");
     			} catch (Exception e) {
     				javaHLErrors.append(e.getMessage()).append("\n");
     			} catch (UnsatisfiedLinkError e) {
     				javaHLErrors.append(e.getMessage()).append("\n");
     			}
     			try {
-    				System.loadLibrary("dbghelp");
+    				System.loadLibrary("saslANONYMOUS");
+    			} catch (Exception e) {
+    				javaHLErrors.append(e.getMessage()).append("\n");
+    			} catch (UnsatisfiedLinkError e) {
+    				javaHLErrors.append(e.getMessage()).append("\n");
+    			}
+    			try {
+    				System.loadLibrary("saslCRAMMD5");
+    			} catch (Exception e) {
+    				javaHLErrors.append(e.getMessage()).append("\n");
+    			} catch (UnsatisfiedLinkError e) {
+    				javaHLErrors.append(e.getMessage()).append("\n");
+    			}
+    			try {
+    				System.loadLibrary("saslDIGESTMD5");
+    			} catch (Exception e) {
+    				javaHLErrors.append(e.getMessage()).append("\n");
+    			} catch (UnsatisfiedLinkError e) {
+    				javaHLErrors.append(e.getMessage()).append("\n");
+    			}
+    			try {
+    				System.loadLibrary("saslNTLM");
     			} catch (Exception e) {
     				javaHLErrors.append(e.getMessage()).append("\n");
     			} catch (UnsatisfiedLinkError e) {
