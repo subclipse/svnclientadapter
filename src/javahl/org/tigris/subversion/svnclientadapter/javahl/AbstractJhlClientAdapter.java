@@ -697,10 +697,18 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 	 */
 	public void copy(SVNUrl srcUrl, File destPath, SVNRevision revision, boolean copyAsChild, boolean makeParents)
 		throws SVNClientException {
+		copy(srcUrl, destPath, revision, SVNRevision.HEAD, copyAsChild, makeParents);
+	}		
+	
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#copy(org.tigris.subversion.svnclientadapter.SVNUrl, java.io.File, org.tigris.subversion.svnclientadapter.SVNRevision, org.tigris.subversion.svnclientadapter.SVNRevision, boolean, boolean)
+	 */
+	public void copy(SVNUrl srcUrl, File destPath, SVNRevision revision, SVNRevision pegRevision, boolean copyAsChild, boolean makeParents)
+		throws SVNClientException {
 		try {
 			notificationHandler.setCommand(ISVNNotifyListener.Command.COPY);
 			String dest = fileToSVNPath(destPath, false);		
-			CopySource[] sources = { new CopySource(srcUrl.toString(), JhlConverter.convert(revision), Revision.HEAD) };			
+			CopySource[] sources = { new CopySource(srcUrl.toString(), JhlConverter.convert(revision), JhlConverter.convert(pegRevision)) };			
 			notificationHandler.logCommandLine("copy " + srcUrl + " " + dest);
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(destPath));
 			svnClient.copy(sources, dest, null, copyAsChild, makeParents, null);
