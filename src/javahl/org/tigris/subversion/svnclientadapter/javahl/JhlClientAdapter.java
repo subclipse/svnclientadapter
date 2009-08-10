@@ -19,12 +19,20 @@
 package org.tigris.subversion.svnclientadapter.javahl;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.channels.FileChannel;
 import java.text.MessageFormat;
 
 import org.tigris.subversion.javahl.ClientException;
+import org.tigris.subversion.javahl.CopySource;
+import org.tigris.subversion.javahl.Revision;
 import org.tigris.subversion.javahl.SVNAdmin;
 import org.tigris.subversion.javahl.SVNClient;
 import org.tigris.subversion.svnclientadapter.ISVNNotifyListener;
+import org.tigris.subversion.svnclientadapter.ISVNProperty;
+import org.tigris.subversion.svnclientadapter.SVNBaseDir;
 import org.tigris.subversion.svnclientadapter.SVNClientException;
 
 /**
@@ -103,6 +111,69 @@ public class JhlClientAdapter extends AbstractJhlClientAdapter {
 
 	public boolean statusReturnsRemoteInfo() {
 		return true;
+	}
+	
+	/* 
+	 * Overridden to fix issue where move of a file with svn:keywords updates
+	 * the file contents.  Only an issue for JavaHL.
+	 * 
+	 * If you are moving a file and it has svn:keywords, then we change to
+	 * copy, overwrite contents and delete.  This is so that file contents
+	 * are not modified by the move.
+	 * 
+	 * For folders, and files without keywords, we just delegate to super()
+	 * 
+	 */
+	public void move(File srcPath, File destPath, boolean force) throws SVNClientException {
+		if (srcPath.isFile()) {
+	        ISVNProperty prop = this.propertyGet(srcPath, ISVNProperty.KEYWORDS);
+	        if (prop != null) {
+	            try {
+	                notificationHandler.setCommand(ISVNNotifyListener.Command.MOVE);
+	    		    String src = fileToSVNPath(srcPath, false);
+	                String dest = fileToSVNPath(destPath, false);
+	                notificationHandler.logCommandLine(
+	                        "move "+src+' '+dest);
+	    			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(new File[] {srcPath, destPath}));        
+	    			CopySource[] copySources =  { new CopySource(src, Revision.WORKING, Revision.WORKING) };
+	    			svnClient.copy(copySources, dest, null, true, true, null);
+	    			try {
+						overwriteFile(srcPath, destPath);
+					} catch (IOException e) {
+						// If file contents do not copy, just
+						// proceed.
+					}
+	    			String paths[] = {src};
+	    			svnClient.remove(paths, null, true, false, null);
+	            } catch (ClientException e) {
+	                notificationHandler.logException(e);
+	                throw new SVNClientException(e);
+	            }                   	
+		        return;
+	        }
+		}
+    	super.move(srcPath, destPath, force);
+	}
+
+	private void overwriteFile(File srcFile, File destFile) throws IOException {
+		if (!destFile.exists()) {
+			destFile.createNewFile();
+		}
+
+		FileChannel source = null;
+		FileChannel destination = null;
+		try {
+			source = new FileInputStream(srcFile).getChannel();
+			destination = new FileOutputStream(destFile).getChannel();
+			destination.transferFrom(source, 0, source.size());
+		} finally {
+			if (source != null) {
+				source.close();
+			}
+			if (destination != null) {
+				destination.close();
+			}
+		}
 	}
 
 	public String getNativeLibraryVersionString() {
