@@ -380,4 +380,9 @@ class CmdLineInfoPart implements ISVNInfo {
     		return path;
     	}
     }
+
+	public int getDepth() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 }

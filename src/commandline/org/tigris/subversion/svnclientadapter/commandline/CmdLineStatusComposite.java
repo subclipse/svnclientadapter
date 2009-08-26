@@ -22,6 +22,7 @@ import java.io.File;
 import java.util.Date;
 
 import org.tigris.subversion.svnclientadapter.ISVNStatus;
+import org.tigris.subversion.svnclientadapter.SVNConflictDescriptor;
 import org.tigris.subversion.svnclientadapter.SVNStatusKind;
 import org.tigris.subversion.svnclientadapter.SVNNodeKind;
 import org.tigris.subversion.svnclientadapter.SVNUrl;
@@ -225,5 +226,20 @@ class CmdLineStatusComposite  implements ISVNStatus {
 	public String toString() {
 		return statusPart.getPath() + "  T: " + statusPart.getTextStatus()
 				+ " P: " + statusPart.getPropStatus();
+	}
+
+	public SVNConflictDescriptor getConflictDescriptor() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public boolean hasTreeConflict() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public boolean isFileExternal() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

@@ -1852,4 +1852,17 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 		
 	}
 
+	public void copy(SVNUrl srcUrl, File destPath, SVNRevision revision,
+			SVNRevision pegRevision, boolean copyAsChild, boolean makeParents)
+			throws SVNClientException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public ISVNInfo[] getInfo(File file, boolean descend)
+			throws SVNClientException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }
