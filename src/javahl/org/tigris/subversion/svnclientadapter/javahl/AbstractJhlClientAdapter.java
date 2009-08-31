@@ -2191,7 +2191,11 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 					+ "\" "
 					+ url.toString());
 			notificationHandler.setBaseDir();
-			svnClient.setRevProperty(url.toString(), propName, Revision.getInstance(revisionNo.getNumber()), propertyData, true);
+			if (propName.startsWith("svn:")) {
+				svnClient.setRevProperty(url.toString(), propName, Revision.getInstance(revisionNo.getNumber()), fixSVNString(propertyData), true);
+			} else {
+				svnClient.setRevProperty(url.toString(), propName, Revision.getInstance(revisionNo.getNumber()), propertyData, true);
+			}
 		} catch (ClientException e) {
 			notificationHandler.logException(e);
 			throw new SVNClientException(e);
