@@ -33,6 +33,7 @@ public class SVNClientException extends Exception {
 	public static final int NONE = -1;
 	public static final int MERGE_CONFLICT = 155015;
 	public static final int UNSUPPORTED_FEATURE = 200007;
+	public static final String OPERATION_INTERRUPTED = "operation was interrupted";
 
 	/**
      * Constructs a new exception with <code>null</code> as its detail message.
@@ -98,6 +99,10 @@ public class SVNClientException extends Exception {
 
 	public void setAprError(int aprError) {
 		this.aprError = aprError;
+	}
+	
+	public boolean operationInterrupted() {
+		return getMessage() != null && getMessage().indexOf(OPERATION_INTERRUPTED) != -1;
 	}
 
 }
