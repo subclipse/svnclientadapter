@@ -230,7 +230,23 @@ public interface ISVNClientAdapter {
 		SVNRevision revision,
 		SVNRevision pegRevision,
 		boolean recurse)
-		throws SVNClientException;	
+		throws SVNClientException;
+	
+	/**
+	 * List directory entries of a URL with lock information
+	 * @param url
+	 * @param revision
+	 * @param pegRevision
+	 * @param recurse
+	 * @return an array of ISVNDirEntries 
+	 * @throws SVNClientException
+	 */
+	public abstract ISVNDirEntryWithLock[] getListWithLocks(
+		SVNUrl url,
+		SVNRevision revision,
+		SVNRevision pegRevision,
+		boolean recurse)
+		throws SVNClientException;		
 
 	/**
 	 * List directory entries of a directory

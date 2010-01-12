@@ -34,10 +34,14 @@ import java.util.StringTokenizer;
 import org.tigris.subversion.javahl.ClientException;
 import org.tigris.subversion.javahl.CopySource;
 import org.tigris.subversion.javahl.Depth;
+import org.tigris.subversion.javahl.DirEntry;
 import org.tigris.subversion.javahl.ErrorCodes;
 import org.tigris.subversion.javahl.Info;
 import org.tigris.subversion.javahl.Info2;
+import org.tigris.subversion.javahl.ListCallback;
+import org.tigris.subversion.javahl.Lock;
 import org.tigris.subversion.javahl.Mergeinfo;
+import org.tigris.subversion.javahl.NodeKind;
 import org.tigris.subversion.javahl.PromptUserPassword;
 import org.tigris.subversion.javahl.PropertyData;
 import org.tigris.subversion.javahl.Revision;
@@ -52,6 +56,7 @@ import org.tigris.subversion.svnclientadapter.ISVNAnnotations;
 import org.tigris.subversion.svnclientadapter.ISVNClientAdapter;
 import org.tigris.subversion.svnclientadapter.ISVNConflictResolver;
 import org.tigris.subversion.svnclientadapter.ISVNDirEntry;
+import org.tigris.subversion.svnclientadapter.ISVNDirEntryWithLock;
 import org.tigris.subversion.svnclientadapter.ISVNInfo;
 import org.tigris.subversion.svnclientadapter.ISVNLogMessage;
 import org.tigris.subversion.svnclientadapter.ISVNLogMessageCallback;
@@ -389,7 +394,42 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
         }
 	}	
 	
-	
+	public ISVNDirEntryWithLock[] getListWithLocks(SVNUrl url, SVNRevision revision, SVNRevision pegRevision, boolean recurse)
+			throws SVNClientException {
+		final List dirEntryList = new ArrayList();
+		ListCallback callback = new ListCallback() {
+			public void doEntry(DirEntry dirent, Lock lock) {
+	            if (dirent.getPath().length() == 0)
+	            {
+	                if (dirent.getNodeKind() == NodeKind.file)
+	                {
+	                    String absPath = dirent.getAbsPath();
+	                    int lastSeparator = absPath.lastIndexOf('/');
+	                    String path = absPath.substring(lastSeparator,
+	                                                    absPath.length());
+	                    dirent.setPath(path);
+	                }
+	                else
+	                {
+	                    // Don't add requested directory.        	
+	                    return;
+	                }
+	            }
+
+	            dirEntryList.add(new JhlDirEntryWithLock(dirent, lock));
+			}			
+		};
+		try {
+			svnClient.list(url.toString(), JhlConverter.convert(revision), JhlConverter.convert(pegRevision), Depth.infinityOrImmediates(recurse), DirEntry.Fields.all, true, callback);
+		} catch (ClientException e) {
+	        notificationHandler.logException(e);
+	        throw new SVNClientException(e);
+		}
+		ISVNDirEntryWithLock[] dirEntries = new ISVNDirEntryWithLock[dirEntryList.size()];
+		dirEntryList.toArray(dirEntries);
+		return dirEntries;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getDirEntry(org.tigris.subversion.svnclientadapter.SVNUrl, org.tigris.subversion.svnclientadapter.SVNRevision)
