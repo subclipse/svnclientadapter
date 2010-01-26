@@ -38,6 +38,7 @@ import org.tigris.subversion.svnclientadapter.AbstractClientAdapter;
 import org.tigris.subversion.svnclientadapter.ISVNAnnotations;
 import org.tigris.subversion.svnclientadapter.ISVNConflictResolver;
 import org.tigris.subversion.svnclientadapter.ISVNDirEntry;
+import org.tigris.subversion.svnclientadapter.ISVNDirEntryWithLock;
 import org.tigris.subversion.svnclientadapter.ISVNInfo;
 import org.tigris.subversion.svnclientadapter.ISVNLogMessage;
 import org.tigris.subversion.svnclientadapter.ISVNLogMessageCallback;
@@ -267,6 +268,17 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 	public ISVNDirEntry[] getList(File path, SVNRevision revision,
 			boolean recurse) throws SVNClientException {
 		return getList(toString(path), revision, recurse);
+	}
+
+	public ISVNDirEntryWithLock[] getListWithLocks(SVNUrl url,
+			SVNRevision revision, SVNRevision pegRevision, boolean recurse)
+			throws SVNClientException {
+		ISVNDirEntry[] entries = getList(url, revision, pegRevision, recurse);
+		ISVNDirEntryWithLock[] entriesWithLocks = new ISVNDirEntryWithLock[entries.length];
+		for (int i = 0; i < entries.length; i++) {
+			entriesWithLocks[i] = new CmdLineRemoteDirEntryWithLock(entries[i], null);
+		}
+		return entriesWithLocks;
 	}
 
 	/*
