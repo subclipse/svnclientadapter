@@ -420,6 +420,10 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 			}			
 		};
 		try {
+            notificationHandler.setCommand(ISVNNotifyListener.Command.LS);
+            String commandLine = "list -r "+revision.toString()+(recurse?"-R":"")+" "+url.toString();
+            notificationHandler.logCommandLine(commandLine);
+			notificationHandler.setBaseDir(new File("."));
 			svnClient.list(url.toString(), JhlConverter.convert(revision), JhlConverter.convert(pegRevision), Depth.infinityOrImmediates(recurse), DirEntry.Fields.all, true, callback);
 		} catch (ClientException e) {
 	        notificationHandler.logException(e);
