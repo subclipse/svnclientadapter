@@ -1816,6 +1816,9 @@ public interface ISVNClientAdapter {
                      int depth, boolean ignoreAncestry)
       throws SVNClientException;
 
+  public abstract SVNDiffSummary[] diffSummarize(File path, SVNUrl toUrl, SVNRevision toRevision, boolean recurse)
+  	  throws SVNClientException;
+  
   /**
    * Return an ordered list of suggested merge source URLs.
    * @param path The merge target path for which to suggest sources.

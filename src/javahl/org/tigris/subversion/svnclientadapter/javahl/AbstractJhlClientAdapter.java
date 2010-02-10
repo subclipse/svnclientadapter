@@ -18,10 +18,12 @@
  ******************************************************************************/
 package org.tigris.subversion.svnclientadapter.javahl;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -80,6 +82,7 @@ import org.tigris.subversion.svnclientadapter.SVNScheduleKind;
 import org.tigris.subversion.svnclientadapter.SVNStatusKind;
 import org.tigris.subversion.svnclientadapter.SVNStatusUnversioned;
 import org.tigris.subversion.svnclientadapter.SVNUrl;
+import org.tigris.subversion.svnclientadapter.SVNDiffSummary.SVNDiffKind;
 import org.tigris.subversion.svnclientadapter.utils.Messages;
 
 /**
@@ -2581,6 +2584,77 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 		return diffSummarize(target1.toString(), revision1,
 				target2.toString(), revision2, depth,
 				ignoreAncestry);
+	}
+
+	// This is a bit of a hack in order to enable diff --summarize against a working copy.
+	// This method does a diff to a temporary file and then parses that file to construct
+	// the SVNDiffSummary array.
+	public SVNDiffSummary[] diffSummarize(File path, SVNUrl toUrl, SVNRevision toRevision, boolean recurse) throws SVNClientException {
+		List diffSummaryList = new ArrayList();    
+		BufferedReader input = null;
+	   	String changedResource = null;
+    	boolean deletedLines = false;
+    	boolean addedLines = false;
+    	boolean contextLines = false;
+    	boolean propertyChanges = false;
+    	boolean inDiff = false;
+		try {
+			File diffFile = File.createTempFile("revision", ".diff");
+			diffFile.deleteOnExit();
+			diff(path, toUrl, toRevision, diffFile, recurse);
+			input = new BufferedReader(new FileReader(diffFile));
+			String line = null; 
+			while ((line = input.readLine()) != null){				
+				if (line != null && line.trim().length() > 0 && !line.startsWith("\\")) {				
+					if (line.startsWith("Index:")) {						
+						if (changedResource != null) {
+							SVNDiffKind diffKind;
+							if (addedLines && !deletedLines && !contextLines) diffKind = SVNDiffKind.ADDED;
+							else if (deletedLines && !addedLines && !contextLines) diffKind = SVNDiffKind.DELETED;
+							else diffKind = SVNDiffKind.MODIFIED;					
+							SVNDiffSummary diffSummary = new SVNDiffSummary(changedResource.substring(path.toString().length() + 1), diffKind, propertyChanges, SVNNodeKind.FILE.toInt());
+							diffSummaryList.add(diffSummary);
+							deletedLines = false;
+							addedLines = false;
+							contextLines = false;
+							propertyChanges = false;
+						}						
+						inDiff = false;
+						changedResource = line.substring(7);
+					}
+					else if (line.startsWith("@@")) {
+						inDiff = true;
+					}
+					else if (line.equals("Property changes on: " + changedResource)) {
+						propertyChanges = true;
+						inDiff = false;
+					} else if (inDiff) {
+						if (line.startsWith("+")) addedLines = true;
+						else if (line.startsWith("-")) deletedLines = true;
+						else contextLines = true;
+					}
+				}
+			}
+			if (changedResource != null) {
+				SVNDiffKind diffKind;
+				if (addedLines && !deletedLines && !contextLines) diffKind = SVNDiffKind.ADDED;
+				else if (deletedLines && !addedLines && !contextLines) diffKind = SVNDiffKind.DELETED;
+				else diffKind = SVNDiffKind.MODIFIED;					
+				SVNDiffSummary diffSummary = new SVNDiffSummary(changedResource.substring(path.toString().length() + 1), diffKind, propertyChanges, SVNNodeKind.FILE.toInt());
+				diffSummaryList.add(diffSummary);
+			}
+		} catch (Exception e) {
+			throw new SVNClientException(e);
+		} finally {
+			if (input != null) {
+				try {
+					input.close();
+				} catch (IOException e) {}
+			}
+		}		
+		SVNDiffSummary[] diffSummary = new SVNDiffSummary[diffSummaryList.size()];
+		diffSummaryList.toArray(diffSummary);
+		return diffSummary;
 	}
 
 	public String[] suggestMergeSources(File path) throws SVNClientException {
