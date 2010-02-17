@@ -2596,6 +2596,8 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
     	boolean deletedLines = false;
     	boolean addedLines = false;
     	boolean contextLines = false;
+    	boolean oldRev0 = false;
+    	boolean newRev0 = false;
     	boolean propertyChanges = false;
     	boolean inDiff = false;
 		try {
@@ -2608,19 +2610,30 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 				if (line != null && line.trim().length() > 0 && !line.startsWith("\\")) {				
 					if (line.startsWith("Index:")) {						
 						if (changedResource != null) {
-							SVNDiffKind diffKind;
-							if (addedLines && !deletedLines && !contextLines) diffKind = SVNDiffKind.ADDED;
-							else if (deletedLines && !addedLines && !contextLines) diffKind = SVNDiffKind.DELETED;
-							else diffKind = SVNDiffKind.MODIFIED;					
-							SVNDiffSummary diffSummary = new SVNDiffSummary(changedResource.substring(path.toString().length() + 1), diffKind, propertyChanges, SVNNodeKind.FILE.toInt());
+							SVNDiffKind diffKind = getDiffKind(changedResource,
+									deletedLines, addedLines, contextLines,
+									oldRev0, newRev0);	
+							SVNDiffSummary diffSummary = new SVNDiffSummary(changedResource.substring(path.toString().length() + 1).replaceAll("\\\\", "/"), diffKind, propertyChanges, SVNNodeKind.FILE.toInt());
 							diffSummaryList.add(diffSummary);
 							deletedLines = false;
 							addedLines = false;
 							contextLines = false;
 							propertyChanges = false;
+							oldRev0 = false;
+							newRev0 = false;
 						}						
 						inDiff = false;
 						changedResource = line.substring(7);
+					}
+					else if (line.startsWith("--- ")) {
+						if (line.endsWith("(revision 0)")) {
+							oldRev0 = true;
+						}
+					}
+					else if (line.startsWith("+++ ")) {
+						if (line.endsWith("(revision 0)")) {
+							newRev0 = true;
+						}						
 					}
 					else if (line.startsWith("@@")) {
 						inDiff = true;
@@ -2636,10 +2649,9 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 				}
 			}
 			if (changedResource != null) {
-				SVNDiffKind diffKind;
-				if (addedLines && !deletedLines && !contextLines) diffKind = SVNDiffKind.ADDED;
-				else if (deletedLines && !addedLines && !contextLines) diffKind = SVNDiffKind.DELETED;
-				else diffKind = SVNDiffKind.MODIFIED;					
+				SVNDiffKind diffKind = getDiffKind(changedResource,
+						deletedLines, addedLines, contextLines, oldRev0,
+						newRev0);	
 				SVNDiffSummary diffSummary = new SVNDiffSummary(changedResource.substring(path.toString().length() + 1), diffKind, propertyChanges, SVNNodeKind.FILE.toInt());
 				diffSummaryList.add(diffSummary);
 			}
@@ -2655,6 +2667,30 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 		SVNDiffSummary[] diffSummary = new SVNDiffSummary[diffSummaryList.size()];
 		diffSummaryList.toArray(diffSummary);
 		return diffSummary;
+	}
+
+	private SVNDiffKind getDiffKind(String changedResource,
+			boolean deletedLines, boolean addedLines, boolean contextLines,
+			boolean oldRev0, boolean newRev0) {
+		SVNDiffKind diffKind;			
+		if (oldRev0 && newRev0) {
+			diffKind = SVNDiffKind.DELETED;
+		}
+		else if (addedLines && !deletedLines && !contextLines) diffKind = SVNDiffKind.ADDED;
+		else if ((!deletedLines && !addedLines) || deletedLines && !addedLines && !contextLines) {
+			if (exists(changedResource)) {
+				diffKind = SVNDiffKind.DELETED;
+			} else {
+				diffKind = SVNDiffKind.ADDED;
+			}
+		}
+		else diffKind = SVNDiffKind.MODIFIED;
+		return diffKind;
+	}
+	
+	private boolean exists(String changedResource) {
+		File file = new File(changedResource);
+		return file.exists();
 	}
 
 	public String[] suggestMergeSources(File path) throws SVNClientException {
