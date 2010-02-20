@@ -116,6 +116,9 @@ public abstract class SVNNotificationHandler {
      * @param commandLine
      */
     public void logCommandLine(String commandLine) {
+    	
+    	System.out.println(commandLine);
+    	
         if (logEnabled && !skipCommand()) {
             for(Iterator it=notifylisteners.iterator(); it.hasNext();) {
                 ISVNNotifyListener listener = (ISVNNotifyListener)it.next();
