@@ -2104,7 +2104,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
             notificationHandler.setCommand(ISVNNotifyListener.Command.MERGE);
             
             String target = fileToSVNPath(localPath, false);
-            String commandLine = "merge -reintegrate";
+            String commandLine = "merge --reintegrate";
             if (dryRun) {
             	commandLine += " --dry-run";
             }
