@@ -1133,11 +1133,14 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 		try {
 			notificationHandler.setCommand(
 				ISVNNotifyListener.Command.CAT);
-            notificationHandler.logCommandLine(
-                            "cat -r "
-                                + revision.toString()
-                                + " "
-                                + url.toString());
+			String commandLine = "cat -r "
+                + revision
+                + " "
+                + url;
+			if (pegRevision != null) {
+				commandLine = commandLine + "@"	+ pegRevision;
+			}
+            notificationHandler.logCommandLine(commandLine);
 			notificationHandler.setBaseDir();                
 			
 			byte[] contents = svnClient.fileContent(url.toString(), JhlConverter.convert(revision), JhlConverter.convert(pegRevision));
@@ -2292,8 +2295,12 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 			if (e.getAprError() == ErrorCodes.unsupportedFeature && includeMergedRevisions) {
 				getLogMessages(target, pegRevision, revisionStart, revisionEnd, stopOnCopy, fetchChangePath, limit, false, requestedProperties, worker);
 			} else {
-				notificationHandler.logException(e);
-				throw new SVNClientException(e);
+				if (e.getAprError() == ErrorCodes.fsNotFound && pegRevision != null && !pegRevision.equals(revisionStart)) {
+					getLogMessages(target, pegRevision, pegRevision, revisionEnd, stopOnCopy, fetchChangePath, limit, includeMergedRevisions, requestedProperties, worker);
+				} else {
+					notificationHandler.logException(e);
+					throw new SVNClientException(e);
+				}
 			}
 		}
 	}
