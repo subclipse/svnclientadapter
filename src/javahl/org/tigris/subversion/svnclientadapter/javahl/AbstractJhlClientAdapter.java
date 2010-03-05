@@ -1742,8 +1742,12 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
         	if (includeMergedRevisions && ((ClientException)e).getAprError() == SVNClientException.UNSUPPORTED_FEATURE) {
         		return annotate(target, revisionStart, revisionEnd, pegRevision, ignoreMimeType, false);
         	}
-            notificationHandler.logException(e);
-            throw new SVNClientException(e);
+			if (e.getAprError() == ErrorCodes.fsNotFound && pegRevision != null && !pegRevision.equals(revisionEnd)) {
+				return annotate(target, revisionStart, pegRevision, pegRevision, ignoreMimeType, includeMergedRevisions);
+			} else {
+				notificationHandler.logException(e);
+				throw new SVNClientException(e);
+			}
         }
 
 	}
