@@ -1348,12 +1348,13 @@ public interface ISVNClientAdapter {
      * @param url
      * @param revisionStart
      * @param revisionEnd
+     * @param pegRevision
      * @param ignoreMimeType
      * @param includeMergedRevisons
      * @return annotations for the given url
 	 * @throws SVNClientException
      */
-    public ISVNAnnotations annotate(SVNUrl url, SVNRevision revisionStart, SVNRevision revisionEnd,
+    public ISVNAnnotations annotate(SVNUrl url, SVNRevision revisionStart, SVNRevision revisionEnd, SVNRevision pegRevision,
     		boolean ignoreMimeType, boolean includeMergedRevisions)
         throws SVNClientException;
 

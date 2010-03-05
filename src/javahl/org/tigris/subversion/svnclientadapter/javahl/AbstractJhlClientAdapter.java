@@ -1706,16 +1706,16 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 		if ((SVNScheduleKind.ADD == info.getSchedule()) && (info.getCopyUrl() != null)) {
 			target = info.getCopyUrl().toString();			
 		}
-    	return annotate(target, revisionStart, revisionEnd, ignoreMimeType, includeMergedRevisions);
+    	return annotate(target, revisionStart, revisionEnd, null, ignoreMimeType, includeMergedRevisions);
 	}
 
 	public ISVNAnnotations annotate(SVNUrl url, SVNRevision revisionStart,
-			SVNRevision revisionEnd, boolean ignoreMimeType,
-			boolean includeMergedRevisions) throws SVNClientException {
-    	return annotate(url.toString(), revisionStart, revisionEnd, ignoreMimeType, includeMergedRevisions);
+			SVNRevision revisionEnd, SVNRevision pegRevision, 
+			boolean ignoreMimeType, boolean includeMergedRevisions) throws SVNClientException {
+    	return annotate(url.toString(), revisionStart, revisionEnd, pegRevision, ignoreMimeType, includeMergedRevisions);
 	}
 
-	private ISVNAnnotations annotate(String target, SVNRevision revisionStart, SVNRevision revisionEnd,
+	private ISVNAnnotations annotate(String target, SVNRevision revisionStart, SVNRevision revisionEnd, SVNRevision pegRevision,
 			boolean ignoreMimeType, boolean includeMergedRevisions)
     	throws SVNClientException
 	{
@@ -1725,20 +1725,22 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
                 revisionStart = new SVNRevision.Number(1);
             if(revisionEnd == null)
                 revisionEnd = SVNRevision.HEAD;
+            if (pegRevision == null) 
+            	pegRevision = SVNRevision.HEAD;
             String commandLine = "blame ";
             if (includeMergedRevisions)
             	commandLine += "-g ";
             commandLine = commandLine + "-r " + revisionStart.toString() + ":" + revisionEnd.toString() + " ";
-            commandLine = commandLine + target + "@HEAD";
+            commandLine = commandLine + target + "@" + pegRevision;
             notificationHandler.logCommandLine(commandLine);
 			notificationHandler.setBaseDir();
 			
 			JhlAnnotations annotations = new JhlAnnotations();
-            svnClient.blame(target, Revision.HEAD, JhlConverter.convert(revisionStart), JhlConverter.convert(revisionEnd), ignoreMimeType, includeMergedRevisions,  annotations);
+            svnClient.blame(target, JhlConverter.convert(pegRevision), JhlConverter.convert(revisionStart), JhlConverter.convert(revisionEnd), ignoreMimeType, includeMergedRevisions,  annotations);
             return annotations;
         } catch (ClientException e) { 
         	if (includeMergedRevisions && ((ClientException)e).getAprError() == SVNClientException.UNSUPPORTED_FEATURE) {
-        		return annotate(target, revisionStart, revisionEnd, ignoreMimeType, false);
+        		return annotate(target, revisionStart, revisionEnd, pegRevision, ignoreMimeType, false);
         	}
             notificationHandler.logException(e);
             throw new SVNClientException(e);
@@ -1752,7 +1754,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
     public ISVNAnnotations annotate(SVNUrl url, SVNRevision revisionStart, SVNRevision revisionEnd)
         throws SVNClientException
     {
-    	return annotate(url.toString(), revisionStart, revisionEnd, false, false);
+    	return annotate(url.toString(), revisionStart, revisionEnd, null, false, false);
     }
 
     /* (non-Javadoc)
@@ -1767,7 +1769,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 		if ((SVNScheduleKind.ADD == info.getSchedule()) && (info.getCopyUrl() != null)) {
 			target = info.getCopyUrl().toString();			
 		}
-    	return annotate(target, revisionStart, revisionEnd, false, false);
+    	return annotate(target, revisionStart, revisionEnd, null, false, false);
     }        
     
     /* (non-Javadoc)
