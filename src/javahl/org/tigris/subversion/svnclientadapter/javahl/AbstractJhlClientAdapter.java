@@ -1220,18 +1220,25 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 			throw new SVNClientException(e);
 		}		
 	}
-
+	
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getProperties(org.tigris.subversion.svnclientadapter.SVNUrl)
 	 */
 	public ISVNProperty[] getProperties(SVNUrl url) throws SVNClientException {
+		return getProperties(url, SVNRevision.HEAD, SVNRevision.HEAD);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getProperties(org.tigris.subversion.svnclientadapter.SVNUrl)
+	 */
+	public ISVNProperty[] getProperties(SVNUrl url, SVNRevision revision, SVNRevision pegRevision) throws SVNClientException {
 		try {
 			notificationHandler.setCommand(ISVNNotifyListener.Command.PROPLIST);
 			String target = url.toString();
 			notificationHandler.logCommandLine(
 					"proplist "+ target);
 			notificationHandler.setBaseDir();
-			PropertyData[] propertiesData = svnClient.properties(target);
+			PropertyData[] propertiesData = svnClient.properties(target, JhlConverter.convert(revision), JhlConverter.convert(pegRevision));
 			if (propertiesData == null) {
 				// no properties
 				return new JhlPropertyData[0];
