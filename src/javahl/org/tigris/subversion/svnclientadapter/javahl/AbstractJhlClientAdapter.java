@@ -1707,13 +1707,19 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
     public ISVNAnnotations annotate(File file, SVNRevision revisionStart,
 			SVNRevision revisionEnd, boolean ignoreMimeType,
 			boolean includeMergedRevisions) throws SVNClientException {
+		return annotate(file, revisionStart, revisionEnd, null, ignoreMimeType, includeMergedRevisions);
+	}
+    
+    public ISVNAnnotations annotate(File file, SVNRevision revisionStart,
+			SVNRevision revisionEnd, SVNRevision pegRevision, boolean ignoreMimeType,
+			boolean includeMergedRevisions) throws SVNClientException {
 		String target = fileToSVNPath(file, false);
 		//If the file is an uncommitted rename/move, we have to refer to original/source, not the new copy.
 		ISVNInfo info = getInfoFromWorkingCopy(file);
 		if ((SVNScheduleKind.ADD == info.getSchedule()) && (info.getCopyUrl() != null)) {
 			target = info.getCopyUrl().toString();			
 		}
-    	return annotate(target, revisionStart, revisionEnd, null, ignoreMimeType, includeMergedRevisions);
+    	return annotate(target, revisionStart, revisionEnd, pegRevision, ignoreMimeType, includeMergedRevisions);
 	}
 
 	public ISVNAnnotations annotate(SVNUrl url, SVNRevision revisionStart,
