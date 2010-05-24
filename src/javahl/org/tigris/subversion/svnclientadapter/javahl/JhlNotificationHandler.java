@@ -209,8 +209,7 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements No
                             statecharBuf[0] = 'U';
                             updates += 1;
                         }
-                        else if (info.getContentState() == NotifyStatus.unchanged && command == ISVNNotifyListener.Command.MERGE
-                                && info.getPropState() < NotifyStatus.obstructed)
+                        else if (info.getContentState() == NotifyStatus.unchanged && info.getPropState() < NotifyStatus.obstructed)
                             break;
                     }
                     if (info.getPropState() == NotifyStatus.conflicted) {
@@ -227,8 +226,7 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements No
                         statecharBuf[1] = 'U';
                         propUpdates += 1;
                     }
-                    if (command == ISVNNotifyListener.Command.MERGE && 
-                    		info.getContentState() == NotifyStatus.unknown && info.getPropState() == NotifyStatus.unknown)
+                    if (info.getContentState() == NotifyStatus.unknown && info.getPropState() == NotifyStatus.unknown)
                     	break;
                     if (error)
                         logError("" + statecharBuf[0] + statecharBuf[1] + "  " + info.getPath());                       //$NON-NLS-1$ //$NON-NLS-2$
