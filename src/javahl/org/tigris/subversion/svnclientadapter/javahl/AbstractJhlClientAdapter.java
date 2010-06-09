@@ -2252,7 +2252,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 
 			notificationHandler.logCommandLine(
 				"propset --revprop -r " + revisionNo.toString()
-					+ (force ? "--force " : "")
+					+ (force ? " --force " : "")
 					+ " \""
 					+ propName
 					+ "\"  \""
@@ -2270,6 +2270,62 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 			throw new SVNClientException(e);
 		}		
 	}
+	
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getRevProperty(org.tigris.subversion.svnclientadapter.SVNUrl, org.tigris.subversion.svnclientadapter.SVNRevision.Number)
+     */
+    public String getRevProperty(SVNUrl url, SVNRevision.Number revisionNo, String propName) throws SVNClientException {
+      String propData = null;
+        try {
+            notificationHandler.setCommand(ISVNNotifyListener.Command.PROPGET);
+
+            notificationHandler.logCommandLine(
+                "propget --revprop -r " + revisionNo.toString()
+                    + " \""
+                    + propName
+                    + "\"  "
+                    + url.toString());
+            notificationHandler.setBaseDir();
+            PropertyData temp = svnClient.revProperty(url.toString(), propName, Revision.getInstance(revisionNo.getNumber())); //setRevProperty(url.toString(), propName, Revision.getInstance(revisionNo.getNumber()), fixSVNString(propertyData), true);
+            propData = temp.getValue();
+            if (propName.startsWith("svn:")) {
+              fixSVNString(propData);
+            } 
+        } catch (ClientException e) {
+            notificationHandler.logException(e);
+            throw new SVNClientException(e);
+        }    
+        return propData;
+    }	
+    
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getRevProperties(org.tigris.subversion.svnclientadapter.SVNUrl, org.tigris.subversion.svnclientadapter.SVNRevision.Number)
+     */
+    public ISVNProperty[] getRevProperties(SVNUrl url, SVNRevision.Number revisionNo) throws SVNClientException {
+        try {
+            notificationHandler.setCommand(ISVNNotifyListener.Command.PROPLIST);
+            String target = url.toString();
+            notificationHandler.logCommandLine(
+                    "proplist --revprop -r " + revisionNo.toString()
+                    + target);
+            
+            notificationHandler.setBaseDir();
+            PropertyData[] propertiesData = svnClient.revProperties(target, Revision.getInstance(revisionNo.getNumber()));
+              //.properties(target, JhlConverter.convert(revision), JhlConverter.convert(pegRevision));
+            if (propertiesData == null) {
+                // no properties
+                return new JhlPropertyData[0];
+            }
+            JhlPropertyData[] svnProperties = new JhlPropertyData[propertiesData.length];
+            for (int i = 0; i < propertiesData.length;i++) {
+                svnProperties[i] = JhlPropertyData.newForUrl(propertiesData[i]);  
+            }
+            return svnProperties;
+        } catch (ClientException e) {
+            notificationHandler.logException(e);
+            throw new SVNClientException(e);
+        }       
+    }    
 
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getAdminDirectoryName()

@@ -1048,6 +1048,17 @@ public interface ISVNClientAdapter {
 			SVNRevision.Number revisionNo, String propName,
 			String propertyData, boolean force) throws SVNClientException;
     
+    /**
+     * get a revision property for a given revision
+     * @param path
+     * @param revisionNo
+     * @param propName
+     * @throws SVNClientException
+     */    
+    public abstract String getRevProperty(SVNUrl path,
+            SVNRevision.Number revisionNo, String propName) 
+            throws SVNClientException;    
+    
 	/**
 	 * get the ignored patterns for the given directory
 	 * if path is not a directory, returns null
@@ -1415,6 +1426,15 @@ public interface ISVNClientAdapter {
      */    
 	public abstract ISVNProperty[] getProperties(SVNUrl url) throws SVNClientException;
 
+    /**
+     * Get all the revision properties for the given url at a revision
+     * @param url
+     * @param revision
+     * @return information about an URL.
+     * @throws SVNClientException
+     */
+    public abstract ISVNProperty[] getRevProperties(SVNUrl url, SVNRevision.Number revision) throws SVNClientException;	
+	
 	/**
 	 * Remove 'conflicted' state on working copy files or directories
 	 * @param path
