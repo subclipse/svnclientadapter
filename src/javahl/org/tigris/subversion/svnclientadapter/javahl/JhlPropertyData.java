@@ -21,7 +21,6 @@ package org.tigris.subversion.svnclientadapter.javahl;
 import java.io.File;
 import java.net.MalformedURLException;
 
-import org.tigris.subversion.javahl.PropertyData;
 import org.tigris.subversion.svnclientadapter.ISVNProperty;
 import org.tigris.subversion.svnclientadapter.SVNUrl;
 
@@ -33,7 +32,9 @@ import org.tigris.subversion.svnclientadapter.SVNUrl;
  */
 public class JhlPropertyData implements ISVNProperty
 {
-    private PropertyData _propertyData;
+    private String key;
+    private byte[] data;
+    private String path;
     private boolean isForUrl;
     
     /**
@@ -41,9 +42,9 @@ public class JhlPropertyData implements ISVNProperty
      * @param propertyData
      * @return a JhlPropertyData constructed from supplied propertyData
      */
-    public static JhlPropertyData newForFile(PropertyData propertyData)
+    public static JhlPropertyData newForFile(String path, String key, byte[] data)
     {
-    	return new JhlPropertyData(propertyData, false);
+    	return new JhlPropertyData(path, key, data, false);
     }
 
     /**
@@ -51,18 +52,20 @@ public class JhlPropertyData implements ISVNProperty
      * @param propertyData
      * @return a JhlPropertyData constructed from supplied propertyData
      */
-    public static JhlPropertyData newForUrl(PropertyData propertyData)
+    public static JhlPropertyData newForUrl(String path, String key, byte[] data)
     {
-    	return new JhlPropertyData(propertyData, true);
+    	return new JhlPropertyData(path, key, data, true);
     }
 
     /**
      * Constructor
      * @param propertyData
      */
-    private JhlPropertyData(PropertyData propertyData, boolean isForUrl)
+    private JhlPropertyData(String path, String key, byte[] data, boolean isForUrl)
     {
-        this._propertyData = propertyData;
+    	this.path = path;
+        this.key = key;
+        this.data = data;
         this.isForUrl = isForUrl;
     }
 
@@ -71,7 +74,7 @@ public class JhlPropertyData implements ISVNProperty
      */
     public String getName()
     {
-        return _propertyData.getName();
+        return key;
     }
 
     /* (non-Javadoc)
@@ -79,7 +82,7 @@ public class JhlPropertyData implements ISVNProperty
      */
     public String getValue()
     {
-        return _propertyData.getValue();
+        return new String(data);
     }
 
     /* (non-Javadoc)
@@ -87,7 +90,7 @@ public class JhlPropertyData implements ISVNProperty
      */
     public File getFile()
     {
-    	return isForUrl ? null : new File(_propertyData.getPath()).getAbsoluteFile();
+    	return isForUrl ? null : new File(path).getAbsoluteFile();
     }
     
     /* (non-Javadoc)
@@ -96,7 +99,7 @@ public class JhlPropertyData implements ISVNProperty
     public SVNUrl getUrl()
     {
 		try {
-	    	return isForUrl ? new SVNUrl(_propertyData.getPath()) : null;
+	    	return isForUrl ? new SVNUrl(path) : null;
         } catch (MalformedURLException e) {
             //should never happen.
             return null;
@@ -108,6 +111,6 @@ public class JhlPropertyData implements ISVNProperty
      */
     public byte[] getData()
     {
-        return _propertyData.getData();
+        return data;
     }
 }

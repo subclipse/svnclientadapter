@@ -1,11 +1,11 @@
 package org.tigris.subversion.svnclientadapter.javahl;
 
-import org.tigris.subversion.javahl.ProgressEvent;
-import org.tigris.subversion.javahl.ProgressListener;
+import org.apache.subversion.javahl.ProgressEvent;
+import org.apache.subversion.javahl.callback.ProgressCallback;
 import org.tigris.subversion.svnclientadapter.ISVNProgressListener;
 import org.tigris.subversion.svnclientadapter.SVNProgressEvent;
 
-public class JhlProgressListener implements ProgressListener {
+public class JhlProgressListener implements ProgressCallback {
 	ISVNProgressListener worker;
 	
 	public JhlProgressListener() {
