@@ -150,7 +150,7 @@ public class JhlClientAdapter extends AbstractJhlClientAdapter {
 					}
 	    			Set<String> paths = new HashSet<String>();
 	    			paths.add(src);
-	    			svnClient.remove(paths, null, true, false, null, null);
+	    			svnClient.remove(paths, true, false, null, null, null);
 	            } catch (ClientException e) {
 	                notificationHandler.logException(e);
 	                throw new SVNClientException(e);

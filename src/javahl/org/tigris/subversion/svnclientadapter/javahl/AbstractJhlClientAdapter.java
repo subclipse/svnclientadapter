@@ -336,7 +336,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 
 			boolean keepChangeLists = false;
 			JhlCommitCallback callback = new JhlCommitCallback();
-            svnClient.commit(files, fixedMessage, Depth.infinityOrEmpty(recurse), keepLocks, keepChangeLists, null, null, callback);
+            svnClient.commit(files, Depth.infinityOrEmpty(recurse), keepLocks, keepChangeLists, null, null, new JhlCommitMessage(fixedMessage), callback);
             long newRev = callback.getRevision();
             if (newRev > 0)
             	notificationHandler.logCompleted("Committed revision " + newRev + ".");
@@ -880,7 +880,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
             commandLine = appendPaths(commandLine, targets);
             notificationHandler.logCommandLine(commandLine);
 			notificationHandler.setBaseDir();
-		    svnClient.remove(targets,fixedMessage,false, false, null, null);
+		    svnClient.remove(targets,false, false, null, new JhlCommitMessage(fixedMessage), null);
             
         } catch (ClientException e) {
             notificationHandler.logException(e);
@@ -906,7 +906,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
             notificationHandler.logCommandLine(commandLine);
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(file));
    
-            svnClient.remove(targets,"",force, false, null, null);
+            svnClient.remove(targets, force, false, null, null, null);
         } catch (ClientException e) {
             notificationHandler.logException(e);
             throw new SVNClientException(e);
@@ -981,7 +981,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 					+ ' '
 					+ dest);
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
-			svnClient.doImport(src, dest, fixedMessage, Depth.infinityOrEmpty(recurse), false, true, null, null);
+			svnClient.doImport(src, dest, Depth.infinityOrEmpty(recurse), false, true, null, new JhlCommitMessage(fixedMessage), null);
 			notificationHandler.logCompleted(Messages.bind("notify.import.complete"));
 		} catch (ClientException e) {
 			notificationHandler.logException(e);
