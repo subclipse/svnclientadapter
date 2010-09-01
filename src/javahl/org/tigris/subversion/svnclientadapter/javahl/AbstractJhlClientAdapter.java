@@ -692,7 +692,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 
 			List<CopySource> copySources = new ArrayList<CopySource>();
 			copySources.add(new CopySource(src, Revision.WORKING, Revision.WORKING));
-			svnClient.copy(copySources, dest, null, true, true, false, null, null);
+			svnClient.copy(copySources, dest, true, true, false, null, null, null);
 			
 		} catch (ClientException e) {
 			notificationHandler.logException(e);
@@ -716,7 +716,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(srcPath));
 			List<CopySource> copySources = new ArrayList<CopySource>();
 			copySources.add(new CopySource(src, Revision.WORKING, Revision.WORKING));
-			svnClient.copy(copySources, dest, fixedMessage, true, true, true, null, null);
+			svnClient.copy(copySources, dest, true, true, true, null, new JhlCommitMessage(fixedMessage), null);
 			// last parameter is not used
 		} catch (ClientException e) {
 			notificationHandler.logException(e);
@@ -758,7 +758,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 			commandLine = appendPaths(commandLine, paths) + " " + dest;
 			notificationHandler.logCommandLine(commandLine.toString());
 			notificationHandler.setBaseDir();
-			svnClient.copy(copySources, dest, fixedMessage, copyAsChild, makeParents, true, null, null);
+			svnClient.copy(copySources, dest, copyAsChild, makeParents, true, null, new JhlCommitMessage(fixedMessage), null);
 		} catch (ClientException e) {
 			notificationHandler.logException(e);
 			throw new SVNClientException(e);
@@ -793,7 +793,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 			copySources.add(new CopySource(srcUrl.toString(), JhlConverter.convert(revision), JhlConverter.convert(pegRevision)));
 			notificationHandler.logCommandLine("copy " + srcUrl + " " + dest);
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(destPath));
-			svnClient.copy(copySources, dest, null, copyAsChild, makeParents, true, null, null);
+			svnClient.copy(copySources, dest, copyAsChild, makeParents, true, null, null, null);
 		} catch (ClientException e) {
 			notificationHandler.logException(e);
 			throw new SVNClientException(e);
@@ -853,7 +853,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 			commandLine = appendPaths(commandLine, paths) + " " + dest;
 			notificationHandler.logCommandLine(commandLine);
 			notificationHandler.setBaseDir();
-			svnClient.copy(copySources, dest, fixedMessage, copyAsChild, makeParents, true, null, null);
+			svnClient.copy(copySources, dest, copyAsChild, makeParents, true, null, new JhlCommitMessage(fixedMessage), null);
 		} catch (ClientException e) {
 			notificationHandler.logException(e);
 			throw new SVNClientException(e);
@@ -1007,7 +1007,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
             notificationHandler.logCommandLine(
                 "mkdir "+target);
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(file));
-            svnClient.mkdir(target,"", false, null, null);
+            svnClient.mkdir(target, false, null, null, null);
         } catch (ClientException e) {
             notificationHandler.logException(e);
             throw new SVNClientException(e);
@@ -1027,7 +1027,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
             notificationHandler.logCommandLine(
                     "move "+fileToSVNPath(srcPath, false)+' '+dest);
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(new File[] {srcPath, destPath}));        
-            svnClient.move(src,dest,"",force, false, false,null,null);
+            svnClient.move(src,dest,force, false, false,null,null,null);
         } catch (ClientException e) {
             notificationHandler.logException(e);
             throw new SVNClientException(e);
@@ -1062,7 +1062,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 					+ ' '
 					+ dest);
 			notificationHandler.setBaseDir();
-			svnClient.move(src, dest, fixedMessage, false, false, false, null,null);
+			svnClient.move(src, dest, false, false, false, null, new JhlCommitMessage(fixedMessage), null);
 		} catch (ClientException e) {
 			notificationHandler.logException(e);
 			throw new SVNClientException(e);
@@ -2506,7 +2506,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 	            notificationHandler.logCommandLine(
 	                "mkdir -m \""+getFirstMessageLine(fixedMessage)+"\" "+target);
 			notificationHandler.setBaseDir();
-            svnClient.mkdir(target,fixedMessage, makeParents, null, null);
+            svnClient.mkdir(target, makeParents, null, new JhlCommitMessage(fixedMessage), null);
         } catch (ClientException e) {
             notificationHandler.logException(e);
             throw new SVNClientException(e);

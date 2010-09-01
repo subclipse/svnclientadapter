@@ -141,7 +141,7 @@ public class JhlClientAdapter extends AbstractJhlClientAdapter {
 	    			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(new File[] {srcPath, destPath}));        
 	    			List<CopySource> copySources = new ArrayList<CopySource>();
 	    			copySources.add(new CopySource(src, Revision.WORKING, Revision.WORKING));
-	    			svnClient.copy(copySources, dest, null, true, true, true, null, null);
+	    			svnClient.copy(copySources, dest, true, true, true, null, null, null);
 	    			try {
 						overwriteFile(srcPath, destPath);
 					} catch (IOException e) {
