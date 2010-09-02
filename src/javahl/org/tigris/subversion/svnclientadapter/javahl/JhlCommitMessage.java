@@ -3,9 +3,9 @@ package org.tigris.subversion.svnclientadapter.javahl;
 import java.util.Set;
 
 import org.apache.subversion.javahl.CommitItem;
-import org.apache.subversion.javahl.CommitMessage;
+import org.apache.subversion.javahl.callback.CommitMessageCallback;
 
-public class JhlCommitMessage implements CommitMessage {
+public class JhlCommitMessage implements CommitMessageCallback {
 
 	private String message;
 	
