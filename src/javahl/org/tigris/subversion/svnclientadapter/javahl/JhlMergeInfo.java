@@ -18,8 +18,11 @@
  ******************************************************************************/
 package org.tigris.subversion.svnclientadapter.javahl;
 
+import java.util.Iterator;
+import java.util.List;
 
-import org.apache.subversion.javahl.Mergeinfo;
+import org.tigris.subversion.javahl.Mergeinfo;
+import org.tigris.subversion.javahl.RevisionRange;
 import org.tigris.subversion.svnclientadapter.ISVNMergeInfo;
 import org.tigris.subversion.svnclientadapter.SVNRevisionRange;
 
@@ -52,7 +55,7 @@ public class JhlMergeInfo implements ISVNMergeInfo {
 	public String[] getPaths() {
 		if (info == null)
 			return null;
-		return (String[]) info.getPaths().toArray();
+		return info.getPaths();
 		
 	}
 
@@ -65,7 +68,13 @@ public class JhlMergeInfo implements ISVNMergeInfo {
 	public SVNRevisionRange[] getRevisions(String path) {
 		if (info == null)
 			return null;
-		return JhlConverter.convert(info.getRevisions(path));
+		List rangeList = info.getRevisions(path);
+		SVNRevisionRange[] range = new SVNRevisionRange[rangeList.size()];
+		int i = 0;
+		for (Iterator iter = rangeList.iterator(); iter.hasNext();) {
+			range[i] = JhlConverter.convert((RevisionRange) iter.next());
+		}
+		return range;
 	}
 
 	public void loadFromMergeInfoProperty(String mergeInfo) {

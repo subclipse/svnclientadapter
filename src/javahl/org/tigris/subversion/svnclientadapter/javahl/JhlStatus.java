@@ -22,13 +22,13 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.util.Date;
 
-import org.apache.subversion.javahl.Status;
+import org.tigris.subversion.javahl.Status;
 import org.tigris.subversion.svnclientadapter.ISVNInfo;
 import org.tigris.subversion.svnclientadapter.ISVNStatus;
 import org.tigris.subversion.svnclientadapter.SVNConflictDescriptor;
+import org.tigris.subversion.svnclientadapter.SVNStatusKind;
 import org.tigris.subversion.svnclientadapter.SVNNodeKind;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
-import org.tigris.subversion.svnclientadapter.SVNStatusKind;
 import org.tigris.subversion.svnclientadapter.SVNUrl;
 
 /**

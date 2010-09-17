@@ -18,14 +18,14 @@
  ******************************************************************************/
 package org.tigris.subversion.svnclientadapter.javahl;
 
-import org.apache.subversion.javahl.callback.UserPasswordCallback;
+import org.tigris.subversion.javahl.PromptUserPassword3;
 import org.tigris.subversion.svnclientadapter.ISVNPromptUserPassword;
 
 /**
  * A JavaHL's PromptUserPassword3 implementation.
  * Actually an adapter to {@link ISVNPromptUserPassword}  
  */
-public class JhlPromptUserPassword implements UserPasswordCallback {
+public class JhlPromptUserPassword implements PromptUserPassword3 {
 
     private ISVNPromptUserPassword worker;
     

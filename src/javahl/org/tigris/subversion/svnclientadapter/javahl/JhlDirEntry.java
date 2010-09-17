@@ -20,7 +20,7 @@ package org.tigris.subversion.svnclientadapter.javahl;
 
 import java.util.Date;
 
-import org.apache.subversion.javahl.DirEntry;
+import org.tigris.subversion.javahl.DirEntry;
 import org.tigris.subversion.svnclientadapter.ISVNDirEntry;
 import org.tigris.subversion.svnclientadapter.SVNNodeKind;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
