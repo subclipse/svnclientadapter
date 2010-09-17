@@ -3,13 +3,13 @@ package org.tigris.subversion.svnclientadapter.javahl;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.subversion.javahl.DiffSummary;
-import org.apache.subversion.javahl.callback.DiffSummaryCallback;
+import org.tigris.subversion.javahl.DiffSummary;
+import org.tigris.subversion.javahl.DiffSummaryReceiver;
 import org.tigris.subversion.svnclientadapter.SVNDiffSummary;
 
-public class JhlDiffSummaryReceiver implements DiffSummaryCallback {
+public class JhlDiffSummaryReceiver implements DiffSummaryReceiver {
 	
-	List<SVNDiffSummary> summary = new ArrayList<SVNDiffSummary>();
+	List summary = new ArrayList();
 
 	public void onSummary(DiffSummary descriptor) {
 		summary.add(JhlConverter.convert(descriptor));

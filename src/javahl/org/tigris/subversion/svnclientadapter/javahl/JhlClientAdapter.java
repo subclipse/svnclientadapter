@@ -24,16 +24,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
-import org.apache.subversion.javahl.ClientException;
-import org.apache.subversion.javahl.CopySource;
-import org.apache.subversion.javahl.Revision;
-import org.apache.subversion.javahl.SVNClient;
-import org.apache.subversion.javahl.SVNRepos;
+import org.tigris.subversion.javahl.ClientException;
+import org.tigris.subversion.javahl.CopySource;
+import org.tigris.subversion.javahl.Revision;
+import org.tigris.subversion.javahl.SVNAdmin;
+import org.tigris.subversion.javahl.SVNClient;
 import org.tigris.subversion.svnclientadapter.ISVNNotifyListener;
 import org.tigris.subversion.svnclientadapter.ISVNProperty;
 import org.tigris.subversion.svnclientadapter.SVNBaseDir;
@@ -48,19 +44,19 @@ import org.tigris.subversion.svnclientadapter.SVNClientException;
  */
 public class JhlClientAdapter extends AbstractJhlClientAdapter {
 
-    private SVNRepos svnAdmin;
+    private SVNAdmin svnAdmin;
     
 	/**
 	 * Default constructor
 	 */
     public JhlClientAdapter() {
         svnClient = new SVNClient();
-        svnAdmin = new SVNRepos();
+        svnAdmin = new SVNAdmin();
         notificationHandler = new JhlNotificationHandler();
         progressListener = new JhlProgressListener();
         svnClient.notification2(notificationHandler);
         svnClient.setPrompt(new DefaultPromptUserPassword());
-        svnClient.setProgressCallback(progressListener);
+        svnClient.setProgressListener(progressListener);
     }
 
 	public boolean isThreadsafe() {
@@ -92,11 +88,12 @@ public class JhlClientAdapter extends AbstractJhlClientAdapter {
 			String fsType = (repositoryType == null) ? REPOSITORY_FSTYPE_FSFS : repositoryType; 
 		    notificationHandler.setCommand(ISVNNotifyListener.Command.CREATE_REPOSITORY);
 		     
+		    String target = fileToSVNPath(path,false);
 		    notificationHandler.logCommandLine(
 		    		MessageFormat.format(
 		    				"create --fstype {0} {1}", 
-							(Object[])new String[] { fsType, fileToSVNPath(path, false) }));
-		    svnAdmin.create(path, false, false, null, fsType);
+							new String[] { fsType, target }));
+		    svnAdmin.create(target, false, false, null, fsType);
 		} catch (ClientException e) {
 			notificationHandler.logException(e);
 			throw new SVNClientException(e);            
@@ -108,8 +105,7 @@ public class JhlClientAdapter extends AbstractJhlClientAdapter {
 	 * @param logLevel
 	 * @param filePath
 	 */
-	public static void enableLogging(SVNClient.ClientLogLevel logLevel, File filePath) {
-		
+	public static void enableLogging(int logLevel,File filePath) {
 		SVNClient.enableLogging(logLevel,fileToSVNPath(filePath, false));	
 	}
 
@@ -139,18 +135,16 @@ public class JhlClientAdapter extends AbstractJhlClientAdapter {
 	                notificationHandler.logCommandLine(
 	                        "move "+src+' '+dest);
 	    			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(new File[] {srcPath, destPath}));        
-	    			List<CopySource> copySources = new ArrayList<CopySource>();
-	    			copySources.add(new CopySource(src, Revision.WORKING, Revision.WORKING));
-	    			svnClient.copy(copySources, dest, true, true, true, null, null, null);
+	    			CopySource[] copySources =  { new CopySource(src, Revision.WORKING, Revision.WORKING) };
+	    			svnClient.copy(copySources, dest, null, true, true, null);
 	    			try {
 						overwriteFile(srcPath, destPath);
 					} catch (IOException e) {
 						// If file contents do not copy, just
 						// proceed.
 					}
-	    			Set<String> paths = new HashSet<String>();
-	    			paths.add(src);
-	    			svnClient.remove(paths, true, false, null, null, null);
+	    			String paths[] = {src};
+	    			svnClient.remove(paths, null, true, false, null);
 	            } catch (ClientException e) {
 	                notificationHandler.logException(e);
 	                throw new SVNClientException(e);

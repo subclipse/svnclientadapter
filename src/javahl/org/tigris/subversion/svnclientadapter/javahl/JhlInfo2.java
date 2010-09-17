@@ -23,12 +23,13 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.Date;
 
-import org.apache.subversion.javahl.Info2;
+import org.tigris.subversion.javahl.Depth;
+import org.tigris.subversion.javahl.Info2;
 import org.tigris.subversion.svnclientadapter.ISVNInfo;
 import org.tigris.subversion.svnclientadapter.SVNNodeKind;
-import org.tigris.subversion.svnclientadapter.SVNRevision.Number;
 import org.tigris.subversion.svnclientadapter.SVNScheduleKind;
 import org.tigris.subversion.svnclientadapter.SVNUrl;
+import org.tigris.subversion.svnclientadapter.SVNRevision.Number;
 
 /**
  * A JavaHL based implementation of {@link ISVNInfo}.
@@ -46,12 +47,9 @@ public class JhlInfo2 implements ISVNInfo {
 	 * @param file
 	 * @param info
 	 */
-	public JhlInfo2(String path, Info2 info) {
+	public JhlInfo2(File file, Info2 info) {
         super();
-        if (path == null)
-        	file = null;
-        else
-        	file = new File(path);
+        this.file = file;
         this.info = info;
 	}	
 	
@@ -220,6 +218,6 @@ public class JhlInfo2 implements ISVNInfo {
      * @see org.tigris.subversion.svnclientadapter.ISVNInfo#getDepth()
      */
     public int getDepth() {
-    	return info.getDepth().ordinal();
+    	return info.getDepth();
     }    
 }

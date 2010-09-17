@@ -20,10 +20,10 @@ package org.tigris.subversion.svnclientadapter.utils;
 
 public class Depth {
 
-	    /** Depth undetermined or ignored. */
+	    /** Depth undetermined or ignored. 
 	    public static final int unknown = -2;
 
-	    /** Exclude (remove, whatever) directory D. */
+	    /** Exclude (remove, whatever) directory D.
 	    public static final int exclude = -1;
 
 	    /** Just the named directory D, no entries. */
