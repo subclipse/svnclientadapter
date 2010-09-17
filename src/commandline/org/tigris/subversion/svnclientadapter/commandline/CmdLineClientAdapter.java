@@ -52,6 +52,7 @@ import org.tigris.subversion.svnclientadapter.SVNClientException;
 import org.tigris.subversion.svnclientadapter.SVNDiffSummary;
 import org.tigris.subversion.svnclientadapter.SVNNotificationHandler;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
+import org.tigris.subversion.svnclientadapter.SVNRevision.Number;
 import org.tigris.subversion.svnclientadapter.SVNRevisionRange;
 import org.tigris.subversion.svnclientadapter.SVNScheduleKind;
 import org.tigris.subversion.svnclientadapter.SVNStatusUnversioned;
@@ -1873,6 +1874,46 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 
 	public ISVNInfo[] getInfo(File file, boolean descend)
 			throws SVNClientException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String getRevProperty(SVNUrl path, Number revisionNo, String propName)
+			throws SVNClientException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public ISVNAnnotations annotate(SVNUrl url, SVNRevision revisionStart,
+			SVNRevision revisionEnd, SVNRevision pegRevision,
+			boolean ignoreMimeType, boolean includeMergedRevisions)
+			throws SVNClientException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public ISVNAnnotations annotate(File file, SVNRevision revisionStart,
+			SVNRevision revisionEnd, SVNRevision pegRevision,
+			boolean ignoreMimeType, boolean includeMergedRevisions)
+			throws SVNClientException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public ISVNProperty[] getProperties(SVNUrl url, SVNRevision revision,
+			SVNRevision peg) throws SVNClientException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public ISVNProperty[] getRevProperties(SVNUrl url, Number revision)
+			throws SVNClientException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public SVNDiffSummary[] diffSummarize(File path, SVNUrl toUrl,
+			SVNRevision toRevision, boolean recurse) throws SVNClientException {
 		// TODO Auto-generated method stub
 		return null;
 	}
