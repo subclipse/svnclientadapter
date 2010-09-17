@@ -20,7 +20,7 @@ package org.tigris.subversion.svnclientadapter.javahl;
 
 import java.util.Date;
 
-import org.tigris.subversion.javahl.Lock;
+import org.apache.subversion.javahl.Lock;
 import org.tigris.subversion.svnclientadapter.ISVNLock;
 
 /**

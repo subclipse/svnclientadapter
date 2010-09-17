@@ -1,10 +1,11 @@
 package org.tigris.subversion.svnclientadapter.javahl;
 
 import java.util.Map;
+import java.util.Set;
 
-import org.tigris.subversion.javahl.ChangePath;
-import org.tigris.subversion.javahl.LogMessageCallback;
-import org.tigris.subversion.javahl.Revision;
+import org.apache.subversion.javahl.ChangePath;
+import org.apache.subversion.javahl.Revision;
+import org.apache.subversion.javahl.callback.LogMessageCallback;
 import org.tigris.subversion.svnclientadapter.ISVNLogMessageCallback;
 
 public class JhlLogMessageCallback implements LogMessageCallback {
@@ -20,15 +21,15 @@ public class JhlLogMessageCallback implements LogMessageCallback {
 		super();
 	}
 
-	public void singleMessage(ChangePath[] changedPaths, long revision,
-			Map revprops, boolean hasChildren) {
+
+	public void singleMessage(Set<ChangePath> changedPaths, long revision,
+		Map<String, byte[]> revprops, boolean hasChildren) {
 
 		if (revision == Revision.SVN_INVALID_REVNUM) {
 			worker.singleMessage(null);
 		} else {
 			worker.singleMessage(new JhlLogMessage(changedPaths, revision, revprops, hasChildren));
 		}
-				
 	}
-
+	
 }

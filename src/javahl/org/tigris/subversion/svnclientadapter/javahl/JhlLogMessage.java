@@ -24,9 +24,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
-import org.tigris.subversion.javahl.ChangePath;
-import org.tigris.subversion.javahl.LogDate;
+import org.apache.subversion.javahl.ChangePath;
+import org.apache.subversion.javahl.LogDate;
 import org.tigris.subversion.svnclientadapter.ISVNLogMessage;
 import org.tigris.subversion.svnclientadapter.ISVNLogMessageChangePath;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
@@ -41,32 +42,33 @@ public class JhlLogMessage implements ISVNLogMessage {
 
 	private static final String EMPTY = "";
 	
-	private List children;
+	private List<ISVNLogMessage> children;
 	private boolean hasChildren;
 	private ISVNLogMessageChangePath[] changedPaths;
 	private SVNRevision.Number revision;
-	private Map revprops;
+	private Map<String, byte[]> revprops;
 	private LogDate logDate;
 
-	public JhlLogMessage(ChangePath[] changedPaths, long revision, Map revprops, boolean hasChildren) {
+	public JhlLogMessage(Set<ChangePath> changedPaths, long revision,
+			Map<String, byte[]> revprops, boolean hasChildren) {
 		this.changedPaths = JhlConverter.convert(changedPaths);
 		this.revision = new SVNRevision.Number(revision);
 		this.revprops = revprops;
 		if (this.revprops == null) {
-			this.revprops = new HashMap(2); // avoid NullPointerErrors
-			this.revprops.put(AUTHOR, EMPTY);
-			this.revprops.put(MESSAGE, EMPTY);
+			this.revprops = new HashMap<String, byte[]>(2); // avoid NullPointerErrors
+			this.revprops.put(AUTHOR, EMPTY.getBytes());
+			this.revprops.put(MESSAGE, EMPTY.getBytes());
 		}
 		this.hasChildren = hasChildren;
 		try {
-			logDate = new LogDate((String) this.revprops.get(DATE));
+			logDate = new LogDate(new String(this.revprops.get(DATE)));
 		} catch (ParseException e) {
 		}
 	}
 
 	public void addChild(ISVNLogMessage msg) {
 		if (children == null)
-			children = new ArrayList();
+			children = new ArrayList<ISVNLogMessage>();
 		children.add(msg);
 	}
 	
@@ -81,7 +83,7 @@ public class JhlLogMessage implements ISVNLogMessage {
 	 * @see org.tigris.subversion.svnclientadapter.ISVNLogMessage#getAuthor()
 	 */
 	public String getAuthor() {
-        return (String) revprops.get(AUTHOR);
+        return new String(revprops.get(AUTHOR));
 	}
 
 	/* (non-Javadoc)
@@ -97,7 +99,7 @@ public class JhlLogMessage implements ISVNLogMessage {
 	 * @see org.tigris.subversion.svnclientadapter.ISVNLogMessage#getMessage()
 	 */
 	public String getMessage() {
-        return (String) revprops.get(MESSAGE);
+        return new String(revprops.get(MESSAGE));
 	}
 
     /* (non-Javadoc)

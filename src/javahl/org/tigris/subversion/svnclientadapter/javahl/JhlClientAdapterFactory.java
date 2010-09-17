@@ -18,9 +18,9 @@
  ******************************************************************************/
 package org.tigris.subversion.svnclientadapter.javahl;
 
-import org.tigris.subversion.javahl.SVNClient;
-import org.tigris.subversion.javahl.SVNClientInterface;
-import org.tigris.subversion.javahl.Version;
+import org.apache.subversion.javahl.ISVNClient;
+import org.apache.subversion.javahl.SVNClient;
+import org.apache.subversion.javahl.Version;
 import org.tigris.subversion.svnclientadapter.ISVNClientAdapter;
 import org.tigris.subversion.svnclientadapter.SVNClientAdapterFactory;
 import org.tigris.subversion.svnclientadapter.SVNClientException;
@@ -73,13 +73,14 @@ public class JhlClientAdapterFactory extends SVNClientAdapterFactory {
     	SVNClientAdapterFactory.registerAdapterFactory(new JhlClientAdapterFactory());
     }
     
-    public static boolean isAvailable() {
+    @SuppressWarnings("rawtypes")
+	public static boolean isAvailable() {
     	if (!availabilityCached) {
-    		Class c = null;
+			Class c = null;
     		try {
     			// load a JavaHL class to see if it is found.  Do not use SVNClient as
     			// it will try to load native libraries and we do not want that yet
-    			c = Class.forName("org.tigris.subversion.javahl.ClientException");
+    			c = Class.forName("org.apache.subversion.javahl.ClientException");
     			if (c == null)
     				return false;
     		} catch (Throwable t) {
@@ -265,17 +266,17 @@ public class JhlClientAdapterFactory extends SVNClientAdapterFactory {
     			// it could be too old version of JavaHL library.  We have to try
     			// to get the version of the library to be sure.
     			try {
-	                SVNClientInterface svnClient = new SVNClient();
+	                ISVNClient svnClient = new SVNClient();
     				Version version = svnClient.getVersion();
-    				if (version.getMajor() == 1 && version.getMinor() == 6)
+    				if (version.getMajor() == 1 && version.getMinor() == 7)
     					available = true;
     				else {
     					available = false;
-    					javaHLErrors = new StringBuffer("Incompatible JavaHL library loaded.  1.6.x or later required.");
+    					javaHLErrors = new StringBuffer("Incompatible JavaHL library loaded.  1.7.x or later required.");
     				}
     			} catch (UnsatisfiedLinkError e) {
     				available = false;
-    				javaHLErrors = new StringBuffer("Incompatible JavaHL library loaded.  1.6.x or later required.");
+    				javaHLErrors = new StringBuffer("Incompatible JavaHL library loaded.  1.7.x or later required.");
     			}
     		}
     	}

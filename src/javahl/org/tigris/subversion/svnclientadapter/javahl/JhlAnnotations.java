@@ -18,10 +18,14 @@
  ******************************************************************************/
 package org.tigris.subversion.svnclientadapter.javahl;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Map;
 
-import org.tigris.subversion.javahl.BlameCallback;
-import org.tigris.subversion.javahl.BlameCallback2;
+import org.apache.subversion.javahl.ClientException;
+import org.apache.subversion.javahl.callback.BlameCallback;
 import org.tigris.subversion.svnclientadapter.Annotations;
 
 /**
@@ -30,23 +34,38 @@ import org.tigris.subversion.svnclientadapter.Annotations;
  * as means of constructing the annotation records.  
  * 
  */
-public class JhlAnnotations extends Annotations implements BlameCallback, BlameCallback2 {
-	
-    /* (non-Javadoc)
-     * @see org.tigris.subversion.javahl.BlameCallback#singleLine(java.util.Date, long, java.lang.String, java.lang.String)
-     */
-    public void singleLine(Date changed, long revision, String author,
-                           String line) {
-    	addAnnotation(new Annotation(revision, author, changed, line));
-    }
+public class JhlAnnotations extends Annotations implements BlameCallback {
 
-	public void singleLine(Date changed, long revision, String author,
+	private static final DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+	
+	private void singleLine(Date changed, long revision, String author,
 			Date merged_date, long merged_revision, String merged_author,
 			String mergedPath, String line) {
 		if (merged_revision == -1 || revision <= merged_revision)
 			addAnnotation(new Annotation(revision, author, changed, line));
 		else
 			addAnnotation(new Annotation(merged_revision, merged_author, merged_date, line));
+	}
+
+	public void singleLine(long lineNum, long revision,
+			Map<String, byte[]> revProps, long mergedRevision,
+			Map<String, byte[]> mergedRevProps, String mergedPath, String line,
+			boolean localChange) throws ClientException {
+
+        try {
+            singleLine(
+                df.parse(new String(revProps.get("svn:date"))),
+                revision,
+                new String(revProps.get("svn:author")),
+                mergedRevProps == null ? null
+                    : df.parse(new String(mergedRevProps.get("svn:date"))),
+                mergedRevision,
+                mergedRevProps == null ? null
+                    : new String(mergedRevProps.get("svn:author")),
+                mergedPath, line);
+        } catch (ParseException e) {
+            throw ClientException.fromException(e);
+        }
 	}
 	
 }

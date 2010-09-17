@@ -23,13 +23,12 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.Date;
 
-import org.tigris.subversion.javahl.Depth;
-import org.tigris.subversion.javahl.Info;
+import org.apache.subversion.javahl.Info2;
 import org.tigris.subversion.svnclientadapter.ISVNInfo;
 import org.tigris.subversion.svnclientadapter.SVNNodeKind;
+import org.tigris.subversion.svnclientadapter.SVNRevision.Number;
 import org.tigris.subversion.svnclientadapter.SVNScheduleKind;
 import org.tigris.subversion.svnclientadapter.SVNUrl;
-import org.tigris.subversion.svnclientadapter.SVNRevision.Number;
 
 /**
  * A JavaHL based implementation of {@link ISVNInfo}.
@@ -39,7 +38,7 @@ import org.tigris.subversion.svnclientadapter.SVNRevision.Number;
  */
 public class JhlInfo implements ISVNInfo {
 	
-	private Info info;
+	private Info2 info;
 	private File file;
 
 	/**
@@ -47,7 +46,7 @@ public class JhlInfo implements ISVNInfo {
 	 * @param file
 	 * @param info
 	 */
-	public JhlInfo(File file, Info info) {
+	public JhlInfo(File file, Info2 info) {
         super();
         this.file = file;
         this.info = info;
@@ -87,7 +86,7 @@ public class JhlInfo implements ISVNInfo {
 	 * @see org.tigris.subversion.svnclientadapter.ISVNInfo#getUuid()
 	 */
 	public String getUuid() {
-		return info.getUuid();
+		return info.getReposUUID();
 	}
 
 	/* (non-Javadoc)
@@ -95,7 +94,7 @@ public class JhlInfo implements ISVNInfo {
 	 */
 	public SVNUrl getRepository() {
 		try {
-			return new SVNUrl(info.getRepository());
+			return new SVNUrl(info.getUrl());
 		} catch (MalformedURLException e) {
             //should never happen.
 			return null;
@@ -113,28 +112,28 @@ public class JhlInfo implements ISVNInfo {
 	 * @see org.tigris.subversion.svnclientadapter.ISVNInfo#getNodeKind()
 	 */
 	public SVNNodeKind getNodeKind() {
-		return JhlConverter.convertNodeKind(info.getNodeKind());
+		return JhlConverter.convertNodeKind(info.getKind());
 	}
 
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNInfo#getAuthor()
 	 */
 	public String getLastCommitAuthor() {
-		return info.getAuthor();
+		return info.getLastChangedAuthor();
 	}
 
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNInfo#getRevision()
 	 */
 	public Number getRevision() {
-		return JhlConverter.convertRevisionNumber(info.getRevision());
+		return JhlConverter.convertRevisionNumber(info.getRev());
 	}
 
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNInfo#getLastChangedRevision()
 	 */
 	public Number getLastChangedRevision() {
-		return JhlConverter.convertRevisionNumber(info.getLastChangedRevision());
+		return JhlConverter.convertRevisionNumber(info.getLastChangedRev());
 	}
 
 	/* (non-Javadoc)
@@ -148,28 +147,28 @@ public class JhlInfo implements ISVNInfo {
 	 * @see org.tigris.subversion.svnclientadapter.ISVNInfo#getLastDateTextUpdate()
 	 */
 	public Date getLastDateTextUpdate() {
-		return info.getLastDateTextUpdate();
+		return info.getTextTime();
 	}
 
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNInfo#getLastDatePropsUpdate()
 	 */
 	public Date getLastDatePropsUpdate() {
-		return info.getLastDatePropsUpdate();
+		return info.getPropTime();
 	}
 
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNInfo#isCopied()
 	 */
 	public boolean isCopied() {
-		return (info.getCopyRev() > 0);
+		return (info.getCopyFromRev() > 0);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNInfo#getCopyRev()
 	 */
 	public Number getCopyRev() {
-		return JhlConverter.convertRevisionNumber(info.getCopyRev());
+		return JhlConverter.convertRevisionNumber(info.getCopyFromRev());
 	}
 
 	/* (non-Javadoc)
@@ -177,7 +176,7 @@ public class JhlInfo implements ISVNInfo {
 	 */
 	public SVNUrl getCopyUrl() {
 		try {
-			return new SVNUrl(info.getCopyUrl());
+			return new SVNUrl(info.getCopyFromUrl());
 		} catch (MalformedURLException e) {
             //should never happen.
 			return null;
@@ -213,6 +212,6 @@ public class JhlInfo implements ISVNInfo {
      */
     public int getDepth() {
     	//Not available in info(1)
-    	return Depth.unknown;
+    	return info.getDepth().ordinal();
     }
 }

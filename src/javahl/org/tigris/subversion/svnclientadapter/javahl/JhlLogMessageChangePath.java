@@ -18,7 +18,7 @@
  ******************************************************************************/
 package org.tigris.subversion.svnclientadapter.javahl;
 
-import org.tigris.subversion.javahl.ChangePath;
+import org.apache.subversion.javahl.ChangePath;
 import org.tigris.subversion.svnclientadapter.SVNLogMessageChangePath;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
 
@@ -39,7 +39,7 @@ public class JhlLogMessageChangePath extends SVNLogMessageChangePath {
 				(changePath.getCopySrcRevision() != -1) ? new SVNRevision.Number(
 						changePath.getCopySrcRevision()) : null, 
 				changePath.getCopySrcPath(), 
-				changePath.getAction());
+				JhlConverter.convert(changePath.getAction()));
 	}
 
 }

@@ -18,21 +18,21 @@
  ******************************************************************************/
 package org.tigris.subversion.svnclientadapter.javahl;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 import java.util.logging.Logger;
 
-import org.tigris.subversion.javahl.ChangePath;
-import org.tigris.subversion.javahl.ConflictDescriptor;
-import org.tigris.subversion.javahl.ConflictResult;
-import org.tigris.subversion.javahl.DiffSummary;
-import org.tigris.subversion.javahl.DirEntry;
-import org.tigris.subversion.javahl.Lock;
-import org.tigris.subversion.javahl.NodeKind;
-import org.tigris.subversion.javahl.Revision;
-import org.tigris.subversion.javahl.RevisionKind;
-import org.tigris.subversion.javahl.RevisionRange;
-import org.tigris.subversion.javahl.ScheduleKind;
-import org.tigris.subversion.javahl.Status;
-import org.tigris.subversion.javahl.StatusKind;
+import org.apache.subversion.javahl.ChangePath;
+import org.apache.subversion.javahl.ConflictDescriptor;
+import org.apache.subversion.javahl.ConflictResult;
+import org.apache.subversion.javahl.DiffSummary;
+import org.apache.subversion.javahl.DirEntry;
+import org.apache.subversion.javahl.Info2;
+import org.apache.subversion.javahl.Lock;
+import org.apache.subversion.javahl.Revision;
+import org.apache.subversion.javahl.RevisionRange;
+import org.apache.subversion.javahl.Status;
 import org.tigris.subversion.svnclientadapter.ISVNLogMessageChangePath;
 import org.tigris.subversion.svnclientadapter.SVNConflictDescriptor;
 import org.tigris.subversion.svnclientadapter.SVNConflictResult;
@@ -44,6 +44,7 @@ import org.tigris.subversion.svnclientadapter.SVNRevision;
 import org.tigris.subversion.svnclientadapter.SVNRevisionRange;
 import org.tigris.subversion.svnclientadapter.SVNScheduleKind;
 import org.tigris.subversion.svnclientadapter.SVNStatusKind;
+import org.tigris.subversion.svnclientadapter.utils.Depth;
 
 /**
  * Convert from javahl types to subversion.svnclientadapter.* types 
@@ -100,18 +101,20 @@ public class JhlConverter {
     	return new SVNRevisionRange(JhlConverter.convert(svnRevisionRange.getFromRevision()), JhlConverter.convert(svnRevisionRange.getToRevision()));
     }
 
-    public static SVNRevisionRange[] convert(RevisionRange[] jhlRange) {
-        SVNRevisionRange[] range = new SVNRevisionRange[jhlRange.length];
-        for(int i=0; i < jhlRange.length; i++) {
-            range[i] = JhlConverter.convert(jhlRange[i]);
-        }
+    public static SVNRevisionRange[] convert(List<RevisionRange> jhlRange) {
+        SVNRevisionRange[] range = new SVNRevisionRange[jhlRange.size()];
+        int i=0;
+        for (RevisionRange item : jhlRange) {
+			range[i] = JhlConverter.convert(item);
+			i++;
+		}
         return range;
 	}
     
-    public static RevisionRange[] convert(SVNRevisionRange[] range) {
-        RevisionRange[] jhlRange = new RevisionRange[range.length];
+    public static  List<RevisionRange> convert(SVNRevisionRange[] range) {
+        List<RevisionRange> jhlRange = new ArrayList<RevisionRange>(range.length);
         for(int i=0; i < range.length; i++) {
-            jhlRange[i] = JhlConverter.convert(range[i]);
+            jhlRange.add(JhlConverter.convert(range[i]));
         }
         return jhlRange;
     }
@@ -124,11 +127,11 @@ public class JhlConverter {
 	public static SVNRevision convert(Revision rev) {
 		if (rev == null) return null;
 		switch (rev.getKind()) {
-			case RevisionKind.base :
+			case base :
 				return SVNRevision.BASE;
-			case RevisionKind.committed :
+			case committed :
 				return SVNRevision.COMMITTED;
-			case RevisionKind.number :
+			case number :
 				Revision.Number n = (Revision.Number) rev;
 				if (n.getNumber() == -1) {
 					// we return null when resource is not managed ...
@@ -136,9 +139,9 @@ public class JhlConverter {
 				} else {
 					return new SVNRevision.Number(n.getNumber());
 				}
-			case RevisionKind.previous :
+			case previous :
 				return SVNRevision.PREVIOUS;
-			case RevisionKind.working :
+			case working :
 				return SVNRevision.WORKING;
 			default :
 				return SVNRevision.HEAD;
@@ -153,12 +156,12 @@ public class JhlConverter {
         }
     }
 
-    public static SVNNodeKind convertNodeKind(int javahlNodeKind) {
+    public static SVNNodeKind convertNodeKind(org.apache.subversion.javahl.NodeKind javahlNodeKind) {
         switch(javahlNodeKind) {
-            case NodeKind.dir  : return SVNNodeKind.DIR; 
-            case NodeKind.file : return SVNNodeKind.FILE; 
-            case NodeKind.none : return SVNNodeKind.NONE; 
-            case NodeKind.unknown : return SVNNodeKind.UNKNOWN;
+            case dir  : return SVNNodeKind.DIR; 
+            case file : return SVNNodeKind.FILE; 
+            case none : return SVNNodeKind.NONE; 
+            case unknown : return SVNNodeKind.UNKNOWN;
             default: {
             	log.severe("unknown node kind :"+javahlNodeKind);
             	return SVNNodeKind.UNKNOWN; // should never go here
@@ -170,35 +173,35 @@ public class JhlConverter {
 		return new JhlStatus(status);
 	}
 
-    public static SVNStatusKind convertStatusKind(int kind) {
+    public static SVNStatusKind convertStatusKind(Status.Kind kind) {
         switch (kind) {
-            case StatusKind.none :
+            case none :
                 return SVNStatusKind.NONE;
-            case StatusKind.normal :
+            case normal :
                 return SVNStatusKind.NORMAL;                
-            case StatusKind.added :
+            case added :
                 return SVNStatusKind.ADDED;
-            case StatusKind.missing :
+            case missing :
                 return SVNStatusKind.MISSING;
-            case StatusKind.incomplete :
+            case incomplete :
                 return SVNStatusKind.INCOMPLETE;
-            case StatusKind.deleted :
+            case deleted :
                 return SVNStatusKind.DELETED;
-            case StatusKind.replaced :
+            case replaced :
                 return SVNStatusKind.REPLACED;                                                
-            case StatusKind.modified :
+            case modified :
                 return SVNStatusKind.MODIFIED;
-            case StatusKind.merged :
+            case merged :
                 return SVNStatusKind.MERGED;                
-            case StatusKind.conflicted :
+            case conflicted :
                 return SVNStatusKind.CONFLICTED;
-            case StatusKind.obstructed :
+            case obstructed :
                 return SVNStatusKind.OBSTRUCTED;
-            case StatusKind.ignored :
+            case ignored :
                 return SVNStatusKind.IGNORED;  
-            case StatusKind.external:
+            case external:
                 return SVNStatusKind.EXTERNAL;
-            case StatusKind.unversioned :
+            case unversioned :
                 return SVNStatusKind.UNVERSIONED;
             default : {
             	log.severe("unknown status kind :"+kind);
@@ -233,25 +236,27 @@ public class JhlConverter {
         return jhlStatus;
     }
     
-    static ISVNLogMessageChangePath[] convert(ChangePath[] changePaths) {
+    static ISVNLogMessageChangePath[] convert(Set<ChangePath> changePaths) {
         if (changePaths == null)
             return new SVNLogMessageChangePath[0];
-        SVNLogMessageChangePath[] jhlChangePaths = new SVNLogMessageChangePath[changePaths.length];
-        for(int i=0; i < changePaths.length; i++) {
-        	jhlChangePaths[i] = new JhlLogMessageChangePath(changePaths[i]);
-        }
+        SVNLogMessageChangePath[] jhlChangePaths = new SVNLogMessageChangePath[changePaths.size()];
+        int i =0;
+        for (ChangePath path : changePaths) {
+        	jhlChangePaths[i] = new JhlLogMessageChangePath(path);
+        	i++;
+		}
         return jhlChangePaths;
     }
     
-    public static SVNScheduleKind convertScheduleKind(int kind) {
+    public static SVNScheduleKind convertScheduleKind(Info2.ScheduleKind kind) {
         switch (kind) {
-        	case ScheduleKind.normal:
+        	case normal:
         		return SVNScheduleKind.NORMAL;
-        	case ScheduleKind.delete:
+        	case delete:
         		return SVNScheduleKind.DELETE;
-        	case ScheduleKind.add:
+        	case add:
         		return SVNScheduleKind.ADD;
-        	case ScheduleKind.replace:
+        	case replace:
         		return SVNScheduleKind.REPLACE;        	
         	default : {
         		log.severe("unknown schedule kind :"+kind);
@@ -268,39 +273,92 @@ public class JhlConverter {
     	if (d == null) return null;
     	SVNConflictVersion srcLeftVersion = null;
     	if (d.getSrcLeftVersion() != null) {
-    		srcLeftVersion = new SVNConflictVersion(d.getSrcLeftVersion().getReposURL(), d.getSrcLeftVersion().getPegRevision(), d.getSrcLeftVersion().getPathInRepos(), d.getSrcLeftVersion().getNodeKind());
+    		srcLeftVersion = new SVNConflictVersion(d.getSrcLeftVersion().getReposURL(), d.getSrcLeftVersion().getPegRevision(), d.getSrcLeftVersion().getPathInRepos(), d.getSrcLeftVersion().getNodeKind().ordinal());
     	}
     	SVNConflictVersion srcRightVersion = null;
     	if (d.getSrcRightVersion() != null) {
-    		srcRightVersion = new SVNConflictVersion(d.getSrcRightVersion().getReposURL(), d.getSrcRightVersion().getPegRevision(), d.getSrcRightVersion().getPathInRepos(), d.getSrcRightVersion().getNodeKind());
+    		srcRightVersion = new SVNConflictVersion(d.getSrcRightVersion().getReposURL(), d.getSrcRightVersion().getPegRevision(), d.getSrcRightVersion().getPathInRepos(), d.getSrcRightVersion().getNodeKind().ordinal());
     	}
-    	return new SVNConflictDescriptor(d.getPath(), d.getKind(), d.getNodeKind(),
+    	return new SVNConflictDescriptor(d.getPath(), d.getKind().ordinal(), d.getNodeKind().ordinal(),
     			d.getPropertyName(), d.isBinary(),
-                d.getMIMEType(), d.getAction(), d.getReason(), d.getOperation(),
+                d.getMIMEType(), d.getAction().ordinal(), d.getReason().ordinal(), d.getOperation().ordinal(),
                 srcLeftVersion, srcRightVersion,
                 d.getBasePath(), d.getTheirPath(),
                 d.getMyPath(), d.getMergedPath());
     }
     
     public static SVNConflictResult convertConflictResult(ConflictResult r) {
-    	return new SVNConflictResult(r.getChoice(), r.getMergedPath());
+    	return new SVNConflictResult(r.getChoice().ordinal(), r.getMergedPath());
     }
 
 	public static SVNDiffSummary convert(DiffSummary d) {
 		return new SVNDiffSummary(d.getPath(), JhlConverter.convert(d.getDiffKind()),
-				d.propsChanged(), d.getNodeKind());
+				d.propsChanged(), d.getNodeKind().ordinal());
 	}
 	
 	public static SVNDiffSummary.SVNDiffKind convert(DiffSummary.DiffKind d) {
-		if (d == DiffSummary.DiffKind.ADDED) {
+		if (d == DiffSummary.DiffKind.added) {
 			return SVNDiffSummary.SVNDiffKind.ADDED;
-		} else if (d == DiffSummary.DiffKind.MODIFIED) {
+		} else if (d == DiffSummary.DiffKind.modified) {
 			return SVNDiffSummary.SVNDiffKind.MODIFIED;
-		} else if (d == DiffSummary.DiffKind.DELETED) {
+		} else if (d == DiffSummary.DiffKind.deleted) {
 			return SVNDiffSummary.SVNDiffKind.DELETED;
 		} else {
 			return SVNDiffSummary.SVNDiffKind.NORMAL;
 		}
 	}
+	
+	public static ConflictResult.Choice convert(SVNConflictResult result) {
+		switch (result.getChoice()) {
+		case SVNConflictResult.chooseBase:
+			return ConflictResult.Choice.chooseBase;
+		case SVNConflictResult.chooseMerged:
+			return ConflictResult.Choice.chooseMerged;
+		case SVNConflictResult.chooseMine:
+			return ConflictResult.Choice.chooseMineConflict;
+		case SVNConflictResult.chooseMineFull:
+			return ConflictResult.Choice.chooseMineFull;
+		case SVNConflictResult.chooseTheirs:
+			return ConflictResult.Choice.chooseTheirsConflict;
+		case SVNConflictResult.chooseTheirsFull:
+			return ConflictResult.Choice.chooseTheirsFull;
+		case SVNConflictResult.postpone:
+			return ConflictResult.Choice.postpone;
+		default:
+			return ConflictResult.Choice.postpone;
+		}
+	}
     
+	public static char convert(ChangePath.Action action) {
+		switch (action) {
+		case add:
+			return 'A';
+		case delete:
+			return 'D';
+		case modify:
+			return 'M';
+		case replace:
+			return 'R';
+		default:
+			return '?';	
+		}
+	}
+	
+	public static org.apache.subversion.javahl.Depth depth(int depthValue) {
+		switch(depthValue) {
+		case Depth.empty:
+			return org.apache.subversion.javahl.Depth.empty;
+		case Depth.files:
+			return org.apache.subversion.javahl.Depth.files;
+		case Depth.immediates:
+			return org.apache.subversion.javahl.Depth.immediates;
+		case Depth.infinity:
+			return org.apache.subversion.javahl.Depth.infinity;
+		case Depth.exclude:
+			return org.apache.subversion.javahl.Depth.exclude;
+		default:
+			return org.apache.subversion.javahl.Depth.unknown;
+		}
+		
+	}
 }
