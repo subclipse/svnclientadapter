@@ -2449,12 +2449,9 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
             throws SVNClientException {
 		try {
 			notificationHandler.setCommand(ISVNNotifyListener.Command.RELOCATE);
-			if (recurse)
-			    notificationHandler.logCommandLine("switch --relocate "+ from + " " + to + " " + path);
-			else
-			    notificationHandler.logCommandLine("switch --relocate -N"+ from + " " + to + " " + path);
+		    notificationHandler.logCommandLine("switch --relocate "+ from + " " + to + " " + path);
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(new File(path)));
-			svnClient.relocate(from, to, path, recurse);
+			svnClient.relocate(from, to, path);
 		} catch (ClientException e) {
 			notificationHandler.logException(e);
 			throw new SVNClientException(e);            
