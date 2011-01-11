@@ -428,7 +428,7 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 		try {
 			if (message == null)
 				message = "";
-			_cmd.copy(toString(src), toString(dest), message, toString(rev));
+			_cmd.copy(toString(src), toString(dest), message, toString(rev), false);
 		} catch (CmdLineException e) {
 			throw SVNClientException.wrapException(e);
 		}
@@ -967,7 +967,7 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 		try {
 			if (message == null)
 				message = "";
-			_cmd.copy(toString(srcPath), toString(destUrl), message, null);
+			_cmd.copy(toString(srcPath), toString(destUrl), message, null, false);
 		} catch (CmdLineException e) {
 			throw SVNClientException.wrapException(e);
 		}
@@ -979,7 +979,7 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 	public void copy(SVNUrl srcUrl, File destPath, SVNRevision revision)
 		throws SVNClientException {
 		try {
-			_cmd.copy(toString(srcUrl), toString(destPath), null, toString(revision));
+			_cmd.copy(toString(srcUrl), toString(destPath), null, toString(revision), false);
 		} catch (CmdLineException e) {
 			throw SVNClientException.wrapException(e);
 		}
@@ -1695,9 +1695,13 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 	public void copy(SVNUrl srcUrl, SVNUrl destUrl, String message,
 			SVNRevision revision, boolean makeParents)
 			throws SVNClientException {
-		// TODO Auto-generated method stub
-		notImplementedYet();
-		
+    try {
+      if (message == null)
+        message = "";
+      _cmd.copy(toString(srcUrl), toString(destUrl), message, toString(revision), makeParents);
+    } catch (CmdLineException e) {
+      throw SVNClientException.wrapException(e);
+    }
 	}
 
 	public void diff(SVNUrl target, SVNRevision pegRevision,

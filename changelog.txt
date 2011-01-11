@@ -1,4 +1,4 @@
-
+- #1231: implemented the method 'CmdLineClientAdapter#copy(SVNUrl,SVNUrl,String,SVNRevision,boolean)' 
 - added ISVNStatus#isWcLocked() and ISVNStatus#isSwitched()
 - removed the getRepositoryRoot() method from adapter interface
 - added logMessage(url, paths[], ...)
