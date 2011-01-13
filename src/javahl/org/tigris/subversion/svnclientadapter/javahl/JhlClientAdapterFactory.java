@@ -31,6 +31,14 @@ import org.tigris.subversion.svnclientadapter.SVNClientException;
  */
 public class JhlClientAdapterFactory extends SVNClientAdapterFactory {
     
+    private static final String[] WINDOWSLIBS = new String[] {
+        "libapr-1", "libapriconv-1", "libeay32", "ssleay32", "libaprutil-1",
+        "dbghelp", "libsasl",
+        // libraries as of 1.5
+        "libsvn_subr-1", "libsvn_delta-1", "libsvn_diff-1", "libsvn_wc-1",
+        "libsvn_fs-1", "libsvn_repos-1", "libsvn_ra-1", "libsvn_client-1"
+    };
+
     private static boolean availabilityCached = false;
     private static boolean available;
 	private static StringBuffer javaHLErrors = new StringBuffer("Failed to load JavaHL Library.\nThese are the errors that were encountered:\n");
@@ -94,112 +102,17 @@ public class JhlClientAdapterFactory extends SVNClientAdapterFactory {
     		// because of a problem in one of these libraries the proper behavior
     		// will still occur -- meaning JavaHL adapter is disabled.
     		if(isOsWindows()) {
-    			try {
-    				System.loadLibrary("libapr-1");
-    			} catch (Exception e) {
-    				javaHLErrors.append(e.getMessage()).append("\n");
-    			} catch (UnsatisfiedLinkError e) {
-    				javaHLErrors.append(e.getMessage()).append("\n");
-    			}
-    			try {
-    				System.loadLibrary("libapriconv-1");
-    			} catch (Exception e) {
-    				javaHLErrors.append(e.getMessage()).append("\n");
-    			} catch (UnsatisfiedLinkError e) {
-    				javaHLErrors.append(e.getMessage()).append("\n");
-    			}
-    			try {
-    				System.loadLibrary("libeay32");
-    			} catch (Exception e) {
-    				javaHLErrors.append(e.getMessage()).append("\n");
-    			} catch (UnsatisfiedLinkError e) {
-    				javaHLErrors.append(e.getMessage()).append("\n");
-    			}
-    			try {
-    				System.loadLibrary("ssleay32");
-    			} catch (Exception e) {
-    				javaHLErrors.append(e.getMessage()).append("\n");
-    			} catch (UnsatisfiedLinkError e) {
-    				javaHLErrors.append(e.getMessage()).append("\n");
-    			}
-    			try {
-    				System.loadLibrary("libaprutil-1");
-    			} catch (Exception e) {
-    				javaHLErrors.append(e.getMessage()).append("\n");
-    			} catch (UnsatisfiedLinkError e) {
-    				javaHLErrors.append(e.getMessage()).append("\n");
-    			}
-    			try {
-    				System.loadLibrary("dbghelp");
-    			} catch (Exception e) {
-    				javaHLErrors.append(e.getMessage()).append("\n");
-    			} catch (UnsatisfiedLinkError e) {
-    				javaHLErrors.append(e.getMessage()).append("\n");
-    			}
-    			try {
-    				System.loadLibrary("libsasl");
-    			} catch (Exception e) {
-    				javaHLErrors.append(e.getMessage()).append("\n");
-    			} catch (UnsatisfiedLinkError e) {
-    				javaHLErrors.append(e.getMessage()).append("\n");
-    			}
-            // Load DLL's for Subversion libraries -- as of 1.5    			
-    			try {
-    				System.loadLibrary("libsvn_subr-1");
-    			} catch (Exception e) {
-    				javaHLErrors.append(e.getMessage()).append("\n");
-    			} catch (UnsatisfiedLinkError e) {
-    				javaHLErrors.append(e.getMessage()).append("\n");
-    			}
-    			try {
-    				System.loadLibrary("libsvn_delta-1");
-    			} catch (Exception e) {
-    				javaHLErrors.append(e.getMessage()).append("\n");
-    			} catch (UnsatisfiedLinkError e) {
-    				javaHLErrors.append(e.getMessage()).append("\n");
-    			}
-    			try {
-    				System.loadLibrary("libsvn_diff-1");
-    			} catch (Exception e) {
-    				javaHLErrors.append(e.getMessage()).append("\n");
-    			} catch (UnsatisfiedLinkError e) {
-    				javaHLErrors.append(e.getMessage()).append("\n");
-    			}
-    			try {
-    				System.loadLibrary("libsvn_wc-1");
-    			} catch (Exception e) {
-    				javaHLErrors.append(e.getMessage()).append("\n");
-    			} catch (UnsatisfiedLinkError e) {
-    				javaHLErrors.append(e.getMessage()).append("\n");
-    			}
-    			try {
-    				System.loadLibrary("libsvn_fs-1");
-    			} catch (Exception e) {
-    				javaHLErrors.append(e.getMessage()).append("\n");
-    			} catch (UnsatisfiedLinkError e) {
-    				javaHLErrors.append(e.getMessage()).append("\n");
-    			}
-    			try {
-    				System.loadLibrary("libsvn_repos-1");
-    			} catch (Exception e) {
-    				javaHLErrors.append(e.getMessage()).append("\n");
-    			} catch (UnsatisfiedLinkError e) {
-    				javaHLErrors.append(e.getMessage()).append("\n");
-    			}
-    			try {
-    				System.loadLibrary("libsvn_ra-1");
-    			} catch (Exception e) {
-    				javaHLErrors.append(e.getMessage()).append("\n");
-    			} catch (UnsatisfiedLinkError e) {
-    				javaHLErrors.append(e.getMessage()).append("\n");
-    			}
-    			try {
-    				System.loadLibrary("libsvn_client-1");
-    			} catch (Exception e) {
-    				javaHLErrors.append(e.getMessage()).append("\n");
-    			} catch (UnsatisfiedLinkError e) {
-    				javaHLErrors.append(e.getMessage()).append("\n");
-    			}
+    		    
+    		    for (int i = 0; i < WINDOWSLIBS.length; i++) {
+    		        try {
+    		            System.loadLibrary(WINDOWSLIBS[i]);
+    		        } catch (Exception e) {
+                        javaHLErrors.append(e.getMessage()).append("\n");
+    		        } catch (UnsatisfiedLinkError e) {
+                        javaHLErrors.append(e.getMessage()).append("\n");
+    		        }
+    		    }
+    		    
     		}
     		//workaround to solve Subclipse ISSUE #83
     		available = false;
