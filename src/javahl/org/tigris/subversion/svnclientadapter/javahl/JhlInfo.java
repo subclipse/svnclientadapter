@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.Date;
 
-import org.apache.subversion.javahl.Info2;
+import org.apache.subversion.javahl.types.Info;
 import org.tigris.subversion.svnclientadapter.ISVNInfo;
 import org.tigris.subversion.svnclientadapter.SVNNodeKind;
 import org.tigris.subversion.svnclientadapter.SVNRevision.Number;
@@ -38,7 +38,7 @@ import org.tigris.subversion.svnclientadapter.SVNUrl;
  */
 public class JhlInfo implements ISVNInfo {
 	
-	private Info2 info;
+	private Info info;
 	private File file;
 
 	/**
@@ -46,7 +46,7 @@ public class JhlInfo implements ISVNInfo {
 	 * @param file
 	 * @param info
 	 */
-	public JhlInfo(File file, Info2 info) {
+	public JhlInfo(File file, Info info) {
         super();
         this.file = file;
         this.info = info;

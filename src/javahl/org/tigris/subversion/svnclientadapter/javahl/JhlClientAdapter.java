@@ -30,8 +30,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.subversion.javahl.ClientException;
-import org.apache.subversion.javahl.CopySource;
-import org.apache.subversion.javahl.Revision;
+import org.apache.subversion.javahl.types.CopySource;
+import org.apache.subversion.javahl.types.Revision;
 import org.apache.subversion.javahl.SVNClient;
 import org.apache.subversion.javahl.SVNRepos;
 import org.tigris.subversion.svnclientadapter.ISVNNotifyListener;

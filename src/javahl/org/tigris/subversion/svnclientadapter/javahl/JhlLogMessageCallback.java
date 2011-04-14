@@ -3,8 +3,8 @@ package org.tigris.subversion.svnclientadapter.javahl;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.subversion.javahl.ChangePath;
-import org.apache.subversion.javahl.Revision;
+import org.apache.subversion.javahl.types.ChangePath;
+import org.apache.subversion.javahl.types.Revision;
 import org.apache.subversion.javahl.callback.LogMessageCallback;
 import org.tigris.subversion.svnclientadapter.ISVNLogMessageCallback;
 

@@ -26,8 +26,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.subversion.javahl.ChangePath;
-import org.apache.subversion.javahl.LogDate;
+import org.apache.subversion.javahl.types.ChangePath;
+import org.apache.subversion.javahl.types.LogDate;
 import org.tigris.subversion.svnclientadapter.ISVNLogMessage;
 import org.tigris.subversion.svnclientadapter.ISVNLogMessageChangePath;
 import org.tigris.subversion.svnclientadapter.SVNRevision;

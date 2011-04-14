@@ -20,7 +20,7 @@ package org.tigris.subversion.svnclientadapter.javahl;
 
 import org.apache.subversion.javahl.ISVNClient;
 import org.apache.subversion.javahl.SVNClient;
-import org.apache.subversion.javahl.Version;
+import org.apache.subversion.javahl.types.Version;
 import org.tigris.subversion.svnclientadapter.ISVNClientAdapter;
 import org.tigris.subversion.svnclientadapter.SVNClientAdapterFactory;
 import org.tigris.subversion.svnclientadapter.SVNClientException;

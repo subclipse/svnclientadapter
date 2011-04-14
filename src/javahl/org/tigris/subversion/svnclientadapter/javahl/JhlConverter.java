@@ -23,16 +23,16 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import org.apache.subversion.javahl.ChangePath;
+import org.apache.subversion.javahl.types.ChangePath;
 import org.apache.subversion.javahl.ConflictDescriptor;
 import org.apache.subversion.javahl.ConflictResult;
 import org.apache.subversion.javahl.DiffSummary;
-import org.apache.subversion.javahl.DirEntry;
-import org.apache.subversion.javahl.Info2;
-import org.apache.subversion.javahl.Lock;
-import org.apache.subversion.javahl.Revision;
-import org.apache.subversion.javahl.RevisionRange;
-import org.apache.subversion.javahl.Status;
+import org.apache.subversion.javahl.types.DirEntry;
+import org.apache.subversion.javahl.types.Info;
+import org.apache.subversion.javahl.types.Lock;
+import org.apache.subversion.javahl.types.Revision;
+import org.apache.subversion.javahl.types.RevisionRange;
+import org.apache.subversion.javahl.types.Status;
 import org.tigris.subversion.svnclientadapter.ISVNLogMessageChangePath;
 import org.tigris.subversion.svnclientadapter.SVNConflictDescriptor;
 import org.tigris.subversion.svnclientadapter.SVNConflictResult;
@@ -156,7 +156,7 @@ public class JhlConverter {
         }
     }
 
-    public static SVNNodeKind convertNodeKind(org.apache.subversion.javahl.NodeKind javahlNodeKind) {
+    public static SVNNodeKind convertNodeKind(org.apache.subversion.javahl.types.NodeKind javahlNodeKind) {
         switch(javahlNodeKind) {
             case dir  : return SVNNodeKind.DIR; 
             case file : return SVNNodeKind.FILE; 
@@ -248,7 +248,7 @@ public class JhlConverter {
         return jhlChangePaths;
     }
     
-    public static SVNScheduleKind convertScheduleKind(Info2.ScheduleKind kind) {
+    public static SVNScheduleKind convertScheduleKind(Info.ScheduleKind kind) {
         switch (kind) {
         	case normal:
         		return SVNScheduleKind.NORMAL;
@@ -344,20 +344,20 @@ public class JhlConverter {
 		}
 	}
 	
-	public static org.apache.subversion.javahl.Depth depth(int depthValue) {
+	public static org.apache.subversion.javahl.types.Depth depth(int depthValue) {
 		switch(depthValue) {
 		case Depth.empty:
-			return org.apache.subversion.javahl.Depth.empty;
+			return org.apache.subversion.javahl.types.Depth.empty;
 		case Depth.files:
-			return org.apache.subversion.javahl.Depth.files;
+			return org.apache.subversion.javahl.types.Depth.files;
 		case Depth.immediates:
-			return org.apache.subversion.javahl.Depth.immediates;
+			return org.apache.subversion.javahl.types.Depth.immediates;
 		case Depth.infinity:
-			return org.apache.subversion.javahl.Depth.infinity;
+			return org.apache.subversion.javahl.types.Depth.infinity;
 		case Depth.exclude:
-			return org.apache.subversion.javahl.Depth.exclude;
+			return org.apache.subversion.javahl.types.Depth.exclude;
 		default:
-			return org.apache.subversion.javahl.Depth.unknown;
+			return org.apache.subversion.javahl.types.Depth.unknown;
 		}
 		
 	}

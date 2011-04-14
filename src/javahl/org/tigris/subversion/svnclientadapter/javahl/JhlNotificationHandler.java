@@ -19,8 +19,8 @@
 package org.tigris.subversion.svnclientadapter.javahl;
 
 import org.apache.subversion.javahl.ClientNotifyInformation;
-import org.apache.subversion.javahl.Revision;
-import org.apache.subversion.javahl.RevisionRange;
+import org.apache.subversion.javahl.types.Revision;
+import org.apache.subversion.javahl.types.RevisionRange;
 import org.apache.subversion.javahl.callback.ClientNotifyCallback;
 import org.tigris.subversion.svnclientadapter.ISVNNotifyListener;
 import org.tigris.subversion.svnclientadapter.SVNConflictVersion.NodeKind;

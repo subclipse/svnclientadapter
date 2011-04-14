@@ -36,16 +36,16 @@ import java.util.StringTokenizer;
 
 import org.apache.subversion.javahl.ClientException;
 import org.apache.subversion.javahl.ConflictResult;
-import org.apache.subversion.javahl.CopySource;
-import org.apache.subversion.javahl.Depth;
-import org.apache.subversion.javahl.DirEntry;
+import org.apache.subversion.javahl.types.CopySource;
+import org.apache.subversion.javahl.types.Depth;
+import org.apache.subversion.javahl.types.DirEntry;
 import org.apache.subversion.javahl.ISVNClient;
-import org.apache.subversion.javahl.Info2;
-import org.apache.subversion.javahl.Lock;
-import org.apache.subversion.javahl.Mergeinfo;
-import org.apache.subversion.javahl.Revision;
-import org.apache.subversion.javahl.RevisionRange;
-import org.apache.subversion.javahl.Status;
+import org.apache.subversion.javahl.types.Info;
+import org.apache.subversion.javahl.types.Lock;
+import org.apache.subversion.javahl.types.Mergeinfo;
+import org.apache.subversion.javahl.types.Revision;
+import org.apache.subversion.javahl.types.RevisionRange;
+import org.apache.subversion.javahl.types.Status;
 import org.apache.subversion.javahl.SubversionException;
 import org.apache.subversion.javahl.callback.ListCallback;
 import org.apache.subversion.javahl.callback.StatusCallback;
@@ -391,7 +391,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 			public void doEntry(DirEntry dirent, Lock lock) {
 	            if (dirent.getPath().length() == 0)
 	            {
-	                if (dirent.getNodeKind() == org.apache.subversion.javahl.NodeKind.file)
+	                if (dirent.getNodeKind() == org.apache.subversion.javahl.types.NodeKind.file)
 	                {
 	                    String absPath = dirent.getAbsPath();
 	                    int lastSeparator = absPath.lastIndexOf('/');
@@ -433,7 +433,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 			public void doEntry(DirEntry dirent, Lock lock) {
 	            if (dirent.getPath().length() == 0)
 	            {
-	                if (dirent.getNodeKind() == org.apache.subversion.javahl.NodeKind.file)
+	                if (dirent.getNodeKind() == org.apache.subversion.javahl.types.NodeKind.file)
 	                {
 	                    String absPath = dirent.getAbsPath();
 	                    int lastSeparator = absPath.lastIndexOf('/');
@@ -1099,8 +1099,9 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 			}
             notificationHandler.logCommandLine(commandLine.toString());
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
+			boolean makeParents = false;
 			long rev[] = svnClient.update(target, JhlConverter.convert(revision), d, setDepth,
-					ignoreExternals, force);
+					makeParents, ignoreExternals, force);
 			return rev[0];
 		} catch (ClientException e) {
 			notificationHandler.logException(e);
@@ -1137,7 +1138,8 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
             notificationHandler.logCommandLine(commandLine.toString());
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
 			notificationHandler.holdStats();
-			long[] rtnCode =  svnClient.update(targets, JhlConverter.convert(revision), d, setDepth, ignoreExternals, force);
+			boolean makeParents = false;
+			long[] rtnCode =  svnClient.update(targets, JhlConverter.convert(revision), d, setDepth, makeParents, ignoreExternals, force);
 			notificationHandler.releaseStats();
 			return rtnCode;
 		} catch (ClientException e) {
@@ -1314,9 +1316,9 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 			
 			if (propertyName.startsWith("svn:")) {
 				// Normalize line endings in property value
-				svnClient.propertySet(target, propertyName, fixSVNString(propertyValue), Depth.infinityOrEmpty(recurse), null, false, null, null);
+				svnClient.propertySet(target, propertyName, fixSVNString(propertyValue).getBytes(), Depth.infinityOrEmpty(recurse), null, false, null, null);
 			} else {
-				svnClient.propertySet(target, propertyName, propertyValue, Depth.infinityOrEmpty(recurse), null, false, null, null);
+				svnClient.propertySet(target, propertyName, propertyValue.getBytes(), Depth.infinityOrEmpty(recurse), null, false, null, null);
 			}
 			
 			// there is no notification (Notify.notify is not called) when we set a property
@@ -1391,7 +1393,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 				}
 			}
 
-			svnClient.propertySet(target, propertyName, new String(propertyBytes), Depth.infinityOrEmpty(recurse), null, false, null, null);
+			svnClient.propertySet(target, propertyName, propertyBytes, Depth.infinityOrEmpty(recurse), null, false, null, null);
 
 			// there is no notification (Notify.notify is not called) when we set a property
 			// so we will do notification ourselves
@@ -1485,7 +1487,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 				}
 			}
 			
-            svnClient.propertyRemove(target, propertyName, Depth.infinityOrEmpty(recurse), null, null);
+            svnClient.propertySet(target, propertyName, null, Depth.infinityOrEmpty(recurse), null, true, null, null);
             
             // there is no notification (Notify.notify is not called) when we set a property
             // so we will do notification ourselves
@@ -2012,7 +2014,8 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
             notificationHandler.setBaseDir(baseDir);
             Revision rev = JhlConverter.convert(revision);
             Revision pegRev = JhlConverter.convert(pegRevision);
-            svnClient.doSwitch(target, url.toString(),rev,pegRev,d, setDepth, ignoreExternals, force);
+            boolean ignoreAncestry = false;
+            svnClient.doSwitch(target, url.toString(),rev,pegRev,d, setDepth, ignoreExternals, force, ignoreAncestry);
            
         } catch (ClientException e) {
             notificationHandler.logException(e);
@@ -2451,7 +2454,8 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 			notificationHandler.setCommand(ISVNNotifyListener.Command.RELOCATE);
 		    notificationHandler.logCommandLine("switch --relocate "+ from + " " + to + " " + path);
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(new File(path)));
-			svnClient.relocate(from, to, path);
+			boolean ignoreAncestry = false;
+			svnClient.relocate(from, to, path, ignoreAncestry);
 		} catch (ClientException e) {
 			notificationHandler.logException(e);
 			throw new SVNClientException(e);            
@@ -2884,12 +2888,12 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 			notificationHandler.setCommand(
 				ISVNNotifyListener.Command.MERGEINFO);
 			String show = "";
-			org.apache.subversion.javahl.MergeinfoLogKind mergeKind = org.apache.subversion.javahl.MergeinfoLogKind.eligible;
+			org.apache.subversion.javahl.types.Mergeinfo.LogKind mergeKind = org.apache.subversion.javahl.types.Mergeinfo.LogKind.eligible;
 			if (kind == ISVNMergeinfoLogKind.eligible)
 				show = show + " --show-revs eligible ";
 			if (kind == ISVNMergeinfoLogKind.merged) {
 				show = show + " --show-revs merged ";
-				mergeKind = org.apache.subversion.javahl.MergeinfoLogKind.merged;
+				mergeKind = org.apache.subversion.javahl.types.Mergeinfo.LogKind.merged;
 			}
 			notificationHandler.logCommandLine(
 				"mergeinfo "

@@ -19,7 +19,7 @@
 package org.tigris.subversion.svnclientadapter.javahl;
 
 
-import org.apache.subversion.javahl.Mergeinfo;
+import org.apache.subversion.javahl.types.Mergeinfo;
 import org.tigris.subversion.svnclientadapter.ISVNMergeInfo;
 import org.tigris.subversion.svnclientadapter.SVNRevisionRange;
 
