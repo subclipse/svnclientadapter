@@ -1961,7 +1961,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 //			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(url));
 			JhlInfoCallback callback = new JhlInfoCallback();
 			
-			svnClient.info2(target, JhlConverter.convert(revision), JhlConverter.convert(peg), Depth.infinity, null, callback);
+			svnClient.info2(target, JhlConverter.convert(revision), JhlConverter.convert(peg), Depth.empty, null, callback);
             ISVNInfo[] items = callback.getInfo();
             if (items == null || items.length == 0) {
             	return new SVNInfoUnversioned(null);
