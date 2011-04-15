@@ -325,7 +325,9 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements Cl
             case merge_completed:
             	break;                   	
             case blame_revision:
-            	break;                   	
+            	break;
+            case update_started:
+            	break;
             default:
             	if (info.getAction().ordinal() == ENDED_ABNORMAL) {
             		if (command == ISVNNotifyListener.Command.COMMIT)
