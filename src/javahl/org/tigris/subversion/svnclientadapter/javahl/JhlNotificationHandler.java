@@ -130,6 +130,7 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements Cl
             	notify = false; // for JavaHL bug
             	break;
             case update_delete :
+            case update_shadowed_delete :
                 logMessage("D   " + info.getPath()); //$NON-NLS-1$
                 receivedSomeChange = true;
                 deletes += 1;
@@ -141,6 +142,7 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements Cl
                 deletes += 1;
                 break;
             case update_add :
+            case update_shadowed_add :
                 logMessage("A   " + info.getPath()); //$NON-NLS-1$
                 receivedSomeChange = true;
                 adds += 1;
@@ -176,6 +178,7 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements Cl
                 treeConflicts += 1;
             	break;
             case update_update :
+            case update_shadowed_update :
                 boolean error = false;
                 if (!((info.getKind().ordinal() == NodeKind.directory)
                     && ((info.getPropState() == ClientNotifyInformation.Status.inapplicable)
@@ -286,12 +289,14 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements Cl
                 logMessage(Messages.bind("notify.commit.modified", info.getPath())); //$NON-NLS-1$
                 break;
             case commit_added :
+            case commit_copied :
                 logMessage(Messages.bind("notify.commit.add", info.getPath())); //$NON-NLS-1$
                 break;
             case commit_deleted :
                 logMessage(Messages.bind("notify.commit.delete", info.getPath())); //$NON-NLS-1$
                 break;
             case commit_replaced :
+            case commit_copied_replaced :
                 logMessage(Messages.bind("notify.commit.replace", info.getPath())); //$NON-NLS-1$
                 break;
             case commit_postfix_txdelta :
@@ -327,6 +332,12 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements Cl
             case blame_revision:
             	break;
             case update_started:
+            	break;
+            case merge_record_info:
+            	break;
+            case merge_record_info_begin:
+            	break;
+            case merge_elide_info:
             	break;
             default:
             	if (info.getAction().ordinal() == ENDED_ABNORMAL) {
