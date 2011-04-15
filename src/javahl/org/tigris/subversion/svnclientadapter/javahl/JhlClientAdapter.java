@@ -64,7 +64,7 @@ public class JhlClientAdapter extends AbstractJhlClientAdapter {
     }
 
 	public boolean isThreadsafe() {
-		return true;
+		return false;
 	}
 
 	/**
