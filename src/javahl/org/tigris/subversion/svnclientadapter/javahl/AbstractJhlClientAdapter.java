@@ -548,7 +548,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 		notificationHandler.setCommand(ISVNNotifyListener.Command.STATUS);
 		String filePathSVN = fileToSVNPath(path, false);
 		Depth depth = Depth.unknownOrImmediates(descend);    // If descend is true, recurse fully, else do only immediate children.
-		notificationHandler.logCommandLine("status " + (contactServer?"-u ":"")+ depthCommandLine(depth) + filePathSVN);
+		notificationHandler.logCommandLine("status" + (contactServer?" -u":"")+ depthCommandLine(depth) + " " + filePathSVN);
 		notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
 		try {
 			MyStatusCallback callback = new MyStatusCallback();
