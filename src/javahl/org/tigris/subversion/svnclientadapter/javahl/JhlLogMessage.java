@@ -51,7 +51,7 @@ public class JhlLogMessage implements ISVNLogMessage {
 
 	public JhlLogMessage(Set<ChangePath> changedPaths, long revision,
 			Map<String, byte[]> revprops, boolean hasChildren) {
-		this.changedPaths = JhlConverter.convert(changedPaths);
+		this.changedPaths = JhlConverter.convertChangePaths(changedPaths);
 		this.revision = new SVNRevision.Number(revision);
 		this.revprops = revprops;
 		if (this.revprops == null) {

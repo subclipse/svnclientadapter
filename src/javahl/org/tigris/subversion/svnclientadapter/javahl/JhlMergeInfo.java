@@ -59,13 +59,13 @@ public class JhlMergeInfo implements ISVNMergeInfo {
 	public SVNRevisionRange[] getRevisionRange(String path) {
 		if (info == null)
 			return null;
-		return JhlConverter.convert(info.getRevisionRange(path));
+		return JhlConverter.convertRevisionRange(info.getRevisionRange(path));
 	}
 
 	public SVNRevisionRange[] getRevisions(String path) {
 		if (info == null)
 			return null;
-		return JhlConverter.convert(info.getRevisions(path));
+		return JhlConverter.convertRevisionRange(info.getRevisions(path));
 	}
 
 	public void loadFromMergeInfoProperty(String mergeInfo) {

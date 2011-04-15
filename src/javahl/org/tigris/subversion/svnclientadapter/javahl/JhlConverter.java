@@ -101,7 +101,7 @@ public class JhlConverter {
     	return new SVNRevisionRange(JhlConverter.convert(svnRevisionRange.getFromRevision()), JhlConverter.convert(svnRevisionRange.getToRevision()));
     }
 
-    public static SVNRevisionRange[] convert(List<RevisionRange> jhlRange) {
+    public static SVNRevisionRange[] convertRevisionRange(List<RevisionRange> jhlRange) {
         SVNRevisionRange[] range = new SVNRevisionRange[jhlRange.size()];
         int i=0;
         for (RevisionRange item : jhlRange) {
@@ -210,33 +210,22 @@ public class JhlConverter {
         }
     }
 
-	
-	/**
-	 * Wrap everything up.
-	 * @param dirEntry
-	 * @return an JhlDirEntry[] array constructed from the given DirEntry[] 
-	 */
-	static JhlDirEntry[] convert(DirEntry[] dirEntry) {
-		JhlDirEntry[] entries = new JhlDirEntry[dirEntry.length];
-		for(int i=0; i < dirEntry.length; i++) {
-			entries[i] = new JhlDirEntry(dirEntry[i]);
-		}
-		return entries;
-	}
 
 	static JhlDirEntry convert(DirEntry dirEntry) {
 		return new JhlDirEntry(dirEntry);
 	}
 
-    public static JhlStatus[] convert(Status[] status) {
-        JhlStatus[] jhlStatus = new JhlStatus[status.length];
-        for(int i=0; i < status.length; i++) {
-            jhlStatus[i] = new JhlStatus(status[i]);
-        }
+    public static JhlStatus[] convertStatus(List<Status> status) {
+        JhlStatus[] jhlStatus = new JhlStatus[status.size()];
+        int i=0;
+        for (Status stat : status) {
+            jhlStatus[i] = new JhlStatus(stat);
+            i++;
+		}
         return jhlStatus;
     }
     
-    static ISVNLogMessageChangePath[] convert(Set<ChangePath> changePaths) {
+    static ISVNLogMessageChangePath[] convertChangePaths(Set<ChangePath> changePaths) {
         if (changePaths == null)
             return new SVNLogMessageChangePath[0];
         SVNLogMessageChangePath[] jhlChangePaths = new SVNLogMessageChangePath[changePaths.size()];

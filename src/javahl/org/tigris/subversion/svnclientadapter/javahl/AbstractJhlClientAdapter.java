@@ -28,7 +28,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -40,7 +39,6 @@ import org.apache.subversion.javahl.types.CopySource;
 import org.apache.subversion.javahl.types.Depth;
 import org.apache.subversion.javahl.types.DirEntry;
 import org.apache.subversion.javahl.ISVNClient;
-import org.apache.subversion.javahl.types.Info;
 import org.apache.subversion.javahl.types.Lock;
 import org.apache.subversion.javahl.types.Mergeinfo;
 import org.apache.subversion.javahl.types.Revision;
@@ -52,7 +50,6 @@ import org.apache.subversion.javahl.callback.StatusCallback;
 import org.apache.subversion.javahl.callback.UserPasswordCallback;
 import org.tigris.subversion.svnclientadapter.AbstractClientAdapter;
 import org.tigris.subversion.svnclientadapter.ISVNAnnotations;
-import org.tigris.subversion.svnclientadapter.ISVNClientAdapter;
 import org.tigris.subversion.svnclientadapter.ISVNConflictResolver;
 import org.tigris.subversion.svnclientadapter.ISVNDirEntry;
 import org.tigris.subversion.svnclientadapter.ISVNDirEntryWithLock;
@@ -68,7 +65,6 @@ import org.tigris.subversion.svnclientadapter.ISVNProperty;
 import org.tigris.subversion.svnclientadapter.ISVNStatus;
 import org.tigris.subversion.svnclientadapter.SVNBaseDir;
 import org.tigris.subversion.svnclientadapter.SVNClientException;
-import org.tigris.subversion.svnclientadapter.SVNConflictVersion.NodeKind;
 import org.tigris.subversion.svnclientadapter.SVNDiffSummary;
 import org.tigris.subversion.svnclientadapter.SVNDiffSummary.SVNDiffKind;
 import org.tigris.subversion.svnclientadapter.SVNInfoUnversioned;
@@ -386,7 +382,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 	
 	private ISVNDirEntry[] list(String path, SVNRevision revision, SVNRevision pegRevision, boolean recurse)
 			throws SVNClientException {
-		final List dirEntryList = new ArrayList();
+		final List<JhlDirEntry> dirEntryList = new ArrayList<JhlDirEntry>();
 		ListCallback callback = new ListCallback() {
 			public void doEntry(DirEntry dirent, Lock lock) {
 	            if (dirent.getPath().length() == 0)
@@ -428,7 +424,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 	
 	public ISVNDirEntryWithLock[] getListWithLocks(SVNUrl url, SVNRevision revision, SVNRevision pegRevision, boolean recurse)
 			throws SVNClientException {
-		final List dirEntryList = new ArrayList();
+		final List<JhlDirEntryWithLock> dirEntryList = new ArrayList<JhlDirEntryWithLock>();
 		ListCallback callback = new ListCallback() {
 			public void doEntry(DirEntry dirent, Lock lock) {
 	            if (dirent.getPath().length() == 0)
@@ -562,8 +558,8 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
                     contactServer,      // If update is set, contact the repository and augment the status structures with information about out-of-dateness     
 					getAll,getAll,		// retrieve all entries; otherwise, retrieve only "interesting" entries (local mods and/or out-of-date).
 					ignoreExternals, null, callback);
-			return processFolderStatuses(processExternalStatuses(JhlConverter.convert(
-					callback.getStatusArray())), getAll, contactServer);  // if yes the svn:externals will be ignored
+			return processFolderStatuses(processExternalStatuses(JhlConverter.convertStatus(
+					callback.getStatusList())), getAll, contactServer);  // if yes the svn:externals will be ignored
 		} catch (ClientException e) {
 			if (e.getAprError() == ErrorCodes.wcNotDirectory) {
 				// when there is no .svn dir, an exception is thrown ...
@@ -585,11 +581,11 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 			
 		}
 
-		private List statuses = new ArrayList();
+		private List<Status> statuses = new ArrayList<Status>();
 
-        public Status[] getStatusArray()
+        public List<Status> getStatusList()
         {
-            return (Status[]) statuses.toArray(new Status[statuses.size()]);
+            return statuses;
         }
     }
 
@@ -608,7 +604,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
     protected JhlStatus[] processExternalStatuses(JhlStatus[] statuses) throws SVNClientException
     {
     	//Collect indexes of external statuses
-    	List externalStatusesIndexes = new ArrayList();
+    	List<Integer> externalStatusesIndexes = new ArrayList<Integer>();
     	for (int i = 0; i < statuses.length; i++) {
     		if (SVNStatusKind.EXTERNAL.equals(statuses[i].getTextStatus())) {
     			externalStatusesIndexes.add(new Integer(i));
@@ -620,8 +616,8 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
     	}
     	
     	//Wrap the "second" externals so their textStatus is actually external
-    	for (Iterator iter = externalStatusesIndexes.iterator(); iter.hasNext();) {
-    		int index = ((Integer) iter.next()).intValue();
+    	for (Integer integer : externalStatusesIndexes) {
+    		int index = integer.intValue();
 			JhlStatus jhlStatus = statuses[index];
 			for (int i = 0; i < statuses.length; i++) {
 				if ((statuses[i].getPath() != null) && (statuses[i].getPath().equals(jhlStatus.getPath()))) {
@@ -632,8 +628,8 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 		}
     	
     	//Fill the missing urls
-    	for (Iterator iter = externalStatusesIndexes.iterator(); iter.hasNext();) {
-    		int index = ((Integer) iter.next()).intValue();
+    	for (Integer integer : externalStatusesIndexes) {
+    		int index = integer.intValue();
 			JhlStatus jhlStatus = statuses[index];
 			if ((jhlStatus.getUrlString() == null) || (jhlStatus.getUrlString().length() == 0)) {
 				ISVNInfo info = getInfoFromWorkingCopy(jhlStatus.getFile());
@@ -654,7 +650,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
     	if (!getAll || !contactServer)
     		return statuses;
     	//Fill the missing last changed info on folders from the file info in the array
-     	List folders = new ArrayList();
+     	List<JhlStatus> folders = new ArrayList<JhlStatus>();
     	for (int i = 0; i < statuses.length; i++) {
 			JhlStatus jhlStatus = statuses[i];
 			if (SVNNodeKind.DIR == jhlStatus.getNodeKind() && jhlStatus.getReposLastChangedRevision() == null) {
@@ -664,8 +660,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
     	for (int i = 0; i < statuses.length; i++) {
 			JhlStatus jhlStatus = statuses[i];
 			if (jhlStatus.getLastChangedRevision() != null) {
-				for (Iterator iter = folders.iterator(); iter.hasNext();) {
-					JhlStatus folder = (JhlStatus) iter.next();
+				for (JhlStatus folder : folders) {
 					if (jhlStatus.getUrlString().startsWith(folder.getUrlString() + "/")) {
 						if (folder.getLastChangedRevision() == null ||
 								folder.getLastChangedRevision().getNumber() < jhlStatus.getLastChangedRevision().getNumber()) {
@@ -1305,9 +1300,9 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 					+ target);
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
 
-			Set statusBefore = null;
+			Set<String> statusBefore = null;
 			if (recurse) {
-				statusBefore = new HashSet();
+				statusBefore = new HashSet<String>();
 				ISVNStatus[] statuses = getStatus(path,recurse,false);
 				for (int i = 0; i < statuses.length;i++) {
 					statusBefore.add(statuses[i].getFile().getAbsolutePath());
@@ -1330,8 +1325,8 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 				   notificationHandler.notifyListenersOfChange(statusPath);
 				   statusBefore.remove(statusPath);
 			   }
-			   for (Iterator it = statusBefore.iterator(); it.hasNext();)
-				   notificationHandler.notifyListenersOfChange((String)it.next());
+			   for (String status : statusBefore) 
+				   notificationHandler.notifyListenersOfChange(status);
             } else {
  			   notificationHandler.notifyListenersOfChange(path.getAbsolutePath());	
             }
@@ -1384,9 +1379,9 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 				}
 			}
 
-			Set statusBefore = null;
+			Set<String> statusBefore = null;
 			if (recurse) {
-				statusBefore = new HashSet();
+				statusBefore = new HashSet<String>();
 				ISVNStatus[] statuses = getStatus(path,recurse,false);
 				for (int i = 0; i < statuses.length;i++) {
 					statusBefore.add(statuses[i].getFile().getAbsolutePath());
@@ -1404,8 +1399,8 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 				   notificationHandler.notifyListenersOfChange(statusPath);
 				   statusBefore.remove(statusPath);
 			   }
-			   for (Iterator it = statusBefore.iterator(); it.hasNext();)
-				   notificationHandler.notifyListenersOfChange((String)it.next());
+			   for (String status : statusBefore) 
+				   notificationHandler.notifyListenersOfChange(status);
             } else {
  			   notificationHandler.notifyListenersOfChange(path.getAbsolutePath());	
             }
@@ -1478,9 +1473,9 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
             notificationHandler.logCommandLine("propdel "+propertyName+" "+target);
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
             
-			Set statusBefore = null;
+			Set<String> statusBefore = null;
 			if (recurse) {
-				statusBefore = new HashSet();
+				statusBefore = new HashSet<String>();
 				ISVNStatus[] statuses = getStatus(path,recurse,false);
 				for (int i = 0; i < statuses.length;i++) {
 					statusBefore.add(statuses[i].getFile().getAbsolutePath());
@@ -1498,8 +1493,8 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 				   notificationHandler.notifyListenersOfChange(statusPath);
 				   statusBefore.remove(statusPath);
 			   }
-			   for (Iterator it = statusBefore.iterator(); it.hasNext();)
-				   notificationHandler.notifyListenersOfChange((String)it.next());
+			   for (String status : statusBefore) 
+				   notificationHandler.notifyListenersOfChange(status);
             } else {
  			   notificationHandler.notifyListenersOfChange(path.getAbsolutePath());	
             }
@@ -2705,7 +2700,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 	// This method does a diff to a temporary file and then parses that file to construct
 	// the SVNDiffSummary array.
 	public SVNDiffSummary[] diffSummarize(File path, SVNUrl toUrl, SVNRevision toRevision, boolean recurse) throws SVNClientException {
-		List diffSummaryList = new ArrayList();    
+		List<SVNDiffSummary> diffSummaryList = new ArrayList<SVNDiffSummary>();    
 		BufferedReader input = null;
 	   	String changedResource = null;
     	boolean deletedLines = false;
@@ -2835,7 +2830,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 			boolean recurse) throws SVNClientException {
 		FileOutputStream os = null;
 		try {
-			ArrayList tempFiles = new ArrayList();
+			List<File> tempFiles = new ArrayList<File>();
 			for (int i = 0; i < paths.length; i++) {
 				File tempFile = File.createTempFile("tempDiff", ".txt");
 				tempFile.deleteOnExit();
@@ -2845,9 +2840,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 				tempFiles.add(tempFile);
 			}
 			os = new FileOutputStream(outFile);
-			Iterator iter = tempFiles.iterator();
-			while (iter.hasNext()) {
-				File tempFile = (File)iter.next();
+			for (File tempFile : tempFiles) {
 				FileInputStream is = new FileInputStream(tempFile);
 				byte[] buffer = new byte[4096];
 				int bytes_read;
