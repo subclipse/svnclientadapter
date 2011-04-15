@@ -1881,7 +1881,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
 			JhlInfoCallback callback = new JhlInfoCallback();
 			
-			svnClient.info2(target, Revision.WORKING, Revision.BASE, Depth.infinity, null, callback);
+			svnClient.info2(target, Revision.WORKING, Revision.WORKING, Depth.empty, null, callback);
 			ISVNInfo[] items = callback.getInfo();
             if (items == null) {
             	return new SVNInfoUnversioned(path);
