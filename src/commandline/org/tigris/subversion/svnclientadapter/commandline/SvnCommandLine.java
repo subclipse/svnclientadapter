@@ -234,14 +234,18 @@ public class SvnCommandLine extends CommandLine {
 	 * @param dest Local path or URL to copy to.
 	 * @param message Commit message.
 	 * @param revision Optional revision to copy from. 
+	 * @param makeparents   <code>true</code> <=> Create parents first when copying from source url to dest url.
 	 */
-	void copy(String src, String dest, String message, String revision) throws CmdLineException {
+	void copy(String src, String dest, String message, String revision, boolean makeparents) throws CmdLineException {
         setCommand(ISVNNotifyListener.Command.COPY, true);        
 		CmdArguments args = new CmdArguments();
 		args.add("cp");
 		if (revision != null) {
 			args.add("-r");
 			args.add(validRev(revision));
+		}
+		if (makeparents) {
+		  args.add("--parents");
 		}
 		if (message != null)
 			args.addLogMessage(message);

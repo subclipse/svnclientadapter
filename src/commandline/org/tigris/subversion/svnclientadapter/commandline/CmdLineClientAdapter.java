@@ -52,6 +52,7 @@ import org.tigris.subversion.svnclientadapter.SVNClientException;
 import org.tigris.subversion.svnclientadapter.SVNDiffSummary;
 import org.tigris.subversion.svnclientadapter.SVNNotificationHandler;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
+import org.tigris.subversion.svnclientadapter.SVNRevision.Number;
 import org.tigris.subversion.svnclientadapter.SVNRevisionRange;
 import org.tigris.subversion.svnclientadapter.SVNScheduleKind;
 import org.tigris.subversion.svnclientadapter.SVNStatusUnversioned;
@@ -427,7 +428,7 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 		try {
 			if (message == null)
 				message = "";
-			_cmd.copy(toString(src), toString(dest), message, toString(rev));
+			_cmd.copy(toString(src), toString(dest), message, toString(rev), false);
 		} catch (CmdLineException e) {
 			throw SVNClientException.wrapException(e);
 		}
@@ -966,7 +967,7 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 		try {
 			if (message == null)
 				message = "";
-			_cmd.copy(toString(srcPath), toString(destUrl), message, null);
+			_cmd.copy(toString(srcPath), toString(destUrl), message, null, false);
 		} catch (CmdLineException e) {
 			throw SVNClientException.wrapException(e);
 		}
@@ -978,7 +979,7 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 	public void copy(SVNUrl srcUrl, File destPath, SVNRevision revision)
 		throws SVNClientException {
 		try {
-			_cmd.copy(toString(srcUrl), toString(destPath), null, toString(revision));
+			_cmd.copy(toString(srcUrl), toString(destPath), null, toString(revision), false);
 		} catch (CmdLineException e) {
 			throw SVNClientException.wrapException(e);
 		}
@@ -1694,9 +1695,13 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 	public void copy(SVNUrl srcUrl, SVNUrl destUrl, String message,
 			SVNRevision revision, boolean makeParents)
 			throws SVNClientException {
-		// TODO Auto-generated method stub
-		notImplementedYet();
-		
+    try {
+      if (message == null)
+        message = "";
+      _cmd.copy(toString(srcUrl), toString(destUrl), message, toString(revision), makeParents);
+    } catch (CmdLineException e) {
+      throw SVNClientException.wrapException(e);
+    }
 	}
 
 	public void diff(SVNUrl target, SVNRevision pegRevision,
@@ -1873,6 +1878,46 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 
 	public ISVNInfo[] getInfo(File file, boolean descend)
 			throws SVNClientException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String getRevProperty(SVNUrl path, Number revisionNo, String propName)
+			throws SVNClientException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public ISVNAnnotations annotate(SVNUrl url, SVNRevision revisionStart,
+			SVNRevision revisionEnd, SVNRevision pegRevision,
+			boolean ignoreMimeType, boolean includeMergedRevisions)
+			throws SVNClientException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public ISVNAnnotations annotate(File file, SVNRevision revisionStart,
+			SVNRevision revisionEnd, SVNRevision pegRevision,
+			boolean ignoreMimeType, boolean includeMergedRevisions)
+			throws SVNClientException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public ISVNProperty[] getProperties(SVNUrl url, SVNRevision revision,
+			SVNRevision peg) throws SVNClientException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public ISVNProperty[] getRevProperties(SVNUrl url, Number revision)
+			throws SVNClientException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public SVNDiffSummary[] diffSummarize(File path, SVNUrl toUrl,
+			SVNRevision toRevision, boolean recurse) throws SVNClientException {
 		// TODO Auto-generated method stub
 		return null;
 	}

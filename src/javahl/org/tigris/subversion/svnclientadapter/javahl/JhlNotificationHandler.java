@@ -101,8 +101,13 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements Cl
         		notify = false;
         		break;
             case skip :
-                logMessage(Messages.bind("notify.skipped", info.getPath())); //$NON-NLS-1$
-                notify = false;                                
+                notify = false;
+                if(info.getErrMsg() != null){
+                	logError(info.getErrMsg());
+                } else {
+                 // When there is an error, the skipped message seems to not be useful
+	                logMessage(Messages.bind("notify.skipped", info.getPath())); //$NON-NLS-1$
+                }
                 break;
             case failed_lock: 
             	if (info.getErrMsg() == null)
