@@ -1309,11 +1309,14 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 				}
 			}
 			
+			Set<String> paths = new HashSet<String>(1);
+			paths.add(target);
+			
 			if (propertyName.startsWith("svn:")) {
 				// Normalize line endings in property value
-				svnClient.propertySet(target, propertyName, fixSVNString(propertyValue).getBytes(), Depth.infinityOrEmpty(recurse), null, false, null, null);
+				svnClient.propertySet(paths, propertyName, fixSVNString(propertyValue).getBytes(), Depth.infinityOrEmpty(recurse), null, false, null, null);
 			} else {
-				svnClient.propertySet(target, propertyName, propertyValue.getBytes(), Depth.infinityOrEmpty(recurse), null, false, null, null);
+				svnClient.propertySet(paths, propertyName, propertyValue.getBytes(), Depth.infinityOrEmpty(recurse), null, false, null, null);
 			}
 			
 			// there is no notification (Notify.notify is not called) when we set a property
@@ -1387,8 +1390,11 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 					statusBefore.add(statuses[i].getFile().getAbsolutePath());
 				}
 			}
+			
+			Set<String> paths = new HashSet<String>(1);
+			paths.add(target);
 
-			svnClient.propertySet(target, propertyName, propertyBytes, Depth.infinityOrEmpty(recurse), null, false, null, null);
+			svnClient.propertySet(paths, propertyName, propertyBytes, Depth.infinityOrEmpty(recurse), null, false, null, null);
 
 			// there is no notification (Notify.notify is not called) when we set a property
 			// so we will do notification ourselves
@@ -1482,7 +1488,10 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 				}
 			}
 			
-            svnClient.propertySet(target, propertyName, null, Depth.infinityOrEmpty(recurse), null, true, null, null);
+			Set<String> paths = new HashSet<String>(1);
+			paths.add(target);
+			
+            svnClient.propertySet(paths, propertyName, null, Depth.infinityOrEmpty(recurse), null, true, null, null);
             
             // there is no notification (Notify.notify is not called) when we set a property
             // so we will do notification ourselves
