@@ -22,6 +22,13 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.util.Date;
 
+import org.apache.subversion.javahl.ClientException;
+import org.apache.subversion.javahl.ConflictDescriptor;
+import org.apache.subversion.javahl.ISVNClient;
+import org.apache.subversion.javahl.callback.InfoCallback;
+import org.apache.subversion.javahl.types.Depth;
+import org.apache.subversion.javahl.types.Info;
+import org.apache.subversion.javahl.types.Revision;
 import org.apache.subversion.javahl.types.Status;
 import org.tigris.subversion.svnclientadapter.ISVNInfo;
 import org.tigris.subversion.svnclientadapter.ISVNStatus;
@@ -43,17 +50,73 @@ public class JhlStatus implements ISVNStatus {
 	private SVNRevision.Number lastChangedRevision;
 	private String lastChangedAuthor;
 	private Date lastChangedDate;
+	
+	private boolean treeConflict = false;
+	private ConflictDescriptor conflictDescriptor;
+	private String conflictOld;
+	private String conflictWorking;
+	private String conflictNew;
 
 	/**
 	 * Constructor
 	 * @param status
 	 */
-	public JhlStatus(Status status) {
+	public JhlStatus(Status status, ISVNClient client) {
 		// note that status.textStatus must be different than 0 (the resource must exist)
         super();
 		_s = status;
+		try {
+			if (client != null && _s.isConflicted())
+				populateConflicts(client, _s.getPath());
+		} catch (ClientException e) {
+			// Ignore
+		}
 	}
 
+	private void populateConflicts(ISVNClient aClient, String path)
+			throws ClientException {
+		
+		class MyInfoCallback implements InfoCallback {
+			Info info;
+
+			public void singleInfo(Info aInfo) {
+				info = aInfo;
+			}
+
+			public Info getInfo() {
+				return info;
+			}
+		}
+
+		MyInfoCallback callback = new MyInfoCallback();
+
+		aClient.info2(path, Revision.HEAD, Revision.HEAD, Depth.empty, null,
+				callback);
+
+		if (callback.getInfo() == null
+				|| callback.getInfo().getConflicts() == null)
+			return;
+
+		for (ConflictDescriptor conflict : callback.getInfo().getConflicts()) {
+			switch (conflict.getKind()) {
+			case tree:
+				this.treeConflict = true;
+				this.conflictDescriptor = conflict;
+				break;
+
+			case text:
+				this.conflictOld = conflict.getBasePath();
+				this.conflictWorking = conflict.getMergedPath();
+				this.conflictNew = conflict.getMyPath();
+				break;
+
+			case property:
+				// Ignore
+				break;
+			}
+		}
+	}
+    
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getUrl()
 	 */
@@ -236,7 +299,7 @@ public class JhlStatus implements ISVNStatus {
      * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getConflictNew()
      */
     public File getConflictNew() {
-		String path = _s.getConflictNew();
+		String path = conflictNew;
 		return (path != null) ? new File(getFile().getParent(), path)
 				.getAbsoluteFile() : null;
     }
@@ -247,7 +310,7 @@ public class JhlStatus implements ISVNStatus {
 	 * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getConflictOld()
 	 */
     public File getConflictOld() {
-		String path = _s.getConflictOld();
+		String path = conflictOld;
 		return (path != null) ? new File(getFile().getParent(), path)
 				.getAbsoluteFile() : null;
 	}
@@ -258,7 +321,7 @@ public class JhlStatus implements ISVNStatus {
 	 * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getConflictWorking()
 	 */
     public File getConflictWorking() {
-		String path = _s.getConflictWorking();
+		String path = conflictWorking;
 		return (path != null) ? new File(getFile().getParent(), path)
 				.getAbsoluteFile() : null;
 	}
@@ -290,7 +353,7 @@ public class JhlStatus implements ISVNStatus {
      * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getTreeConflicted()
      */
 	public boolean hasTreeConflict() {
-		return _s.hasTreeConflict();
+		return treeConflict;
 	}
 	
     /* (non-Javadoc)
@@ -304,7 +367,7 @@ public class JhlStatus implements ISVNStatus {
      * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getConflictDescriptor()
      */
 	public SVNConflictDescriptor getConflictDescriptor() {
-		return JhlConverter.convertConflictDescriptor(_s.getConflictDescriptor());
+		return JhlConverter.convertConflictDescriptor(conflictDescriptor);
 	}
     
     public void updateFromInfo(ISVNInfo info) {
@@ -346,7 +409,7 @@ public class JhlStatus implements ISVNStatus {
     	 * @param url
     	 */
     	public JhlStatusExternal(JhlStatus status, String url) {
-            super(status._s);
+            super(status._s, null);
             this.url = url;
     	}
 

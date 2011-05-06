@@ -27,6 +27,7 @@ import org.apache.subversion.javahl.types.ChangePath;
 import org.apache.subversion.javahl.ConflictDescriptor;
 import org.apache.subversion.javahl.ConflictResult;
 import org.apache.subversion.javahl.DiffSummary;
+import org.apache.subversion.javahl.ISVNClient;
 import org.apache.subversion.javahl.types.DirEntry;
 import org.apache.subversion.javahl.types.Info;
 import org.apache.subversion.javahl.types.Lock;
@@ -169,8 +170,8 @@ public class JhlConverter {
         }
     }
 
-	public static JhlStatus convert(Status status) {
-		return new JhlStatus(status);
+	public static JhlStatus convert(Status status, ISVNClient client) {
+		return new JhlStatus(status, client);
 	}
 
     public static SVNStatusKind convertStatusKind(Status.Kind kind) {
@@ -215,11 +216,11 @@ public class JhlConverter {
 		return new JhlDirEntry(dirEntry);
 	}
 
-    public static JhlStatus[] convertStatus(List<Status> status) {
+    public static JhlStatus[] convertStatus(List<Status> status, ISVNClient client) {
         JhlStatus[] jhlStatus = new JhlStatus[status.size()];
         int i=0;
         for (Status stat : status) {
-            jhlStatus[i] = new JhlStatus(stat);
+            jhlStatus[i] = new JhlStatus(stat, client);
             i++;
 		}
         return jhlStatus;

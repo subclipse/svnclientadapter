@@ -559,7 +559,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 					getAll,getAll,		// retrieve all entries; otherwise, retrieve only "interesting" entries (local mods and/or out-of-date).
 					ignoreExternals, null, callback);
 			return processFolderStatuses(processExternalStatuses(JhlConverter.convertStatus(
-					callback.getStatusList())), getAll, contactServer);  // if yes the svn:externals will be ignored
+					callback.getStatusList(), svnClient)), getAll, contactServer);  // if yes the svn:externals will be ignored
 		} catch (ClientException e) {
 			if (e.getAprError() == ErrorCodes.wcNotDirectory) {
 				// when there is no .svn dir, an exception is thrown ...
@@ -1314,9 +1314,9 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 			
 			if (propertyName.startsWith("svn:")) {
 				// Normalize line endings in property value
-				svnClient.propertySet(paths, propertyName, fixSVNString(propertyValue).getBytes(), Depth.infinityOrEmpty(recurse), null, false, null, null);
+				svnClient.propertySetLocal(paths, propertyName, fixSVNString(propertyValue).getBytes(), Depth.infinityOrEmpty(recurse), null, false);
 			} else {
-				svnClient.propertySet(paths, propertyName, propertyValue.getBytes(), Depth.infinityOrEmpty(recurse), null, false, null, null);
+				svnClient.propertySetLocal(paths, propertyName, propertyValue.getBytes(), Depth.infinityOrEmpty(recurse), null, false);
 			}
 			
 			// there is no notification (Notify.notify is not called) when we set a property
@@ -1394,7 +1394,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 			Set<String> paths = new HashSet<String>(1);
 			paths.add(target);
 
-			svnClient.propertySet(paths, propertyName, propertyBytes, Depth.infinityOrEmpty(recurse), null, false, null, null);
+			svnClient.propertySetLocal(paths, propertyName, propertyBytes, Depth.infinityOrEmpty(recurse), null, false);
 
 			// there is no notification (Notify.notify is not called) when we set a property
 			// so we will do notification ourselves
@@ -1491,7 +1491,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 			Set<String> paths = new HashSet<String>(1);
 			paths.add(target);
 			
-            svnClient.propertySet(paths, propertyName, null, Depth.infinityOrEmpty(recurse), null, true, null, null);
+            svnClient.propertySetLocal(paths, propertyName, null, Depth.infinityOrEmpty(recurse), null, true);
             
             // there is no notification (Notify.notify is not called) when we set a property
             // so we will do notification ourselves

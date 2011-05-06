@@ -158,7 +158,7 @@ public class JhlInfo2 implements ISVNInfo {
 	 * @see org.tigris.subversion.svnclientadapter.ISVNInfo#getLastDatePropsUpdate()
 	 */
 	public Date getLastDatePropsUpdate() {
-		return info.getPropTime();
+		return null;
 	}
 
 	/* (non-Javadoc)
