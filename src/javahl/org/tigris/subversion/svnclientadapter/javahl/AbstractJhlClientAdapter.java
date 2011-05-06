@@ -576,9 +576,12 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
      */
     private class MyStatusCallback implements StatusCallback
     {
-        public void doStatus(Status status) {
-            statuses.add(status);
-			
+        public void doStatus(String path, Status status) {
+        	// Status can be null, in which case you are supposed to use the
+        	// String to construct an otherwise null status object.  I am not sure
+        	// of the use-case for this right now, so I am just going to discard them
+        	if (status != null)
+        		statuses.add(status);
 		}
 
 		private List<Status> statuses = new ArrayList<Status>();
@@ -621,23 +624,12 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 			JhlStatus jhlStatus = statuses[index];
 			for (int i = 0; i < statuses.length; i++) {
 				if ((statuses[i].getPath() != null) && (statuses[i].getPath().equals(jhlStatus.getPath()))) {
-					statuses[i] = new JhlStatus.JhlStatusExternal(statuses[i]);
+					statuses[i] = new JhlStatus.JhlStatusExternal(statuses[i], svnClient);
 					statuses[index] = statuses[i];
 				}
 			}
 		}
     	
-    	//Fill the missing urls
-    	for (Integer integer : externalStatusesIndexes) {
-    		int index = integer.intValue();
-			JhlStatus jhlStatus = statuses[index];
-			if ((jhlStatus.getUrlString() == null) || (jhlStatus.getUrlString().length() == 0)) {
-				ISVNInfo info = getInfoFromWorkingCopy(jhlStatus.getFile());
-				if (info != null) {
-					statuses[index] = new JhlStatus.JhlStatusExternal(jhlStatus, info.getUrlString());
-				}
-			}
-		}
     	return statuses;
     }
     /**

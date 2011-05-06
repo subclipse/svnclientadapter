@@ -30,7 +30,6 @@ import org.apache.subversion.javahl.types.Depth;
 import org.apache.subversion.javahl.types.Info;
 import org.apache.subversion.javahl.types.Revision;
 import org.apache.subversion.javahl.types.Status;
-import org.tigris.subversion.svnclientadapter.ISVNInfo;
 import org.tigris.subversion.svnclientadapter.ISVNStatus;
 import org.tigris.subversion.svnclientadapter.SVNConflictDescriptor;
 import org.tigris.subversion.svnclientadapter.SVNNodeKind;
@@ -56,6 +55,8 @@ public class JhlStatus implements ISVNStatus {
 	private String conflictOld;
 	private String conflictWorking;
 	private String conflictNew;
+	private String urlCopiedFrom;
+	private String url;
 
 	/**
 	 * Constructor
@@ -66,14 +67,14 @@ public class JhlStatus implements ISVNStatus {
         super();
 		_s = status;
 		try {
-			if (client != null && _s.isConflicted())
-				populateConflicts(client, _s.getPath());
+			if (client != null)
+				populateInfo(client, _s.getPath());
 		} catch (ClientException e) {
 			// Ignore
 		}
 	}
 
-	private void populateConflicts(ISVNClient aClient, String path)
+	private void populateInfo(ISVNClient aClient, String path)
 			throws ClientException {
 		
 		class MyInfoCallback implements InfoCallback {
@@ -93,28 +94,31 @@ public class JhlStatus implements ISVNStatus {
 		aClient.info2(path, Revision.HEAD, Revision.HEAD, Depth.empty, null,
 				callback);
 
-		if (callback.getInfo() == null
-				|| callback.getInfo().getConflicts() == null)
+		Info aInfo = callback.getInfo();
+		if (aInfo == null)
 			return;
-
-		for (ConflictDescriptor conflict : callback.getInfo().getConflicts()) {
-			switch (conflict.getKind()) {
-			case tree:
-				this.treeConflict = true;
-				this.conflictDescriptor = conflict;
-				break;
-
-			case text:
-				this.conflictOld = conflict.getBasePath();
-				this.conflictWorking = conflict.getMergedPath();
-				this.conflictNew = conflict.getMyPath();
-				break;
-
-			case property:
-				// Ignore
-				break;
+		if (aInfo.getConflicts() != null) {
+			for (ConflictDescriptor conflict : aInfo.getConflicts()) {
+				switch (conflict.getKind()) {
+				case tree:
+					this.treeConflict = true;
+					this.conflictDescriptor = conflict;
+					break;
+	
+				case text:
+					this.conflictOld = conflict.getBasePath();
+					this.conflictWorking = conflict.getMergedPath();
+					this.conflictNew = conflict.getMyPath();
+					break;
+	
+				case property:
+					// Ignore
+					break;
+				}
 			}
 		}
+		this.urlCopiedFrom = aInfo.getCopyFromUrl();
+		this.url = aInfo.getUrl();
 	}
     
 	/* (non-Javadoc)
@@ -122,8 +126,7 @@ public class JhlStatus implements ISVNStatus {
 	 */
 	public SVNUrl getUrl() {
 		try {
-            String urlString = getUrlString();
-            return (urlString != null) ? new SVNUrl(urlString) : null;
+            return (url != null) ? new SVNUrl(url) : null;
         } catch (MalformedURLException e) {
             //should never happen.
             return null;
@@ -135,7 +138,7 @@ public class JhlStatus implements ISVNStatus {
 	 */
 	public String getUrlString()
 	{
-		return _s.getUrl();
+		return url;
 	}
 	
 	/* (non-Javadoc)
@@ -266,8 +269,7 @@ public class JhlStatus implements ISVNStatus {
 	 */
 	public SVNUrl getUrlCopiedFrom() {
 		try {
-            String url = _s.getUrlCopiedFrom();
-            return (url != null) ? new SVNUrl(url) : null;
+            return (urlCopiedFrom != null) ? new SVNUrl(urlCopiedFrom) : null;
         } catch (MalformedURLException e) {
             //should never happen.
             return null;
@@ -332,21 +334,27 @@ public class JhlStatus implements ISVNStatus {
 	 * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getLockCreationDate()
 	 */
     public Date getLockCreationDate() {
-        return _s.getLockCreationDate();
+    	if (_s.getLocalLock() == null)
+    		return null;
+        return _s.getLocalLock().getCreationDate();
     }
  
     /* (non-Javadoc)
      * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getLockOwner()
      */
     public String getLockOwner() {
-        return _s.getLockOwner();
+    	if (_s.getLocalLock() == null)
+    		return null;
+        return _s.getLocalLock().getOwner();
     }
  
     /* (non-Javadoc)
      * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getLockComment()
      */
     public String getLockComment() {
-        return _s.getLockComment();
+    	if (_s.getLocalLock() == null)
+    		return null;
+        return _s.getLocalLock().getComment();
     }
 
     /* (non-Javadoc)
@@ -370,12 +378,7 @@ public class JhlStatus implements ISVNStatus {
 		return JhlConverter.convertConflictDescriptor(conflictDescriptor);
 	}
     
-    public void updateFromInfo(ISVNInfo info) {
-    	lastChangedRevision = info.getLastChangedRevision();
-    	lastChangedAuthor = info.getLastCommitAuthor();
-    	lastChangedDate = info.getLastChangedDate();
-    }
-    
+   
     public void updateFromStatus(JhlStatus info) {
     	lastChangedRevision = info.getLastChangedRevision();
     	lastChangedAuthor = info.getLastCommitAuthor();
@@ -384,43 +387,22 @@ public class JhlStatus implements ISVNStatus {
     
     /**
      * A special JhlStatus subclass representing svn:external resource.
-     * (JavaHL answer two sort of statuses on externals:
-     * - when ignoreExternals is set to true during call to status(),
-     *  the return status has textStatus set to EXTERNAL, but the url is null.<br>
-     * - when ignoreExternals is set to false during call to status(),
-     *  besides the "external" status, second status with url and all fields is returned too, 
-     *  but this one has textStatus NORMAL)
      */
     public static class JhlStatusExternal extends JhlStatus
     {
-    	private String url;
 
     	/**
     	 * Constructor
     	 * @param status
     	 */
-    	public JhlStatusExternal(JhlStatus status) {
-            this(status, null);
-    	}
-
-    	/**
-    	 * Constructor
-    	 * @param status
-    	 * @param url
-    	 */
-    	public JhlStatusExternal(JhlStatus status, String url) {
-            super(status._s, null);
-            this.url = url;
+    	public JhlStatusExternal(JhlStatus status, ISVNClient client) {
+            super(status._s, client);
     	}
 
     	public SVNStatusKind getTextStatus() {
             return SVNStatusKind.EXTERNAL;
     	}    	
     	
-    	public String getUrlString()
-    	{
-    		return (url != null) ? url : super.getUrlString();
-    	}
     }
 
 }
