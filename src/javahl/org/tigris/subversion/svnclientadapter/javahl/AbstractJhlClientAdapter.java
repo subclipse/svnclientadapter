@@ -2049,6 +2049,22 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
     }
     
     /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#upgrade(java.io.File)
+     */
+    public void upgrade(File path) throws SVNClientException {
+        try {
+            notificationHandler.setCommand(ISVNNotifyListener.Command.UPGRADE);
+            String target = fileToSVNPath(path, false);
+            String commandLine = "upgrade " + target;
+            notificationHandler.logCommandLine(commandLine);
+            svnClient.upgrade(target);
+        } catch (ClientException e) {
+            notificationHandler.logException(e);
+            throw new SVNClientException(e);
+        }
+    }    
+    
+    /* (non-Javadoc)
      * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#merge(org.tigris.subversion.svnclientadapter.SVNUrl, org.tigris.subversion.svnclientadapter.SVNRevision, org.tigris.subversion.svnclientadapter.SVNUrl, org.tigris.subversion.svnclientadapter.SVNRevision, java.io.File, boolean, boolean, boolean, boolean)
      */
     public void merge(SVNUrl path1, SVNRevision revision1, SVNUrl path2,

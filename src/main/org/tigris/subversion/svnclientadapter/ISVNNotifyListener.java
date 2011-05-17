@@ -67,6 +67,7 @@ public interface ISVNNotifyListener {
         public static final int RELOCATE = 30;
         public static final int RESOLVE = 31;
 		public static final int MERGEINFO = 32;
+		public static final int UPGRADE = 33;
     }    
 
     /**

@@ -344,6 +344,8 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements Cl
             	break;
             case merge_elide_info:
             	break;
+            case upgraded_path:
+            	break;
             default:
             	if (info.getAction().ordinal() == ENDED_ABNORMAL) {
             		if (command == ISVNNotifyListener.Command.COMMIT)

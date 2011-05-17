@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
-
 /**
  * High level API for Subversion
  * 
@@ -1573,6 +1572,13 @@ public interface ISVNClientAdapter {
      * @throws SVNClientException
      */
     public abstract void cleanup(File dir) throws SVNClientException;
+    
+    /**
+     * Recursively upgrade a working copy to a new metadata storage format.
+     * @param dir
+     * @throws SVNClientException
+     */    
+    public abstract void upgrade(File dir) throws SVNClientException;
 
     /**
      * Merge changes from two paths into a new local path.
