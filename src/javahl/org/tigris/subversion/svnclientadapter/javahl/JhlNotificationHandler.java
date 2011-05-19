@@ -365,6 +365,7 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements Cl
             	logMessage("Unknown action received: " + info.getAction());
                 	
         }
+
         if (notify) {
             // only when the status changed
             notifyListenersOfChange(info.getPath(), JhlConverter.convertNodeKind(info.getKind()));                
