@@ -21,22 +21,22 @@ package org.tigris.subversion.svnclientadapter.utils;
 public class Depth {
 
 	    /** Depth undetermined or ignored. */
-	    public static final int unknown = -2;
+	    public static final int unknown = 0;
 
 	    /** Exclude (remove, whatever) directory D. */
-	    public static final int exclude = -1;
+	    public static final int exclude = 1;
 
 	    /** Just the named directory D, no entries. */
-	    public static final int empty = 0;
+	    public static final int empty = 2;
 
 	    /** D + its file children, but not subdirs. */
-	    public static final int files = 1;
+	    public static final int files = 3;
 
 	    /** D + immediate children (D and its entries). */
-	    public static final int immediates = 2;
+	    public static final int immediates = 4;
 
 	    /** D + all descendants (full recursion from D). */
-	    public static final int infinity = 3;
+	    public static final int infinity = 5;
 
 	    public static final int fromRecurse(boolean recurse)
 	    {
