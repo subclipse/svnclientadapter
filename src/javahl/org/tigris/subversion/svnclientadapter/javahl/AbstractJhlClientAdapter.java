@@ -1235,7 +1235,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 					"proplist "+ target);
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
 			JhlProplistCallback callback = new JhlProplistCallback(true);
-			svnClient.properties(target, Revision.WORKING, Revision.BASE, Depth.infinity, null, callback);
+			svnClient.properties(target, null, null, Depth.empty, null, callback);
 			return callback.getPropertyData();
 		} catch (ClientException e) {
 			notificationHandler.logException(e);
@@ -1422,7 +1422,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 			notificationHandler.logCommandLine(
 				"propget " + propertyName + " " + target);
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
-			byte[] bytes = svnClient.propertyGet(target, propertyName, Revision.WORKING, Revision.BASE);
+			byte[] bytes = svnClient.propertyGet(target, propertyName, null, null);
             if (bytes == null)
                 return null;
             else
