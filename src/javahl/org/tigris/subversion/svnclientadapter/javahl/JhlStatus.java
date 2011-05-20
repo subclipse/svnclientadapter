@@ -91,7 +91,7 @@ public class JhlStatus implements ISVNStatus {
 
 		MyInfoCallback callback = new MyInfoCallback();
 
-		aClient.info2(path, Revision.HEAD, Revision.HEAD, Depth.empty, null,
+		aClient.info2(path, null, null, Depth.empty, null,
 				callback);
 
 		Info aInfo = callback.getInfo();
