@@ -28,7 +28,6 @@ import org.apache.subversion.javahl.ISVNClient;
 import org.apache.subversion.javahl.callback.InfoCallback;
 import org.apache.subversion.javahl.types.Depth;
 import org.apache.subversion.javahl.types.Info;
-import org.apache.subversion.javahl.types.Revision;
 import org.apache.subversion.javahl.types.Status;
 import org.tigris.subversion.svnclientadapter.ISVNStatus;
 import org.tigris.subversion.svnclientadapter.SVNConflictDescriptor;
@@ -107,8 +106,8 @@ public class JhlStatus implements ISVNStatus {
 	
 				case text:
 					this.conflictOld = conflict.getBasePath();
-					this.conflictWorking = conflict.getMergedPath();
-					this.conflictNew = conflict.getMyPath();
+					this.conflictWorking = conflict.getMyPath();
+					this.conflictNew = conflict.getTheirPath();
 					break;
 	
 				case property:
@@ -302,8 +301,8 @@ public class JhlStatus implements ISVNStatus {
      */
     public File getConflictNew() {
 		String path = conflictNew;
-		return (path != null) ? new File(getFile().getParent(), path)
-				.getAbsoluteFile() : null;
+		return (path != null) ? new File(path)
+		.getAbsoluteFile() : null;
     }
 
     /*
@@ -313,8 +312,8 @@ public class JhlStatus implements ISVNStatus {
 	 */
     public File getConflictOld() {
 		String path = conflictOld;
-		return (path != null) ? new File(getFile().getParent(), path)
-				.getAbsoluteFile() : null;
+		return (path != null) ? new File(path)
+		.getAbsoluteFile() : null;
 	}
 
     /*
@@ -324,8 +323,8 @@ public class JhlStatus implements ISVNStatus {
 	 */
     public File getConflictWorking() {
 		String path = conflictWorking;
-		return (path != null) ? new File(getFile().getParent(), path)
-				.getAbsoluteFile() : null;
+		return (path != null) ? new File(path)
+		.getAbsoluteFile() : null;
 	}
     
     /*
