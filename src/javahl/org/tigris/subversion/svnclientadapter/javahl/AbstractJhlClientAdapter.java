@@ -244,7 +244,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(dir));
 			boolean noIgnores = false;
 			boolean addParents = true;
-            svnClient.add(fileToSVNPath(dir, false), Depth.infinityOrFiles(recurse), force, noIgnores, addParents);
+            svnClient.add(fileToSVNPath(dir, false), Depth.infinityOrEmpty(recurse), force, noIgnores, addParents);
         } catch (ClientException e) {
             notificationHandler.logException(e);
             throw new SVNClientException(e);
