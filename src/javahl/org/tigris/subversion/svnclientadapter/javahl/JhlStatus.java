@@ -54,8 +54,6 @@ public class JhlStatus implements ISVNStatus {
 	private String conflictOld;
 	private String conflictWorking;
 	private String conflictNew;
-	private String urlCopiedFrom;
-	private String url;
 
 	/**
 	 * Constructor
@@ -66,7 +64,7 @@ public class JhlStatus implements ISVNStatus {
         super();
 		_s = status;
 		try {
-			if (client != null)
+			if (client != null && _s.isConflicted())
 				populateInfo(client, _s.getPath());
 		} catch (ClientException e) {
 			// Ignore
@@ -96,6 +94,7 @@ public class JhlStatus implements ISVNStatus {
 		Info aInfo = callback.getInfo();
 		if (aInfo == null)
 			return;
+		
 		if (aInfo.getConflicts() != null) {
 			for (ConflictDescriptor conflict : aInfo.getConflicts()) {
 				switch (conflict.getKind()) {
@@ -116,8 +115,6 @@ public class JhlStatus implements ISVNStatus {
 				}
 			}
 		}
-		this.urlCopiedFrom = aInfo.getCopyFromUrl();
-		this.url = aInfo.getUrl();
 	}
     
 	/* (non-Javadoc)
@@ -125,7 +122,7 @@ public class JhlStatus implements ISVNStatus {
 	 */
 	public SVNUrl getUrl() {
 		try {
-            return (url != null) ? new SVNUrl(url) : null;
+            return (_s.getUrl() != null) ? new SVNUrl(_s.getUrl()) : null;
         } catch (MalformedURLException e) {
             //should never happen.
             return null;
@@ -137,7 +134,7 @@ public class JhlStatus implements ISVNStatus {
 	 */
 	public String getUrlString()
 	{
-		return url;
+		return _s.getUrl();
 	}
 	
 	/* (non-Javadoc)
@@ -260,19 +257,6 @@ public class JhlStatus implements ISVNStatus {
 		else
 			nodeKind = JhlConverter.convertNodeKind(_s.getReposKind());
         return nodeKind;
-	}
-	
-	/*
-	 * (non-Javadoc)
-	 * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getUrlCopiedFrom()
-	 */
-	public SVNUrl getUrlCopiedFrom() {
-		try {
-            return (urlCopiedFrom != null) ? new SVNUrl(urlCopiedFrom) : null;
-        } catch (MalformedURLException e) {
-            //should never happen.
-            return null;
-        }
 	}
 
     /* (non-Javadoc)

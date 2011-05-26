@@ -174,13 +174,6 @@ public class SVNStatusUnversioned implements ISVNStatus {
         return SVNNodeKind.UNKNOWN;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getUrlCopiedFrom()
-	 */
-	public SVNUrl getUrlCopiedFrom() {
-		return null;
-	}
-
     /* (non-Javadoc)
      * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getConflictNew()
      */
