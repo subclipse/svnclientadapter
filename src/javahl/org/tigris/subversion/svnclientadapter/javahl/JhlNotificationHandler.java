@@ -101,27 +101,22 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements Cl
         		notify = false;
         		break;
             case skip :
-                notify = false;
-                if(info.getErrMsg() != null){
-                	logError(info.getErrMsg());
-                } else {
-                 // When there is an error, the skipped message seems to not be useful
-	                logMessage(Messages.bind("notify.skipped", info.getPath())); //$NON-NLS-1$
-                }
+            	notify = logSkipped(info, Messages.bind("notify.skipped", info.getPath())); //$NON-NLS-1$
                 break;
+            case update_skip_obstruction :
+            	notify = logSkipped(info, Messages.bind("notify.update.skip.obstruction", info.getPath())); //$NON-NLS-1$
+                break;
+            case update_skip_working_only :
+            	notify = logSkipped(info, Messages.bind("notify.update.skip.working.only", info.getPath())); //$NON-NLS-1$
+                break;  
+            case update_skip_access_denied :
+            	notify = logSkipped(info, Messages.bind("notify.update.skip.access.denied", info.getPath())); //$NON-NLS-1$
+                break;                  
             case failed_lock: 
-            	if (info.getErrMsg() == null)
-            		logError(Messages.bind("notify.lock.failed", info.getPath())); //$NON-NLS-1$
-            	else
-            		logError(info.getErrMsg());
-                notify = false;
+            	notify = logFailedOperation(info, Messages.bind("notify.lock.failed", info.getPath())); //$NON-NLS-1$
                 break;
             case failed_unlock:
-            	if (info.getErrMsg() == null)
-            		logError(Messages.bind("notify.unlock.failed", info.getPath())); //$NON-NLS-1$
-            	else
-            		logError(info.getErrMsg());
-            	notify = false;
+            	notify = logFailedOperation(info, Messages.bind("notify.unlock.failed", info.getPath())); //$NON-NLS-1$
             	break;
             case locked:
                 if (info.getLock() != null && info.getLock().getOwner() != null)
@@ -157,6 +152,18 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements Cl
                 receivedSomeChange = true;
                 exists += 1;
                 break;
+            case changelist_set :
+                logMessage(Messages.bind("notify.changelist.set", info.getPath())); //$NON-NLS-1$
+                notify = false;
+                break; 
+            case changelist_clear :
+                logMessage(Messages.bind("notify.changelist.clear", info.getPath())); //$NON-NLS-1$
+                notify = false;
+                break;  
+            case changelist_moved :
+                logMessage(Messages.bind("notify.changelist.moved", info.getPath())); //$NON-NLS-1$
+                notify = false;
+                break;                        
             case restore :
                 logMessage(Messages.bind("notify.restored", info.getPath())); //$NON-NLS-1$
                 break;
@@ -173,6 +180,10 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements Cl
             case add :
                 logMessage("A         " + info.getPath()); //$NON-NLS-1$
                 break;
+            case copy :
+                logMessage(Messages.bind("notify.copy", info.getPath())); //$NON-NLS-1$
+                notify = false;
+                break;                
             case delete :
                 logMessage("D         " + info.getPath()); //$NON-NLS-1$
                 receivedSomeChange = true;
@@ -235,6 +246,9 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements Cl
                 logMessage(Messages.bind("notify.update.external", info.getPath())); //$NON-NLS-1$
             	inExternal = true;
                 break;
+            case update_external_removed :
+                logMessage(Messages.bind("notify.update.external.removed", info.getPath())); //$NON-NLS-1$
+                break;                
             case update_completed :
                 notify = false;
                 if (info.getRevision() >= 0) {
@@ -310,7 +324,9 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements Cl
                     logMessage(Messages.bind("notify.commit.transmit")); //$NON-NLS-1$
                     sentFirstTxdelta = true;
                 }
-                break;                              
+                break;  
+            case url_redirect :
+            	break;
             case property_added:
             	logMessage(Messages.bind("notify.property.set", info.getPath())); //$NON-NLS-1$
             	break;
@@ -344,7 +360,47 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements Cl
             	break;
             case merge_elide_info:
             	break;
+            case patch:
+            	notify = false;
+            	logMessage(Messages.bind("notify.patch")); //$NON-NLS-1$
+            	break;
+            case patch_applied_hunk:
+            	logMessage(Messages.bind("notify.patch.applied.hunk", info.getPath())); //$NON-NLS-1$
+            	break;  
+            case patch_rejected_hunk:
+            	notify = logFailedOperation(info, Messages.bind("notify.patch.rejected.hunk", info.getPath()));
+            	break;
+            case patch_hunk_already_applied:
+            	notify = logFailedOperation(info, Messages.bind("notify.patch.hunk.already.applied", info.getPath()));
+            	break;                       	
             case upgraded_path:
+            	break;
+            case failed_external: 
+            	notify = logFailedOperation(info, Messages.bind("notify.external", info.getPath())); //$NON-NLS-1$
+                break;     
+            case failed_conflict: 
+            	notify = logFailedOperation(info, Messages.bind("notify.conflict", info.getPath())); //$NON-NLS-1$
+                break;  
+            case failed_missing: 
+            	notify = logFailedOperation(info, Messages.bind("notify.missing", info.getPath())); //$NON-NLS-1$
+                break;                      
+            case failed_out_of_date: 
+            	notify = logFailedOperation(info, Messages.bind("notify.out.of.date", info.getPath())); //$NON-NLS-1$
+                break; 
+            case failed_no_parent:
+            	notify = logFailedOperation(info, Messages.bind("notify.no.parent")); //$NON-NLS-1$
+                break;                
+            case failed_locked:
+            	notify = logFailedOperation(info, Messages.bind("notify.locked", info.getPath())); //$NON-NLS-1$
+                break;
+            case failed_forbidden_by_server:
+            	notify = logFailedOperation(info, Messages.bind("notify.forbidden.by.server")); //$NON-NLS-1$
+                break; 
+            case path_nonexistent:
+            	notify = logFailedOperation(info, Messages.bind("notify.path.nonexistent", info.getPath())); //$NON-NLS-1$
+                break;   
+            case exclude:
+            	logMessage(Messages.bind("notify.exclude", info.getPath()));
             	break;
             default:
             	if (info.getAction().ordinal() == ENDED_ABNORMAL) {
@@ -370,6 +426,22 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements Cl
             // only when the status changed
             notifyListenersOfChange(info.getPath(), JhlConverter.convertNodeKind(info.getKind()));                
         }
+    }
+    
+    private boolean logFailedOperation(ClientNotifyInformation info, String defaultErrorMessage) {
+    	if (info.getErrMsg() == null)
+    		logError(defaultErrorMessage);
+    	else
+    		logError(info.getErrMsg());
+    	return false;
+    }
+    
+    private boolean logSkipped(ClientNotifyInformation info, String defaultErrorMessage)	 {
+    	if (info.getErrMsg() == null)
+    		logMessage(defaultErrorMessage);
+    	else
+    		logError(info.getErrMsg());
+    	return false;    	
     }
 
     public void setCommand(int command) {
