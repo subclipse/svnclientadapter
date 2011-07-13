@@ -64,7 +64,7 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements Cl
     private static final int ENDED_ABNORMAL = -1;
 
     public void onNotify(ClientNotifyInformation info) {
-
+    	
         // for some actions, we don't want to call notifyListenersOfChange :
         // when the status of the target has not been modified 
         boolean notify = true;
@@ -355,6 +355,8 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements Cl
             case update_started:
             	break;
             case merge_record_info:
+            	logMessage(Messages.bind("notify.merge.record.info", info.getPath())); //$NON-NLS-1$
+            	propUpdates += 1;
             	break;
             case merge_record_info_begin:
             	break;
