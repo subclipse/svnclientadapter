@@ -64,7 +64,6 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements Cl
     private static final int ENDED_ABNORMAL = -1;
 
     public void onNotify(ClientNotifyInformation info) {
-    	
         // for some actions, we don't want to call notifyListenersOfChange :
         // when the status of the target has not been modified 
         boolean notify = true;
@@ -376,6 +375,7 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements Cl
             	notify = logFailedOperation(info, Messages.bind("notify.patch.hunk.already.applied", info.getPath()));
             	break;                       	
             case upgraded_path:
+            	logMessage(Messages.bind("notify.upgraded.path", info.getPath())); //$NON-NLS-1$
             	break;
             case failed_external: 
             	notify = logFailedOperation(info, Messages.bind("notify.external", info.getPath())); //$NON-NLS-1$
