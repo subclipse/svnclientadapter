@@ -2821,25 +2821,27 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 	}
 
 	public String[] suggestMergeSources(File path) throws SVNClientException {
-		String[] sources = {};
+		String[] sources = null;
 		try {
 			Set<String> s = svnClient.suggestMergeSources(fileToSVNPath(path, false), Revision.HEAD);
+			sources = new String[s.size()];
 			s.toArray(sources);
-			return sources;
 		} catch (SubversionException e) {
             throw new SVNClientException(e);
 		}
+		return sources;
 	}
 
 	public String[] suggestMergeSources(SVNUrl url, SVNRevision peg) throws SVNClientException {
-		String[] sources = {};
+		String[] sources = null;
 		try {
 			Set<String> s = svnClient.suggestMergeSources(url.toString(), JhlConverter.convert(peg));
+			sources = new String[s.size()];
 			s.toArray(sources);
-			return sources;
 		} catch (SubversionException e) {
             throw new SVNClientException(e);
 		}
+		return sources;
 	}
 
 	
