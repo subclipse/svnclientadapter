@@ -840,7 +840,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 			commandLine = appendPaths(commandLine, paths) + " " + dest;
 			notificationHandler.logCommandLine(commandLine);
 			notificationHandler.setBaseDir();
-			svnClient.copy(copySources, dest, copyAsChild, makeParents, true, null, new JhlCommitMessage(fixedMessage), null);
+			svnClient.copy(copySources, dest, copyAsChild, makeParents, true, null, new JhlCommitMessage(fixedMessage), new JhlCommitCallback());
 		} catch (ClientException e) {
 			notificationHandler.logException(e);
 			throw new SVNClientException(e);
