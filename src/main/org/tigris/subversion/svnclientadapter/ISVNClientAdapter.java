@@ -1408,6 +1408,15 @@ public interface ISVNClientAdapter {
 	public abstract ISVNProperty[] getProperties(File path) throws SVNClientException;
 	
     /**
+     * Get all the properties for the given file or dir
+     * @param path
+     * @param descend get properties recursively
+     * @return the properties for the given url
+     * @throws SVNClientException
+     */    
+	public abstract ISVNProperty[] getProperties(File path, boolean descend) throws SVNClientException;
+	
+    /**
      * Get all the properties for the given url
 	 * @param url
 	 * @param revision

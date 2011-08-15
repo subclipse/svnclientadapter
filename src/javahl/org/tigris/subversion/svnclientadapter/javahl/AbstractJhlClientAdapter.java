@@ -1222,20 +1222,35 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 			throw new SVNClientException(e);
 		}
 	}
+	
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getProperties(java.io.File)
+	 */
+	public ISVNProperty[] getProperties(File path) throws SVNClientException {
+		return getProperties(path, false);
+	}
 
 
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getProperties(java.io.File)
 	 */
-	public ISVNProperty[] getProperties(File path) throws SVNClientException {
+	public ISVNProperty[] getProperties(File path, boolean descend) throws SVNClientException {
 		try {
 			notificationHandler.setCommand(ISVNNotifyListener.Command.PROPLIST);
 			String target = fileToSVNPath(path, false);
-			notificationHandler.logCommandLine(
-					"proplist "+ target);
+			StringBuffer commandLine = new StringBuffer("propList ");
+			if (descend) {
+				commandLine.append(" -R ");
+			}
+			commandLine.append(target);
+			notificationHandler.logCommandLine(commandLine.toString());
 			notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
 			JhlProplistCallback callback = new JhlProplistCallback(true);
-			svnClient.properties(target, null, null, Depth.empty, null, callback);
+			if (descend) {
+				svnClient.properties(target, null, null, Depth.infinity, null, callback);
+			} else {
+				svnClient.properties(target, null, null, Depth.empty, null, callback);
+			}
 			return callback.getPropertyData();
 		} catch (ClientException e) {
 			notificationHandler.logException(e);
