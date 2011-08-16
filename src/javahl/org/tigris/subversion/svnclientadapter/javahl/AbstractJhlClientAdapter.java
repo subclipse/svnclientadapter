@@ -1283,6 +1283,31 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 			throw new SVNClientException(e);
 		}		
 	}
+	
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#propertySet(org.tigris.subversion.svnclientadapter.SVNUrl, java.lang.String, java.lang.String, java.lang.String)
+	 */
+	public void propertySet(
+		SVNUrl url,
+		String propertyName,
+		String propertyValue,
+		String message)
+		throws SVNClientException {
+		// TODO message is currently ignored as API does not seem to take it.  There also seems to be a (reported)
+		//      bug in the API.
+		try {
+			notificationHandler.setCommand(ISVNNotifyListener.Command.PROPSET);
+			if (propertyName.startsWith("svn:")) {
+				// Normalize line endings in property value
+				svnClient.propertySetRemote(url.toString(), propertyName, fixSVNString(propertyValue).getBytes(), false, null, new JhlCommitCallback());
+			} else {
+				svnClient.propertySetRemote(url.toString(), propertyName, propertyValue.getBytes(), false, null, new JhlCommitCallback());
+			}			
+		} catch (ClientException e) {
+			notificationHandler.logException(e);
+			throw new SVNClientException(e);
+		}
+	}	
 
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#propertySet(java.io.File, java.lang.String, java.lang.String, boolean)

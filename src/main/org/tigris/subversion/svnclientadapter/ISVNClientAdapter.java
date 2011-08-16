@@ -971,6 +971,21 @@ public interface ISVNClientAdapter {
 		String propertyValue,
 		boolean recurse)
 		throws SVNClientException;
+	
+	/**
+	 * set a property
+	 * @param url
+	 * @param propertyName
+	 * @param propertyValue
+	 * @param recurse
+	 * @throws SVNClientException
+	 */
+	public abstract void propertySet(
+		SVNUrl url,
+		String propertyName,
+		String propertyValue,
+		String message)
+		throws SVNClientException;
 
 	/**
 	 * set a property using the content of a file 
