@@ -1285,23 +1285,22 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 	}
 	
 	/* (non-Javadoc)
-	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#propertySet(org.tigris.subversion.svnclientadapter.SVNUrl, java.lang.String, java.lang.String, java.lang.String)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#propertySet(org.tigris.subversion.svnclientadapter.SVNUrl, org.tigris.subversion.svnclientadapter.SVNRevision.Number,java.lang.String, java.lang.String, java.lang.String)
 	 */
 	public void propertySet(
 		SVNUrl url,
+		SVNRevision.Number baseRev,
 		String propertyName,
 		String propertyValue,
 		String message)
 		throws SVNClientException {
-		// TODO message is currently ignored as API does not seem to take it.  There also seems to be a (reported)
-		//      bug in the API.
 		try {
 			notificationHandler.setCommand(ISVNNotifyListener.Command.PROPSET);
 			if (propertyName.startsWith("svn:")) {
 				// Normalize line endings in property value
-				svnClient.propertySetRemote(url.toString(), propertyName, fixSVNString(propertyValue).getBytes(), false, null, new JhlCommitCallback());
+				svnClient.propertySetRemote(url.toString(), baseRev.getNumber(), propertyName, fixSVNString(propertyValue).getBytes(), new JhlCommitMessage(message), false, null, new JhlCommitCallback());
 			} else {
-				svnClient.propertySetRemote(url.toString(), propertyName, propertyValue.getBytes(), false, null, new JhlCommitCallback());
+				svnClient.propertySetRemote(url.toString(), baseRev.getNumber(), propertyName, propertyValue.getBytes(), new JhlCommitMessage(message), false, null, new JhlCommitCallback());
 			}			
 		} catch (ClientException e) {
 			notificationHandler.logException(e);

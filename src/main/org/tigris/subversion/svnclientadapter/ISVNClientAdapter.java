@@ -975,6 +975,7 @@ public interface ISVNClientAdapter {
 	/**
 	 * set a property
 	 * @param url
+	 * @param baseRev
 	 * @param propertyName
 	 * @param propertyValue
 	 * @param recurse
@@ -982,6 +983,7 @@ public interface ISVNClientAdapter {
 	 */
 	public abstract void propertySet(
 		SVNUrl url,
+		SVNRevision.Number baseRev,
 		String propertyName,
 		String propertyValue,
 		String message)
