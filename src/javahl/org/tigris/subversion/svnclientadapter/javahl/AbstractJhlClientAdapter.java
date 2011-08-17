@@ -1275,7 +1275,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 			notificationHandler.logCommandLine(
 					"proplist "+ target);
 			notificationHandler.setBaseDir();
-			JhlProplistCallback callback = new JhlProplistCallback(true);
+			JhlProplistCallback callback = new JhlProplistCallback(false);
 			svnClient.properties(target, JhlConverter.convert(revision), JhlConverter.convert(pegRevision), Depth.infinity, null, callback);
 			return callback.getPropertyData();
 		} catch (ClientException e) {
