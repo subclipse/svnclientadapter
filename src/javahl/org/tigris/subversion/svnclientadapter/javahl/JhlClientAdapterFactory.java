@@ -32,6 +32,7 @@ import org.tigris.subversion.svnclientadapter.SVNClientException;
 public class JhlClientAdapterFactory extends SVNClientAdapterFactory {
     
     private static final String[] WINDOWSLIBS = new String[] {
+    	"msvcr100", "msvcp100",
         "libapr-1", "libapriconv-1", "libeay32", "ssleay32", "libaprutil-1",
         "dbghelp", "libsasl",
         // libraries as of 1.5
