@@ -1877,10 +1877,18 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 				commandLine += "--accept=theirs-full ";
 				choice = ConflictResult.Choice.chooseTheirsFull;
 				break;
+			case ISVNConflictResolver.Choice.chooseTheirs:
+				commandLine += "--accept=theirs-conflict ";
+				choice = ConflictResult.Choice.chooseTheirsConflict;
+				break;				
 			case ISVNConflictResolver.Choice.chooseMineFull:
 				commandLine += "--accept=mine-full ";
 				choice = ConflictResult.Choice.chooseMineFull;
 				break;
+			case ISVNConflictResolver.Choice.chooseMine:
+				commandLine += "--accept=mine-conflict ";
+				choice = ConflictResult.Choice.chooseMineConflict;
+				break;				
 			default:
 				choice = ConflictResult.Choice.chooseMerged;
 				break;
