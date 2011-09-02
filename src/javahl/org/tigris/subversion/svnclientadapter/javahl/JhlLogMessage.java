@@ -83,7 +83,13 @@ public class JhlLogMessage implements ISVNLogMessage {
 	 * @see org.tigris.subversion.svnclientadapter.ISVNLogMessage#getAuthor()
 	 */
 	public String getAuthor() {
-        return new String(revprops.get(AUTHOR));
+		byte[] author = revprops.get(AUTHOR);
+		if (author == null) {
+			return "";
+		}
+		else {
+			return new String(author);
+		}
 	}
 
 	/* (non-Javadoc)
@@ -99,7 +105,13 @@ public class JhlLogMessage implements ISVNLogMessage {
 	 * @see org.tigris.subversion.svnclientadapter.ISVNLogMessage#getMessage()
 	 */
 	public String getMessage() {
-        return new String(revprops.get(MESSAGE));
+		byte[] message = revprops.get(MESSAGE);
+		if (message == null) {
+			return "";
+		}
+		else {
+			return new String(message);
+		}
 	}
 
     /* (non-Javadoc)
