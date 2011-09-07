@@ -18,6 +18,7 @@
  ******************************************************************************/
 package org.tigris.subversion.svnclientadapter.javahl;
 
+import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -88,7 +89,11 @@ public class JhlLogMessage implements ISVNLogMessage {
 			return "";
 		}
 		else {
-			return new String(author);
+			try {
+				return new String(author, "UTF8");
+			} catch (UnsupportedEncodingException e) {
+				return new String(author);
+			}
 		}
 	}
 
@@ -110,7 +115,11 @@ public class JhlLogMessage implements ISVNLogMessage {
 			return "";
 		}
 		else {
-			return new String(message);
+			try {
+				return new String(message, "UTF8");
+			} catch (UnsupportedEncodingException e) {
+				return new String(message);
+			}
 		}
 	}
 
