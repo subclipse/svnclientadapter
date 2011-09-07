@@ -19,6 +19,8 @@
 package org.tigris.subversion.svnclientadapter;
 
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import org.tigris.subversion.svnclientadapter.utils.StringUtils;
 
@@ -297,5 +299,20 @@ public class SVNUrl {
      */
     public String toString() {
         return get();
+    }
+	
+    public String toSafeUrl() {
+    	// The URI class will throw Exception if there are spaces in the URL, but it seems
+    	// to handle other classes OK.  I tested with @ + and Unicode characters.  It leaves
+    	// the @ and + alone and converts Unicode to %nn.  It is possible there are other
+    	// characters we need to replace here besides space.
+    	String s = get().replaceAll(" ", "%20");
+    	URI u;
+		try {
+			u = new URI(s);
+	        return u.toASCIIString();
+		} catch (URISyntaxException e) {
+			return s;
+		}
     }
 }
