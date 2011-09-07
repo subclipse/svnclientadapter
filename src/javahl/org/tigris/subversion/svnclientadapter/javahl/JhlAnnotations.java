@@ -18,6 +18,7 @@
  ******************************************************************************/
 package org.tigris.subversion.svnclientadapter.javahl;
 
+import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -52,16 +53,29 @@ public class JhlAnnotations extends Annotations implements BlameCallback {
 			Map<String, byte[]> mergedRevProps, String mergedPath, String line,
 			boolean localChange) throws ClientException {
 
-        try {
+		String author = null;
+		String mergedAuthor = null;
+		try {
+			author = new String(revProps.get("svn:author"), "UTF8");
+		} catch (UnsupportedEncodingException e) {
+			author = new String(revProps.get("svn:author"));
+		}
+		if (mergedRevProps != null) {
+			try {
+				mergedAuthor = new String(mergedRevProps.get("svn:author"), "UTF8");
+			} catch (UnsupportedEncodingException e) {
+				mergedAuthor = new String(mergedRevProps.get("svn:author"));
+			}
+		}
+		try {
             singleLine(
                 df.parse(new String(revProps.get("svn:date"))),
                 revision,
-                new String(revProps.get("svn:author")),
+                author,
                 mergedRevProps == null ? null
                     : df.parse(new String(mergedRevProps.get("svn:date"))),
                 mergedRevision,
-                mergedRevProps == null ? null
-                    : new String(mergedRevProps.get("svn:author")),
+                mergedAuthor,
                 mergedPath, line);
         } catch (ParseException e) {
             throw ClientException.fromException(e);

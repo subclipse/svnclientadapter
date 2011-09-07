@@ -26,6 +26,7 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -2369,7 +2370,13 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
                     + url.toString());
             notificationHandler.setBaseDir();
            byte[] bytes = svnClient.revProperty(url.toString(), propName, Revision.getInstance(revisionNo.getNumber())); //setRevProperty(url.toString(), propName, Revision.getInstance(revisionNo.getNumber()), fixSVNString(propertyData), true);
-           propData = new String(bytes);
+			try {
+				// Assume property data is UTF8. Technically, only svn: props are forced
+				// to be UTF8.
+				propData = new String(bytes, "UTF8");
+			} catch (UnsupportedEncodingException e) {
+				propData = new String(bytes);
+			}
             if (propName.startsWith("svn:")) {
               fixSVNString(propData);
             } 

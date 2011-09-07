@@ -19,6 +19,7 @@
 package org.tigris.subversion.svnclientadapter.javahl;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 
 import org.tigris.subversion.svnclientadapter.ISVNProperty;
@@ -82,7 +83,11 @@ public class JhlPropertyData implements ISVNProperty
      */
     public String getValue()
     {
-        return new String(data);
+        try {
+			return new String(data, "UTF8");
+		} catch (UnsupportedEncodingException e) {
+			return new String(data);
+		}
     }
 
     /* (non-Javadoc)
