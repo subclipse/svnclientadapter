@@ -36,19 +36,19 @@ import java.util.StringTokenizer;
 
 import org.apache.subversion.javahl.ClientException;
 import org.apache.subversion.javahl.ConflictResult;
+import org.apache.subversion.javahl.ISVNClient;
+import org.apache.subversion.javahl.SubversionException;
+import org.apache.subversion.javahl.callback.ListCallback;
+import org.apache.subversion.javahl.callback.StatusCallback;
+import org.apache.subversion.javahl.callback.UserPasswordCallback;
 import org.apache.subversion.javahl.types.CopySource;
 import org.apache.subversion.javahl.types.Depth;
 import org.apache.subversion.javahl.types.DirEntry;
-import org.apache.subversion.javahl.ISVNClient;
 import org.apache.subversion.javahl.types.Lock;
 import org.apache.subversion.javahl.types.Mergeinfo;
 import org.apache.subversion.javahl.types.Revision;
 import org.apache.subversion.javahl.types.RevisionRange;
 import org.apache.subversion.javahl.types.Status;
-import org.apache.subversion.javahl.SubversionException;
-import org.apache.subversion.javahl.callback.ListCallback;
-import org.apache.subversion.javahl.callback.StatusCallback;
-import org.apache.subversion.javahl.callback.UserPasswordCallback;
 import org.tigris.subversion.svnclientadapter.AbstractClientAdapter;
 import org.tigris.subversion.svnclientadapter.ISVNAnnotations;
 import org.tigris.subversion.svnclientadapter.ISVNConflictResolver;
@@ -654,7 +654,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 			JhlStatus jhlStatus = statuses[i];
 			if (jhlStatus.getLastChangedRevision() != null) {
 				for (JhlStatus folder : folders) {
-					if (jhlStatus.getUrlString().startsWith(folder.getUrlString() + "/")) {
+					if (jhlStatus.getUrlString() != null && jhlStatus.getUrlString().startsWith(folder.getUrlString() + "/")) {
 						if (folder.getLastChangedRevision() == null ||
 								folder.getLastChangedRevision().getNumber() < jhlStatus.getLastChangedRevision().getNumber()) {
 							folder.updateFromStatus(jhlStatus);
