@@ -574,8 +574,15 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 					getAll,getAll,		// retrieve all entries; otherwise, retrieve only "interesting" entries (local mods and/or out-of-date).
 					ignoreExternals, null, statusCallback);
 
+			List<Status> statusList = null;
+			if (statusCallback instanceof MyStatusCallback) {
+				statusList = ((MyStatusCallback)statusCallback).getStatusList();
+			}
+			else {
+				statusList = ((JhlStatusCallback)statusCallback).getStatusList();
+			}
 			return processFolderStatuses(processExternalStatuses(JhlConverter.convertStatus(
-					statusCallback.getStatusList(), svnClient)), getAll, contactServer);  // if yes the svn:externals will be ignored
+					statusList, svnClient)), getAll, contactServer);  // if yes the svn:externals will be ignored
 		} catch (ClientException e) {
 			if (e.getAprError() == ErrorCodes.wcNotDirectory) {
 				// when there is no .svn dir, an exception is thrown ...
