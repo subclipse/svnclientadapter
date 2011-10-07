@@ -64,6 +64,7 @@ import org.tigris.subversion.svnclientadapter.ISVNProgressListener;
 import org.tigris.subversion.svnclientadapter.ISVNPromptUserPassword;
 import org.tigris.subversion.svnclientadapter.ISVNProperty;
 import org.tigris.subversion.svnclientadapter.ISVNStatus;
+import org.tigris.subversion.svnclientadapter.ISVNStatusCallback;
 import org.tigris.subversion.svnclientadapter.SVNBaseDir;
 import org.tigris.subversion.svnclientadapter.SVNClientException;
 import org.tigris.subversion.svnclientadapter.SVNDiffSummary;
@@ -541,26 +542,40 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
     public ISVNStatus[] getStatus(File path, boolean descend, boolean getAll, boolean contactServer) throws SVNClientException {
     	return getStatus(path, descend, getAll, contactServer, false);
     }
-
+    
     /* (non-Javadoc)
      * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getStatus(java.io.File, boolean, boolean, boolean, boolean)
      */
     public ISVNStatus[] getStatus(File path, boolean descend, boolean getAll, boolean contactServer, boolean ignoreExternals) throws SVNClientException {
+    	return getStatus(path, descend, getAll, contactServer, ignoreExternals, null);
+    }
+
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getStatus(java.io.File, boolean, boolean, boolean, boolean, ISVNStatusCallback)
+     */
+    public ISVNStatus[] getStatus(File path, boolean descend, boolean getAll, boolean contactServer, boolean ignoreExternals, ISVNStatusCallback callback) throws SVNClientException {
 		notificationHandler.setCommand(ISVNNotifyListener.Command.STATUS);
 		String filePathSVN = fileToSVNPath(path, false);
 		Depth depth = Depth.unknownOrImmediates(descend);    // If descend is true, recurse fully, else do only immediate children.
 		notificationHandler.logCommandLine("status" + (contactServer?" -u":"")+ depthCommandLine(depth) + " " + filePathSVN);
 		notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
 		try {
-			MyStatusCallback callback = new MyStatusCallback();
+			StatusCallback statusCallback;
+			if (callback == null) {
+				statusCallback = new MyStatusCallback();
+			}
+			else {
+				statusCallback = new JhlStatusCallback(callback);
+			}
 			svnClient.status(
                     filePathSVN,  
                     depth,        
                     contactServer,      // If update is set, contact the repository and augment the status structures with information about out-of-dateness     
 					getAll,getAll,		// retrieve all entries; otherwise, retrieve only "interesting" entries (local mods and/or out-of-date).
-					ignoreExternals, null, callback);
+					ignoreExternals, null, statusCallback);
+
 			return processFolderStatuses(processExternalStatuses(JhlConverter.convertStatus(
-					callback.getStatusList(), svnClient)), getAll, contactServer);  // if yes the svn:externals will be ignored
+					statusCallback.getStatusList(), svnClient)), getAll, contactServer);  // if yes the svn:externals will be ignored
 		} catch (ClientException e) {
 			if (e.getAprError() == ErrorCodes.wcNotDirectory) {
 				// when there is no .svn dir, an exception is thrown ...
