@@ -186,7 +186,7 @@ public class JhlClientAdapterFactory extends SVNClientAdapterFactory {
     					available = true;
     				else {
     					available = false;
-    					javaHLErrors = new StringBuffer("Incompatible JavaHL library loaded.  1.7.x or later required.");
+    					javaHLErrors = new StringBuffer("Incompatible JavaHL library loaded.  Subversion 1.7.x required.");
     				}
     			} catch (UnsatisfiedLinkError e) {
     				available = false;
