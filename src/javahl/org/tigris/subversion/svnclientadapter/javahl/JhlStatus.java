@@ -263,13 +263,7 @@ public class JhlStatus implements ISVNStatus {
      * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getRepositoryTextStatus()
      */
     public SVNStatusKind getRepositoryTextStatus() {
-    	SVNStatusKind statusKind = JhlConverter.convertStatusKind(_s.getRepositoryTextStatus());
-    	
-    	// This is a hack to work around a problem in which the API is returning NONE when it should return DELETED.
-    	if (statusKind == SVNStatusKind.NONE && _s.getReposLastCmtRevision() != null && _s.getReposLastCmtRevision().getNumber() > -1) {
-    		statusKind = SVNStatusKind.DELETED;
-    	}
-        return statusKind;
+        return JhlConverter.convertStatusKind(_s.getRepositoryTextStatus());
     }
 
     /* (non-Javadoc)
