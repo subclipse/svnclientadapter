@@ -2055,13 +2055,21 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
      */
     public void switchToUrl(File path, SVNUrl url, SVNRevision revision, int depth, boolean setDepth, boolean ignoreExternals, boolean force) throws SVNClientException {
         switchToUrl(path, url, revision, revision, depth, setDepth, ignoreExternals, force);
-    }    
+    }
     
     /*
      * (non-Javadoc)
      * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#switchUrl(org.tigris.subversion.svnclientadapter.SVNUrl, java.io.File, org.tigris.subversion.svnclientadapter.SVNRevision, org.tigris.subversion.svnclientadapter.SVNRevision, int, boolean, boolean, boolean)
      */
     public void switchToUrl(File path, SVNUrl url, SVNRevision revision, SVNRevision pegRevision, int depth, boolean setDepth, boolean ignoreExternals, boolean force) throws SVNClientException {
+    	switchToUrl(path, url, revision, pegRevision, depth, setDepth, ignoreExternals, force, false);
+    }
+    
+    /*
+     * (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#switchUrl(org.tigris.subversion.svnclientadapter.SVNUrl, java.io.File, org.tigris.subversion.svnclientadapter.SVNRevision, org.tigris.subversion.svnclientadapter.SVNRevision, int, boolean, boolean, boolean, boolean)
+     */
+    public void switchToUrl(File path, SVNUrl url, SVNRevision revision, SVNRevision pegRevision, int depth, boolean setDepth, boolean ignoreExternals, boolean force, boolean ignoreAncestry) throws SVNClientException {
         if (depth == Depth.exclude.ordinal()) {
         	update(path, pegRevision, depth, true, ignoreExternals, force);
         	return;
@@ -2080,7 +2088,6 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
             notificationHandler.setBaseDir(baseDir);
             Revision rev = JhlConverter.convert(revision);
             Revision pegRev = JhlConverter.convert(pegRevision);
-            boolean ignoreAncestry = false;
             svnClient.doSwitch(target, url.toString(),rev,pegRev,d, setDepth, ignoreExternals, force, ignoreAncestry);
            
         } catch (ClientException e) {
