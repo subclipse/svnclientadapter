@@ -2487,7 +2487,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 			if (e.getAprError() == ErrorCodes.unsupportedFeature && includeMergedRevisions) {
 				getLogMessages(target, pegRevision, revisionStart, revisionEnd, stopOnCopy, fetchChangePath, limit, false, requestedProperties, worker);
 			} else {
-				if (e.getAprError() == ErrorCodes.fsNotFound && pegRevision != null && !pegRevision.equals(revisionStart)) {
+				if ((e.getAprError() == ErrorCodes.fsNotFound || e.getAprError() == ErrorCodes.clientUnrelatedResources) && pegRevision != null && !pegRevision.equals(revisionStart)) {
 					getLogMessages(target, pegRevision, pegRevision, revisionEnd, stopOnCopy, fetchChangePath, limit, includeMergedRevisions, requestedProperties, worker);
 				} else {
 					notificationHandler.logException(e);
