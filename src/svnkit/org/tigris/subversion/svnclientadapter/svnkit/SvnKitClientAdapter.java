@@ -81,37 +81,10 @@ public class SvnKitClientAdapter extends AbstractJhlClientAdapter {
         return true;
     }
     
-//    public long[] commitAcrossWC(File[] paths, String message, boolean recurse,
-//            boolean keepLocks, boolean atomic) throws SVNClientException {
-//        try {
-//        	String fixedMessage = fixSVNString(message);
-//        	if (fixedMessage == null)
-//        		fixedMessage = "";
-//            notificationHandler.setCommand(ISVNNotifyListener.Command.COMMIT);
-//            String[] files = new String[paths.length];
-//            String commandLine = "commit -m \""+fixedMessage+"\"";
-//            if (!recurse)
-//                commandLine+=" -N";
-//            if (keepLocks)
-//                commandLine+=" --no-unlock";
-//
-//            for (int i = 0; i < paths.length; i++) {
-//                files[i] = fileToSVNPath(paths[i], false);
-//                commandLine+=" "+ files[i];
-//            }
-//            notificationHandler.logCommandLine(commandLine);
-//			notificationHandler.setBaseDir();
-//
-//            long[] newRev = ((SVNClientImpl)svnClient).commit(files, fixedMessage, recurse, keepLocks, atomic);
-//            return newRev;
-//        } catch (ClientException e) {
-//            notificationHandler.logException(e);
-//            throw new SVNClientException(e);
-//        }
-//
-//     }
     
     public boolean canCommitAcrossWC() {
+    	// Native SVN now supports this with normal commit method, so support for
+    	// the special method has been removed.
         return false;
     }
 
