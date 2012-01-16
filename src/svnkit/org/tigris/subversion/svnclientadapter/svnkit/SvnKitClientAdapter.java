@@ -20,9 +20,6 @@ package org.tigris.subversion.svnclientadapter.svnkit;
 
 import java.io.File;
 
-import org.tigris.subversion.javahl.ClientException;
-import org.tigris.subversion.javahl.SVNClient;
-import org.tigris.subversion.svnclientadapter.ISVNNotifyListener;
 import org.tigris.subversion.svnclientadapter.ISVNPromptUserPassword;
 import org.tigris.subversion.svnclientadapter.ISVNStatus;
 import org.tigris.subversion.svnclientadapter.SVNClientException;
@@ -31,10 +28,9 @@ import org.tigris.subversion.svnclientadapter.javahl.AbstractJhlClientAdapter;
 import org.tigris.subversion.svnclientadapter.javahl.JhlNotificationHandler;
 import org.tigris.subversion.svnclientadapter.javahl.JhlProgressListener;
 import org.tmatesoft.svn.core.SVNException;
-import org.tmatesoft.svn.core.internal.io.dav.http.IHTTPConnectionFactory;
-import org.tmatesoft.svn.core.internal.io.svn.ISVNConnectorFactory;
 import org.tmatesoft.svn.core.io.SVNRepositoryFactory;
-import org.tmatesoft.svn.core.javahl.SVNClientImpl;
+import org.tmatesoft.svn.core.javahl17.SVNClientImpl;
+
 
 
 /**
@@ -47,18 +43,12 @@ import org.tmatesoft.svn.core.javahl.SVNClientImpl;
 public class SvnKitClientAdapter extends AbstractJhlClientAdapter {
 
     public SvnKitClientAdapter() {
-        this(null, null, null);
-    }
-
-    public SvnKitClientAdapter(SVNClient owner,
-                               IHTTPConnectionFactory httpConnectionFactory,
-                               ISVNConnectorFactory svnConnectorFactory) {
-        svnClient = SVNClientImpl.newInstance(owner, httpConnectionFactory, svnConnectorFactory);
+        svnClient = SVNClientImpl.newInstance();
         notificationHandler = new JhlNotificationHandler();
         progressListener = new JhlProgressListener();
         svnClient.notification2(notificationHandler);        
         svnClient.setPrompt(new DefaultPromptUserPassword());
-        svnClient.setProgressListener(progressListener);
+        svnClient.setProgressCallback(progressListener);
     }
 
 	public boolean isThreadsafe() {
@@ -91,38 +81,38 @@ public class SvnKitClientAdapter extends AbstractJhlClientAdapter {
         return true;
     }
     
-    public long[] commitAcrossWC(File[] paths, String message, boolean recurse,
-            boolean keepLocks, boolean atomic) throws SVNClientException {
-        try {
-        	String fixedMessage = fixSVNString(message);
-        	if (fixedMessage == null)
-        		fixedMessage = "";
-            notificationHandler.setCommand(ISVNNotifyListener.Command.COMMIT);
-            String[] files = new String[paths.length];
-            String commandLine = "commit -m \""+fixedMessage+"\"";
-            if (!recurse)
-                commandLine+=" -N";
-            if (keepLocks)
-                commandLine+=" --no-unlock";
-
-            for (int i = 0; i < paths.length; i++) {
-                files[i] = fileToSVNPath(paths[i], false);
-                commandLine+=" "+ files[i];
-            }
-            notificationHandler.logCommandLine(commandLine);
-			notificationHandler.setBaseDir();
-
-            long[] newRev = ((SVNClientImpl)svnClient).commit(files, fixedMessage, recurse, keepLocks, atomic);
-            return newRev;
-        } catch (ClientException e) {
-            notificationHandler.logException(e);
-            throw new SVNClientException(e);
-        }
-
-     }
+//    public long[] commitAcrossWC(File[] paths, String message, boolean recurse,
+//            boolean keepLocks, boolean atomic) throws SVNClientException {
+//        try {
+//        	String fixedMessage = fixSVNString(message);
+//        	if (fixedMessage == null)
+//        		fixedMessage = "";
+//            notificationHandler.setCommand(ISVNNotifyListener.Command.COMMIT);
+//            String[] files = new String[paths.length];
+//            String commandLine = "commit -m \""+fixedMessage+"\"";
+//            if (!recurse)
+//                commandLine+=" -N";
+//            if (keepLocks)
+//                commandLine+=" --no-unlock";
+//
+//            for (int i = 0; i < paths.length; i++) {
+//                files[i] = fileToSVNPath(paths[i], false);
+//                commandLine+=" "+ files[i];
+//            }
+//            notificationHandler.logCommandLine(commandLine);
+//			notificationHandler.setBaseDir();
+//
+//            long[] newRev = ((SVNClientImpl)svnClient).commit(files, fixedMessage, recurse, keepLocks, atomic);
+//            return newRev;
+//        } catch (ClientException e) {
+//            notificationHandler.logException(e);
+//            throw new SVNClientException(e);
+//        }
+//
+//     }
     
     public boolean canCommitAcrossWC() {
-        return true;
+        return false;
     }
 
     /**

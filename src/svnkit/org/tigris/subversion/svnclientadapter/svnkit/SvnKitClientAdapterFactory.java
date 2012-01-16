@@ -56,7 +56,7 @@ public class SvnKitClientAdapterFactory extends SVNClientAdapterFactory {
     
     public static boolean isAvailable() {
         try {
-            Class c = Class.forName("org.tmatesoft.svn.core.javahl.SVNClientImpl");
+            Class c = Class.forName("org.tmatesoft.svn.core.javahl17.SVNClientImpl");
             if (c != null)
             	return true;
             else
