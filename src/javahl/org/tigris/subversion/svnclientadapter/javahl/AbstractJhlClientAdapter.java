@@ -1287,11 +1287,18 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 	public ISVNProperty[] getProperties(SVNUrl url) throws SVNClientException {
 		return getProperties(url, SVNRevision.HEAD, SVNRevision.HEAD);
 	}
-
+	
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getProperties(org.tigris.subversion.svnclientadapter.SVNUrl)
 	 */
 	public ISVNProperty[] getProperties(SVNUrl url, SVNRevision revision, SVNRevision pegRevision) throws SVNClientException {
+		return getProperties(url, revision, pegRevision, true);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getProperties(org.tigris.subversion.svnclientadapter.SVNUrl)
+	 */
+	public ISVNProperty[] getProperties(SVNUrl url, SVNRevision revision, SVNRevision pegRevision, boolean recurse) throws SVNClientException {
 		try {
 			notificationHandler.setCommand(ISVNNotifyListener.Command.PROPLIST);
 			String target = url.toString();
@@ -1299,7 +1306,14 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 					"proplist "+ target);
 			notificationHandler.setBaseDir();
 			JhlProplistCallback callback = new JhlProplistCallback(false);
-			svnClient.properties(target, JhlConverter.convert(revision), JhlConverter.convert(pegRevision), Depth.infinity, null, callback);
+			Depth depth;
+			if (recurse) {
+				depth = Depth.infinity;
+			}
+			else {
+				depth = Depth.empty;
+			}
+			svnClient.properties(target, JhlConverter.convert(revision), JhlConverter.convert(pegRevision), depth, null, callback);
 			return callback.getPropertyData();
 		} catch (ClientException e) {
 			notificationHandler.logException(e);

@@ -1457,6 +1457,17 @@ public interface ISVNClientAdapter {
 	 * @param url
 	 * @param revision
 	 * @param peg
+	 * @param recurse
+	 * @return information about an URL.
+	 * @throws SVNClientException
+	 */
+	public abstract ISVNProperty[] getProperties(SVNUrl url, SVNRevision revision, SVNRevision peg, boolean recurse) throws SVNClientException;
+	
+    /**
+     * Get all the properties for the given url
+	 * @param url
+	 * @param revision
+	 * @param peg
 	 * @return information about an URL.
 	 * @throws SVNClientException
 	 */
