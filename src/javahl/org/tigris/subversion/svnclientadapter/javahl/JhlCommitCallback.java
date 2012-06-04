@@ -36,5 +36,10 @@ public class JhlCommitCallback implements CommitCallback {
     	if (commitInfo == null) return null;
         return commitInfo.getAuthor();
     }
+    
+    public String getPostCommitError() {
+    	if (commitInfo == null) return null;
+    	return commitInfo.getPostCommitError();
+    }
 	
 }

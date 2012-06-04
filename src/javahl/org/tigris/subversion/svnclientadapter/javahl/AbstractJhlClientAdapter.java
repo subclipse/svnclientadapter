@@ -95,6 +95,8 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
     protected JhlNotificationHandler notificationHandler;
     protected JhlConflictResolver conflictResolver;
     protected JhlProgressListener progressListener;
+    
+    private String postCommitError;
 
     public AbstractJhlClientAdapter() {
 
@@ -314,6 +316,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
     public long commit(File[] paths, String message, boolean recurse, boolean keepLocks)
         throws SVNClientException {
         try {
+        	postCommitError = null;
         	String fixedMessage = fixSVNString(message);
         	if (fixedMessage == null)
         		fixedMessage = "";
@@ -335,6 +338,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 			boolean keepChangeLists = false;
 			JhlCommitCallback callback = new JhlCommitCallback();
             svnClient.commit(files, Depth.infinityOrEmpty(recurse), keepLocks, keepChangeLists, null, null, new JhlCommitMessage(fixedMessage), callback);
+            postCommitError = callback.getPostCommitError();
             long newRev = callback.getRevision();
             if (newRev > 0)
             	notificationHandler.logCompleted("Committed revision " + newRev + ".");
@@ -345,6 +349,10 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
         }
 
     }
+
+	public String getPostCommitError() {
+		return postCommitError;
+	}
 
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getList(org.tigris.subversion.svnclientadapter.SVNUrl, org.tigris.subversion.svnclientadapter.SVNRevision, boolean)

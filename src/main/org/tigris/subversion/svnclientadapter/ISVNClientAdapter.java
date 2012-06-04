@@ -201,6 +201,8 @@ public interface ISVNClientAdapter {
 	public abstract long[] commitAcrossWC(File[] paths, String message, boolean recurse, boolean keepLocks, boolean atomic)
 		throws SVNClientException;
 	
+	public String getPostCommitError();
+	
 	/**
 	 * List directory entries of a URL
 	 * @param url
