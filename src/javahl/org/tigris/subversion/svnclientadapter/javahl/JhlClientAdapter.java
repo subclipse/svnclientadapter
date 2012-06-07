@@ -104,15 +104,6 @@ public class JhlClientAdapter extends AbstractJhlClientAdapter {
 	    
 	}
 
-	/**
-	 * @param logLevel
-	 * @param filePath
-	 */
-	public static void enableLogging(SVNClient.ClientLogLevel logLevel, File filePath) {
-		
-		SVNClient.enableLogging(logLevel,fileToSVNPath(filePath, false));	
-	}
-
 	public boolean statusReturnsRemoteInfo() {
 		return true;
 	}
