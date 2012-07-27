@@ -47,6 +47,7 @@ import org.tigris.subversion.svnclientadapter.ISVNNotifyListener;
 import org.tigris.subversion.svnclientadapter.ISVNProgressListener;
 import org.tigris.subversion.svnclientadapter.ISVNProperty;
 import org.tigris.subversion.svnclientadapter.ISVNStatus;
+import org.tigris.subversion.svnclientadapter.ISVNStatusCallback;
 import org.tigris.subversion.svnclientadapter.SVNBaseDir;
 import org.tigris.subversion.svnclientadapter.SVNClientException;
 import org.tigris.subversion.svnclientadapter.SVNDiffSummary;
@@ -1920,6 +1921,56 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 			SVNRevision toRevision, boolean recurse) throws SVNClientException {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public String getPostCommitError() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ISVNStatus[] getStatus(File path, boolean descend, boolean getAll,
+			boolean contactServer, boolean ignoreExternals,
+			ISVNStatusCallback callback) throws SVNClientException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void propertySet(SVNUrl url, Number baseRev, String propertyName,
+			String propertyValue, String message) throws SVNClientException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public ISVNProperty[] getProperties(File path, boolean descend)
+			throws SVNClientException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ISVNProperty[] getProperties(SVNUrl url, SVNRevision revision,
+			SVNRevision peg, boolean recurse) throws SVNClientException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void switchToUrl(File path, SVNUrl url, SVNRevision revision,
+			SVNRevision pegRevision, int depth, boolean setDepth,
+			boolean ignoreExternals, boolean force, boolean ignoreAncestry)
+			throws SVNClientException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void upgrade(File dir) throws SVNClientException {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
