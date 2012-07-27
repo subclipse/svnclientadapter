@@ -10,7 +10,7 @@
   <path id="project.classpath">
     <pathelement location="${svnjavahl.jar}"/>
   	<pathelement location="${svnkit.jar}"/>
-  	<pathelement location="${ganymed.jar}"/>
+  	<pathelement location="${svnkitjavahl.jar}"/>
   </path>
 
   <!-- ================================================================= -->
@@ -126,11 +126,10 @@
   	<!-- required libs -->
 	<copy file="${svnjavahl.jar}" todir="${build.distrib.dir}/lib"/>
 	<copy file="${lib.dir}/JAVAHL-LICENSE" todir="${build.distrib.dir}/lib"/>  	
-	<copy file="${svnkit.jar}" todir="${build.distrib.dir}/lib"/>
-	<copy file="${lib.dir}/SVNKit-LICENSE" todir="${build.distrib.dir}/lib"/>  	
-	<copy file="${lib.dir}/SEQUENCE-LICENSE" todir="${build.distrib.dir}/lib"/>
-	<copy file="${ganymed.jar}" todir="${build.distrib.dir}/lib"/>
-	<copy file="${lib.dir}/GANYMED-LICENSE" todir="${build.distrib.dir}/lib"/>
+  	<!-- SVNKit files -->
+    <copy todir="${build.distrib.dir}/lib">
+      <fileset dir="${lib.dir}/svnkit"/>
+    </copy>
   	<!-- Javadoc files -->
     <copy todir="${build.distrib.dir}/javadoc">
       <fileset dir="${build.javadoc.dir}"/>
