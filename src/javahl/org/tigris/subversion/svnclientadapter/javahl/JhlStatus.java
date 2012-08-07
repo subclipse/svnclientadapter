@@ -63,8 +63,13 @@ public class JhlStatus implements ISVNStatus {
 		// note that status.textStatus must be different than 0 (the resource must exist)
         super();
 		_s = status;
+		
+		// This is a workaround for an SVNKit bug that results in _s.isConflicted == false for an old format
+		// working copy, even if the file is text conflicted.
+		boolean textConflicted = _s.getTextStatus() != null && _s.getTextStatus().equals(Status.Kind.conflicted);
+		
 		try {
-			if (client != null && _s.isConflicted())
+			if (client != null && (_s.isConflicted() || textConflicted))
 				populateInfo(client, _s.getPath());
 		} catch (ClientException e) {
 			// Ignore
