@@ -55,18 +55,33 @@ public class JhlAnnotations extends Annotations implements BlameCallback {
 
 		String author = null;
 		String mergedAuthor = null;
-		try {
-			author = new String(revProps.get("svn:author"), "UTF8");
-		} catch (UnsupportedEncodingException e) {
-			author = new String(revProps.get("svn:author"));
-		}
-		if (mergedRevProps != null) {
+		
+		byte[] authorBytes = revProps.get("svn:author");		
+		if (authorBytes != null) {
 			try {
-				mergedAuthor = new String(mergedRevProps.get("svn:author"), "UTF8");
+				author = new String(revProps.get("svn:author"), "UTF8");
 			} catch (UnsupportedEncodingException e) {
-				mergedAuthor = new String(mergedRevProps.get("svn:author"));
+				author = new String(revProps.get("svn:author"));
 			}
 		}
+		else {
+			author = "unknown";
+		}
+		
+		if (mergedRevProps != null) {			
+			byte[] mergedAuthorBytes = mergedRevProps.get("svn:author");
+			if (mergedAuthorBytes != null) {
+				try {
+					mergedAuthor = new String(mergedRevProps.get("svn:author"), "UTF8");
+				} catch (UnsupportedEncodingException e) {
+					mergedAuthor = new String(mergedRevProps.get("svn:author"));
+				}
+			}
+			else {
+				mergedAuthor = "unknown";
+			}
+		}
+		
 		try {
             singleLine(
                 df.parse(new String(revProps.get("svn:date"))),
