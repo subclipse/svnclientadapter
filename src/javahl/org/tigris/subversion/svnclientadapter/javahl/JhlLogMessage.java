@@ -58,7 +58,8 @@ public class JhlLogMessage implements ISVNLogMessage {
 		if (this.revprops == null) {
 			this.revprops = new HashMap<String, byte[]>(2); // avoid NullPointerErrors
 			this.revprops.put(AUTHOR, EMPTY.getBytes());
-			this.revprops.put(MESSAGE, EMPTY.getBytes());
+			this.revprops.put(MESSAGE, EMPTY.getBytes());		
+			this.revprops.put(DATE, EMPTY.getBytes());
 		}
 		this.hasChildren = hasChildren;
 		try {
