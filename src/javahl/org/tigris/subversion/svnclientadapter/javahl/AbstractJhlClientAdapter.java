@@ -567,6 +567,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 		Depth depth = Depth.unknownOrImmediates(descend);    // If descend is true, recurse fully, else do only immediate children.
 		notificationHandler.logCommandLine("status" + (contactServer?" -u":"")+ depthCommandLine(depth) + " " + filePathSVN);
 		notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
+		boolean noIgnore = false; // default to this on all calls to API
 		try {
 			StatusCallback statusCallback;
 			if (callback == null) {
@@ -579,7 +580,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
                     filePathSVN,  
                     depth,        
                     contactServer,      // If update is set, contact the repository and augment the status structures with information about out-of-dateness     
-					getAll,getAll,		// retrieve all entries; otherwise, retrieve only "interesting" entries (local mods and/or out-of-date).
+					getAll,noIgnore,	// retrieve all entries; otherwise, retrieve only "interesting" entries (local mods and/or out-of-date).
 					ignoreExternals, null, statusCallback);
 
 			List<Status> statusList = null;
