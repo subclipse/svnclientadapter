@@ -557,17 +557,23 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
     public ISVNStatus[] getStatus(File path, boolean descend, boolean getAll, boolean contactServer, boolean ignoreExternals) throws SVNClientException {
     	return getStatus(path, descend, getAll, contactServer, ignoreExternals, null);
     }
-
+    
     /* (non-Javadoc)
      * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getStatus(java.io.File, boolean, boolean, boolean, boolean, ISVNStatusCallback)
      */
     public ISVNStatus[] getStatus(File path, boolean descend, boolean getAll, boolean contactServer, boolean ignoreExternals, ISVNStatusCallback callback) throws SVNClientException {
+    	return getStatus(path, descend, getAll, contactServer, ignoreExternals, true, callback);
+    }
+
+    /* (non-Javadoc)
+     * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#getStatus(java.io.File, boolean, boolean, boolean, boolean, boolean, ISVNStatusCallback)
+     */
+    public ISVNStatus[] getStatus(File path, boolean descend, boolean getAll, boolean contactServer, boolean ignoreExternals, boolean noIgnore, ISVNStatusCallback callback) throws SVNClientException {
 		notificationHandler.setCommand(ISVNNotifyListener.Command.STATUS);
 		String filePathSVN = fileToSVNPath(path, false);
 		Depth depth = Depth.unknownOrImmediates(descend);    // If descend is true, recurse fully, else do only immediate children.
 		notificationHandler.logCommandLine("status" + (contactServer?" -u":"")+ depthCommandLine(depth) + " " + filePathSVN);
 		notificationHandler.setBaseDir(SVNBaseDir.getBaseDir(path));
-		boolean noIgnore = false; // default to this on all calls to API
 		try {
 			StatusCallback statusCallback;
 			if (callback == null) {
