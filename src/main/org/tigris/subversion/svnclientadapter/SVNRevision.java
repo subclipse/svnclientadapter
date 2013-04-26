@@ -18,11 +18,12 @@
  ******************************************************************************/
 package org.tigris.subversion.svnclientadapter;
 
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+
+import org.tigris.subversion.svnclientadapter.utils.SafeSimpleDateFormat;
 
 /**
  * Class to specify a revision in a svn command.
@@ -33,7 +34,7 @@ import java.util.Locale;
 public class SVNRevision 
 {
 	// See chapter 3 section 3.3 of the SVN book for valid date strings 
-	protected static final DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd'T'HHmmssZ");
+	protected static final SafeSimpleDateFormat dateFormat = new SafeSimpleDateFormat("yyyyMMdd'T'HHmmssZ");
     protected int revKind;
 
     public SVNRevision(int kind)
@@ -143,9 +144,7 @@ public class SVNRevision
          * @see java.lang.Object#toString()
          */
         public String toString() {
-        	synchronized (dateFormat) {
-        		return '{' + dateFormat.format(revDate)+ '}';
-        	}
+        	return '{' + dateFormat.format(revDate)+ '}';
         }
 
         /* (non-Javadoc)
