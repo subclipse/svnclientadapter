@@ -64,7 +64,7 @@ public class JhlLogMessage implements ISVNLogMessage {
 		this.hasChildren = hasChildren;
 		try {
 			logDate = new LogDate(new String(this.revprops.get(DATE)));
-		} catch (ParseException e) {
+		} catch (Exception e) {
 		}
 	}
 
