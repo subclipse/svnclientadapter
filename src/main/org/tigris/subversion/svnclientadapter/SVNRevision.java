@@ -143,7 +143,9 @@ public class SVNRevision
          * @see java.lang.Object#toString()
          */
         public String toString() {
-            return '{' + dateFormat.format(revDate)+ '}';
+        	synchronized (dateFormat) {
+        		return '{' + dateFormat.format(revDate)+ '}';
+        	}
         }
 
         /* (non-Javadoc)

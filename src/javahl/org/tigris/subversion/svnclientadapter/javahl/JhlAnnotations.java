@@ -83,15 +83,17 @@ public class JhlAnnotations extends Annotations implements BlameCallback {
 		}
 		
 		try {
-            singleLine(
-                df.parse(new String(revProps.get("svn:date"))),
-                revision,
-                author,
-                mergedRevProps == null ? null
-                    : df.parse(new String(mergedRevProps.get("svn:date"))),
-                mergedRevision,
-                mergedAuthor,
-                mergedPath, line);
+			synchronized (df) {
+	            singleLine(
+	                df.parse(new String(revProps.get("svn:date"))),
+	                revision,
+	                author,
+	                mergedRevProps == null ? null
+	                    : df.parse(new String(mergedRevProps.get("svn:date"))),
+	                mergedRevision,
+	                mergedAuthor,
+	                mergedPath, line);
+			}
         } catch (ParseException e) {
             throw ClientException.fromException(e);
         }
