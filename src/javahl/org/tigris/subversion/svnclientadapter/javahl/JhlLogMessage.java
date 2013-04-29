@@ -19,16 +19,18 @@
 package org.tigris.subversion.svnclientadapter.javahl;
 
 import java.io.UnsupportedEncodingException;
-import java.text.ParseException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TimeZone;
 
 import org.apache.subversion.javahl.types.ChangePath;
-import org.apache.subversion.javahl.types.LogDate;
 import org.tigris.subversion.svnclientadapter.ISVNLogMessage;
 import org.tigris.subversion.svnclientadapter.ISVNLogMessageChangePath;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
@@ -48,7 +50,13 @@ public class JhlLogMessage implements ISVNLogMessage {
 	private ISVNLogMessageChangePath[] changedPaths;
 	private SVNRevision.Number revision;
 	private Map<String, byte[]> revprops;
-	private LogDate logDate;
+
+    private static final DateFormat formatter = new SimpleDateFormat(
+            "yyyy-MM-dd'T'HH:mm:ss.SSS z");
+    private static final TimeZone UTC = TimeZone.getTimeZone("UTC");
+
+    private long timeMicros;
+    private Calendar cachedDate;
 
 	public JhlLogMessage(Set<ChangePath> changedPaths, long revision,
 			Map<String, byte[]> revprops, boolean hasChildren) {
@@ -63,9 +71,16 @@ public class JhlLogMessage implements ISVNLogMessage {
 		}
 		this.hasChildren = hasChildren;
 		try {
-			logDate = new LogDate(new String(this.revprops.get(DATE)));
-		} catch (Exception e) {
-		}
+			String datestr = new String(this.revprops.get(DATE));
+			Date date;
+			synchronized (formatter) {
+				date = formatter.parse(datestr.substring(0, 23) + " UTC");
+			}
+	        cachedDate = Calendar.getInstance(UTC);
+	        cachedDate.setTime(date);
+	        timeMicros = cachedDate.getTimeInMillis() * 1000
+	                        + Integer.parseInt(datestr.substring(23, 26));
+		} catch (Exception e) {}
 	}
 
 	public void addChild(ISVNLogMessage msg) {
@@ -102,9 +117,12 @@ public class JhlLogMessage implements ISVNLogMessage {
 	 * @see org.tigris.subversion.svnclientadapter.ISVNLogMessage#getDate()
 	 */
 	public Date getDate() {
-		if (logDate == null)
+		if (cachedDate == null) {
 			return new Date(0L);
-        return logDate.getDate();
+		}
+		else {
+			return cachedDate.getTime();
+		}
 	}
 
 	/* (non-Javadoc)
@@ -155,15 +173,16 @@ public class JhlLogMessage implements ISVNLogMessage {
 	}
 
 	public long getTimeMillis() {
-		if (logDate == null)
+		if (cachedDate == null) {
 			return 0L;
-        return logDate.getTimeMillis();
+		}
+		else {
+			return cachedDate.getTimeInMillis();
+		}
 	}
 	
 	public long getTimeMicros() {
-		if (logDate == null) 
-			return 0L;
-		return logDate.getTimeMicros();
+		return timeMicros;
 	}
 
 	public boolean hasChildren() {
