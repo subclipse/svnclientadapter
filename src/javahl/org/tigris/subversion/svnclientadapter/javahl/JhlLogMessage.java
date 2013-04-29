@@ -72,14 +72,16 @@ public class JhlLogMessage implements ISVNLogMessage {
 		this.hasChildren = hasChildren;
 		try {
 			String datestr = new String(this.revprops.get(DATE));
-			Date date;
-			synchronized (formatter) {
-				date = formatter.parse(datestr.substring(0, 23) + " UTC");
+			if (datestr != null && datestr.length() == 27 && datestr.charAt(26) == 'Z') {
+				Date date;
+				synchronized (formatter) {
+					date = formatter.parse(datestr.substring(0, 23) + " UTC");
+				}
+		        cachedDate = Calendar.getInstance(UTC);
+		        cachedDate.setTime(date);
+		        timeMicros = cachedDate.getTimeInMillis() * 1000
+		                        + Integer.parseInt(datestr.substring(23, 26));
 			}
-	        cachedDate = Calendar.getInstance(UTC);
-	        cachedDate.setTime(date);
-	        timeMicros = cachedDate.getTimeInMillis() * 1000
-	                        + Integer.parseInt(datestr.substring(23, 26));
 		} catch (Exception e) {}
 	}
 
