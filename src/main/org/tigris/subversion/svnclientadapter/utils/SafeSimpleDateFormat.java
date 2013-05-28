@@ -27,6 +27,7 @@ public class SafeSimpleDateFormat
         if (formatter == null)
         {
             formatter = new SimpleDateFormat(format);
+            formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
             formatters.put(format, formatter);
         }
         return formatter;
