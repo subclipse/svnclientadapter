@@ -102,6 +102,9 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements Cl
             case skip :
             	notify = logSkipped(info, Messages.bind("notify.skipped", info.getPath())); //$NON-NLS-1$
                 break;
+            case skip_conflicted :
+            	notify = logSkipped(info, Messages.bind("notify.skipped.conflicted", info.getPath())); //$NON-NLS-1$
+                break;                
             case update_skip_obstruction :
             	notify = logSkipped(info, Messages.bind("notify.update.skip.obstruction", info.getPath())); //$NON-NLS-1$
                 break;
@@ -397,13 +400,31 @@ public class JhlNotificationHandler extends SVNNotificationHandler implements Cl
                 break;
             case failed_forbidden_by_server:
             	notify = logFailedOperation(info, Messages.bind("notify.forbidden.by.server")); //$NON-NLS-1$
-                break; 
+                break;
+            case failed_obstructed:
+            	notify = logFailedOperation(info, Messages.bind("notify.obstructed")); //$NON-NLS-1$
+                break;                 
             case path_nonexistent:
             	notify = logFailedOperation(info, Messages.bind("notify.path.nonexistent", info.getPath())); //$NON-NLS-1$
                 break;   
             case exclude:
-            	logMessage(Messages.bind("notify.exclude", info.getPath()));
+            	logMessage(Messages.bind("notify.exclude", info.getPath())); //$NON-NLS-1$
             	break;
+            case conflict_resolver_starting:
+            	break;
+            case conflict_resolver_done:
+            	break; 
+            case left_local_modifications:
+            	logMessage(Messages.bind("notify.left.local.modifications", info.getPath())); //$NON-NLS-1$
+            	break;            	
+            case foreign_copy_begin:
+            	break;
+            case update_broken_lock:
+            	logError(Messages.bind("notify.lock.broken", info.getPath())); //$NON-NLS-1$
+            	break; 
+            case move_broken:
+            	logError(Messages.bind("notify.move.broken", info.getPath())); //$NON-NLS-1$
+            	break;         
             default:
             	if (info.getAction().ordinal() == ENDED_ABNORMAL) {
             		if (command == ISVNNotifyListener.Command.COMMIT)
