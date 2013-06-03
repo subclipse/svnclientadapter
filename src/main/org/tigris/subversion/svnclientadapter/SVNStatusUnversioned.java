@@ -58,6 +58,20 @@ public class SVNStatusUnversioned implements ISVNStatus {
 		return file.getPath();
 	}
 
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getMovedFromAbspath()
+	 */
+	public String getMovedFromAbspath() {
+		return null;
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getMovedToAbspath()
+	 */
+	public String getMovedToAbspath() {
+		return null;
+	}
+
     /* (non-Javadoc)
      * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getFile()
      */

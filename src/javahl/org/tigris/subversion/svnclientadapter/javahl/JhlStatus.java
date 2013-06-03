@@ -245,6 +245,22 @@ public class JhlStatus implements ISVNStatus {
 
 	/*
 	 * (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getMovedFromAbspath()
+	 */
+	public String getMovedFromAbspath() {
+		return _s.getMovedFromAbspath();
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getMovedToAbspath()
+	 */
+	public String getMovedToAbspath() {
+		return _s.getMovedToAbspath();
+	}
+
+	/*
+	 * (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNStatus#getFile()
 	 */
     public File getFile() {

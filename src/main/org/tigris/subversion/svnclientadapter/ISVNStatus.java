@@ -86,6 +86,16 @@ public interface ISVNStatus {
      * which <code>status</code> was run.
      */
 	String getPath();
+
+    /**
+     * @return The absolute path from which this item was moved.
+     */
+	String getMovedFromAbspath();
+
+	 /**
+     * @return The absolute path to which this item was moved.
+     */
+	String getMovedToAbspath();
     
     /**
      * @return The absolute path to this item.
