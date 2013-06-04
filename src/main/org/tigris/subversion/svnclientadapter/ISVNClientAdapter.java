@@ -1455,7 +1455,23 @@ public interface ISVNClientAdapter {
      */
     public ISVNAnnotations annotate(File file, SVNRevision revisionStart, SVNRevision revisionEnd, SVNRevision pegRevision,
     		boolean ignoreMimeType, boolean includeMergedRevisions)
-        throws SVNClientException;    
+        throws SVNClientException; 
+ 
+    /**
+     * Get all the properties for the given file or dir, including inherited
+     * @param path
+     * @return the properties for the given file or dir, including inherited
+     * @throws SVNClientException
+     */    
+    public abstract ISVNProperty[] getPropertiesIncludingInherited(File path) throws SVNClientException;
+    
+    /**
+     * Get all the properties for the given URL, including inherited
+     * @param path
+     * @return the properties for the given URL, including inherited
+     * @throws SVNClientException
+     */    
+    public abstract ISVNProperty[] getPropertiesIncludingInherited(SVNUrl path) throws SVNClientException;    
     
     /**
      * Get all the properties for the given file or dir

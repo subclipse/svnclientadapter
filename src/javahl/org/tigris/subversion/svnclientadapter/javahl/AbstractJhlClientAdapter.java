@@ -1336,6 +1336,29 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 		}		
 	}
 	
+	public ISVNProperty[] getPropertiesIncludingInherited(File path) throws SVNClientException {
+		return getPropertiesIncludingInherited(fileToSVNPath(path, false), true);
+	}
+	
+	public ISVNProperty[] getPropertiesIncludingInherited(SVNUrl path) throws SVNClientException {
+		return getPropertiesIncludingInherited(path.toString(), false);
+	}
+
+	private ISVNProperty[] getPropertiesIncludingInherited(String path, boolean isFile) throws SVNClientException {
+		try {
+			notificationHandler.setCommand(ISVNNotifyListener.Command.PROPLIST);
+			notificationHandler.logCommandLine(
+					"proplist "+ path);
+			notificationHandler.setBaseDir();
+			InheritedJhlProplistCallback callback = new InheritedJhlProplistCallback(isFile);
+			svnClient.properties(path, JhlConverter.convert(SVNRevision.HEAD), JhlConverter.convert(SVNRevision.HEAD), Depth.empty, null, callback);
+			return callback.getPropertyData();
+		} catch (ClientException e) {
+			notificationHandler.logException(e);
+			throw new SVNClientException(e);
+		}				
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.svnclientadapter.ISVNClientAdapter#propertySet(org.tigris.subversion.svnclientadapter.SVNUrl, org.tigris.subversion.svnclientadapter.SVNRevision.Number,java.lang.String, java.lang.String, java.lang.String)
 	 */
