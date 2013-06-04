@@ -236,6 +236,21 @@ public class SVNConflictDescriptor
          * Object is already added or schedule-add.
          */
         public static final int added = 5;
+        
+        /**
+         * Object is already replaced.
+         */
+        public static final int replaced = 6;
+        
+        /**
+         * Object is moved away.
+         */
+        public static final int moved_away = 7;
+        
+        /**
+         * Object is moved here.
+         */
+        public static final int moved_here = 8;
     }
     
     public final class Operation
