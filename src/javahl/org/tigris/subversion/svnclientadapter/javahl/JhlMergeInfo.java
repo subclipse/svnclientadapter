@@ -19,6 +19,8 @@
 package org.tigris.subversion.svnclientadapter.javahl;
 
 
+import java.util.Set;
+
 import org.apache.subversion.javahl.types.Mergeinfo;
 import org.tigris.subversion.svnclientadapter.ISVNMergeInfo;
 import org.tigris.subversion.svnclientadapter.SVNRevisionRange;
@@ -52,8 +54,9 @@ public class JhlMergeInfo implements ISVNMergeInfo {
 	public String[] getPaths() {
 		if (info == null)
 			return null;
-		return (String[]) info.getPaths().toArray();
-		
+		Set<String> paths = info.getPaths();
+		String[] pathArray = new String[paths.size()];
+		return paths.toArray(pathArray);
 	}
 
 	public SVNRevisionRange[] getRevisionRange(String path) {
