@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -1336,6 +1337,48 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 		}		
 	}
 	
+	public ISVNProperty[] getPropertiesIncludingInherited(File path, boolean includeEmptyProperties, List<String> filterProperties) throws SVNClientException {
+		ISVNProperty[] properties = getPropertiesIncludingInherited(fileToSVNPath(path, false), true);
+		return filterProperties(properties, includeEmptyProperties, filterProperties);
+	}
+	
+	public ISVNProperty[] getPropertiesIncludingInherited(SVNUrl path, boolean includeEmptyProperties, List<String> filterProperties) throws SVNClientException {
+		ISVNProperty[] properties = getPropertiesIncludingInherited(path.toString(), false);
+		return filterProperties(properties, includeEmptyProperties, filterProperties);
+	}
+	
+	private ISVNProperty[] filterProperties(ISVNProperty[] properties, boolean includeEmptyProperties, List<String> filterProperties) {
+		if (includeEmptyProperties == true && filterProperties == null) {
+			return properties;
+		}
+		Map<String, ISVNProperty> propertyMap = new HashMap<String, ISVNProperty>();
+		for (ISVNProperty property : properties) {
+			if (includeEmptyProperties || (property.getValue() != null && property.getValue().trim().length() > 0)) {
+				if (filterProperties == null || filterProperties.contains(property.getName())) {
+					ISVNProperty savedProperty = propertyMap.get(property.getName());
+					if (savedProperty == null || getPropertyPathLength(property) > getPropertyPathLength(savedProperty)) {
+						propertyMap.put(property.getName(), property);
+					}
+				}
+			}
+		}
+		ISVNProperty[] propertyArray = new ISVNProperty[propertyMap.size()];
+		propertyMap.values().toArray(propertyArray);
+		return propertyArray;
+	}
+	
+	private int getPropertyPathLength(ISVNProperty property) {
+		if (property.getFile() != null) {
+			return property.getFile().getAbsolutePath().length();
+		}
+		else if (property.getUrl() != null) {
+			return property.getUrl().toString().length();
+		}
+		else {
+			return 0;
+		}
+	}
+	
 	public ISVNProperty[] getPropertiesIncludingInherited(File path) throws SVNClientException {
 		return getPropertiesIncludingInherited(fileToSVNPath(path, false), true);
 	}
@@ -1351,7 +1394,11 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 					"proplist "+ path);
 			notificationHandler.setBaseDir();
 			InheritedJhlProplistCallback callback = new InheritedJhlProplistCallback(isFile);
-			svnClient.properties(path, JhlConverter.convert(SVNRevision.HEAD), JhlConverter.convert(SVNRevision.HEAD), Depth.empty, null, callback);
+			Revision revision = null;
+			if (!isFile) {
+				revision = JhlConverter.convert(SVNRevision.HEAD);
+			}
+			svnClient.properties(path, revision, revision, Depth.empty, null, callback);
 			return callback.getPropertyData();
 		} catch (ClientException e) {
 			notificationHandler.logException(e);

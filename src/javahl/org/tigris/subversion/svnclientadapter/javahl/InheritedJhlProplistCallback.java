@@ -37,21 +37,25 @@ public class InheritedJhlProplistCallback implements InheritedProplistCallback {
 	}
 	
 	public void singlePath(String path, Map<String, byte[]> properties, Collection<InheritedItem> inherited_properties) {
-		Set<String> keys = properties.keySet();
-		for (String key : keys) {
-			if (isFile) {
-				props.add(JhlPropertyData.newForFile(path, key, properties.get(key)));
-			} else {
-				props.add(JhlPropertyData.newForUrl(path, key, properties.get(key)));
+		if (properties != null) {
+			Set<String> keys = properties.keySet();
+			for (String key : keys) {
+				if (isFile) {
+					props.add(JhlPropertyData.newForFile(path, key, properties.get(key)));
+				} else {
+					props.add(JhlPropertyData.newForUrl(path, key, properties.get(key)));
+				}
 			}
 		}
-		for (InheritedItem inheritedItem : inherited_properties) {
-			Set<String> inheritedKeySet = inheritedItem.properties.keySet();	
-			for (String key : inheritedKeySet) {
-				if (isFile) {
-					props.add(JhlPropertyData.newForFile(inheritedItem.path_or_url, key, inheritedItem.properties.get(key)));
-				} else {
-					props.add(JhlPropertyData.newForUrl(inheritedItem.path_or_url, key, inheritedItem.properties.get(key)));
+		if (inherited_properties != null) {
+			for (InheritedItem inheritedItem : inherited_properties) {
+				Set<String> inheritedKeySet = inheritedItem.properties.keySet();	
+				for (String key : inheritedKeySet) {
+					if (isFile) {
+						props.add(JhlPropertyData.newForFile(inheritedItem.path_or_url, key, inheritedItem.properties.get(key)));
+					} else {
+						props.add(JhlPropertyData.newForUrl(inheritedItem.path_or_url, key, inheritedItem.properties.get(key)));
+					}
 				}
 			}
 		}
