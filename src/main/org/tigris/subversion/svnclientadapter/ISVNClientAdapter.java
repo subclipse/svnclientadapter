@@ -1469,11 +1469,12 @@ public interface ISVNClientAdapter {
      * Get all the properties for the given file or dir, including inherited
      * @param path
      * @param includeEmptyProperties
+     * @param includeClosestOnly
      * @param filterParameters
      * @return the properties for the given file or dir, including inherited
      * @throws SVNClientException
      */    
-    public abstract ISVNProperty[] getPropertiesIncludingInherited(File path, boolean includeEmptyProperties, List<String> filterProperties) throws SVNClientException;
+    public abstract ISVNProperty[] getPropertiesIncludingInherited(File path, boolean includeEmptyProperties, boolean includeClosestOnly, List<String> filterProperties) throws SVNClientException;
     
     /**
      * Get all the properties for the given URL, including inherited
@@ -1487,11 +1488,12 @@ public interface ISVNClientAdapter {
      * Get all the properties for the given URL, including inherited
      * @param path
      * @param includeEmptyProperties
+     * @param includeClosestOnly
      * @param filterParameters
      * @return the properties for the given URL, including inherited
      * @throws SVNClientException
      */    
-    public abstract ISVNProperty[] getPropertiesIncludingInherited(SVNUrl path, boolean includeEmptyProperties, List<String> filterProperties) throws SVNClientException;   
+    public abstract ISVNProperty[] getPropertiesIncludingInherited(SVNUrl path, boolean includeEmptyProperties, boolean includeClosestOnly, List<String> filterProperties) throws SVNClientException;   
     
     /**
      * Get all the properties for the given file or dir

@@ -1335,17 +1335,17 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 		}		
 	}
 	
-	public ISVNProperty[] getPropertiesIncludingInherited(File path, boolean includeEmptyProperties, List<String> filterProperties) throws SVNClientException {
+	public ISVNProperty[] getPropertiesIncludingInherited(File path, boolean includeEmptyProperties, boolean includeClosestOnly, List<String> filterProperties) throws SVNClientException {
 		ISVNProperty[] properties = getPropertiesIncludingInherited(fileToSVNPath(path, false), true);
-		return filterProperties(properties, includeEmptyProperties, filterProperties);
+		return filterProperties(properties, includeEmptyProperties, includeClosestOnly, filterProperties);
 	}
 	
-	public ISVNProperty[] getPropertiesIncludingInherited(SVNUrl path, boolean includeEmptyProperties, List<String> filterProperties) throws SVNClientException {
+	public ISVNProperty[] getPropertiesIncludingInherited(SVNUrl path, boolean includeEmptyProperties, boolean includeClosestOnly, List<String> filterProperties) throws SVNClientException {
 		ISVNProperty[] properties = getPropertiesIncludingInherited(path.toString(), false);
-		return filterProperties(properties, includeEmptyProperties, filterProperties);
+		return filterProperties(properties, includeEmptyProperties, includeClosestOnly, filterProperties);
 	}
 	
-	private ISVNProperty[] filterProperties(ISVNProperty[] properties, boolean includeEmptyProperties, List<String> filterProperties) {
+	private ISVNProperty[] filterProperties(ISVNProperty[] properties, boolean includeEmptyProperties, boolean includeClosestOnly, List<String> filterProperties) {
 		if (includeEmptyProperties == true && filterProperties == null) {
 			return properties;
 		}
@@ -1354,7 +1354,7 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 			if (includeEmptyProperties || (property.getValue() != null && property.getValue().trim().length() > 0)) {
 				if (filterProperties == null || filterProperties.contains(property.getName())) {
 					ISVNProperty savedProperty = propertyMap.get(property.getName());
-					if (savedProperty == null || getPropertyPathLength(property) > getPropertyPathLength(savedProperty)) {
+					if (savedProperty == null || !includeClosestOnly || getPropertyPathLength(property) > getPropertyPathLength(savedProperty)) {
 						propertyMap.put(property.getName(), property);
 					}
 				}
