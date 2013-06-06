@@ -18,12 +18,10 @@
  ******************************************************************************/
 package org.tigris.subversion.svnclientadapter.javahl;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -2895,87 +2893,8 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 				ignoreAncestry);
 	}
 
-	// This is a bit of a hack in order to enable diff --summarize against a working copy.
-	// This method does a diff to a temporary file and then parses that file to construct
-	// the SVNDiffSummary array.
 	public SVNDiffSummary[] diffSummarize(File path, SVNUrl toUrl, SVNRevision toRevision, boolean recurse) throws SVNClientException {
-		List<SVNDiffSummary> diffSummaryList = new ArrayList<SVNDiffSummary>();    
-		BufferedReader input = null;
-	   	String changedResource = null;
-    	boolean deletedLines = false;
-    	boolean addedLines = false;
-    	boolean contextLines = false;
-    	boolean oldRev0 = false;
-    	boolean newRev0 = false;
-    	boolean propertyChanges = false;
-    	boolean inDiff = false;
-		try {
-			File diffFile = File.createTempFile("revision", ".diff");
-			diffFile.deleteOnExit();
-			diff(path, toUrl, toRevision, diffFile, recurse);
-			input = new BufferedReader(new FileReader(diffFile));
-			String line = null; 
-			while ((line = input.readLine()) != null){				
-				if (line != null && line.trim().length() > 0 && !line.startsWith("\\")) {				
-					if (line.startsWith("Index:")) {						
-						if (changedResource != null) {
-							SVNDiffKind diffKind = getDiffKind(changedResource,
-									deletedLines, addedLines, contextLines,
-									oldRev0, newRev0);	
-							SVNDiffSummary diffSummary = new SVNDiffSummary(changedResource.substring(path.toString().length() + 1).replaceAll("\\\\", "/"), diffKind, propertyChanges, SVNNodeKind.FILE.toInt());
-							diffSummaryList.add(diffSummary);
-							deletedLines = false;
-							addedLines = false;
-							contextLines = false;
-							propertyChanges = false;
-							oldRev0 = false;
-							newRev0 = false;
-						}						
-						inDiff = false;
-						changedResource = line.substring(7);
-					}
-					else if (line.startsWith("--- ")) {
-						if (line.endsWith("(revision 0)")) {
-							oldRev0 = true;
-						}
-					}
-					else if (line.startsWith("+++ ")) {
-						if (line.endsWith("(revision 0)")) {
-							newRev0 = true;
-						}						
-					}
-					else if (line.startsWith("@@")) {
-						inDiff = true;
-					}
-					else if (line.equals("Property changes on: " + changedResource)) {
-						propertyChanges = true;
-						inDiff = false;
-					} else if (inDiff) {
-						if (line.startsWith("+")) addedLines = true;
-						else if (line.startsWith("-")) deletedLines = true;
-						else contextLines = true;
-					}
-				}
-			}
-			if (changedResource != null) {
-				SVNDiffKind diffKind = getDiffKind(changedResource,
-						deletedLines, addedLines, contextLines, oldRev0,
-						newRev0);	
-				SVNDiffSummary diffSummary = new SVNDiffSummary(changedResource.substring(path.toString().length() + 1), diffKind, propertyChanges, SVNNodeKind.FILE.toInt());
-				diffSummaryList.add(diffSummary);
-			}
-		} catch (Exception e) {
-			throw new SVNClientException(e);
-		} finally {
-			if (input != null) {
-				try {
-					input.close();
-				} catch (IOException e) {}
-			}
-		}		
-		SVNDiffSummary[] diffSummary = new SVNDiffSummary[diffSummaryList.size()];
-		diffSummaryList.toArray(diffSummary);
-		return diffSummary;
+		return diffSummarize(path.getAbsolutePath(), SVNRevision.WORKING, toUrl.toString(), toRevision, Depth.infinity.ordinal(), true);
 	}
 
 	private SVNDiffKind getDiffKind(String changedResource,
