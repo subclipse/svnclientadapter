@@ -598,8 +598,8 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 			return processFolderStatuses(processExternalStatuses(JhlConverter.convertStatus(
 					statusList, svnClient)), getAll, contactServer);  // if yes the svn:externals will be ignored
 		} catch (ClientException e) {
-			if (e.getAprError() == ErrorCodes.wcNotDirectory) {
-				// when there is no .svn dir, an exception is thrown ...
+			if (e.getAprError() == ErrorCodes.wcNotDirectory || e.getAprError() == ErrorCodes.wcPathNotFound) {
+				// when folder is unversioned, an exception is thrown ...
 				return new ISVNStatus[] {new SVNStatusUnversioned(path)};
 			} else {
 				notificationHandler.logException(e);
