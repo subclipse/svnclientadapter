@@ -53,6 +53,7 @@ import org.tigris.subversion.svnclientadapter.SVNClientException;
 import org.tigris.subversion.svnclientadapter.SVNDiffSummary;
 import org.tigris.subversion.svnclientadapter.SVNNotificationHandler;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
+import org.tigris.subversion.svnclientadapter.SVNUrl;
 import org.tigris.subversion.svnclientadapter.SVNRevision.Number;
 import org.tigris.subversion.svnclientadapter.SVNRevisionRange;
 import org.tigris.subversion.svnclientadapter.SVNScheduleKind;
@@ -1971,6 +1972,31 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 	public void upgrade(File dir) throws SVNClientException {
 		// TODO Auto-generated method stub
 		
+	}
+
+	public ISVNProperty[] getPropertiesIncludingInherited(File path) throws SVNClientException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public ISVNProperty[] getPropertiesIncludingInherited(File path, boolean includeEmptyProperties, boolean includeClosestOnly, List<String> filterProperties) throws SVNClientException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public ISVNProperty[] getPropertiesIncludingInherited(SVNUrl path) throws SVNClientException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public ISVNProperty[] getPropertiesIncludingInherited(SVNUrl path, boolean includeEmptyProperties, boolean includeClosestOnly, List<String> filterProperties) throws SVNClientException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public ISVNStatus[] getStatus(File path, boolean descend, boolean getAll, boolean contactServer, boolean ignoreExternals, boolean noIgnore, ISVNStatusCallback callback) throws SVNClientException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

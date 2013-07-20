@@ -242,4 +242,14 @@ class CmdLineStatusComposite  implements ISVNStatus {
 		// TODO Auto-generated method stub
 		return false;
 	}
+
+	public String getMovedFromAbspath() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String getMovedToAbspath() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
