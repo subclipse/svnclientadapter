@@ -2056,8 +2056,13 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
             } 
             return items[0];
 		} catch (ClientException e) {
-			notificationHandler.logException(e);
-			throw new SVNClientException(e);            
+			if (e.getAprError() == ErrorCodes.wcNotDirectory || e.getAprError() == ErrorCodes.wcPathNotFound) {
+				return new SVNInfoUnversioned(path);
+			}
+			else {
+				notificationHandler.logException(e);
+				throw new SVNClientException(e);   
+			}
 		}        
 	}
 
@@ -2083,8 +2088,13 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
             }
             
 		} catch (ClientException e) {
-			notificationHandler.logException(e);
-			throw new SVNClientException(e);            
+			if (e.getAprError() == ErrorCodes.wcNotDirectory || e.getAprError() == ErrorCodes.wcPathNotFound) {
+				return new SVNInfoUnversioned(path);
+			}
+			else {
+				notificationHandler.logException(e);
+				throw new SVNClientException(e);  
+			}
 		}        
 	}
 
@@ -2108,8 +2118,13 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 				return items;
 			}
 		} catch (ClientException e) {
-			notificationHandler.logException(e);
-			throw new SVNClientException(e);            
+			if (e.getAprError() == ErrorCodes.wcNotDirectory || e.getAprError() == ErrorCodes.wcPathNotFound) {
+				return new ISVNInfo[]{new SVNInfoUnversioned(path)};
+			}
+			else {
+				notificationHandler.logException(e);
+				throw new SVNClientException(e);  
+			}
 		}      
 	}
 	
@@ -2133,8 +2148,13 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
             }
             
 		} catch (ClientException e) {
-			notificationHandler.logException(e);
-			throw new SVNClientException(e);            
+			if (e.getAprError() == ErrorCodes.wcNotDirectory || e.getAprError() == ErrorCodes.wcPathNotFound) {
+				return new SVNInfoUnversioned(null);
+			}
+			else {
+				notificationHandler.logException(e);
+				throw new SVNClientException(e);
+			}
 		}        
 	}
 
