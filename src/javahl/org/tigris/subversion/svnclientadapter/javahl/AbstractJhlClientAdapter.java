@@ -2300,18 +2300,24 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
             notificationHandler.setBaseDir(baseDir);
     
             if (samePath) {
-            	Revision rev1;
-            	Revision rev2;
-            	if (revision1 == null)
-            		rev1 = Revision.START;
-            	else
-            		rev1 = JhlConverter.convert(revision1);
-            	if (revision2 == null)
-            		rev2 = Revision.START;
-            	else
-            		rev2 = JhlConverter.convert(revision2);
-            	List<RevisionRange> revisionRanges = new ArrayList<RevisionRange>();
-            	revisionRanges.add(new RevisionRange(rev1, rev2));
+            	List<RevisionRange> revisionRanges;
+            	if (revision1 == null && revision2 == null) {
+            		revisionRanges = null;
+            	}
+            	else {
+                	Revision rev1;
+                	Revision rev2;
+                	if (revision1 == null)
+                		rev1 = Revision.START;
+                	else
+                		rev1 = JhlConverter.convert(revision1);
+                	if (revision2 == null)
+                		rev2 = Revision.START;
+                	else
+                		rev2 = JhlConverter.convert(revision2);
+                	revisionRanges = new ArrayList<RevisionRange>();
+                	revisionRanges.add(new RevisionRange(rev1, rev2));
+            	}
             	svnClient.merge(path1.toString(), JhlConverter.convert(pegRevision), revisionRanges, target, force, d, ignoreAncestry, dryRun, recordOnly );           	
             } else
             	svnClient.merge(path1.toString(), JhlConverter.convert(revision1), path2.toString(), JhlConverter.convert(revision2), target, force, d, ignoreAncestry, dryRun, recordOnly );
