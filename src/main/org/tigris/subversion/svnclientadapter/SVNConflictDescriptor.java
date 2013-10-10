@@ -131,6 +131,10 @@ public class SVNConflictDescriptor
         return reason;
     }
     
+    public boolean isTreeConflict() {
+    	return reason == SVNConflictDescriptor.Reason.deleted || reason == SVNConflictDescriptor.Reason.moved_away || reason == SVNConflictDescriptor.Reason.missing || reason == SVNConflictDescriptor.Reason.obstructed;
+    }
+    
     public int getOperation()
     {
     	return operation;
