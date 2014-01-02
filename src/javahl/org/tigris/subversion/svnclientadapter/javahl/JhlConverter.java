@@ -158,6 +158,9 @@ public class JhlConverter {
     }
 
     public static SVNNodeKind convertNodeKind(org.apache.subversion.javahl.types.NodeKind javahlNodeKind) {
+    	if (javahlNodeKind == null) {
+    		return null;
+    	}
         switch(javahlNodeKind) {
             case dir  : return SVNNodeKind.DIR; 
             case file : return SVNNodeKind.FILE; 
@@ -175,6 +178,9 @@ public class JhlConverter {
 	}
 
     public static SVNStatusKind convertStatusKind(Status.Kind kind) {
+    	if (kind == null) {
+    		return null;
+    	}
         switch (kind) {
             case none :
                 return SVNStatusKind.NONE;
@@ -239,6 +245,9 @@ public class JhlConverter {
     }
     
     public static SVNScheduleKind convertScheduleKind(Info.ScheduleKind kind) {
+    	if (kind == null) {
+    		return null;
+    	}
         switch (kind) {
         	case normal:
         		return SVNScheduleKind.NORMAL;
@@ -299,6 +308,9 @@ public class JhlConverter {
 	}
 	
 	public static ConflictResult.Choice convert(SVNConflictResult result) {
+		if (result == null) {
+			return null;
+		}
 		switch (result.getChoice()) {
 		case SVNConflictResult.chooseBase:
 			return ConflictResult.Choice.chooseBase;
