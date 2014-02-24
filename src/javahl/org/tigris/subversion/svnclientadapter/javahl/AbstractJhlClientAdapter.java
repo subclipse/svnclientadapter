@@ -1349,32 +1349,34 @@ public abstract class AbstractJhlClientAdapter extends AbstractClientAdapter {
 		if (includeEmptyProperties == true && filterProperties == null) {
 			return properties;
 		}
-		Map<String, ISVNProperty> propertyMap = new HashMap<String, ISVNProperty>();
+		List<ISVNProperty> allProperties = null;
+		Map<String, ISVNProperty> propertyMap = null;
+		if (includeClosestOnly) {
+			propertyMap = new HashMap<String, ISVNProperty>();
+		}
+		else {
+			allProperties = new ArrayList<ISVNProperty>();
+		}
 		for (ISVNProperty property : properties) {
-			if (includeEmptyProperties || (property.getValue() != null && property.getValue().trim().length() > 0)) {
-				if (filterProperties == null || filterProperties.contains(property.getName())) {
-					ISVNProperty savedProperty = propertyMap.get(property.getName());
-					if (savedProperty == null || !includeClosestOnly || getPropertyPathLength(property) > getPropertyPathLength(savedProperty)) {
-						propertyMap.put(property.getName(), property);
-					}
+			if (filterProperties == null || filterProperties.contains(property.getName())) {
+				if (includeClosestOnly) {
+					propertyMap.put(property.getName(), property);
+				}
+				else {
+					allProperties.add(property);
 				}
 			}
 		}
-		ISVNProperty[] propertyArray = new ISVNProperty[propertyMap.size()];
-		propertyMap.values().toArray(propertyArray);
-		return propertyArray;
-	}
-	
-	private int getPropertyPathLength(ISVNProperty property) {
-		if (property.getFile() != null) {
-			return property.getFile().getAbsolutePath().length();
-		}
-		else if (property.getUrl() != null) {
-			return property.getUrl().toString().length();
+		ISVNProperty[] propertyArray;
+		if (includeClosestOnly) {
+			propertyArray = new ISVNProperty[propertyMap.size()];
+			propertyMap.values().toArray(propertyArray);
 		}
 		else {
-			return 0;
+			propertyArray = new ISVNProperty[allProperties.size()];
+			allProperties.toArray(propertyArray);
 		}
+		return propertyArray;
 	}
 	
 	public ISVNProperty[] getPropertiesIncludingInherited(File path) throws SVNClientException {
