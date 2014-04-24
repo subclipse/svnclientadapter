@@ -55,16 +55,18 @@ public class JhlAnnotations extends Annotations implements BlameCallback {
 		String author = null;
 		String mergedAuthor = null;
 		
-		byte[] authorBytes = revProps.get("svn:author");		
-		if (authorBytes != null) {
-			try {
-				author = new String(revProps.get("svn:author"), "UTF8");
-			} catch (UnsupportedEncodingException e) {
-				author = new String(revProps.get("svn:author"));
+		if (revProps != null) {
+			byte[] authorBytes = revProps.get("svn:author");		
+			if (authorBytes != null) {
+				try {
+					author = new String(revProps.get("svn:author"), "UTF8");
+				} catch (UnsupportedEncodingException e) {
+					author = new String(revProps.get("svn:author"));
+				}
 			}
-		}
-		else {
-			author = "unknown";
+			else {
+				author = "unknown";
+			}
 		}
 		
 		if (mergedRevProps != null) {			
@@ -80,20 +82,21 @@ public class JhlAnnotations extends Annotations implements BlameCallback {
 				mergedAuthor = "unknown";
 			}
 		}
-		
-		try {
-            singleLine(
-                df.parse(new String(revProps.get("svn:date"))),
-                revision,
-                author,
-                mergedRevProps == null ? null
-                    : df.parse(new String(mergedRevProps.get("svn:date"))),
-                mergedRevision,
-                mergedAuthor,
-                mergedPath, line);
-        } catch (ParseException e) {
-            throw ClientException.fromException(e);
-        }
+		if (revProps != null) {
+			try {
+	            singleLine(
+	                df.parse(new String(revProps.get("svn:date"))),
+	                revision,
+	                author,
+	                mergedRevProps == null ? null
+	                    : df.parse(new String(mergedRevProps.get("svn:date"))),
+	                mergedRevision,
+	                mergedAuthor,
+	                mergedPath, line);
+	        } catch (ParseException e) {
+	            throw ClientException.fromException(e);
+	        }
+		}
 	}
 	
 }
