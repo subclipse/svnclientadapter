@@ -302,7 +302,7 @@ public class SVNUrl {
     	// to handle other classes OK.  I tested with @ + and Unicode characters.  It leaves
     	// the @ and + alone and converts Unicode to %nn.  It is possible there are other
     	// characters we need to replace here besides space.
-    	String s = get().replaceAll(" ", "%20");
+    	String s = get().replace(" ", "%20").replace("[", "%5B").replace("]","%5D");
 		try {
 			URI u = new URI(s);
 			return u.toASCIIString();
