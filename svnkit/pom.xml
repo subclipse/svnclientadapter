@@ -17,15 +17,6 @@
             <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
         </license>
     </licenses>
-
-    <repositories>
-        <repository>
-            <id>tmatesoft-svnkit</id>
-            <name>tmatesoft</name>
-            <url>http://maven.tmatesoft.com/content/repositories/releases/</url>
-        </repository>
-    </repositories>
-
     
     <dependencies>
         <dependency>
