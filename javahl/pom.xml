@@ -2,9 +2,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>adapter-base</artifactId>
+    <artifactId>adapter-javahl</artifactId>
     <packaging>jar</packaging>
-    <name>svnClientAdapter Base Interface</name>
+    <name>JavaHL Native Adapter</name>
 
     <parent>
         <groupId>org.tigris.svnclientadapter</groupId>
@@ -18,6 +18,19 @@
             <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
         </license>
     </licenses>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.tigris.svnclientadapter</groupId>
+            <artifactId>adapter-base</artifactId>
+            <version>1.8.16</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.subversion</groupId>
+            <artifactId>javahl</artifactId>
+            <version>1.8.16</version>
+        </dependency>
+    </dependencies>
 
     <build>
         <plugins>

@@ -15,9 +15,9 @@
                     <snapshots>
                         <enabled>false</enabled>
                     </snapshots>
-                    <id>central</id>
+                    <id>bintray-subclipse-maven</id>
                     <name>bintray</name>
-                    <url>http://jcenter.bintray.com</url>
+                    <url>http://dl.bintray.com/subclipse/maven</url>
                 </repository>
             </repositories>
             <pluginRepositories>
@@ -25,9 +25,9 @@
                     <snapshots>
                         <enabled>false</enabled>
                     </snapshots>
-                    <id>central</id>
+                    <id>bintray-subclipse-maven</id>
                     <name>bintray-plugins</name>
-                    <url>http://jcenter.bintray.com</url>
+                    <url>http://dl.bintray.com/subclipse/maven</url>
                 </pluginRepository>
             </pluginRepositories>
             <id>bintray</id>
