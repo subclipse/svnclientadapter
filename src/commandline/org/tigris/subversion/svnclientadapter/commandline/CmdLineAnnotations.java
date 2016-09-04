@@ -38,7 +38,7 @@ import org.xml.sax.InputSource;
 /**
  * Handles annotations (see svn ann) 
  *
- * @author Cédric Chabanois 
+ * @author CÃ©dric Chabanois 
  */
 public class CmdLineAnnotations extends Annotations {
 

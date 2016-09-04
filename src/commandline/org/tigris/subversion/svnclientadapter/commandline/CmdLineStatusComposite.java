@@ -33,7 +33,7 @@ import org.tigris.subversion.svnclientadapter.SVNRevision.Number;
  * Implements a ISVNStatus using "svn status" and "svn info".</p>
  * 
  * @author Philip Schatz (schatz at tigris)
- * @author Cédric Chabanois (cchabanois at no-log.org)
+ * @author CÃ©dric Chabanois (cchabanois at no-log.org)
  * @author Daniel Rall
  */
 class CmdLineStatusComposite  implements ISVNStatus {

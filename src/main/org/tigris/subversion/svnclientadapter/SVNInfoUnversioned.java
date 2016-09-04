@@ -26,7 +26,7 @@ import org.tigris.subversion.svnclientadapter.SVNRevision.Number;
 /**
  * A special {@link ISVNInfo} implementation that is used if a File/Folder is not versioned.
  * 
- * @author Cédric Chabanois (cchabanois at no-log.org)
+ * @author CÃ©dric Chabanois (cchabanois at no-log.org)
  */
 public class SVNInfoUnversioned implements ISVNInfo {
 	private File file;

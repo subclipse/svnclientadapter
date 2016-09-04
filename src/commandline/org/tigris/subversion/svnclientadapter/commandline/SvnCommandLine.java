@@ -30,7 +30,7 @@ import org.tigris.subversion.svnclientadapter.commandline.parser.SvnOutputParser
  * Is a bare-bones interface to using the Subversion commandline client.</p>
  *  
  * @author Philip Schatz (schatz at tigris)
- * @author C�dric Chabanois (cchabanois at no-log.org)
+ * @author Cï¿½dric Chabanois (cchabanois at no-log.org)
  * @author John M Flinchbaugh (john at hjsoft.com)
  */
 public class SvnCommandLine extends CommandLine {

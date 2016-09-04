@@ -34,7 +34,7 @@ import org.tigris.subversion.svnclientadapter.SVNUrl;
  * A JavaHL based implementation of {@link ISVNInfo}.
  * Actually just an adapter from {@link org.tigris.subversion.javahl.Info}
  *  
- * @author Cédric Chabanois
+ * @author CÃ©dric Chabanois
  */
 public class JhlInfo implements ISVNInfo {
 	

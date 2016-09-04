@@ -25,7 +25,7 @@ import java.io.File;
  * A callback interface used for receiving notifications of a progress of
  * a subversion command invocation.
  * 
- * @author Cédric Chabanois <a
+ * @author CÃ©dric Chabanois <a
  *         href="mailto:cchabanois@ifrance.com">cchabanois@ifrance.com</a>
  */
 public interface ISVNNotifyListener {

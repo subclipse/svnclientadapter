@@ -25,7 +25,7 @@ import java.util.Map;
  * Abstract Factory for SVNClientAdapter. Real factories should extend this class and 
  * register themselves with the method #registerAdapterFactory 
  *
- * @author Cédric Chabanois 
+ * @author CÃ©dric Chabanois 
  *         <a href="mailto:cchabanois@ifrance.com">cchabanois@ifrance.com</a>
  * 
  * @author Panagiotis Korros 

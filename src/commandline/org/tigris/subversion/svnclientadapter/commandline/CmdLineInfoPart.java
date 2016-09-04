@@ -37,7 +37,7 @@ import org.tigris.subversion.svnclientadapter.SVNRevision.Number;
  * Represents the infos for one resource in the result of a svn info command
  * 
  * @author Philip Schatz (schatz at tigris)
- * @author Cédric Chabanois (cchabanois at no-log.org)
+ * @author CÃ©dric Chabanois (cchabanois at no-log.org)
  */
 class CmdLineInfoPart implements ISVNInfo {
 

@@ -42,7 +42,7 @@ import org.tigris.subversion.svnclientadapter.SVNClientException;
 /**
  * A JavaHL base implementation of {@link org.tigris.subversion.svnclientadapter.ISVNClientAdapter}.
  *
- * @author C�dric Chabanois (cchabanois at no-log.org)
+ * @author Cï¿½dric Chabanois (cchabanois at no-log.org)
  * @author Panagiotis Korros (pkorros at bigfoot.com) 
  *
  */

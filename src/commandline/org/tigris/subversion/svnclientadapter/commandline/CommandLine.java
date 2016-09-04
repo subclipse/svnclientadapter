@@ -32,7 +32,7 @@ import java.util.StringTokenizer;
  * Common superclass for both SvnCommandLine and SvnAdminCommandLine 
  *  
  * @author Philip Schatz (schatz at tigris)
- * @author Cédric Chabanois (cchabanois at no-log.org)
+ * @author CÃ©dric Chabanois (cchabanois at no-log.org)
  * @author Daniel Rall
  */
 abstract class CommandLine {

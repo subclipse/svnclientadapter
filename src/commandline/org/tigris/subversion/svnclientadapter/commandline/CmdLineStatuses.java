@@ -32,7 +32,7 @@ import org.tigris.subversion.svnclientadapter.SVNStatusUnversioned;
  * Digests <code>status</code> and <code>info</code> information from
  * the command-line.
  * 
- * @author Cédric Chabanois (cchabanois at no-log.org)
+ * @author CÃ©dric Chabanois (cchabanois at no-log.org)
  * @author Daniel Rall
  */
 public class CmdLineStatuses {

@@ -36,7 +36,7 @@ import org.tigris.subversion.svnclientadapter.javahl.JhlClientAdapterFactory;
  * A very simple sample
  * see svnant task for more samples and unit tests
  *  
- * @author Cédric Chabanois (cchabanois at no-log.org)
+ * @author CÃ©dric Chabanois (cchabanois at no-log.org)
  */
 public class Sample {
 

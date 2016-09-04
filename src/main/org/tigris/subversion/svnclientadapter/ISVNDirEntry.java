@@ -23,7 +23,7 @@ import java.util.Date;
  * An interface describing subversion directory entry.
  * (E.g. a record returned by call to svn list)
  * 
- * @author Cédric Chabanois
+ * @author CÃ©dric Chabanois
  */
 public interface ISVNDirEntry {
 

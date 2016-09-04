@@ -32,7 +32,7 @@ import org.tigris.subversion.svnclientadapter.commandline.CmdLineNotifyStatus;
 /**
  * parser for the output of svn
  * 
- * @author Cédric Chabanois (cchabanois at no-log.org)
+ * @author CÃ©dric Chabanois (cchabanois at no-log.org)
  */
 public class SvnOutputParser {
 	private static final Logger log = Logger.getLogger(SvnOutputParser.class.getName());

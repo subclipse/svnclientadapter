@@ -23,7 +23,7 @@ import java.io.File;
 /**
  * An interface describing a subversion property (e.g. as return by svn propget)
  *
- * @author Cédric Chabanois 
+ * @author CÃ©dric Chabanois 
  *         <a href="mailto:cchabanois@ifrance.com">cchabanois@ifrance.com</a>
  */
 public interface ISVNProperty {

@@ -25,7 +25,7 @@ import java.util.Date;
  * A special {@link ISVNStatus} implementation that is used if a File/Folder is not versioned or is ignored.
  * 
  * @author Philip Schatz (schatz at tigris)
- * @author Cédric Chabanois (cchabanois at no-log.org)
+ * @author CÃ©dric Chabanois (cchabanois at no-log.org)
  */
 public class SVNStatusUnversioned implements ISVNStatus {
     private File file;

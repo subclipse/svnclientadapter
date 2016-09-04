@@ -27,7 +27,7 @@ import org.tigris.subversion.svnclientadapter.SVNNotificationHandler;
 /**
  * Command line specific extension to generic notification handler
  * 
- * @author Cédric Chabanois (cchabanois@ifrance.com)
+ * @author CÃ©dric Chabanois (cchabanois@ifrance.com)
  */
 public class CmdLineNotificationHandler extends SVNNotificationHandler {
 

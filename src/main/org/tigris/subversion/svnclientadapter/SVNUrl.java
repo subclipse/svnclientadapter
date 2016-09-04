@@ -34,7 +34,7 @@ import org.tigris.subversion.svnclientadapter.utils.StringUtils;
  *
  * An SVNUrl is immutable. 
  *
- * @author C�dric Chabanois 
+ * @author Cï¿½dric Chabanois 
  *         <a href="mailto:cchabanois@ifrance.com">cchabanois@ifrance.com</a>
  *
  */

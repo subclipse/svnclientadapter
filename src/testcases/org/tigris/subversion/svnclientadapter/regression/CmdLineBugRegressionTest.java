@@ -50,7 +50,7 @@ public class CmdLineBugRegressionTest extends SVNTest {
 		final String passwd = "cedricPass";
 		
 		//Just check that String(, charset) creates proper local string (windows only)
-		//final String cedricIn8859_1 = "Cédric";  //ISO 8859-1
+		//final String cedricIn8859_1 = "CÃ©dric";  //ISO 8859-1
 		//assertEquals(cedricIn8859_1, userName);
 		
         client = SVNClientAdapterFactory.createSVNClient(CmdLineClientAdapterFactory.COMMANDLINE_CLIENT);

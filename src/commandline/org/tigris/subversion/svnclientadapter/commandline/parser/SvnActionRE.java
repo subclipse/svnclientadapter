@@ -27,7 +27,7 @@ import org.tigris.subversion.svnclientadapter.commandline.CmdLineNotifyStatus;
 /**
  * regular expression to parse an svn notification line 
  * 
- * @author C�dric Chabanois (cchabanois at no-log.org) 
+ * @author Cï¿½dric Chabanois (cchabanois at no-log.org) 
  */
 class SvnActionRE {
 	public static final String PATH = "path";

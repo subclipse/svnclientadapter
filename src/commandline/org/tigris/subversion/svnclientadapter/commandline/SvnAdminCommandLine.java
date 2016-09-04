@@ -23,7 +23,7 @@ import org.tigris.subversion.svnclientadapter.ISVNNotifyListener;
 /**
  * Call svnadmin
  * 
- * @author Cédric Chabanois (cchabanois at no-log.org)
+ * @author CÃ©dric Chabanois (cchabanois at no-log.org)
  */
 public class SvnAdminCommandLine extends CommandLine {
 

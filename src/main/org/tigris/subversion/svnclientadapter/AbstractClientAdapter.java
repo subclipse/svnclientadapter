@@ -31,7 +31,7 @@ import java.util.StringTokenizer;
 /**
  * Default implementation of some of the methods of ISVNClientAdapter
  * 
- * @author Cédric Chabanois (cchabanois at no-log.org)
+ * @author CÃ©dric Chabanois (cchabanois at no-log.org)
  * @author Panagiotis Korros (pkorros at bigfoot.com)   
  */
 public abstract class AbstractClientAdapter implements ISVNClientAdapter {
