@@ -1,3 +1,4 @@
 language: java
-script: mvn install --settings settings.xml -DskipTests=true -B
+before_script: cp -f settings.xml ~/settings.xml
+script: mvn install -DskipTests=true -B
 
