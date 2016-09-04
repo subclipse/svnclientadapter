@@ -19,6 +19,14 @@
         </license>
     </licenses>
 
+    <repositories>
+        <repository>
+            <id>bintray-subclipse-maven</id>
+            <name>bintray</name>
+            <url>http://dl.bintray.com/subclipse/maven</url>
+        </repository>
+    </repositories>
+
     <dependencies>
         <dependency>
             <groupId>org.tigris.svnclientadapter</groupId>
