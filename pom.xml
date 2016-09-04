@@ -12,7 +12,6 @@
         <module>base</module>
         <module>cmdline</module>
         <module>javahl</module>
-        <module>svnkit</module>
     </modules>
 
     <properties>
