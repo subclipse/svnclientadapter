@@ -31,8 +31,14 @@
         </dependency>
         <dependency>
             <groupId>org.tmatesoft.svnkit</groupId>
-            <artifactId>svnkit</artifactId>
+            <artifactId>svnkit-javahl16</artifactId>
             <version>1.8.12</version>
+            <exclusions>
+            	<exclusion>
+            		<groupId>org.apache.subversion</groupId>
+            		<artifactId>svn-javahl-api</artifactId>
+            	</exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
 
