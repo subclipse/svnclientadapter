@@ -1,5 +1,7 @@
 #SVNClientAdapter
 
+[![Build Status](https://travis-ci.org/subclipse/svnclientadapter.svg?branch=master)](https://travis-ci.org/subclipse/svnclientadapter)
+
 SVNClientAdapter is a high-level Java API for Subversion.
 
 It can use one of 3 low-level svn client implementations to provide access to the Subversion API:
