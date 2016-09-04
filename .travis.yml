@@ -1,4 +1,4 @@
 language: java
-before_script: cp -f settings.xml ~/settings.xml
+before_script: mkdir ~/.m2 && cp -f settings.xml ~/.m2/settings.xml
 script: mvn install -DskipTests=true -B
 
