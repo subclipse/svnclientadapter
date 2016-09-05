@@ -3,30 +3,22 @@
 [![Build Status](https://travis-ci.org/subclipse/svnclientadapter.svg?branch=master)](https://travis-ci.org/subclipse/svnclientadapter)
 [ ![Download](https://api.bintray.com/packages/subclipse/maven/svnclientadapter/images/download.svg) ](https://bintray.com/subclipse/maven/svnclientadapter/_latestVersion)  
 
-SVNClientAdapter is a high-level Java API for Subversion.
+SVNClientAdapter is a high-level Java API for Subversion.  You can write your code to the SVNClientAdapter Java interfaces and then at runtime run it with any of the three adapter implementations:
 
-It can use one of 3 low-level svn client implementations to provide access to the Subversion API:
+1. JavaHL - (http://subversion.apache.org/docs/)
+2. Command Line - (http://subversion.apache.org/packages.html)
+3. SVNKit - (http://svnkit.com)
 
-- JavaHL (JNI) subversion library (http://svn.collab.net/repos/svn/trunk/subversion/bindings/java/javahl/)
-- SVNKit (pure Java) (http://svnkit.com/)
-- svn(.exe) command line client (some functionality unavailable/unreliable with <1.3 command line clients)
+The first two implementation require that the native Subversion packages and libraries are installed as the Java
+code will use those libraries.  In the case of JavaHL it talks to the native library via JNI and the command line
+it of course executes by running the command line process and capturing the stdout.  The command line adapter is
+not actively maintained and does not currently implement many of the newer methods added over the last several years.
 
-SVNClientAdapter is easier to use than SVNClient class and has more features.
+SVNKit is a pure-Java reverse-engineering of the Subversion API. SVNKit implements the JavaHL interface and
+SVNClientAdapter uses the library via this interface.  Refer to the SVNKit website for Terms and Conditions.
 
-#How to use it :
-You will need to add svnClientAdapter.jar in your classpath. 
-If you wish to use JNI client (recommended), you will need svnjavahl.jar in your classpath.
-If you wish to use pure java implementation of subversion low-level api, you will need svnkit.jar and ganymed.jar in your classpath.
-If you wish to use command line client, you will need that client be present on your system path.
-
-See the src/samples folder to see how to use it.
-
-# History
-
-This repository was cloned from its original home at http://subclipse.tigris.org
-The original SVN repository housed three projects (Subclipse, svnClientAdapter and svnAnt)
-Best attempt possible was made to prune out the history though branches and tags did not
-make it and features like svn:externals do not translate to Git.
+# Examples
+A sample project is maintained in this repository.  It shows how to initialize and use the library.
 
 # License
 The source code for this project is licensed under Apache 2.0 license.
