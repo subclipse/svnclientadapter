@@ -23,20 +23,19 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.tigris.subversion.svnclientadapter.ISVNClientAdapter;
+import org.tigris.subversion.svnclientadapter.ISVNDirEntry;
+import org.tigris.subversion.svnclientadapter.ISVNLogMessage;
 import org.tigris.subversion.svnclientadapter.ISVNNotifyListener;
 import org.tigris.subversion.svnclientadapter.SVNClientAdapterFactory;
 import org.tigris.subversion.svnclientadapter.SVNClientException;
 import org.tigris.subversion.svnclientadapter.SVNNodeKind;
 import org.tigris.subversion.svnclientadapter.SVNRevision;
 import org.tigris.subversion.svnclientadapter.SVNUrl;
-import org.tigris.subversion.svnclientadapter.commandline.CmdLineClientAdapterFactory;
-import org.tigris.subversion.svnclientadapter.javahl.JhlClientAdapterFactory;
+import org.tigris.subversion.svnclientadapter.svnkit.SvnKitClientAdapterFactory;;;
 
 /**
  * A very simple sample
- * see svnant task for more samples and unit tests
  *  
- * @author Cédric Chabanois (cchabanois at no-log.org)
  */
 public class Sample {
 
@@ -51,6 +50,9 @@ public class Sample {
 
 		public void logCommandLine(String message) {
 			// the command line used
+			// Note that the notification handler suppresses these for
+			// many of the simple SVN commands that might be run a lot
+			// in order to generate less noise.
 			System.out.println(message);
 		}
 
@@ -74,64 +76,102 @@ public class Sample {
 			// nodeKind is SVNNodeKind.FILE or SVNNodeKind.DIR
 			
 			// this is the function we use in subclipse to know which files need to be refreshed
+			// So commands like checkout/update/commit will generate these messages but
+			// command like ls/log/status/diff will not
 			
 			System.out.println("Status of "+path.toString()+" has changed");
 		}
 	}
 
-    public void setup() {
-        try {
-            JhlClientAdapterFactory.setup();
-        } catch (SVNClientException e) {
-            // can't register this factory
-        }
-        try {
-            CmdLineClientAdapterFactory.setup();
-        } catch (SVNClientException e1) {
-            // can't register this factory
-        }
-        
+    public void setup() throws SVNClientException {
+        // You could register JavaHL or CommandLine
+    	// or all of them and then choose which one
+    	// to use later.  For ease of demo just
+    	// using the SVNKit pure-Java adapter
+    	
+    	SvnKitClientAdapterFactory.setup();        
     }
     
 	public void run() {
         // register the factories
-        setup();
+        try {
+			setup();
+		} catch (SVNClientException e) {
+			System.out.println("Failed to initialize adapter");
+			System.out.println(e.getMessage());
+			return;
+		}
 		
-        // first create the SVNClient from factory
-		// SVNClientAdapterFactory.JAVAHL_CLIENT to use JNI client (recommanded)
-		// SVNClientAdapterFactory.COMMANDLINE_CLIENT to use command line client
-		// You can also get the best client type interface using getBestSVNClientType
 		ISVNClientAdapter svnClient;
+
 		try {
+			// If you registered multiple factories, this would return
+			// the best one available - JavaHL > SVNKit > CmdLine
 			String bestClientType = SVNClientAdapterFactory.getPreferredSVNClientType();
-            System.out.println("Using "+bestClientType+" factory");
-			svnClient = SVNClientAdapterFactory.createSVNClient(bestClientType);
+            System.out.println("Using "+ bestClientType +" factory");
+            
+            // This code uses the returned value, but you could just use
+            // a String constant here too
+            svnClient = SVNClientAdapterFactory.createSVNClient(bestClientType);
 		} catch (SVNClientException e) {
 			System.out.println(e.getMessage());
 			return;
 		}
 		
 
-		// set username and password if necessary
+		// set username and password if necessary based on repository
 		svnClient.setUsername("guest");
 		svnClient.setPassword(" ");
 
-		//	add a listener if you wish
+		
+		//	add a listener if you wish. This is almost always necessary
+		// if you are doing anything interesting as the listener receives
+		// all the feedback from the API
+		
 		NotifyListener listener = new Sample.NotifyListener();
 		svnClient.addNotifyListener(listener);
 
 		try {
 			//	use the svn commands
-			InputStream is = svnClient.getContent(new SVNUrl("http://subclipse.tigris.org/svn/subclipse/trunk/svnClientAdapter/readme.txt"),SVNRevision.HEAD);
+			String SVNROOT = "http://svn.apache.org/repos/asf/subversion/trunk";
+			System.out.println("Getting list of files in: " + SVNROOT);
+			boolean RECURSE = false;
+			
+			// This does equivalent of svn ls command.
+			ISVNDirEntry[] list = svnClient.getList(new SVNUrl(SVNROOT), SVNRevision.HEAD, RECURSE);
+			for (int i = 0; i < list.length; i++) {
+				System.out.println(list[i].getPath());
+			}
+			
+			String SVNFILE = SVNROOT + "/COMMITTERS";
+			System.out.println("Retrieving file: " + SVNFILE);
+
+			// This does equivalent of svn cat command to read the file from repository
+			InputStream is = svnClient.getContent(new SVNUrl(SVNFILE),SVNRevision.HEAD);
 			
 			System.out.println("The beginning of the file is :");
 			byte[] bytes = new byte[100];
 			is.read(bytes);
 			System.out.println(new String(bytes));
+			
+			// This does equivalent of svn log command to fetch history
+			System.out.println("Fetching info for most recent commit to: " + SVNROOT);
+			ISVNLogMessage[] logMessages = svnClient.getLogMessages(new SVNUrl(SVNROOT), SVNRevision.HEAD,
+					SVNRevision.HEAD, new SVNRevision.Number(0), false, false, 1, false);
+			for (int i = 0; i < logMessages.length; i++) {
+				System.out.println("Revision: " + logMessages[i].getRevision());
+				System.out.println("Author: " + logMessages[i].getAuthor());
+				System.out.println("Date: " + logMessages[i].getDate());
+				System.out.println("Message: " + logMessages[i].getMessage());
+			}
+			
 		} catch (IOException e) {
-			System.out.println("An exception occured while getting remote file :"+e.getMessage());
+			System.out.println(e.getMessage());
 		} catch (SVNClientException e) {
-			System.out.println("An exception occured while getting remote file :"+e.getMessage());
+			System.out.println(e.getMessage());
+		} finally {
+			// You should dispose svnClient when done with it to free native handles
+			svnClient.dispose();
 		}
 	}
 
@@ -139,5 +179,6 @@ public class Sample {
 	public static void main(String[] args) {
 		Sample sample = new Sample();
 		sample.run();
+		System.exit(0);
 	}
 }

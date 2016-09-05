@@ -6,24 +6,33 @@
     <version>1.0.0-SNAPSHOT</version>
     <name>Client Adapter Sample</name>
     <url>https://github.com/subclipse/svnclientadapter</url>
-    <packaging>pom</packaging>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+    
+    <repositories>
+        <repository>
+            <id>bintray-subclipse-maven</id>
+            <name>bintray</name>
+            <url>http://dl.bintray.com/subclipse/maven</url>
+        </repository>
+    </repositories>
 
     <dependencies>
         <dependency>
             <groupId>org.tigris.svnclientadapter</groupId>
             <artifactId>adapter-base</artifactId>
             <version>1.9.4</version>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.tigris.svnclientadapter</groupId>
             <artifactId>adapter-svnkit</artifactId>
             <version>1.9.4</version>
+            <scope>runtime</scope>
         </dependency>
-    </dependencies>
+   </dependencies>
 
     <build>
         <plugins>
@@ -35,6 +44,11 @@
                     <source>1.6</source>
                     <target>1.6</target>
                 </configuration>
+            </plugin>
+            <plugin>
+              <groupId>org.codehaus.mojo</groupId>
+              <artifactId>exec-maven-plugin</artifactId>
+              <version>1.4.0</version>
             </plugin>
         </plugins>
     </build>
