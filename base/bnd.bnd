@@ -1,0 +1,6 @@
+Export-Package: \
+	org.tigris.subversion.svnclientadapter,\
+	org.tigris.subversion.svnclientadapter.utils
+Bundle-Name: svnclientadapter.base
+Bundle-SymbolicName: svnclientadapter.base
+Bundle-Description: SVNClientAdapter Base Interfaces

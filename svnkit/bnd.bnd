@@ -1,0 +1,4 @@
+Export-Package: org.tigris.subversion.svnclientadapter.svnkit
+Bundle-Name: svnclientadapter.svnkit
+Bundle-SymbolicName: svnclientadapter.svnkit
+Bundle-Description: SVNClientAdapter SVNKit Adapter
