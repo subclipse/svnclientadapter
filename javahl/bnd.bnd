@@ -1,0 +1,4 @@
+Export-Package: org.tigris.subversion.svnclientadapter.javahl
+Bundle-Name: svnclientadapter.javahl
+Bundle-SymbolicName: svnclientadapter.javahl
+Bundle-Description: SVNClientAdapter JavaHL Adapter

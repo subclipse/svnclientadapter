@@ -1,0 +1,6 @@
+Export-Package: \
+	org.tigris.subversion.svnclientadapter.commandline,\
+	org.tigris.subversion.svnclientadapter.commandline.parser
+Bundle-Name: svnclientadapter.cli
+Bundle-SymbolicName: svnclientadapter.cli
+Bundle-Description: SVNClientAdapter Command Line Adapter
