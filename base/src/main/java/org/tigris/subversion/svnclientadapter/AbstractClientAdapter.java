@@ -55,7 +55,7 @@ public abstract class AbstractClientAdapter implements ISVNClientAdapter {
         if (keywords.isLastChangedBy())
             currentKeywords.setLastChangedBy(true);
         if (keywords.isLastChangedDate())
-            currentKeywords.setLastChangedBy(true);
+            currentKeywords.setLastChangedDate(true);
         if (keywords.isLastChangedRevision())
             currentKeywords.setLastChangedRevision(true);
         setKeywords(path,currentKeywords,false);
