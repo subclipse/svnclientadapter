@@ -168,18 +168,15 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 	}
 
 	private boolean isManaged(File file) {
-    	if (file.isDirectory()) {
-    		return isManagedDir(file.getParentFile()) || isManagedDir(file);
-    	} else {
-    		return isManagedDir(file.getParentFile());
-    	}    	
-    }
+		return file.isDirectory() && isManagedDir(file)
+				|| file.getParentFile() != null && isManagedDir(file.getParentFile());
+	}
 
-    private boolean isManagedDir(File dir) {
-        // all directories that do not have a .svn dir are not versioned
-        File entries = new File(dir, getAdminDirectoryName() + "/entries");
-        return entries.exists();
-    }
+	private boolean isManagedDir(File dir) {
+		// a directory that has a .svn dir or that has a parent directory with a .svn dir is versioned
+		File entries = new File(dir, getAdminDirectoryName() + "/entries");
+		return entries.exists() || dir.getParentFile() != null && isManagedDir(dir.getParentFile());
+	}
 
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.subclipse.client.ISVNClientAdapter#getStatus(java.io.File[])
