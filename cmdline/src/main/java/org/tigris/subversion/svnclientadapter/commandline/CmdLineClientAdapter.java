@@ -58,7 +58,6 @@ import org.tigris.subversion.svnclientadapter.SVNRevision.Number;
 import org.tigris.subversion.svnclientadapter.SVNRevisionRange;
 import org.tigris.subversion.svnclientadapter.SVNScheduleKind;
 import org.tigris.subversion.svnclientadapter.SVNStatusUnversioned;
-import org.tigris.subversion.svnclientadapter.SVNUrl;
 
 /**
  * <p>
@@ -169,18 +168,15 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 	}
 
 	private boolean isManaged(File file) {
-    	if (file.isDirectory()) {
-    		return isManagedDir(file.getParentFile()) || isManagedDir(file);
-    	} else {
-    		return isManagedDir(file.getParentFile());
-    	}    	
-    }
+		return file.isDirectory() && isManagedDir(file)
+				|| file.getParentFile() != null && isManagedDir(file.getParentFile());
+	}
 
-    private boolean isManagedDir(File dir) {
-        // all directories that do not have a .svn dir are not versioned
-        File entries = new File(dir, getAdminDirectoryName() + "/entries");
-        return entries.exists();
-    }
+	private boolean isManagedDir(File dir) {
+		// a directory that has a .svn dir or that has a parent directory with a .svn dir is versioned
+		File entries = new File(dir, getAdminDirectoryName() + "/entries");
+		return entries.exists() || dir.getParentFile() != null && isManagedDir(dir.getParentFile());
+	}
 
 	/* (non-Javadoc)
 	 * @see org.tigris.subversion.subclipse.client.ISVNClientAdapter#getStatus(java.io.File[])
@@ -1007,14 +1003,43 @@ public class CmdLineClientAdapter extends AbstractClientAdapter {
 		}
 	}
 
-    /**
-     * A safe <code>toString()</code> implementation which implements
-     * <code>null</code> checking on <code>obj</code>.
-     */
-	protected static String toString(Object obj) {
-		return (obj == null) ? null : obj.toString();
+	protected static String toString(SVNRevision r) {
+		return (r == null) ? null : r.toString();
 	}
 
+	protected static String toString(File f) {
+		return (f == null) ? null : atSign(f.toString());
+	}
+
+	protected static String toString(File[] f) {
+		if (f == null) return null;
+		StringBuffer buf = new StringBuffer();
+		for (int i = 0; i < f.length; i++) {
+			buf.append(atSign(f[i].toString()) + " ");
+		}
+		return buf.toString();
+	}
+
+	protected static String toString(SVNUrl u) {
+		return (u == null) ? null : atSign(u.toString());
+	}
+	
+	/**
+	 * The command line requires paths that contain an '@'
+	 * have an '@' at the end of the string. Otherwise it
+	 * interprets the '@' as the start of a peg revision
+	 * 
+	 * Rather than always add an '@' to end of path we use
+	 * this method to only do so when needed.
+	 */
+	private static String atSign(String s) {
+		if (s.contains("@"))
+			return s + "@";
+		else
+			return s;
+	}
+
+	
     /**
      * Implementation used by overloads of <code>getLogMessages()</code>.
      *

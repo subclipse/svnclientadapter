@@ -1,4 +1,4 @@
-#SVNClientAdapter
+# SVNClientAdapter
 
 [![Build Status](https://travis-ci.org/subclipse/svnclientadapter.svg?branch=master)](https://travis-ci.org/subclipse/svnclientadapter)
 [ ![Download](https://api.bintray.com/packages/subclipse/maven/svnclientadapter/images/download.svg) ](https://bintray.com/subclipse/maven/svnclientadapter/_latestVersion)  

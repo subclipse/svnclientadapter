@@ -354,6 +354,7 @@ public class SvnCommandLine extends CommandLine {
 		args.add(path);
 		if (force)
 			args.add("--force");
+		args.addAuthInfo(this.user, this.pass);
         args.addConfigInfo(this.configDir);			
 		execVoid(args);
 	}
