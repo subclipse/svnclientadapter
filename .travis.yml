@@ -1,2 +1,2 @@
 language: java
-script: "mvn clean verify -B"
+script: "[ ${TRAVIS_PULL_REQUEST} = 'false' ] && mvn clean deploy --settings settings.xml -B || mvn clean verify --settings settings.xml -B"
