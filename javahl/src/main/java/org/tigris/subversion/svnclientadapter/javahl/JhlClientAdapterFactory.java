@@ -37,7 +37,8 @@ public class JhlClientAdapterFactory extends SVNClientAdapterFactory {
         "dbghelp", "libsasl",
         // libraries as of 1.5
         "libsvn_subr-1", "libsvn_delta-1", "libsvn_diff-1", "libsvn_wc-1",
-        "libsvn_fs-1", "libsvn_repos-1", "libsvn_ra-1", "libsvn_client-1"
+        "libsvn_fs_util-1", "libsvn_fs_fs-1", "libsvn_fs_x-1", "libsvn_fs-1",
+        "libsvn_repos-1", "libsvn_ra-1", "libsvn_client-1"
     };
 
     private static boolean availabilityCached = false;
