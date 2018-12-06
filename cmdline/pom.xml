@@ -9,7 +9,7 @@
     <parent>
         <groupId>org.tigris.svnclientadapter</groupId>
         <artifactId>multi</artifactId>
-        <version>1.10.0</version>
+        <version>1.11.0</version>
     </parent>
 
     <licenses>
@@ -23,7 +23,7 @@
         <dependency>
             <groupId>org.tigris.svnclientadapter</groupId>
             <artifactId>adapter-base</artifactId>
-            <version>1.10.0</version>
+            <version>1.11.0</version>
         </dependency>
     </dependencies>
 
