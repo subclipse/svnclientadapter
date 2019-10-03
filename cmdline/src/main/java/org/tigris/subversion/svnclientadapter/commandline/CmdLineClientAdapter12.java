@@ -20,6 +20,8 @@
 package org.tigris.subversion.svnclientadapter.commandline;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.tigris.subversion.svnclientadapter.ISVNAnnotations;
 import org.tigris.subversion.svnclientadapter.ISVNNotifyListener;
@@ -88,11 +90,14 @@ public class CmdLineClientAdapter12 extends CmdLineClientAdapter {
     	}
     	String statusLinesString = ((SvnCommandLine12) _cmd).statusByStdout(paths, descend, getAll, false, ignoreExternals);
         String[] parts = StringUtils.split(statusLinesString,Helper.NEWLINE);
-        CmdLineStatusPart[] cmdLineStatusParts = new CmdLineStatusPart[parts.length];
-        for (int i = 0; i < parts.length;i++) {
-            cmdLineStatusParts[i] = new CmdLineStatusPart.CmdLineStatusPartFromStdout(parts[i]);
+        List<CmdLineStatusPart> statusPartList = new ArrayList<CmdLineStatusPart>();
+        for (int i = 0; i < parts.length; i++) {
+            if (parts[i].length() < CmdLineStatusPart.CmdLineStatusPartFromStdout.STATUS_FILE_WIDTH) {
+                continue;
+            }
+            statusPartList.add(new CmdLineStatusPart.CmdLineStatusPartFromStdout(parts[i]));
         }
-        return cmdLineStatusParts;
+        return statusPartList.toArray(new CmdLineStatusPart[0]);
     }
  
 	protected ISVNAnnotations annotate(String target, SVNRevision revisionStart, SVNRevision revisionEnd) throws SVNClientException {
