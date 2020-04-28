@@ -33,7 +33,8 @@ public class JhlClientAdapterFactory extends SVNClientAdapterFactory {
     
     private static final String[] WINDOWSLIBS = new String[] {
     	"msvcr100", "msvcp100",
-        "libapr-1", "libapriconv-1", "libeay32", "ssleay32", "libaprutil-1",
+        "libapr-1", "libapriconv-1", "libeay32", "ssleay32",
+		"libcrypto-1_1", "libssl-1_1", "libaprutil-1",
         "dbghelp", "libsasl",
         // libraries as of 1.5
         "libsvn_subr-1", "libsvn_delta-1", "libsvn_diff-1", "libsvn_wc-1",
