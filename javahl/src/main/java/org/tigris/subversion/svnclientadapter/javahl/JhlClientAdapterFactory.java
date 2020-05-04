@@ -32,11 +32,22 @@ import org.tigris.subversion.svnclientadapter.SVNClientException;
 public class JhlClientAdapterFactory extends SVNClientAdapterFactory {
     
     private static final String[] WINDOWSLIBS = new String[] {
-    	"msvcr100", "msvcp100", "zlib-1",
-        "libapr-1", "libapriconv-1", "libeay32", "ssleay32",
-		"libcrypto-1_1", "capi", "libssl-1_1", "libaprutil-1",
-        "dbghelp", "libsasl", "libserf-1",
-        // libraries as of 1.5
+    	"msvcr100", "msvcp100",
+        "libapr-1", "libapriconv-1",
+		"libcrypto-1_1", "capi", "libssl-1_1",
+		"libaprutil-1",
+        "libserf-1",
+        "libsvn_subr-1", "libsvn_delta-1", "libsvn_diff-1", "libsvn_wc-1",
+        "libsvn_fs_util-1", "libsvn_fs_fs-1", "libsvn_fs_x-1", "libsvn_fs-1",
+        "libsvn_repos-1", "libsvn_ra-1", "libsvn_client-1"
+    };
+    
+    private static final String[] WINDOWSLIBS64 = new String[] {
+    	"msvcr100", "msvcp100",
+        "libapr-1", "libapriconv-1",
+		"libcrypto-1_1-x64", "capi", "libssl-1_1-x64",
+		"libaprutil-1",
+        "libserf-1",
         "libsvn_subr-1", "libsvn_delta-1", "libsvn_diff-1", "libsvn_wc-1",
         "libsvn_fs_util-1", "libsvn_fs_fs-1", "libsvn_fs_x-1", "libsvn_fs-1",
         "libsvn_repos-1", "libsvn_ra-1", "libsvn_client-1"
@@ -106,16 +117,27 @@ public class JhlClientAdapterFactory extends SVNClientAdapterFactory {
     		// because of a problem in one of these libraries the proper behavior
     		// will still occur -- meaning JavaHL adapter is disabled.
     		if(isOsWindows()) {
-    		    
-    		    for (int i = 0; i < WINDOWSLIBS.length; i++) {
-    		        try {
-    		            System.loadLibrary(WINDOWSLIBS[i]);
-    		        } catch (Exception e) {
-                        javaHLErrors.append(e.getMessage()).append("\n");
-    		        } catch (UnsatisfiedLinkError e) {
-                        javaHLErrors.append(e.getMessage()).append("\n");
-    		        }
-    		    }
+    		    if (is32bit()) {
+					for (int i = 0; i < WINDOWSLIBS.length; i++) {
+						try {
+							System.loadLibrary(WINDOWSLIBS[i]);
+						} catch (Exception e) {
+							javaHLErrors.append(e.getMessage()).append("\n");
+						} catch (UnsatisfiedLinkError e) {
+							javaHLErrors.append(e.getMessage()).append("\n");
+						}
+					}
+				} else {
+					for (int i = 0; i < WINDOWSLIBS64.length; i++) {
+						try {
+							System.loadLibrary(WINDOWSLIBS64[i]);
+						} catch (Exception e) {
+							javaHLErrors.append(e.getMessage()).append("\n");
+						} catch (UnsatisfiedLinkError e) {
+							javaHLErrors.append(e.getMessage()).append("\n");
+						}
+					}
+				}
     		    
     		}
     		//workaround to solve Subclipse ISSUE #83
@@ -210,6 +232,20 @@ public class JhlClientAdapterFactory extends SVNClientAdapterFactory {
 	{
         try {
             return System.getProperty("os.name").startsWith("Windows");
+        } catch (SecurityException ex) {
+            // we are not allowed to look at this property
+            return false;
+        }
+	}
+    
+	/**
+	 * Answer whether running on 32-bit JVM
+	 * @return true when running on 32-bit JVM 
+	 */
+	public static boolean is32bit()
+	{
+        try {
+            return System.getProperty("os.arch").equalsIgnoreCase("x86");
         } catch (SecurityException ex) {
             // we are not allowed to look at this property
             return false;
