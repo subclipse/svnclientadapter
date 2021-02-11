@@ -27,9 +27,14 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
 
+      - name: Write Maven Settings
+        uses: whelk-io/maven-settings-xml-action@v14
+        with:
+          servers: '[{ "id": "github", "username": "${{ github.actor }}", "password": "${{ secrets.GITHUB_TOKEN }}" }]'
+
       - name: Build with Maven
         run: |
-          mvn --batch-mode --settings settings.xml package
+          mvn --batch-mode package
 
       - name: Archive Build Output
         uses: actions/upload-artifact@v2
@@ -47,6 +52,6 @@ jobs:
 
       - name: Publish package
         if: github.event_name == 'release'
-        run: mvn --batch-mode --settings settings.xml deploy
+        run: mvn --batch-mode deploy
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
