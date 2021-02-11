@@ -1,0 +1,57 @@
+name: Build
+
+on:
+  pull_request:
+    branches: [ master ]
+
+  push:
+    branches: [ master ]
+
+  release:
+    types: [ created ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+
+      - name: Cache Maven packages
+        uses: actions/cache@v2.1.4
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+
+      - name: Write Maven Settings
+        uses: whelk-io/maven-settings-xml-action@v14
+        with:
+          servers: '[{ "id": "github", "username": "${{ github.actor }}", "password": "${{ secrets.GITHUB_TOKEN }}" }]'
+
+      - name: Build with Maven
+        run: |
+          mvn --batch-mode package
+
+      - name: Archive Build Output
+        uses: actions/upload-artifact@v2
+        with:
+          name: svnclientadapter
+          path: |
+            base/target/*.jar
+            !base/target/*-sources.jar
+            cmdline/target/*.jar
+            !cmdline/target/*-sources.jar
+            javahl/target/*.jar
+            !javahl/target/*-sources.jar
+            svnkit/target/*.jar
+            !svnkit/target/*-sources.jar
+
+      - name: Publish package
+        if: github.event_name == 'release'
+        run: mvn --batch-mode deploy
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

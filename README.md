@@ -1,7 +1,6 @@
 # SVNClientAdapter
+[![Build Status](https://github.com/subclipse/svnclientadapter/workflows/Build/badge.svg)](https://github.com/subclipse/svnclientadapter/actions)
 
-[![Build Status](https://travis-ci.org/subclipse/svnclientadapter.svg?branch=master)](https://travis-ci.org/subclipse/svnclientadapter)
-[ ![Download](https://api.bintray.com/packages/subclipse/maven/svnclientadapter/images/download.svg) ](https://bintray.com/subclipse/maven/svnclientadapter/_latestVersion)  
 
 SVNClientAdapter is a high-level Java API for Subversion.  You can write your code to the SVNClientAdapter Java interfaces and then at runtime run it with any of the three adapter implementations:
 

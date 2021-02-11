@@ -4,7 +4,7 @@
     <groupId>org.tigris.svnclientadapter</groupId>
     <artifactId>multi</artifactId>
     <version>1.14.0</version>
-    <name>svnClientAdapter</name>
+    <name>svnclientadapter</name>
     <url>https://github.com/subclipse/svnclientadapter</url>
     <packaging>pom</packaging>
 
@@ -23,15 +23,16 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.3.2</version>
+                <version>3.8.1</version>
                 <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
+                    <source>1.8</source>
+                    <target>1.8</target>
                 </configuration>
             </plugin>
             <plugin>
               <groupId>org.apache.maven.plugins</groupId>
               <artifactId>maven-source-plugin</artifactId>
+              <version>3.2.0</version>
               <executions>
                 <execution>
                   <id>attach-sources</id>
@@ -43,11 +44,13 @@
             </plugin>
         </plugins>
     </build>
+
     <distributionManagement>
-        <repository>
-            <id>bintray-subclipse-maven</id>
-            <name>subclipse-maven</name>
-            <url>https://api.bintray.com/maven/subclipse/maven/svnclientadapter/;publish=1</url>
-        </repository>
+    <repository>
+        <id>github</id>
+        <name>GitHub Packages</name>
+        <url>https://maven.pkg.github.com/subclipse/svnclientadapter</url>
+    </repository>
     </distributionManagement>
+
 </project>

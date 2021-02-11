@@ -21,9 +21,9 @@
 
     <repositories>
         <repository>
-            <id>bintray-subclipse-maven</id>
-            <name>bintray</name>
-            <url>http://dl.bintray.com/subclipse/maven</url>
+          <id>github</id>
+          <name>JavaHL Apache Maven Packages</name>
+          <url>https://maven.pkg.github.com/subclipse/javahl</url>
         </repository>
     </repositories>
 
@@ -42,15 +42,6 @@
 
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.3.2</version>
-                <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
-                </configuration>
-            </plugin>
 			<plugin>
 				<groupId>biz.aQute.bnd</groupId>
 				<artifactId>bnd-maven-plugin</artifactId>
@@ -73,6 +64,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
+                <version>3.2.0</version>
 				<configuration>
 					<archive>
 						<manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
