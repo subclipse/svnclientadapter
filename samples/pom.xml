@@ -12,10 +12,10 @@
     </properties>
     
     <repositories>
-        <repository>
-            <id>bintray-subclipse-maven</id>
-            <name>bintray</name>
-            <url>http://dl.bintray.com/subclipse/maven</url>
+         <repository>
+          <id>github</id>
+          <name>svnClientAdapter Apache Maven Packages</name>
+          <url>https://maven.pkg.github.com/subclipse/svnclientadapter</url>
         </repository>
     </repositories>
 
@@ -39,10 +39,10 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.3.2</version>
+                <version>3.8.1</version>
                 <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
+                    <source>1.8</source>
+                    <target>1.8</target>
                 </configuration>
             </plugin>
             <plugin>
