@@ -29,7 +29,7 @@ jobs:
           restore-keys: ${{ runner.os }}-m2
 
       - name: Write Maven Settings
-        uses: whelk-io/maven-settings-xml-action@v18
+        uses: whelk-io/maven-settings-xml-action@v21
         with:
           servers: '[{ "id": "github", "username": "${{ github.actor }}", "password": "${{ secrets.GITHUB_TOKEN }}" }]'
 
